@@ -1,50 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gurumanie Singh • Portfolio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Example: link a shared CSS file if you create one under /assets/css -->
-  <link rel="stylesheet" href="assets/css/main.css" />
-</head>
-<body>
-  <nav style="padding: 1rem; background-color: #f2f2f2;">
-    <a href="/">Home</a> |
-    <a href="/py-network-experiments/">Python Networking</a> |
-    <a href="/overthewire-solutions/">OverTheWire Solutions</a> |
-    <a href="/COMS309/">COMS309 Class Work</a> |
-    <a href="/CPRE381/">CPRE381 Class Work</a>
-  </nav>
 
-  <header style="text-align: center; margin: 2rem 0;">
-    <h1>Gurumanie Singh</h1>
-    <p>Computer Engineering • Cybersecurity & Networking Enthusiast</p>
+  <!-- Override Tailwind’s gray palette with your custom grays -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS CSS (for scroll animations) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Your shared custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="font-sans transition-all"
+      style="font-family: 'Less Sans Minimal', sans-serif; background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <!-- Header -->
+  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-semibold text-white">
+      Gurumanie Singh • Portfolio
+    </h1>
   </header>
 
-  <section id="featured-projects" style="max-width: 600px; margin: auto;">
-    <h2>Featured Projects</h2>
-    <ul>
-      <li>
-        <strong>OverTheWire Bandit Solutions</strong> —
-        <a href="/overthewire-solutions/">Browse Write-ups »</a>
-      </li>
-      <li>
-        <strong>Python Networking Experiments</strong> —
-        <a href="/py-network-experiments/">View Scripts & Demos »</a>
-      </li>
-      <li>
-        <strong>COMS309 Coursework</strong> —
-        <a href="/COMS309/">See Labs & Assignments »</a>
-      </li>
-      <li>
-        <strong>CPRE381 Coursework</strong> —
-        <a href="/CPRE381/">See Projects & Reports »</a>
-      </li>
-    </ul>
+  <!-- Hero / Intro Section -->
+  <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
+    <h2 class="text-4xl font-semibold mb-4 text-white">
+      Welcome
+    </h2>
+    <p class="text-lg max-w-2xl mx-auto text-gray-200">
+      Hi, I'm Gurumanie Singh. Below are links to my projects, coursework, and write-ups. Click any card to explore.
+    </p>
   </section>
 
-  <footer style="text-align: center; margin: 3rem 0;">
-    <p>© 2025 Gurumanie Singh • <a href="https://github.com/gurumanie-singh">GitHub</a> • <a href="https://linkedin.com/in/gurumaniesingh">LinkedIn</a></p>
-  </footer>
+  <!-- Portfolio Grid -->
+  <section id="projects" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-3xl font-medium text-center mb-8 text-white">
+      Explore My Work
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
+
+      <!-- OverTheWire Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          OverTheWire Solutions Guide
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Step-by-step walkthroughs for each Bandit level, fully documented with code snippets and screenshots.
+        </p>
+        <a href="overthewire/index.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View OverTheWire
+        </a>
+      </div>
+
+      <!-- Python Networking Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Python Networking Experiments
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          A collection of custom Python scripts: port scanners, packet sniffers, client/server demos.
+        </p>
+        <a href="py-network-experiments/index.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Python Network
+        </a>
+      </div>
+
+      <!-- COMS309 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          COMS309 Coursework
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Labs, assignments, and reports from my COMS309 (Digital Design) class.
+        </p>
+        <a href="COMS309/index.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View COMS309
+        </a>
+      </div>
+
+      <!-- CPRE381 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          CPRE381 Coursework
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Projects, reports, and VHDL simulations from my CPRE381 (Computer Architecture) class.
+        </p>
+        <a href="CPRE381/index.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View CPRE381
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AOS Initialization -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true });
+  </script>
 </body>
+
 </html>
