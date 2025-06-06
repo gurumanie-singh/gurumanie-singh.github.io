@@ -1,0 +1,106 @@
+-------------------------------------------------------------------------
+-- Gurumanie Singh
+-------------------------------------------------------------------------
+-- tb_reg_N_Flush.vhd
+-------------------------------------------------------------------------
+-- DESCRIPTION: This file contains a testbench for the reg_N_Flush unit.
+-------------------------------------------------------------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_textio.all;  -- For logic types I/O
+
+entity tb_reg_N_Flush is
+	
+end tb_reg_N_Flush;
+
+
+architecture mixed of tb_reg_N_Flush is
+constant N : integer := 32; -- Constant of type integer for input/output data width. Default value is 32.
+
+-- We will be instantiating our design under test (DUT), so we need to specify its
+-- component interface.
+component reg_N_Flush is
+	port (	
+		i_data		: in std_logic_vector(31 downto 0);
+		i_writeEn	: in std_logic;
+		i_reset		: in std_logic;
+		i_flush		: in std_logic;
+		i_clock		: in std_logic;
+		o_output	: out std_logic_vector(31 downto 0)
+		); 	
+end component;
+
+
+-- Input and output signals as needed.
+signal s_data		: std_logic_vector(31 downto 0);
+signal s_writeEn   	: std_logic;
+signal s_reset		: std_logic;
+signal s_flush		: std_logic;
+signal s_CLK		: std_logic;
+signal s_output		: std_logic_vector(31 downto 0); 
+
+begin
+
+  -- TODO: Actually instantiate the component to test and wire all signals to the corresponding
+  -- input or output. Note that DUT0 is just the name of the instance that can be seen 
+  -- during simulation. What follows DUT0 is the entity name that will be used to find
+  -- the appropriate library component during simulation loading.
+  DUT0: reg_N_Flush
+  port map(
+          i_data	=> s_data,
+	    i_writeEn	=> s_writeEn,
+	    i_reset		=> s_reset,
+	    i_flush		=> s_flush,
+	    i_clock		=> s_CLK,
+	    o_output	=> s_output
+	    );
+  --You can also do the above port map in one line using the below format: http://www.ics.uci.edu/~jmoorkan/vhdlref/compinst.html
+  
+
+P_CLK: process
+  begin
+    s_CLK <= '0';
+    wait for 5 ns;
+    s_CLK <= '1';
+    wait for 5 ns;
+  end process;
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+
+	s_writeEn 	<= '0';
+	s_reset		<= '1';
+	s_reset		<= '0';
+	s_flush		<= '0';
+
+	-- Test 1
+	s_data	 	<= x"10000000"; 
+	s_writeEn	<= '1';
+	wait for 10 ns;
+
+	-- Test 2
+	s_data	 	<= x"FFFFFFFF"; 
+	s_writeEn	<= '0';
+	wait for 10 ns;
+
+	-- Test 3
+	s_data	 	<= x"11111111"; 
+	s_writeEn	<= '1';
+	wait for 10 ns;
+
+	-- Test 4
+	s_data	 	<= x"10000000"; 
+	s_flush		<= '1';
+	wait for 10 ns;
+
+	-- Test 5
+	s_data	 	<= x"FFFFFFFF"; 
+	s_flush		<= '0';
+	s_writeEn	<= '1';
+	wait for 10 ns;
+	
+    wait;
+  end process;
+  
+end mixed;

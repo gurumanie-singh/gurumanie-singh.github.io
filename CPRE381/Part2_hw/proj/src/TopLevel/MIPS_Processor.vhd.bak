@@ -1,0 +1,1073 @@
+-------------------------------------------------------------------------
+-- Dawud Benedict and Henry Duwe 
+-- Department of Electrical and Computer Engineering
+-- Iowa State University
+-------------------------------------------------------------------------
+
+
+-- MIPS_Processor.vhd
+-------------------------------------------------------------------------
+-- DESCRIPTION: MIPS 5-stage pipeline processor.
+
+-- 01/29/2019 by H3::Design created.
+-------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+library work;
+use work.MIPS_types.all;
+
+entity MIPS_Processor is
+  generic(N : integer := DATA_WIDTH);
+  port(iCLK            : in std_logic;
+       iRST            : in std_logic;
+       iInstLd         : in std_logic;
+       iInstAddr       : in std_logic_vector(N-1 downto 0);
+       iInstExt        : in std_logic_vector(N-1 downto 0);
+       oALUOut         : out std_logic_vector(N-1 downto 0)); -- Hook this up to the output of the ALU. It is important for synthesis that you have this output that can effectively be impacted by all other components so they are not optimized away.
+
+end  MIPS_Processor;
+
+
+architecture structure of MIPS_Processor is
+
+  -- Required data memory signals
+  signal s_DMemWr       : std_logic; -- use this signal as the final active high data memory write enable signal
+  signal s_DMemAddr     : std_logic_vector(N-1 downto 0); -- use this signal as the final data memory address input
+  signal s_DMemData     : std_logic_vector(N-1 downto 0); -- use this signal as the final data memory data input
+  signal s_DMemOut      : std_logic_vector(N-1 downto 0); -- use this signal as the data memory output
+ 
+  -- Required register file signals 
+  signal s_RegWr        : std_logic; -- use this signal as the final active high write enable input to the register file
+  signal s_RegWrAddr    : std_logic_vector(4 downto 0); -- use this signal as the final destination register address input
+  signal s_RegWrData    : std_logic_vector(N-1 downto 0); -- use this signal as the final data memory data input
+
+  -- Required instruction memory signals
+  signal s_IMemAddr     : std_logic_vector(N-1 downto 0); -- Do not assign this signal, assign to s_NextInstAddr instead
+  signal s_NextInstAddr : std_logic_vector(N-1 downto 0); -- Use this signal as your intended final instruction memory address input.
+  signal s_Inst         : std_logic_vector(N-1 downto 0); -- Use this signal as the instruction signal 
+
+  -- Required halt signal -- for simulation
+  signal s_Halt         : std_logic;  -- this signal indicates to the simulation that intended program execution has completed. (Opcode: 01 0100)
+
+  -- Required overflow signal -- for overflow exception detection
+  signal s_Ovfl         : std_logic;  -- this signal indicates an overflow exception would have been initiated
+
+	-- memory
+  component mem is
+    generic(ADDR_WIDTH : integer;
+            DATA_WIDTH : integer);
+    port(
+          clk          : in std_logic;
+          addr         : in std_logic_vector((ADDR_WIDTH-1) downto 0);
+          data         : in std_logic_vector((DATA_WIDTH-1) downto 0);
+          we           : in std_logic := '1';
+          q            : out std_logic_vector((DATA_WIDTH -1) downto 0));
+    end component;
+
+	--signal s_memToReg : std_logic_vector(1 downto 0); -- signal that controls if the write data should come from ALU or Mem
+	signal s_memToRegValue : std_logic_vector((DATA_WIDTH - 1) downto 0); -- output of memToRegMux
+	signal s_loadByte : std_logic_vector(7 downto 0); 	-- byte selection from load
+	signal s_byteExtend : std_logic_vector(31 downto 0); -- extended byte selection
+	signal s_loadHalf : std_logic_vector(15 downto 0);	-- halfword selection from load
+	signal s_halfExtend : std_logic_vector(31 downto 0); -- extended halfword selection
+
+	-- PC reg
+	component PC_reg is
+		generic( N : integer := 32);
+		port (
+			i_data   : in std_logic_vector(N-1 downto 0);
+			i_writeEn: in std_logic;
+			i_reset  : in std_logic;
+			i_clock  : in std_logic;
+			o_output : out std_logic_vector(N-1 downto 0));
+	end component;
+
+	signal s_PCWrite : std_logic;
+
+
+	-- RegFile component
+	component regFile is
+		port (	
+			i_rt 		: in std_logic_vector(4 downto 0);  -- read reg 0 select
+			i_rs 		: in std_logic_vector(4 downto 0);  -- read reg 1 select
+			i_rd		: in std_logic_vector(4 downto 0);  -- write reg select  (set to 0 for no writing)
+			i_RegWrite 	: in std_logic;						-- write enable
+			i_data		: in std_logic_vector(31 downto 0); -- write data
+			i_clk, i_rst	: in std_logic;	 	  			-- clock and reset
+			o_rt 		: out std_logic_vector(31 downto 0); -- output of reg 0
+			o_rs 		: out std_logic_vector(31 downto 0)); -- output of reg 1
+	end component;
+
+	signal s_RtOut : std_logic_vector(31 downto 0);
+	signal s_RsOut : std_logic_vector(31 downto 0);
+
+	---------------   ALU component ----------------------------------------
+	component ALU_full is
+		generic (N : integer := 32);
+		port (  
+			i_A, i_B : in std_logic_vector(N-1 downto 0); -- inputs
+			ALUControl : in std_logic_vector(3 downto 0); -- controls AND/OR/ADD/SUB
+			i_shamt	 : in std_logic_vector(4 downto 0);		-- shift ammount
+			i_regShift: in std_logic;
+			o_out	 : out std_logic_vector(N-1 downto 0);	-- ALU output
+			o_OvF 	 : out std_logic;						-- overflow
+			o_zero	 : out std_logic); 						-- zero output		
+	end component;
+
+	--signal s_ALUout		: std_logic_vector((DATA_WIDTH -1) downto 0); -- output of ALU
+	signal s_ALUzero 	: std_logic;								  -- zero output of ALU
+	signal s_AdderOvFl	: std_logic;
+	--signal s_notZero	: std_logic;
+
+	-- N-bit 2t1 Mux component
+	component mux2t1_N is
+	  generic(N : integer := 32); -- Generic of type integer for input/output data width. Default value is 32.
+	  port(i_S          : in std_logic;
+	       i_D0         : in std_logic_vector(N-1 downto 0);
+	       i_D1         : in std_logic_vector(N-1 downto 0);
+	       o_O          : out std_logic_vector(N-1 downto 0));
+	end component;
+
+	-- one bit 2t1 mux
+	component mux2t1_dataflow is
+		port(   i_D0 : in std_logic;
+				i_D1 : in std_logic;
+				i_S : in std_logic;
+				o_O : out std_logic);
+	end component;
+
+	-- 4t1 mux
+	component mux4t1_N is
+		generic (N : integer := 32);
+		port (	
+				i_D0, i_D1, i_D2, i_D3 : in std_logic_vector(N-1 downto 0); -- inputs
+				i_S : in std_logic_vector(1 downto 0); -- select line
+				o_O : out std_logic_vector(N-1 downto 0)); -- output
+	end component;
+
+	-- sign/zero extenders
+	component extender_16to32 is
+		port (	i_signSelect : in std_logic;
+				i_imm : in std_logic_vector(15 downto 0);
+				o_out : out std_logic_vector(31 downto 0));
+	end component;
+
+	signal s_extendSelect : std_logic; 					 -- if set, selects signExtention, else zeroExtention
+
+	component extender8t32 is
+		port (	i_signSelect : in std_logic;
+				i_imm 		: in std_logic_vector(7 downto 0);
+				o_out 		: out std_logic_vector(31 downto 0));
+	end component;
+
+----------------------- CONTROL UNIT ----------------------
+	component ControlUnit is
+		port (	
+			i_opcode 	: in std_logic_vector(5 downto 0);
+			o_RegDst 	: out std_logic_vector(1 downto 0);
+			o_Jump		: out std_logic;
+			o_Branch 	: out std_logic;
+			o_MemRead 	: out std_logic;
+			o_MemToReg 	: out std_logic_vector(1 downto 0);
+			o_ALUOp 	: out std_logic_vector(2 downto 0);
+			o_MemWrite 	: out std_logic;
+			o_ALUSrc 	: out std_logic;
+			o_RegWrite 	: out std_logic;
+			o_SignExt	: out std_logic;
+			o_Halt		: out std_logic;
+			o_luiSelect 	: out std_logic_vector(1 downto 0);
+			o_checkOvFl 	: out std_logic;
+			o_SignedLoad 	: out std_logic;
+			o_equalSelect	: out std_logic); 	
+	end component;
+
+	-- Control Unit signals
+	signal s_jumpSelect : std_logic;				-- set for jump instructions
+	signal s_branchSelect : std_logic;				-- set for branch instructions
+	signal s_ALUOp : std_logic_vector(2 downto 0);   -- input to ALU controller. Selects the opperation or tells controller to look at funct field.
+	signal s_checkAddiOvF : std_logic; -- set to check overFlow for Addi. 
+	signal s_equalSelect: std_logic; -- set for beq. Checks for zero, otherwise checks for NOT zero.
+
+
+	-- ALU Controller
+	component ALUController is
+		port (	
+			i_Function 	: in std_logic_vector(5 downto 0);
+			i_ALUOp 	: in std_logic_vector(2 downto 0);
+			o_ALUControl	: out std_logic_vector(3 downto 0);
+			o_checkOvFl 	: out std_logic;
+			o_jrSelect		: out std_logic;
+			o_regShift		: out std_logic);			-- use funct to select if arithmetic shift or not	
+	end component;
+
+	signal s_checkAddSubOvF : std_logic;
+	signal s_jrSelect		: std_logic;
+	signal s_jumpMuxOut		: std_logic_vector(31 downto 0);
+	signal s_jrMuxOut 		: std_logic_vector(31 downto 0);
+	
+
+	-- PC
+	component reg_N is
+		generic( N : integer := 32);
+		port (
+			i_data   : in std_logic_vector(N-1 downto 0);
+			i_writeEn: in std_logic;
+			i_reset  : in std_logic;
+			i_clock  : in std_logic;
+			o_output : out std_logic_vector(N-1 downto 0));
+	end component;
+
+	signal s_PCin : std_logic_vector(31 downto 0);
+
+	-- adder
+	component ripple_carry_adder is
+		generic (N : integer := 32);
+		port (  i_X, i_Y : in std_logic_vector(N-1 downto 0);
+			i_C	 : in std_logic;
+			o_S	 : out std_logic_vector(N-1 downto 0);
+			o_C	 : out std_logic );
+	end component;
+
+	signal s_adderCarry : std_logic; -- does nothing, just for port mapping.
+
+	-- Shift left 2
+	component ShiftLeft2_N is
+		generic(in_N : integer := 32;
+				out_N: integer := 32);
+		port (	i_input : in std_logic_vector(in_N - 1 downto 0);
+				o_out : out std_logic_vector(out_N - 1 downto 0));
+	end component;
+
+	signal s_shiftedJump : std_logic_vector(27 downto 0);	-- jump immediate shifted by 2
+	signal s_jumpAddr 	 : std_logic_vector(31 downto 0);	-- final jump address: { PC+4[31-28], inst[25-0], "00"}
+	signal s_shiftedBranch: std_logic_vector(31 downto 0);	-- branch immediate shifted by 2
+	signal s_branchAddr  : std_logic_vector(31 downto 0);	-- final branch address: PC+4 + shifted branch immediate
+	signal s_branchCarry : std_logic; 						-- does nothing. Has the value of the carry out of branch adder.
+
+	signal s_zeroMuxOut  : std_logic; -- output of the zeroMux. Is 1 if zero and beq OR notZero and bne.
+	signal s_branchPC	 : std_logic_vector(31 downto 0); 	-- new value of PC from branchMux. Either PC+4 (s_newPC) or s_branchAddr
+	signal s_executeBranch: std_logic; 					  -- signal for branchMux. Found by ANDing the zero and branch select line. 
+	signal s_RsRtEqual	: std_logic; -- signal set if Rt = Rs.
+	signal s_RsRtNotEqual: std_logic;
+
+
+	-------------------------------- Pipeline Regs -------------------------------------------------------
+
+	component Pipeline_IF_ID is
+		port (	
+			i_CLK		: in std_logic;
+			i_RST		: in std_logic;
+			i_flush		: in std_logic;
+			i_stall		: in std_logic;
+			i_PCAdd4	: in std_logic_vector(31 downto 0);
+			i_Inst		: in std_logic_vector(31 downto 0);
+			o_PCAdd4	: out std_logic_vector(31 downto 0);
+			o_Inst		: out std_logic_vector(31 downto 0)
+			); 	
+	end component;
+		
+		signal s_Flush_IF : std_logic;
+
+		-- IF/ID inputs
+		signal s_PCAdd4_IF 	: std_logic_vector(31 downto 0);
+		
+		-- IF/ID outputs
+		signal s_PCAdd4_ID 	: std_logic_vector(31 downto 0);
+		signal s_Inst_ID	: std_logic_vector(31 downto 0);
+
+	------------- ID/EX reg ----------------------
+	component Pipeline_ID_EX is
+		port (  -- clock and reset
+				i_CLK	: in std_logic;
+				i_RST	: in std_logic;
+				i_flush	: in std_logic;
+				i_stall		: in std_logic;
+				-- inputs
+				i_MemToReg 	: in std_logic_vector(1 downto 0);
+				i_RegWrite	: in std_logic;
+				i_RegDst	: in std_logic_vector(1 downto 0);
+				i_luiSelect	: in std_logic_vector(1 downto 0);
+				i_halt		: in std_logic;						-- halt signal
+				i_signedLoad: in std_logic;
+				i_DMemWr	: in std_logic;
+				i_ALUControl: in std_logic_vector(3 downto 0);
+				i_checkOvFl	: in std_logic;						
+				i_regShift	: in std_logic;
+				i_shamt		: in std_logic_vector(4 downto 0);  -- shamt field of Inst
+				i_RsAddr	: in std_logic_vector(4 downto 0);	-- Rs Address
+				i_RtAddr	: in std_logic_vector(4 downto 0);	-- Rt address
+				i_RdAddr	: in std_logic_vector(4 downto 0);	-- Rd address
+				i_extImm	: in std_logic_vector(31 downto 0);	-- sign extended immediate
+				i_RtVal		: in std_logic_vector(31 downto 0); -- Value in Rt reg
+				i_RsVal		: in std_logic_vector(31 downto 0); -- Value in Rs reg
+				i_luiValue	: in std_logic_vector(31 downto 0); -- Shifted Value for lui
+				i_PCAdd4	: in std_logic_vector(31 downto 0);
+				i_ALUInB	: in std_logic_vector(31 downto 0); -- selected valur from ALUSrc Mux
+				i_ALUSrc	: in std_logic;
+				i_MemRead	: in std_logic;
+				-- outputs
+				o_MemToReg 	: out std_logic_vector(1 downto 0);
+				o_RegWrite	: out std_logic;
+				o_RegDst	: out std_logic_vector(1 downto 0);
+				o_luiSelect	: out std_logic_vector(1 downto 0);
+				o_halt		: out std_logic;						-- halt signal
+				o_signedLoad: out std_logic;
+				o_DMemWr	: out std_logic;
+				o_ALUControl: out std_logic_vector(3 downto 0);
+				o_checkOvFl	: out std_logic;						
+				o_regShift	: out std_logic;
+				o_shamt		: out std_logic_vector(4 downto 0);  -- shamt field of Inst
+				o_RsAddr	: out std_logic_vector(4 downto 0);	-- Rs Address
+				o_RtAddr	: out std_logic_vector(4 downto 0);	-- Rt address
+				o_RdAddr	: out std_logic_vector(4 downto 0);	-- Rd address
+				o_extImm	: out std_logic_vector(31 downto 0); -- sign extended immediate
+				o_RtVal		: out std_logic_vector(31 downto 0); -- Value in Rt reg
+				o_RsVal		: out std_logic_vector(31 downto 0); -- Value in Rs reg
+				o_luiValue	: out std_logic_vector(31 downto 0); -- Shifted Value for lui
+				o_PCAdd4	: out std_logic_vector(31 downto 0);
+				o_ALUInB	: out std_logic_vector(31 downto 0); -- selected valur from ALUSrc Mux
+				o_ALUSrc	: out std_logic;
+				o_MemRead	: out std_logic
+		);
+	end component;
+
+		-- ID/EX inputs. Output from Control Unit
+		signal s_MemToReg_ID: std_logic_vector(1 downto 0);
+		signal s_RegWrite_ID: std_logic;
+		signal s_RegDst_ID	: std_logic_vector(1 downto 0);
+		signal s_luiSelect_ID: std_logic_vector(1 downto 0);
+		signal s_halt_ID	: std_logic;						-- halt signal
+		signal s_signedLoad_ID: std_logic;
+		signal s_DMemWr_ID	: std_logic;
+		signal s_ALUControl_ID: std_logic_vector(3 downto 0);
+		signal s_ALUSrc_ID	: std_logic;
+		signal s_checkOvFl_ID: std_logic;						
+		signal s_regShift_ID: std_logic;
+		signal s_extImm_ID	: std_logic_vector(31 downto 0); -- sign extended immediate
+		signal s_RtVal_ID	: std_logic_vector(31 downto 0); -- Value in Rt reg
+		signal s_RsVal_ID	: std_logic_vector(31 downto 0); -- Value in Rs reg
+		signal s_luiValue_ID: std_logic_vector(31 downto 0);
+		signal s_ALUSrcOut_ID	: std_logic_vector(31 downto 0); -- selected valur from ALUSrc Mux
+		signal s_MemRead_ID		: std_logic;
+
+		-- ID/EX outputs
+		signal s_MemToReg_EX: std_logic_vector(1 downto 0);
+		signal s_RegWrite_EX: std_logic;
+		signal s_RegDst_EX	: std_logic_vector(1 downto 0);
+		signal s_luiSelect_EX: std_logic_vector(1 downto 0);
+		signal s_halt_EX	: std_logic;						-- halt signal
+		signal s_signedLoad_EX: std_logic;
+		signal s_DMemWr_EX	: std_logic;
+		signal s_ALUControl_EX: std_logic_vector(3 downto 0);
+		signal s_checkOvFl_EX: std_logic;						
+		signal s_regShift_EX: std_logic;
+		signal s_shamt_EX	: std_logic_vector(4 downto 0); -- shamt field of Inst
+		signal s_RsAddr_EX	: std_logic_vector(4 downto 0);	-- Rs Address
+		signal s_RtAddr_EX	: std_logic_vector(4 downto 0);	-- Rt address
+		signal s_RdAddr_EX	: std_logic_vector(4 downto 0);	-- Rd address
+		signal s_extImm_EX	: std_logic_vector(31 downto 0);	-- sign extended immediate
+		signal s_RtVal_EX	: std_logic_vector(31 downto 0); -- Value in Rt reg
+		signal s_RsVal_EX	: std_logic_vector(31 downto 0); -- Value in Rs reg
+		signal s_luiValue_EX: std_logic_vector(31 downto 0);
+		signal s_PCAdd4_EX	: std_logic_vector(31 downto 0);
+		signal s_ALUSrcOut_EX	: std_logic_vector(31 downto 0); -- selected valur from ALUSrc Mux
+		signal s_ALUSrc_EX	: std_logic;
+		signal s_MemRead_EX	: std_logic;
+
+	------------- EX/MEM reg ----------------------
+	component Pipeline_EX_MEM is
+		port (  -- clock and reset
+				i_CLK	: in std_logic;
+				i_RST	: in std_logic;
+				i_flush	: in std_logic;
+				i_stall		: in std_logic;
+				-- inputs
+				i_MemToReg 	: in std_logic_vector(1 downto 0);
+				i_RegWrite	: in std_logic;
+				i_RegDst	: in std_logic_vector(1 downto 0);
+				i_luiSelect	: in std_logic_vector(1 downto 0);
+				i_halt		: in std_logic;						-- halt signal
+				i_signedLoad: in std_logic;
+				i_DMemWr	: in std_logic;
+				i_Rt_Rd_Addr: in std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction. 
+				i_ALUout	: in std_logic_vector(31 downto 0); -- ALU output value
+				i_luiValue	: in std_logic_vector(31 downto 0); -- Shifted Value for lui
+				i_PCAdd4	: in std_logic_vector(31 downto 0);
+				i_RtVal		: in std_logic_vector(31 downto 0);
+				i_MemRead	: in std_logic;
+				i_OvFl		: in std_logic;
+				-- outputs
+				o_MemToReg 	: out std_logic_vector(1 downto 0);
+				o_RegWrite	: out std_logic;
+				o_RegDst	: out std_logic_vector(1 downto 0);
+				o_luiSelect	: out std_logic_vector(1 downto 0);
+				o_halt		: out std_logic;						-- halt signal
+				o_signedLoad: out std_logic;
+				o_DMemWr	: out std_logic;
+				o_Rt_Rd_Addr: out std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction. 
+				o_ALUout	: out std_logic_vector(31 downto 0); -- ALU output value
+				o_luiValue	: out std_logic_vector(31 downto 0); -- Shifted Value for lui
+				o_PCAdd4	: out std_logic_vector(31 downto 0);
+				o_RtVal		: out std_logic_vector(31 downto 0);
+				o_MemRead	: out std_logic;
+				o_OvFl		: out std_logic
+		);
+	end component;
+
+		-- EX/MEM inputs
+		signal s_Rt_Rd_Addr_EX: std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction.
+		signal s_ALUout_EX	: std_logic_vector(31 downto 0); -- ALU output value
+		signal s_OvFl_EX	: std_logic;
+
+		-- EX/MEM outputs
+		signal s_MemToReg_MEM: std_logic_vector(1 downto 0);
+		signal s_RegWrite_MEM: std_logic;
+		signal s_RegDst_MEM	: std_logic_vector(1 downto 0);
+		signal s_luiSelect_MEM: std_logic_vector(1 downto 0);
+		signal s_halt_MEM	: std_logic;						-- halt signal
+		signal s_signedLoad_MEM: std_logic;
+		signal s_Rt_Rd_Addr_MEM: std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction.
+		signal s_ALUout_MEM	: std_logic_vector(31 downto 0); -- ALU output value
+		signal s_luiValue_MEM: std_logic_vector(31 downto 0);
+		signal s_PCAdd4_MEM	: std_logic_vector(31 downto 0);
+		signal s_RtVal_MEM	: std_logic_vector(31 downto 0); -- Value in Rt reg
+		signal s_MemRead_MEM: std_logic;
+		signal s_OvFl_MEM	: std_logic;
+
+
+	------------- MEM/WB reg ----------------------
+	component Pipeline_MEM_WB is
+		port (  -- clock and reset
+				i_CLK	: in std_logic;
+				i_RST	: in std_logic;
+				i_flush	: in std_logic;
+				i_stall		: in std_logic;
+				-- inputs
+				i_MemToReg 	: in std_logic_vector(1 downto 0);
+				i_RegWrite	: in std_logic;
+				i_RegDst	: in std_logic_vector(1 downto 0);
+				i_luiSelect	: in std_logic_vector(1 downto 0);
+				i_halt		: in std_logic;						-- halt signal
+				i_signedLoad: in std_logic;
+				i_Rt_Rd_Addr: in std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction. 
+				i_ALUout	: in std_logic_vector(31 downto 0); -- ALU output value
+				i_MemOut	: in std_logic_vector(31 downto 0); -- Mem output value
+				i_luiValue	: in std_logic_vector(31 downto 0); -- Shifted Value for lui
+				i_PCAdd4	: in std_logic_vector(31 downto 0);
+				i_OvFl		: in std_logic;
+				-- outputs
+				o_MemToReg 	: out std_logic_vector(1 downto 0);
+				o_RegWrite	: out std_logic;
+				o_RegDst	: out std_logic_vector(1 downto 0);
+				o_luiSelect	: out std_logic_vector(1 downto 0);
+				o_halt		: out std_logic;						-- halt signal
+				o_signedLoad: out std_logic;
+				o_Rt_Rd_Addr: out std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction. 
+				o_ALUout	: out std_logic_vector(31 downto 0); -- ALU output value
+				o_MemOut	: out std_logic_vector(31 downto 0); -- Mem output value
+				o_luiValue	: out std_logic_vector(31 downto 0); -- Shifted Value for lui
+				o_PCAdd4	: out std_logic_vector(31 downto 0);
+				o_OvFl		: out std_logic
+		);
+	end component;
+
+		-- MEM/WB inputs
+		signal s_MemOut_MEM	: std_logic_vector(31 downto 0); -- Mem output value
+
+		-- MEM/WB outputs
+		signal s_MemToReg_WB: std_logic_vector(1 downto 0);
+		signal s_RegWrite_WB: std_logic;
+		signal s_RegDst_WB	: std_logic_vector(1 downto 0);
+		signal s_luiSelect_WB: std_logic_vector(1 downto 0);
+		signal s_signedLoad_WB: std_logic;
+		signal s_Rt_Rd_Addr_WB: std_logic_vector(4 downto 0);	-- Rd/Rt address. Selected from Mux. Is the write reg for that instruction.
+		signal s_ALUout_WB	: std_logic_vector(31 downto 0); -- ALU output value
+		signal s_MemOut_WB	: std_logic_vector(31 downto 0); -- Mem output value
+		signal s_luiValue_WB: std_logic_vector(31 downto 0);
+		signal s_PCAdd4_WB	: std_logic_vector(31 downto 0);
+		signal s_OvFl_WB	: std_logic;
+
+
+--------- Forwarding / Stalling signals and components ----------------
+
+component forwarding_unit is
+	port (	i_RegDst_MEM	: in std_logic_vector(1 downto 0); -- to check if inst is jal: regDst(1) = 1
+			i_RegDst_WB		: in std_logic_vector(1 downto 0);
+			i_RegWrite_EX	: in std_logic;
+			i_RegWrite_MEM 	: in std_logic;
+			i_RegWrite_WB 	: in std_logic;
+			i_Rt_Rd_EX	 	: in std_logic_vector(4 downto 0);
+			i_Rt_Rd_MEM 	: in std_logic_vector(4 downto 0);
+			i_Rt_Rd_WB		: in std_logic_vector(4 downto 0);
+			i_RtAddr_EX		: in std_logic_vector(4 downto 0);
+			i_RsAddr_EX		: in std_logic_vector(4 downto 0);
+			i_ALUSrc_EX		: in std_logic;
+			i_branch		: in std_logic;
+			i_jrSelect		: in std_logic;
+			i_RtAddr_ID		: in std_logic_vector(4 downto 0);
+			i_RsAddr_ID		: in std_logic_vector(4 downto 0);
+			i_luiSelect_MEM	: in std_logic_vector(1 downto 0);
+			i_MemRead_MEM	: in std_logic;
+			o_ForwardDMem	: out std_logic_vector(1 downto 0);
+			o_ForwardRtEx 	: out std_logic_vector(1 downto 0);
+			o_ForwardA		: out std_logic_vector(1 downto 0);
+			o_ForwardB		: out std_logic_vector(1 downto 0);
+			o_ForwardRt		: out std_logic_vector(1 downto 0);
+			o_ForwardRs		: out std_logic_vector(1 downto 0);
+			o_StallIF		: out std_logic;
+			o_StallID		: out std_logic;
+			o_FlushID		: out std_logic;
+			o_FlushEX		: out std_logic); 
+end component;
+
+signal s_ForwardA	: std_logic_vector(1 downto 0);  -- select signal for ForwardA mux
+signal s_ALUInA_EX		: std_logic_vector(31 downto 0); -- input A of ALU, output of ForwardA mux
+
+signal s_ForwardB	: std_logic_vector(1 downto 0);  -- select signal for ForwardB mux
+signal s_ALUInB_EX	: std_logic_vector(31 downto 0); -- input B of ALU, output of ForwardA mux
+
+signal s_ForwardRt : std_logic_vector(1 downto 0);
+signal s_ForwardRs : std_logic_vector(1 downto 0);
+signal s_ForwardDMem: std_logic_vector(1 downto 0);
+
+signal s_ForwardRtEx: std_logic_vector(1 downto 0);
+signal s_newRtVal_EX: std_logic_vector(31 downto 0);
+
+signal s_StallIF : std_logic;
+signal s_StallID : std_logic;
+signal s_FlushID : std_logic;
+signal s_FlushEX : std_logic;
+
+component forward_reg_EX is
+	port (
+			i_clk		: in std_logic;
+			i_rst		: in std_logic;
+			i_ForwardA 	: in std_logic_vector(1 downto 0);
+			i_ForwardB 	: in std_logic_vector(1 downto 0);
+			i_ForwardRtEX: in std_logic_vector(1 downto 0);
+			i_RegWrData	: in std_logic_vector(31 downto 0);
+			i_FlushEX	: in std_logic;
+			o_PastASel 	: out std_logic;
+			o_PastBSel 	: out std_logic;
+			o_PastRtEXSel : out std_logic;
+			o_PastWrData: out std_logic_vector(31 downto 0));
+end component;
+
+signal s_ForwardAOut : std_logic_vector(31 downto 0);
+signal s_ForwardBOut : std_logic_vector(31 downto 0);
+signal s_ForwardRtEXOut : std_logic_vector(31 downto 0);
+
+signal s_PastASel : std_logic;
+signal s_PastBSel : std_logic;
+signal s_PastRtEXSel : std_logic;
+signal s_PastWrData	: std_logic_vector(31 downto 0);
+
+
+
+begin
+
+  -- TODO: This is required to be your final input to your instruction memory. 
+  -- This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. 
+  -- If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
+  with iInstLd select
+    s_IMemAddr <= s_NextInstAddr when '0',
+      iInstAddr when others;
+
+	------------------- Pipelines ---------------------------
+
+	-- IF/ID pipeline
+	IF_ID_reg: Pipeline_IF_ID
+   		 port map ( i_CLK => iCLK,       
+			        i_RST => iRST,  
+					i_flush => s_Flush_IF,     
+				    i_stall => s_StallIF,
+			        i_PCAdd4 => s_PCAdd4_IF,  
+			        i_Inst   => s_Inst,  
+			        o_PCAdd4 => s_PCAdd4_ID,   
+			        o_Inst => s_Inst_ID);
+
+	-- ID/EX pipeline
+	ID_EX_reg: Pipeline_ID_EX
+	    port map ( i_CLK => iCLK,
+	               i_RST => iRST,
+				   i_flush => s_FlushID, 
+				   i_stall => s_StallID,
+	               i_MemToReg => s_MemToReg_ID,
+	               i_RegWrite => s_RegWrite_ID,
+	               i_RegDst => s_RegDst_ID,
+	               i_luiSelect => s_luiSelect_ID,
+	               i_halt => s_halt_ID,
+	               i_signedLoad => s_signedLoad_ID,
+	               i_DMemWr => s_DMemWr_ID,
+	               i_ALUControl => s_ALUControl_ID,
+	               i_checkOvFl => s_checkOvFl_ID,
+	               i_regShift => s_regShift_ID,
+				   i_shamt	=> s_Inst_ID(10 downto 6),
+	               i_RsAddr => s_Inst_ID(25 downto 21),
+	               i_RtAddr => s_Inst_ID(20 downto 16),
+	               i_RdAddr => s_Inst_ID(15 downto 11),
+	               i_extImm => s_extImm_ID,
+	               i_RtVal => s_RtVal_ID,
+	               i_RsVal => s_RsVal_ID,
+				   i_luiValue => s_luiValue_ID,
+				   i_PCAdd4 => s_PCAdd4_ID,
+				   i_ALUInB => s_ALUSrcOut_ID,
+				   i_ALUSrc => s_ALUSrc_ID,
+				   i_MemRead => s_MemRead_ID,
+				  -- outputs
+	               o_MemToReg => s_MemToReg_EX,
+	               o_RegWrite => s_RegWrite_EX,
+	               o_RegDst => s_RegDst_EX,
+	               o_luiSelect => s_luiSelect_EX,
+	               o_halt => s_halt_EX,
+	               o_signedLoad => s_signedLoad_EX,
+	               o_DMemWr => s_DMemWr_EX,
+	               o_ALUControl => s_ALUControl_EX,
+	               o_checkOvFl => s_checkOvFl_EX,
+	               o_regShift => s_regShift_EX,
+				   o_shamt => s_shamt_EX,
+	               o_RsAddr => s_RsAddr_EX,
+	               o_RtAddr => s_RtAddr_EX,
+	               o_RdAddr => s_RdAddr_EX,
+	               o_extImm => s_extImm_EX,
+	               o_RtVal => s_RtVal_EX,
+	               o_RsVal => s_RsVal_EX,
+				   o_luiValue => s_luiValue_EX,
+				   o_PCAdd4 => s_PCAdd4_EX,
+				   o_ALUInB => s_ALUSrcOut_EX,
+				   o_ALUSrc => s_ALUSrc_EX,
+				   o_MemRead => s_MemRead_EX);
+
+	-- EX/MEM pipeline
+	EX_MEM_reg: Pipeline_EX_MEM
+	    port map ( i_CLK => iCLK,
+	               i_RST => iRST,
+   				   i_flush => s_FlushEX,					-- temp
+				   i_stall => '0',
+	               i_MemToReg => s_MemToReg_EX,
+	               i_RegWrite => s_RegWrite_EX,
+	               i_RegDst => s_RegDst_EX,
+	               i_luiSelect => s_luiSelect_EX,
+	               i_halt => s_halt_EX,
+	               i_signedLoad => s_signedLoad_EX,
+	               i_DMemWr => s_DMemWr_EX,
+	               i_Rt_Rd_Addr => s_Rt_Rd_Addr_EX,
+	               i_ALUout => s_ALUout_EX,
+				   i_luiValue => s_luiValue_EX,
+				   i_PCAdd4 => s_PCAdd4_EX,
+				   i_RtVal => s_newRtVal_EX,
+				   i_MemRead => s_MemRead_EX,
+				   i_OvFl	=> s_OvFl_EX,
+	               o_MemToReg => s_MemToReg_MEM,
+	               o_RegWrite => s_RegWrite_MEM,
+	               o_RegDst => s_RegDst_MEM,
+	               o_luiSelect => s_luiSelect_MEM,
+	               o_halt => s_halt_MEM,
+	               o_signedLoad => s_signedLoad_MEM,
+	               o_DMemWr => s_DMemWr,
+	               o_Rt_Rd_Addr => s_Rt_Rd_Addr_MEM,
+	               o_ALUout => s_ALUout_MEM,
+				   o_luiValue => s_luiValue_MEM,
+				   o_PCAdd4 => s_PCAdd4_MEM,
+				   o_RtVal => s_RtVal_MEM,
+				   o_MemRead => s_MemRead_MEM,
+				   o_OvFl	=> s_OvFl_MEM);
+
+	-- MEM/WB pipeline
+	MEM_WB_reg: Pipeline_MEM_WB
+	    port map ( i_CLK => iCLK,
+	               i_RST => iRST,
+				   i_flush => '0',						-- temp
+				   i_stall => '0',
+	               i_MemToReg => s_MemToReg_MEM,
+	               i_RegWrite => s_RegWrite_MEM,
+	               i_RegDst => s_RegDst_MEM,
+	               i_luiSelect => s_luiSelect_MEM,
+	               i_halt => s_halt_MEM,
+	               i_signedLoad => s_signedLoad_MEM,
+	               i_Rt_Rd_Addr => s_Rt_Rd_Addr_MEM,
+	               i_ALUout => s_ALUout_MEM,
+	               i_MemOut => s_DMemOut,
+				   i_luiValue => s_luiValue_MEM,
+				   i_PCAdd4 => s_PCAdd4_MEM,
+				   i_OvFl	=> s_Ovfl_MEM,
+	               o_MemToReg => s_MemToReg_WB,
+	               o_RegWrite => s_RegWrite_WB,
+	               o_RegDst => s_RegDst_WB,
+	               o_luiSelect => s_luiSelect_WB,
+	               o_halt => s_Halt,					-- halt connected at WB
+	               o_signedLoad => s_signedLoad_WB,
+	               o_Rt_Rd_Addr => s_Rt_Rd_Addr_WB,
+	               o_ALUout => s_ALUout_WB,
+	               o_MemOut => s_MemOut_WB,
+				   o_luiValue => s_luiValue_WB,
+				   o_PCAdd4 => s_PCAdd4_WB,
+				   o_OvFl	=> s_Ovfl );
+  
+
+	--------- WB Stage -------------------
+	byteSelect : mux4t1_N
+		generic map (N => 8)
+		port map (	i_S => s_ALUout_WB(1 downto 0), -- ALU output is DMem address
+					i_D0 => s_MemOut_WB(7 downto 0),
+					i_D1 => s_MemOut_WB(15 downto 8),
+					i_D2 => s_MemOut_WB(23 downto 16),
+					i_D3 => s_MemOut_WB(31 downto 24),
+					o_O => s_loadByte);
+
+	byteExtender : extender8t32
+		port map (	i_signSelect => s_signedLoad_WB,
+					i_imm => s_loadByte,
+					o_out => s_byteExtend);
+
+	halfwordSelect : mux2t1_N
+		generic map (N => 16)
+		port map (	i_S => s_ALUout_WB(1),		-- ALU output is DMem address
+					i_D0 => s_MemOut_WB(15 downto 0),
+					i_D1 => s_MemOut_WB(31 downto 16),
+					o_O => s_loadHalf);
+
+	halfwordExtend : extender_16to32
+		port map ( 	i_signSelect => s_signedLoad_WB,
+				 	i_imm => s_loadHalf,
+					o_out => s_halfExtend);
+
+	
+	memToRegMux : mux4t1_N -- mux in WB
+		generic map (N => 32)
+		port map (	i_S => s_MemToReg_WB,
+					i_D0 => s_ALUout_WB,
+					i_D1 => s_MemOut_WB,
+					i_D2 => s_halfExtend,
+					i_D3 => s_byteExtend,
+					o_O => s_memToRegValue);
+
+	regDstMux : mux2t1_N
+		generic map (N => 5)
+		port map ( 	i_S => s_RegDst_WB(1),
+					i_D0 => s_Rt_Rd_Addr_WB,													
+					i_D1 => "11111",   				-- reg 31 for jal
+					o_O => s_RegWrAddr);
+
+	luiMux : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_luiSelect_WB,
+					i_D0 => s_memToRegValue,
+					i_D1 => s_luiValue_WB,
+					i_D2 => s_PCAdd4_WB,	-- store value of PC+4 (when executed in IF) in reg 31 for jal
+					i_D3 => x"00000000",  	-- unused
+					o_O => s_RegWrData);
+
+	---- regFile  WB/ID ------------
+	s_RegWr <= s_RegWrite_WB; -- map to given signal reg write enable
+
+	reg_file : regFile
+		port map (	i_rt => s_Inst_ID(20 downto 16),
+					i_rs => s_Inst_ID(25 downto 21),
+					i_rd => s_RegWrAddr,
+					i_RegWrite => s_RegWr,
+					i_data => s_RegWrData,
+					i_clk => iCLK,
+					i_rst => iRST,
+					o_rt => s_RtOut,
+					o_rs => s_RsOut);
+
+	ForwardRt : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ForwardRt,
+					i_D0 => s_RtOut,
+					i_D1 => s_PCAdd4_MEM,
+					i_D2 => s_ALUOut_MEM,
+					i_D3 => s_luiValue_MEM,
+					o_O => s_RtVal_ID);
+
+	ForwardRs : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ForwardRs,
+					i_D0 => s_RsOut,
+					i_D1 => s_PCAdd4_MEM,
+					i_D2 => s_ALUOut_MEM,
+					i_D3 => s_luiValue_MEM,
+					o_O => s_RsVal_ID);
+
+
+	------------ MEM stage -------------
+  	s_DMemAddr <= s_ALUout_MEM; -- D Mem Addr input is ALU result
+
+	DMem: mem
+    	generic map(ADDR_WIDTH => ADDR_WIDTH,
+                	DATA_WIDTH => N)
+    	port map(clk  => iCLK,
+             	addr => s_DMemAddr(11 downto 2), -- addr is ALU output
+             	data => s_DMemData,			   
+             	we   => s_DMemWr,
+             	q    => s_DMemOut);
+
+	ForwardDMem : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ForwardDMem,
+					i_D0 => s_RtVal_MEM,
+					i_D1 => s_RegWrData,
+					i_D2 => x"00000000",
+					i_D3 => x"00000000",
+					o_O => s_DMemData);
+
+	-------- EX stage -------------------
+
+	ALU : ALU_full
+		port map (	i_A => s_ALUInA_EX,
+					i_B => s_ALUInB_EX,
+					ALUControl => s_ALUControl_EX,
+					i_shamt => s_shamt_EX,
+					i_regShift => s_regShift_EX,
+					o_out => s_ALUout_EX,
+					o_OvF => s_AdderOvFl,
+					o_zero => s_ALUzero);
+
+	oALUOut <= s_ALUout_EX;
+
+	ForwardAandStall : mux2t1_N
+		generic map (N => 32)
+		port map ( 	i_S => s_PastASel,
+					i_D0 => s_ForwardAOut,
+					i_D1 => s_PastWrData,
+					o_O => s_ALUInA_EX);
+
+	ForwardA : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ForwardA,
+					i_D0 => s_RsVal_EX,
+					i_D1 => s_RegWrData,
+					i_D2 => s_ALUOut_MEM,
+					i_D3 => s_luiValue_MEM,
+					o_O => s_ForwardAOut);
+
+	ForwardBandStall : mux2t1_N
+		generic map (N => 32)
+		port map ( 	i_S => s_PastBSel,
+					i_D0 => s_ForwardBOut,
+					i_D1 => s_PastWrData,
+					o_O => s_ALUInB_EX);
+
+	ForwardB : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ForwardB,
+					i_D0 => s_ALUSrcOut_EX,
+					i_D1 => s_RegWrData,
+					i_D2 => s_ALUOut_MEM,
+					i_D3 => s_luiValue_MEM,
+					o_O => s_ForwardBOut);
+
+	RtOrRdMux : mux2t1_N
+		generic map (N => 5)
+		port map ( 	i_S => s_RegDst_EX(0),
+					i_D0 => s_RtAddr_EX,													
+					i_D1 => s_RdAddr_EX,   				-- reg 31 for jal
+					o_O => s_Rt_Rd_Addr_EX);
+
+	ForwardRtandStall : mux2t1_N
+		generic map (N => 32)
+		port map ( 	i_S => s_PastRtEXSel,
+					i_D0 => s_ForwardRtEXOut,
+					i_D1 => s_PastWrData,
+					o_O => s_newRtVal_EX);
+
+	ForwardRtEx : mux4t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ForwardRtEx,
+					i_D0 => s_RtVal_EX,
+					i_D1 => s_RegWrData, 
+					i_D2 => x"00000000",
+					i_D3 => x"00000000",
+					o_O => s_ForwardRtEXOut);
+
+	
+	------------  ID stage --------------------
+
+	s_luiValue_ID <= (s_Inst_ID(15 downto 0) & x"0000"); -- lui data should be [immediate,16'b0]
+
+	control : ControlUnit
+		port map (	i_opcode => s_Inst_ID(31 downto 26),
+					o_RegDst => s_RegDst_ID,
+					o_Jump => s_jumpSelect,
+					o_Branch => s_branchSelect,
+					o_MemToReg => s_MemToReg_ID,
+					o_ALUOp => s_ALUOp,
+					o_MemWrite => s_DMemWr_ID,
+					o_MemRead => s_MemRead_ID,
+					o_ALUSrc => s_ALUSrc_ID,
+					o_RegWrite => s_RegWrite_ID,
+					o_SignExt => s_extendSelect,
+					o_Halt => s_halt_ID,
+					o_luiSelect => s_luiSelect_ID,
+					o_checkOvFl => s_checkAddiOvF,
+					o_SignedLoad => s_signedLoad_ID,
+					o_equalSelect => s_equalSelect);
+
+	ALU_Control : ALUController
+		port map (	i_Function => s_Inst_ID(5 downto 0),
+					i_ALUOp => s_ALUOp,
+					o_ALUControl => s_ALUControl_ID,
+					o_checkOvFl => s_checkAddSubOvF,
+					o_jrSelect => s_jrSelect,
+					o_regShift => s_regShift_ID);
+
+	ALUSrcMux : mux2t1_N
+		generic map (N => 32)
+		port map (	i_S => s_ALUSrc_ID,
+					i_D0 => s_RtVal_ID,
+					i_D1 => s_extImm_ID,
+					o_O => s_ALUSrcOut_ID);
+
+	ImmediateSignExtender : extender_16to32
+		port map ( 	i_signSelect => s_extendSelect,
+					i_imm => s_Inst_ID(15 downto 0),
+					o_out => s_extImm_ID);
+	
+	---- Control Flow Components: ID/IF stage -----------
+
+	-- branch path
+	branchShift : ShiftLeft2_N
+		generic map	(in_N => 32,
+					 out_N => 32)
+		port map (	 i_input => s_extImm_ID,
+					 o_out => s_shiftedBranch);
+
+	branch_adder : ripple_carry_adder
+		port map (	i_X => s_shiftedBranch,
+					i_Y => s_PCAdd4_ID,
+					i_C => '0',
+					o_S => s_branchAddr,
+					o_C => s_branchCarry);
+
+	s_RsRtEqual <= '1' when (s_RtVal_ID = s_RsVal_ID) else '0';
+	
+	s_RsRtNotEqual <= NOT s_RsRtEqual;
+	
+	zeroMux : mux2t1_dataflow
+		port map (	i_S => s_equalSelect,
+					i_D0 => s_RsRtNotEqual,
+					i_D1 => s_RsRtEqual,
+					o_O =>  s_zeroMuxOut);
+
+	s_executeBranch <= s_zeroMuxOut AND s_branchSelect; 
+
+	branchMux : mux2t1_N
+		port map (	i_S => s_executeBranch,
+					i_D0 => s_PCAdd4_IF,
+					i_D1 => s_branchAddr,
+					o_O => s_branchPC);
+
+	-- jump
+	jumpShift : ShiftLeft2_N									
+		generic map	(in_N => 26,
+					 out_N => 28)
+		port map (	 i_input => s_Inst_ID(25 downto 0),
+					 o_out => s_shiftedJump);
+
+	s_jumpAddr <= (s_PCAdd4_ID(31 downto 28) & s_shiftedJump);
+
+	jumpMux : mux2t1_N											
+		generic map	(N => 32)
+		port map 	(i_S => s_jumpSelect,
+					 i_D0 => s_branchPC,
+					 i_D1 => s_jumpAddr,
+					 o_O => s_jumpMuxOut);
+
+	-- jr: PC input is R[rs]
+	jrMux : mux2t1_N
+		generic map	(N => 32)
+		port map 	(i_S => s_jrSelect,		-- s_jrSelect
+					 i_D0 => s_jumpMuxOut,
+					 i_D1 => s_RsVal_ID,
+					 o_O => s_jrMuxOut);
+
+	s_Flush_IF	<= (s_jumpSelect OR s_executeBranch OR s_jrSelect) AND s_PCWrite; -- PCWrite = NOT StallIF. Only Flush if we are not also trying to stall.
+
+
+	--------------------- IF stage ------------------------------
+	PC : PC_reg
+		port map (	i_data => s_jrMuxOut,
+					i_writeEn => s_PCWrite,  		-- turn off during stall
+					i_reset => iRST,
+					i_clock => iCLK,
+					o_output => s_NextInstAddr);
+
+	s_PCWrite <= NOT s_StallIF;
+
+	PC_adder : ripple_carry_adder
+		port map (	i_X => s_NextInstAddr,
+					i_Y => x"00000004",
+					i_C => '0',
+					o_S => s_PCAdd4_IF,
+					o_C => s_adderCarry);
+
+	IMem: mem
+	  	generic map(ADDR_WIDTH => ADDR_WIDTH,
+	              	DATA_WIDTH => N)
+	  	port map(clk  => iCLK,
+	          	 addr => s_IMemAddr(11 downto 2),
+	          	 data => iInstExt,
+	         	 we   => iInstLd,
+	          	 q    => s_Inst); 
+
+	--------------------------------------------------------------------------
+	
+	-- find if overflow needs to be checked in ID
+	s_checkOvFl_ID <= (s_checkAddiOvF OR s_checkAddSubOvF);
+	
+	-- check overflow in EX
+	s_OvFl_EX <=  s_checkOvFl_EX AND s_AdderOvFl; -- returns overflow for only ADD, SUB, and ADDI instructions
+
+
+	---------- Hazards and Forwarding -----------------------------
+
+	forward_unit : forwarding_unit
+		port map (	i_RegDst_MEM => s_RegDst_MEM,
+					i_RegDst_WB => s_RegDst_WB,
+					i_RegWrite_EX => s_RegWrite_EX,
+					i_RegWrite_MEM => s_RegWrite_MEM,
+					i_RegWrite_WB => s_RegWrite_WB,
+					i_Rt_Rd_EX => s_Rt_Rd_Addr_EX,
+					i_Rt_Rd_MEM => s_Rt_Rd_Addr_MEM,
+					i_Rt_Rd_WB => s_Rt_Rd_Addr_WB,
+					i_RtAddr_EX => s_RtAddr_EX,
+					i_RsAddr_EX => s_RsAddr_EX,
+					i_ALUSrc_EX => s_ALUSrc_EX,
+					i_branch => s_branchSelect,
+					i_jrSelect => s_jrSelect,
+					i_RtAddr_ID => s_Inst_ID(20 downto 16),
+					i_RsAddr_ID => s_Inst_ID(25 downto 21),
+					i_luiSelect_MEM => s_luiSelect_MEM,
+					i_MemRead_MEM => s_MemRead_MEM,
+					o_ForwardDMem => s_ForwardDMem,
+					o_ForwardRtEx => s_ForwardRtEx,
+					o_ForwardA => s_ForwardA,
+					o_ForwardB => s_ForwardB,
+					o_ForwardRs => s_ForwardRs,
+					o_ForwardRt => s_ForwardRt,
+					o_StallIF => s_StallIF,
+					o_StallID => s_StallID,
+					o_FlushID => s_FlushID,
+					o_FlushEX => s_FlushEX);
+
+
+	stallAndForward : forward_reg_EX
+		port map ( 	i_clk => iCLK,
+					i_rst => iRST,
+					i_ForwardA => s_ForwardA,
+					i_ForwardB => s_ForwardB,
+					i_ForwardRtEX => s_ForwardRtEX,
+					i_RegWrData => s_RegWrData,
+					i_FlushEX => s_FlushEX,
+					o_PastASel => s_PastASel,
+					o_PastBSel => s_PastBSel,
+					o_PastRtEXSel => s_PastRtEXSel,
+					o_PastWrData => s_PastWrData);
+
+
+
+end structure;

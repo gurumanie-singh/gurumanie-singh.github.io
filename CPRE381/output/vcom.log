@@ -1,0 +1,55 @@
+QuestaSim-64 vcom 2024.2 Compiler 2024.05 May 20 2024
+Start time: 13:28:10 on Apr 28,2025
+vcom -2008 -work internal/ModelSimContainer/work proj/src/MIPS_types.vhd internal/testpy/tb.vhd proj/src/MIPS_types.vhd proj/src/TopLevel/forwarding_unit.vhd proj/src/TopLevel/ShiftLeft2_N.vhd proj/src/TopLevel/extender_16to32.vhd proj/src/TopLevel/Pipeline_ID_EX.vhd proj/src/TopLevel/Pipeline_IF_ID.vhd proj/src/TopLevel/Pipeline_MEM_WB.vhd proj/src/TopLevel/ControlUnit.vhd proj/src/TopLevel/mem.vhd proj/src/TopLevel/Pipeline_EX_MEM.vhd proj/src/TopLevel/extender8t32.vhd proj/src/TopLevel/ALUController.vhd proj/src/TopLevel/MIPS_Processor.vhd proj/src/TopLevel/PC_reg.vhd proj/src/TopLevel/forward_reg_EX.vhd proj/src/TopLevel/ALU_Adders/onescomp.vhd proj/src/TopLevel/ALU_Adders/add_sub.vhd proj/src/TopLevel/ALU_Adders/ripple_carry_adder.vhd proj/src/TopLevel/ALU_Adders/full_adder.vhd proj/src/TopLevel/ALU_Adders/barrelShifter_32.vhd proj/src/TopLevel/ALU_Adders/ALU_full.vhd proj/src/TopLevel/RegFile/dffg.vhd proj/src/TopLevel/RegFile/reg_N.vhd proj/src/TopLevel/RegFile/regFile.vhd proj/src/TopLevel/RegFile/decoder_5t32.vhd proj/src/TopLevel/RegFile/reg_N_bypass.vhd proj/src/TopLevel/RegFile/reg29_N.vhd proj/src/TopLevel/RegFile/mux_32t1_n.vhd proj/src/TopLevel/MUXs/mux2t1_N.vhd proj/src/TopLevel/MUXs/mux8t1_N.vhd proj/src/TopLevel/MUXs/mux4t1_N.vhd proj/src/TopLevel/MUXs/mux2t1_dataflow.vhd 
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling package MIPS_types
+-- Compiling package body MIPS_types
+-- Loading package MIPS_types
+-- Loading package std_logic_textio
+-- Loading package ENV
+-- Compiling entity tb
+-- Compiling architecture mixed of tb
+** Warning: proj/src/MIPS_types.vhd(15): (vcom-1615) Existing package 'MIPS_types' at line 15 will be overwritten.
+-- Compiling package MIPS_types
+** Warning: proj/src/MIPS_types.vhd(29): (vcom-1615) Existing package body 'MIPS_types(body)' at line 29 will be overwritten.
+-- Compiling package body MIPS_types
+-- Loading package MIPS_types
+-- Compiling entity forwarding_unit
+-- Compiling architecture dataflow of forwarding_unit
+-- Compiling entity ShiftLeft2_N
+-- Compiling architecture dataflow of ShiftLeft2_N
+-- Compiling entity extender_16to32
+-- Compiling architecture dataflow of extender_16to32
+-- Compiling entity Pipeline_ID_EX
+-- Compiling architecture structural of Pipeline_ID_EX
+-- Compiling entity Pipeline_IF_ID
+-- Compiling architecture structural of Pipeline_IF_ID
+-- Compiling entity Pipeline_MEM_WB
+-- Compiling architecture structural of Pipeline_MEM_WB
+-- Compiling entity ControlUnit
+-- Compiling architecture dataflow of ControlUnit
+-- Loading package NUMERIC_STD
+-- Compiling entity mem
+-- Compiling architecture rtl of mem
+-- Compiling entity Pipeline_EX_MEM
+-- Compiling architecture structural of Pipeline_EX_MEM
+-- Compiling entity extender8t32
+-- Compiling architecture dataflow of extender8t32
+-- Compiling entity ALUController
+-- Compiling architecture dataflow of ALUController
+-- Loading package MIPS_types
+-- Compiling entity MIPS_Processor
+-- Compiling architecture structure of MIPS_Processor
+-- Compiling entity PC_reg
+-- Compiling architecture structural of PC_reg
+-- Compiling entity forward_reg_EX
+** Error: proj/src/TopLevel/forward_reg_EX.vhd(13): (vcom-1294) Declaration with designator "o_PastASel" already exists in this region.
+** =====> Prior declaration of "o_PastASel" is at proj/src/TopLevel/forward_reg_EX.vhd(12).
+** Error: proj/src/TopLevel/forward_reg_EX.vhd(14): (vcom-1294) Declaration with designator "o_PastASel" already exists in this region.
+** =====> Prior declaration of "o_PastASel" is at proj/src/TopLevel/forward_reg_EX.vhd(13).
+** Error: proj/src/TopLevel/forward_reg_EX.vhd(18): near "end": (vcom-1576) expecting IDENTIFIER.
+** Note: proj/src/TopLevel/forward_reg_EX.vhd(18): VHDL Compiler exiting
+End time: 13:28:10 on Apr 28,2025, Elapsed time: 0:00:00
+Errors: 3, Warnings: 2

@@ -1,0 +1,50 @@
+-- 2 to 1 Multiplexer
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity mux2t1_dataflow is
+port(   i_D0 : in std_logic;
+	i_D1 : in std_logic;
+	i_S : in std_logic;
+	o_O : out std_logic);
+end mux2t1_dataflow;
+
+architecture dataflow of mux2t1_dataflow is
+begin
+	o_O <= i_D0 when (i_S = '0') else
+		    i_D1(i) when (i_S = "00001") else
+		    i_D2(i) when (i_S = "00010") else
+		    i_D3(i) when (i_S = "00011") else
+		    i_D4(i) when (i_S = "00100") else
+		    i_D5(i) when (i_S = "00101") else
+		    i_D6(i) when (i_S = "00110") else
+		    i_D7(i) when (i_S = "00111") else
+		    i_D8(i) when (i_S = "01000") else
+		    i_D9(i) when (i_S = "01001") else
+		    i_D10(i) when (i_S = "01010") else
+		    i_D11(i) when (i_S = "01011") else
+		    i_D12(i) when (i_S = "01100") else
+		    i_D13(i) when (i_S = "01101") else
+		    i_D14(i) when (i_S = "01110") else
+		    i_D15(i) when (i_S = "01111") else
+		    i_D16(i) when (i_S = "10000") else
+		    i_D17(i) when (i_S = "10001") else
+		    i_D18(i) when (i_S = "10010") else
+		    i_D19(i) when (i_S = "10011") else
+		    i_D20(i) when (i_S = "10100") else
+		    i_D21(i) when (i_S = "10101") else
+		    i_D22(i) when (i_S = "10110") else
+		    i_D23(i) when (i_S = "10111") else
+		    i_D24(i) when (i_S = "11000") else
+		    i_D25(i) when (i_S = "11001") else
+		    i_D26(i) when (i_S = "11010") else
+		    i_D27(i) when (i_S = "11011") else
+		    i_D28(i) when (i_S = "11100") else
+		    i_D29(i) when (i_S = "11101") else
+		    i_D30(i) when (i_S = "11110") else
+		    i_D31(i) when (i_S = "11111") else
+		    i_D32(i);
+
+end dataflow;

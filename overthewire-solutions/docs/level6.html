@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 6 Solution - OverTheWire Bandit</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS (after override) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans transition-all"
+      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <header class="w-full p-6 bg-grey/50 backdrop-blur-md sticky top-0 z-10 flex flex-wrap justify-between items-center">
+    <h1 class="text-2xl font-semibold text-white">Level 6: Locate Password by File Attributes</h1>
+    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
+  </header>
+
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
+      <p class="text-lg text-gray-200">
+        The password for <code>bandit7</code> is stored in a file somewhere on the server that meets all of these criteria:
+      </p>
+      <ul class="list-disc list-inside ml-4 text-gray-200">
+        <li>Owned by user <code>bandit7</code></li>
+        <li>Owned by group <code>bandit6</code></li>
+        <li>Exactly 33 bytes in size</li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">1. Exit Level 5 and SSH into Level 6</h3>
+        <p class="mb-2 text-gray-200">
+          After retrieving the Level 6 password from <code>maybehere07/.file2</code>, exit your current SSH session:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>exit</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then connect as <code>bandit6</code> using the password obtained in Level 5:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit6@bandit.labs.overthewire.org -p 2220</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">2. Verify No Files Are Visible Initially</h3>
+        <p class="mb-2 text-gray-200">
+          Once logged in as <code>bandit6</code>, run:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          No files appear in the home directory.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">3. Understand the File Selection Criteria</h3>
+        <p class="mb-2 text-gray-200">
+          The level instructions state that the password file is:
+        </p>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li>Owned by user <code>bandit7</code></li>
+          <li>Owned by group <code>bandit6</code></li>
+          <li>Exactly 33 bytes in size</li>
+        </ul>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">4. Use <code>find</code> to Locate the File</h3>
+        <p class="mb-2 text-gray-200">
+          To search the entire filesystem for a file matching those attributes, use:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>find -user bandit7 -group bandit6 -size 33c</code></pre>
+        <p class="mt-2 text-gray-200">
+          This command will print paths of any files owned by <code>bandit7</code>, in group <code>bandit6</code>, and exactly 33 bytes in size. While there may be many "Permission Denied" files, one matching file appears as:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>/var/lib/dpkg/info/bandit7.password</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">5. Read the Password File</h3>
+        <p class="mb-2 text-gray-200">
+          Display its contents to obtain the password for <code>bandit7</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat /var/lib/dpkg/info/bandit7.password</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output is the password for <code>bandit7</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>exit</code> : return to your local machine from Level 5.</li>
+          <li><code>ssh bandit6@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit6</code>.</li>
+          <li><code>ls</code> : confirm no files in home directory.</li>
+          <li><code>find -user bandit7 -group bandit6 -size 33c</code> : locate the 33-byte file owned by <code>bandit7</code> and group <code>bandit6</code>.</li>
+          <li><code>cat /var/lib/dpkg/info/bandit7.password</code> : display the file; retrieve the <code>bandit7</code> password.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
+</body>
+</html>

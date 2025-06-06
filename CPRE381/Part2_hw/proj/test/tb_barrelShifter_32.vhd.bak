@@ -1,0 +1,118 @@
+-------------------------------------------------------------------------
+-- Gurumanie Singh
+-------------------------------------------------------------------------
+-- tb_barrelShifter_32.vhd
+-------------------------------------------------------------------------
+-- DESCRIPTION: This file contains a testbench for the barrelShifter_32 unit.
+-------------------------------------------------------------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_textio.all;  -- For logic types I/O
+
+entity tb_barrelShifter_32 is
+
+end tb_barrelShifter_32;
+
+
+architecture mixed of tb_barrelShifter_32 is
+-- We will be instantiating our design under test (DUT), so we need to specify its
+-- component interface.
+component barrelShifter_32 is
+	port (	i_shiftRight		: in std_logic;
+			i_shiftArithmetic	: in std_logic; -- 00 for sll, 01 for srl, 11 for sra
+			i_input			: in std_logic_vector(31 downto 0);
+			i_shamt			: in std_logic_vector(4 downto 0);
+			o_output		: out std_logic_vector(31 downto 0));
+end component;
+
+
+-- Input and output signals as needed.
+signal s_shiftRight	: std_logic;
+signal s_shiftArithmetic: std_logic;
+signal s_input		: std_logic_vector(31 downto 0);
+signal s_shamt   	: std_logic_vector(4 downto 0);
+signal s_output		: std_logic_vector(31 downto 0);
+
+begin
+
+  -- TODO: Actually instantiate the component to test and wire all signals to the corresponding
+  -- input or output. Note that DUT0 is just the name of the instance that can be seen 
+  -- during simulation. What follows DUT0 is the entity name that will be used to find
+  -- the appropriate library component during simulation loading.
+  DUT0: barrelShifter_32
+  port map(
+		i_shiftRight		=> s_shiftRight,
+            	i_shiftArithmetic	=> s_shiftArithmetic,
+            	i_input			=> s_input,
+		i_shamt			=> s_shamt,
+		o_output		=> s_output
+	    );
+  --You can also do the above port map in one line using the below format: http://www.ics.uci.edu/~jmoorkan/vhdlref/compinst.html
+  
+
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+
+	-- Test 1
+	s_shiftRight 		<= '0'; 
+	s_shiftArithmetic 	<= '0';
+	s_input			<= x"00000001";
+	s_shamt			<= "00001";
+	wait for 10 ns;
+
+	-- Test 2
+	s_shiftRight 		<= '0'; 
+	s_shiftArithmetic 	<= '0';
+	s_input			<= x"00000001";
+	s_shamt			<= "11111";
+	wait for 10 ns;
+
+	-- Test 3
+	s_shiftRight 		<= '1'; 
+	s_shiftArithmetic 	<= '0';
+	s_input			<= x"80000000";
+	s_shamt			<= "00001";
+	wait for 10 ns;
+
+	-- Test 4
+	s_shiftRight 		<= '1'; 
+	s_shiftArithmetic 	<= '0';
+	s_input			<= x"80000000";
+	s_shamt			<= "11111";
+	wait for 10 ns;
+
+	-- Test 5
+	s_shiftRight 		<= '1'; 
+	s_shiftArithmetic 	<= '1';
+	s_input			<= x"80000000";
+	s_shamt			<= "00001";
+	wait for 10 ns;
+
+	-- Test 6
+	s_shiftRight 		<= '1'; 
+	s_shiftArithmetic 	<= '1';
+	s_input			<= x"80000000";
+	s_shamt			<= "11111";
+	wait for 10 ns;
+
+	-- Test 7
+	s_shiftRight 		<= '1'; 
+	s_shiftArithmetic 	<= '0';
+	s_input			<= x"001000";
+	s_shamt			<= "01000";
+	wait for 10 ns;
+
+	-- Test 8
+	s_shiftRight 		<= '1'; 
+	s_shiftArithmetic 	<= '1';
+	s_input			<= x"001000";
+	s_shamt			<= "01000";
+	wait for 10 ns;
+
+
+    wait;
+  end process;
+  
+end mixed;

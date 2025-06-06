@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 13 Solution - OverTheWire Bandit</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS (after override) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans transition-all"
+      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <header class="w-full p-6 bg-grey/50 backdrop-blur-md sticky top-0 z-10 flex flex-wrap justify-between items-center">
+    <h1 class="text-2xl font-semibold text-white">Level 13: Use the Provided SSH Key</h1>
+    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
+  </header>
+
+    <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
+      <p class="text-lg text-gray-200">
+        The password for <code>bandit14</code> is stored in <code>/etc/bandit_pass/bandit14</code> and only readable by user <code>bandit14</code>. You are given an RSA private key (<code>sshkey.private</code>) that grants SSH access to <code>bandit14</code>.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">1. Exit Level 12 and SSH into Level 13</h3>
+        <p class="mb-2 text-gray-200">
+          After retrieving the Level 13 password from the previous step, exit your current session:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>exit</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then connect as <code>bandit13</code> using the password obtained:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit13@bandit.labs.overthewire.org -p 2220</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">2. List and Inspect <code>sshkey.private</code></h3>
+        <p class="mb-2 text-gray-200">
+          Once logged in as <code>bandit13</code>, run:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          You will see <code>sshkey.private</code> listed. To view its contents:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat sshkey.private</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">3. Use the Private Key to SSH into <code>bandit14</code></h3>
+        <p class="mb-2 text-gray-200">
+          The instructions state that you must log in as <code>bandit14</code> using the provided RSA private key. Run:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit.labs.overthewire.org -l bandit14 -p 2220 -i sshkey.private</code></pre>
+        <p class="mt-2 text-gray-200">
+          This will authenticate using <code>sshkey.private</code> and log you into the <code>bandit14</code> account, where you can read <code>/etc/bandit_pass/bandit14</code> to obtain the password.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>exit</code> : return to your local machine from Level 12.</li>
+          <li><code>ssh bandit13@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit13</code>.</li>
+          <li><code>ls</code> : list files; shows <code>sshkey.private</code>.</li>
+          <li><code>cat sshkey.private</code> : view the RSA private key.</li>
+          <li><code>ssh bandit.labs.overthewire.org -l bandit14 -p 2220 -i sshkey.private</code> : authenticate as <code>bandit14</code> using the provided key and access <code>/etc/bandit_pass/bandit14</code>.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
+</body>
+</html>

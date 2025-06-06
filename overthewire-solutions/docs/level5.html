@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 5 Solution - OverTheWire Bandit</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS (after override) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans transition-all"
+      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <header class="w-full p-6 bg-grey/50 backdrop-blur-md sticky top-0 z-10 flex flex-wrap justify-between items-center">
+    <h1 class="text-2xl font-semibold text-white">Level 5: File of Specific Size</h1>
+    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
+  </header>
+
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
+      <p class="text-lg text-gray-200">
+        The password for the next level is hidden inside a non-executable, human-readable file of exactly 1033 bytes, located within one of the directories <code>maybehere00</code> through <code>maybehere17</code> under <code>inhere</code>.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">1. Exit Level 4 and SSH into Level 5</h3>
+        <p class="mb-2 text-gray-200">
+          After retrieving the Level 5 password from <code>-file07</code>, exit the current session:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>exit</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then connect as <code>bandit5</code> (using the password from Level 4):
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit5@bandit.labs.overthewire.org -p 2220</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">2. List the Home Directory Contents</h3>
+        <p class="mb-2 text-gray-200">
+          Once logged in as <code>bandit5</code>, list files:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          You will see a directory named <code>inhere</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">3. Change into <code>inhere</code></h3>
+        <p class="mb-2 text-gray-200">
+          Enter the <code>inhere</code> directory:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cd inhere</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">4. Observe Directories <code>maybehere00</code> to <code>maybehere17</code></h3>
+        <p class="mb-2 text-gray-200">
+          Running <code>ls</code> shows multiple subdirectories named <code>maybehere00</code> through <code>maybehere17</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          Each directory may contain files; the target file has specific properties.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">5. Determine Selection Criteria</h3>
+        <p class="mb-2 text-gray-200">
+          According to the level instructions, the password is inside a file that is:
+        </p>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li>Human-readable (i.e., plain text)</li>
+          <li>Exactly <strong>1033 bytes</strong> in size</li>
+          <li>Non-executable</li>
+        </ul>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">6. Find the File by Size Using <code>du</code></h3>
+        <p class="mb-2 text-gray-200">
+          To search recursively for a file of a precise byte-size, we use <code>du</code> with two flags:
+        </p>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>-b</code> : report sizes in bytes instead of the default block size.</li>
+          <li><code>-a</code> : include all files (not just directories) in the listing.</li>
+        </ul>
+        <p class="mt-2 text-gray-200">
+          Combining these flags with <code>grep</code> lets us locate the exact file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>du -b -a | grep 1033</code></pre>
+        <p class="mt-2 text-gray-200">
+          This command outputs lines matching “1033”, indicating the path to the 1033-byte file.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">7. Identify the Password File</h3>
+        <p class="mb-2 text-gray-200">
+          The output shows:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>1033	./maybehere07/.file2</code></pre>
+        <p class="mt-2 text-gray-200">
+          Thus, <code>./maybehere07/.file2</code> is the human-readable, non-executable file of 1033 bytes containing the password.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">8. Read <code>.file2</code> to Obtain the Password</h3>
+        <p class="mb-2 text-gray-200">
+          Display its contents:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat maybehere07/.file2</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output is the password for <code>bandit6</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>exit</code> : return to your local machine from Level 4.</li>
+          <li><code>ssh bandit5@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit5</code>.</li>
+          <li><code>ls</code> : list <code>inhere</code>.</li>
+          <li><code>cd inhere</code> : change into <code>inhere</code> directory.</li>
+          <li><code>ls</code> : list <code>maybehere00</code> through <code>maybehere17</code> directories.</li>
+          <li><code>du -b -a | grep 1033</code> : find the file exactly 1033 bytes in size (<code>./maybehere07/.file2</code>).</li>
+          <li><code>cat maybehere07/.file2</code> : display the file; retrieve the Level 6 password.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
+</body>
+</html>

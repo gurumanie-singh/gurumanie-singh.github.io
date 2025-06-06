@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 0 Solution - OverTheWire Bandit</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS (after override) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans transition-all"
+      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <header class="w-full p-6 bg-grey/50 backdrop-blur-md sticky top-0 z-10 flex flex-wrap justify-between items-center">
+    <h1 class="text-2xl font-semibold text-white">Level 0: SSH Login</h1>
+    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
+  </header>
+
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Level 0 Goal</h2>
+      <p class="text-lg text-gray-200">
+        The goal of this level is to log into the Bandit wargame via SSH. Use the following connection details:
+      </p>
+      <ul class="list-disc list-inside mt-3 text-gray-200">
+        <li><strong>Host:</strong> <code>bandit.labs.overthewire.org</code></li>
+        <li><strong>Port:</strong> <code>2220</code></li>
+        <li><strong>Username:</strong> <code>bandit0</code></li>
+        <li><strong>Password:</strong> <code>bandit0</code></li>
+      </ul>
+      <p class="mt-4 text-gray-200">
+        Once logged in, open the <code>readme</code> file to find the password for Level 1.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">1. Check the SSH manual</h3>
+        <p class="mb-2 text-gray-200">
+          Use the <code>man</code> command to see how to specify port and username:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>man ssh</code></pre>
+        <p class="mt-2 text-gray-200">
+          In the manual, you'll see:
+        </p>
+        <ul class="list-disc list-inside ml-4 mt-2 text-gray-200">
+          <li><code>-p &lt;port&gt;</code> to set a custom port</li>
+          <li><code>-l &lt;user&gt;</code> to specify the login name</li>
+        </ul>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">2. Connect via SSH</h3>
+        <p class="mb-2 text-gray-200">
+          Run one of the following commands (they are equivalent). This logs you in as <code>bandit0</code> on port 2220:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>
+# Option A:
+ssh -p 2220 -l bandit0 bandit.labs.overthewire.org
+
+# Option B:
+ssh bandit0@bandit.labs.overthewire.org -p 2220
+        </code></pre>
+        <p class="mt-2 text-gray-200">
+          When prompted, enter the password: <code>bandit0</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">3. View the <code>readme</code> file</h3>
+        <p class="mb-2 text-gray-200">
+          After logging in, list the files in your home directory:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          You should see a file named <code>readme</code>. To read its contents:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat readme</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output shows the password for Level 1.
+        </p>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>man ssh</code> : read SSH manual to learn flags like <code>-p</code> and <code>-l</code>.</li>
+          <li><code>ssh bandit0@bandit.labs.overthewire.org -p 2220</code> : connect via SSH.</li>
+          <li><code>ls</code> : list files.</li>
+          <li><code>cat readme</code> : display contents of <code>readme</code>.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 12 Solution - OverTheWire Bandit</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS (after override) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans transition-all"
+      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <header class="w-full p-6 bg-grey/50 backdrop-blur-md sticky top-0 z-10 flex flex-wrap justify-between items-center">
+    <h1 class="text-2xl font-semibold text-white">Level 12: Unpack Repeatedly Compressed Hexdump</h1>
+    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
+  </header>
+
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
+      <p class="text-lg text-gray-200">
+        The password for the next level is hidden in <code>data.txt</code>, which is a hexdump of a file that has been repeatedly compressed. You must revert the hexdump to binary, then decompress through each layer until you obtain an ASCII text file containing the password.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">1. Exit Level 11 and SSH into Level 12</h3>
+        <p class="mb-2 text-gray-200">
+          After obtaining the Level 12 password from the ROT13 decoding in Level 11, exit the current session:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>exit</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then connect as <code>bandit12</code> using the password acquired:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit12@bandit.labs.overthewire.org -p 2220</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">2. List and Inspect <code>data.txt</code></h3>
+        <p class="mb-2 text-gray-200">
+          Once logged in as <code>bandit12</code>, run:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          You will see <code>data.txt</code> listed. To view its contents (a hexdump), use:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">3. Create a Temporary Working Directory</h3>
+        <p class="mb-2 text-gray-200">
+          Since you cannot modify files in the home directory, create a temporary directory under <code>/tmp</code> using a hard-to-guess name. The command <code>mktemp -d</code> automatically generates a unique directory:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mkdir /tmp/tmp.lJMBrRKLqx</code></pre>
+        <p class="mt-2 text-gray-200">
+          (In this example, <code>/tmp/tmp.lJMBrRKLqx</code> is the generated directory. Remember this path for subsequent steps.)
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">4. Copy and Revert the Hexdump to Binary</h3>
+        <p class="mb-2 text-gray-200">
+          Copy <code>data.txt</code> into your temporary directory and revert the hexdump to binary. First, copy and rename the file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cp data.txt /tmp/tmp.lJMBrRKLqx/data.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then, convert the hexdump back to binary and save it as <code>hexToBin.txt</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>xxd -r data.txt &gt; /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">5. Identify Compression Format and Convert to <code>.gz</code></h3>
+        <p class="mb-2 text-gray-200">
+          Check the binary file’s type:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “gzip compressed data.” Rename the file extension to <code>.gz</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">6. Decompress the Gzip File</h3>
+        <p class="mb-2 text-gray-200">
+          Decompress the gzip archive:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code></pre>
+        <p class="mt-2 text-gray-200">
+          Now check the type of the resulting file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “bzip2 compressed data.”
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">7. Convert to <code>.bz2</code> and Decompress</h3>
+        <p class="mb-2 text-gray-200">
+          Rename the file extension to <code>.bz2</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then decompress the bzip2 archive:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code></pre>
+        <p class="mt-2 text-gray-200">
+          Check the type of the resulting file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “POSIX tar archive.”
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">8. Extract the First Tar Archive</h3>
+        <p class="mb-2 text-gray-200">
+          Rename the file extension to <code>.tar</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar</code></pre>
+        <p class="mt-2 text-gray-200">
+          Extract the tar archive:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx</code></pre>
+        <p class="mt-2 text-gray-200">
+          This produces <code>data5.bin</code> inside the temporary directory. Check its type:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/data5.bin</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates another “POSIX tar archive.”
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">9. Extract the Second Tar Archive</h3>
+        <p class="mb-2 text-gray-200">
+          Extract <code>data5.bin</code> (the second tar):
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>tar -xf /tmp/tmp.lJMBrRKLqx/data5.bin -C /tmp/tmp.lJMBrRKLqx</code></pre>
+        <p class="mt-2 text-gray-200">
+          This produces <code>data6.bin</code>. Check its type:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/data6.bin</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “bzip2 compressed data.”
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">10. Convert <code>data6.bin</code> to <code>.bz2</code> and Decompress</h3>
+        <p class="mb-2 text-gray-200">
+          Rename <code>data6.bin</code> to <code>hexToBin.bz2</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mv /tmp/tmp.lJMBrRKLqx/data6.bin /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then decompress the bzip2 archive:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code></pre>
+        <p class="mt-2 text-gray-200">
+          Check the type of the resulting file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “POSIX tar archive.”
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">11. Extract the Third Tar Archive</h3>
+        <p class="mb-2 text-gray-200">
+          Rename the file extension to <code>.tar</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar</code></pre>
+        <p class="mt-2 text-gray-200">
+          Extract the tar archive:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx</code></pre>
+        <p class="mt-2 text-gray-200">
+          Now check the type of the new file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “gzip compressed data.”
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">12. Convert to <code>.gz</code> and Decompress</h3>
+        <p class="mb-2 text-gray-200">
+          Rename the file extension to <code>.gz</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then decompress the gzip archive:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code></pre>
+        <p class="mt-2 text-gray-200">
+          Check the type of the resulting file:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output indicates “ASCII text,” which is the password. Finally, display the password:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>exit</code> : return to your local machine from Level 11.</li>
+          <li><code>ssh bandit12@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit12</code>.</li>
+          <li><code>ls</code> : list files; shows <code>data.txt</code>.</li>
+          <li><code>cat data.txt</code> : inspect the hexdump contents.</li>
+          <li><code>mkdir /tmp/tmp.lJMBrRKLqx</code> : create a temporary working directory.</li>
+          <li><code>cp data.txt /tmp/tmp.lJMBrRKLqx/data.txt</code> : copy the hexdump into the temp directory.</li>
+          <li><code>xxd -r data.txt &gt; /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : revert the hexdump to binary.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : identify compression format (gzip).</li>
+          <li><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code> : rename to <code>.gz</code>.</li>
+          <li><code>gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code> : decompress gzip archive.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : identify compression format (bzip2).</li>
+          <li><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code> : rename to <code>.bz2</code>.</li>
+          <li><code>bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code> : decompress bzip2 archive.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : identify format (tar).</li>
+          <li><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar</code> : rename to <code>.tar</code>.</li>
+          <li><code>tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx</code> : extract first tar; yields <code>data5.bin</code>.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/data5.bin</code> : identify format (tar).</li>
+          <li><code>tar -xf /tmp/tmp.lJMBrRKLqx/data5.bin -C /tmp/tmp.lJMBrRKLqx</code> : extract second tar; yields <code>data6.bin</code>.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/data6.bin</code> : identify format (bzip2).</li>
+          <li><code>mv /tmp/tmp.lJMBrRKLqx/data6.bin /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code> : rename to <code>.bz2</code>.</li>
+          <li><code>bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2</code> : decompress third bzip2 archive.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : identify format (tar).</li>
+          <li><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar</code> : rename to <code>.tar</code>.</li>
+          <li><code>tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx</code> : extract third tar; yields a gzip file.</li>
+          <li><code>mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code> : rename to <code>.gz</code>.</li>
+          <li><code>gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz</code> : decompress final gzip archive.</li>
+          <li><code>file /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : verify ASCII text.</li>
+          <li><code>cat /tmp/tmp.lJMBrRKLqx/hexToBin.txt</code> : display the password (ASCII text).</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
+</body>
+</html>

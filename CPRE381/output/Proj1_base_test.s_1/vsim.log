@@ -1,0 +1,23 @@
+Reading pref.tcl
+
+# 2024.2
+
+# vsim -postsimdataflow -debugdb -c -voptargs=""+acc"" tb -do "modelsim_framework.do" -gOUTPUT_TRACE=ms.trace 
+# Start time: 12:09:54 on Apr 18,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vsim-8611) Generating debug db.
+# ** Warning: (vopt-10587) Some optimizations are turned off because the +acc switch is in effect. This will cause your simulation to run slowly. Please use -access/-debug to maintain needed visibility. The +acc switch would be deprecated in a future release.
+# Support of the MGLS_LICENSE_FILE and LM_LICENSE_FILE licensing environment variables will be discontinued starting with the 2025.1 release. Please update to using the SALT_LICENSE_SERVER variable.
+# Please contact Siemens EDA Customer Support (https://support.sw.siemens.com/) for assistance.
+# ** Warning: ../../proj/src/TopLevel/MIPS_Processor.vhd(491): (vopt-1549) At instance PC_Mux the actual expression and the port 'i_D1' of component 'work.MIPS_Processor(structure).mux2t1_N' have different sizes:  ([36,32]).
+#         Region: /tb/MyMips/PC_Mux
+# ** Error (suppressible): ../../proj/src/TopLevel/MIPS_Processor.vhd(491): (vopt-1549) At instance PC_Mux the actual expression and the port 'i_D1' of entity 'work.mux2t1_N' have different sizes:  ([36,32]).
+#         Region: /tb/MyMips/PC_Mux
+# Optimization failed
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=1, Warnings=2.
+# Error loading design
+Error loading design
+# End time: 12:09:54 on Apr 18,2025, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 2
+Support of the MGLS_LICENSE_FILE and LM_LICENSE_FILE licensing environment variables will be discontinued starting with the 2025.1 release. Please update to using the SALT_LICENSE_SERVER variable.
+Please contact Siemens EDA Customer Support (https://support.sw.siemens.com/) for assistance.

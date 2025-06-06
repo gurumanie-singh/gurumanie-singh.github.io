@@ -1,0 +1,181 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+library work;
+use work.MIPS_types.all;
+
+entity MIPS_Processor_Fetch is
+  generic(N : integer := DATA_WIDTH);
+  port(iCLK            : in std_logic;
+       iRST            : in std_logic;
+       iInstLd         : in std_logic;
+       iInstAddr       : in std_logic_vector(N-1 downto 0);
+       iInstExt        : in std_logic_vector(N-1 downto 0);
+	 iJrValue		: in std_logic_vector(31 downto 0);
+	 	 iJumpSelect	   : in std_logic;
+		 iBranchSelect	   : in std_logic;
+    	 iJrSelect	   	   : in std_logic;
+		 iSignSelect	   : in std_logic;
+		oPCout				: out std_logic_vector(31 downto 0));
+    
+end  MIPS_Processor_Fetch;
+
+
+architecture structure of MIPS_Processor_Fetch is
+
+	-- PC reg
+	component PC_reg is
+		generic( N : integer := 32);
+		port (
+			i_data   : in std_logic_vector(N-1 downto 0);
+			i_writeEn: in std_logic;
+			i_reset  : in std_logic;
+			i_clock  : in std_logic;
+			o_output : out std_logic_vector(N-1 downto 0));
+	end component;
+
+	-- adder
+	component ripple_carry_adder is
+		generic (N : integer := 32);
+		port (  i_X, i_Y : in std_logic_vector(N-1 downto 0);
+			i_C	 : in std_logic;
+			o_S	 : out std_logic_vector(N-1 downto 0);
+			o_C	 : out std_logic );
+	end component;
+
+	-- N-bit 2t1 Mux component
+	component mux2t1_N is
+	  generic(N : integer := 32); -- Generic of type integer for input/output data width. Default value is 32.
+	  port(i_S          : in std_logic;
+	       i_D0         : in std_logic_vector(N-1 downto 0);
+	       i_D1         : in std_logic_vector(N-1 downto 0);
+	       o_O          : out std_logic_vector(N-1 downto 0));
+	end component;
+
+	-- sign/zero extenders
+	component extender_16to32 is
+		port (	i_signSelect : in std_logic;
+				i_imm : in std_logic_vector(15 downto 0);
+				o_out : out std_logic_vector(31 downto 0));
+	end component;
+
+	-- Shift left 2
+	component ShiftLeft2_N is
+		generic(in_N : integer := 32;
+				out_N: integer := 32);
+		port (	i_input : in std_logic_vector(in_N - 1 downto 0);
+				o_out : out std_logic_vector(out_N - 1 downto 0));
+	end component;
+
+  component mem is
+    generic(ADDR_WIDTH : integer;
+            DATA_WIDTH : integer);
+    port(
+          clk          : in std_logic;
+          addr         : in std_logic_vector((ADDR_WIDTH-1) downto 0);
+          data         : in std_logic_vector((DATA_WIDTH-1) downto 0);
+          we           : in std_logic := '1';
+          q            : out std_logic_vector((DATA_WIDTH -1) downto 0));
+    end component;
+
+  -- Required instruction memory signals
+  signal s_IMemAddr     : std_logic_vector(N-1 downto 0); -- Do not assign this signal, assign to s_NextInstAddr instead
+  signal s_NextInstAddr : std_logic_vector(N-1 downto 0); -- TODO: use this signal as your intended final instruction memory address input.
+  signal s_Inst         : std_logic_vector(N-1 downto 0); -- TODO: use this signal as the instruction signal 
+
+  signal s_PCin : std_logic_vector(31 downto 0);
+  signal s_newPC : std_logic_vector(31 downto 0);
+  signal s_adderCarry : std_logic;
+  signal s_branchCarry : std_logic;
+  signal s_shiftedJump : std_logic_vector(27 downto 0);
+  signal s_extendedImm : std_logic_vector(31 downto 0);
+  signal s_branchAddr : std_logic_vector(31 downto 0);
+  signal s_jumpAddr : std_logic_vector(31 downto 0);
+  signal s_branchMuxOut : std_logic_vector(31 downto 0);
+  signal s_jumpMuxOut : std_logic_vector(31 downto 0);
+  signal s_shiftedBranch : std_logic_vector(31 downto 0);
+
+
+begin
+  -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
+  with iInstLd select
+    s_IMemAddr <= s_NextInstAddr when '0',
+      iInstAddr when others;
+
+	PC : PC_reg
+		port map (	i_data => s_PCin,
+					i_writeEn => '1',
+					i_reset => iRST,
+					i_clock => iCLK,
+					o_output => s_NextInstAddr);
+
+	oPCout <= s_NextInstAddr;
+
+	PC_adder : ripple_carry_adder
+		port map (	i_X => s_NextInstAddr,
+					i_Y => x"00000004",
+					i_C => '0',
+					o_S => s_newPC,
+					o_C => s_adderCarry);
+
+	jumpShift : ShiftLeft2_N
+		generic map	(in_N => 26,
+					 out_N => 28)
+		port map (	 i_input => s_Inst(25 downto 0),
+					 o_out => s_shiftedJump);
+
+	s_jumpAddr <= (s_newPC(31 downto 28) & s_shiftedJump);
+
+	jumpMux : mux2t1_N
+		generic map	(N => 32)
+		port map 	(i_S => iJumpSelect,
+					 i_D0 => s_branchMuxOut,
+					 i_D1 => s_jumpAddr,
+					 o_O => s_jumpMuxOut);  -- s_jumpMuxOut
+
+	-- if jr, PC input is R[rs]
+	jrMux : mux2t1_N
+		generic map	(N => 32)
+		port map 	(i_S => iJrSelect,		-- s_jrSelect
+					 i_D0 => s_jumpMuxOut,
+					 i_D1 => iJrValue,
+					 o_O => s_PCin);
+
+	IMem: mem
+	  	generic map(ADDR_WIDTH => ADDR_WIDTH,
+	              	DATA_WIDTH => N)
+	  	port map(clk  => iCLK,
+	          	 addr => s_IMemAddr(11 downto 2),
+	          	 data => iInstExt,
+	         	 we   => iInstLd,
+	          	 q    => s_Inst);
+
+	-- branch path
+
+	ImmediateSignExtender : extender_16to32
+		port map ( 	i_signSelect => iSignSelect,
+					i_imm => s_Inst(15 downto 0),
+					o_out => s_extendedImm);
+
+	branchShift : ShiftLeft2_N
+		generic map	(in_N => 32,
+					 out_N => 32)
+		port map (	 i_input => s_extendedImm,
+					 o_out => s_shiftedBranch);
+
+	branch_adder : ripple_carry_adder
+		port map (	i_X => s_shiftedBranch,
+					i_Y => s_newPC,
+					i_C => '0',
+					o_S => s_branchAddr,
+					o_C => s_branchCarry);
+	
+	branchMux : mux2t1_N
+		port map (	i_S => iBranchSelect,
+					i_D0 => s_newPC,
+					i_D1 => s_branchAddr,
+					o_O => s_branchMuxOut);
+
+
+
+end structure;

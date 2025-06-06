@@ -1,0 +1,96 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity barrelShifter_32 is
+	port (	i_shiftRight: in std_logic;
+			i_shiftArithmetic: in std_logic; 
+			i_input		: in std_logic_vector(31 downto 0);
+			i_shamt		: in std_logic_vector(4 downto 0);
+			o_output	: out std_logic_vector(31 downto 0));
+end barrelShifter_32;
+
+architecture dataflow of barrelShifter_32 is
+
+component mux2t1_N is
+  generic(N : integer := 32); -- Generic of type integer for input/output data width. Default value is 32.
+  port(i_S          : in std_logic;
+       i_D0         : in std_logic_vector(N-1 downto 0);
+       i_D1         : in std_logic_vector(N-1 downto 0);
+       o_O          : out std_logic_vector(N-1 downto 0));
+end component;
+
+signal s_mux0, s_mux1, s_mux2, s_mux3, s_mux4 : std_logic_vector(31 downto 0);
+signal s_mux0d1, s_mux1d1, s_mux2d1, s_mux3d1, s_mux4d1 : std_logic_vector(31 downto 0);
+signal s_in, s_flippedIn, s_flippedOut : std_logic_vector(31 downto 0);					
+signal s_msb : std_logic;	-- most significant bit of input
+signal s_msbStr: std_logic_vector(15 downto 0);
+
+begin
+
+-- if right shift, the input and final output are flipped.
+flip_vector : for i in 0 to 31 generate
+	s_flippedIn(i) <= i_input(31 - i);
+end generate flip_vector;
+
+with i_shiftRight select
+	s_in <= s_flippedIn when '1',
+			i_input when others; 
+
+-- if arithmetic, the take the most significant bit as the appending value.
+s_msb <= i_shiftArithmetic AND i_input(31);
+
+create_string : for i in 0 to 15 generate	-- create a string of msb
+	s_msbStr(i) <= s_msb;
+end generate create_string;
+
+s_mux4d1 <= s_in(15 downto 0) & s_msbStr(15 downto 0);
+
+mux4 : mux2t1_N
+	port map (	i_S => i_shamt(4),
+				i_D0 => s_in,
+				i_D1 => s_mux4d1,
+				o_O => s_mux4);
+
+s_mux3d1 <= s_mux4(23 downto 0) & s_msbStr(7 downto 0);
+
+mux3 : mux2t1_N
+	port map (	i_S => i_shamt(3),
+				i_D0 => s_mux4,
+				i_D1 => s_mux3d1,
+				o_O => s_mux3);
+
+s_mux2d1 <= s_mux3(27 downto 0) & s_msbStr(3 downto 0);
+
+mux2 : mux2t1_N
+	port map (	i_S => i_shamt(2),
+				i_D0 => s_mux3,
+				i_D1 => s_mux2d1,
+				o_O => s_mux2);
+
+s_mux1d1 <= s_mux2(29 downto 0) & s_msbStr(1 downto 0);
+
+mux1 : mux2t1_N
+	port map (	i_S => i_shamt(1),
+				i_D0 => s_mux2,
+				i_D1 => s_mux1d1,
+				o_O => s_mux1);
+
+s_mux0d1 <= s_mux1(30 downto 0) & s_msb;
+
+mux0 : mux2t1_N
+	port map (	i_S => i_shamt(0),
+				i_D0 => s_mux1,
+				i_D1 => s_mux0d1,
+				o_O => s_mux0);
+
+-- flip output if right shift
+flip_vector2 : for i in 0 to 31 generate
+	s_flippedOut(i) <= s_mux0(31 - i);
+end generate flip_vector2;
+
+with i_shiftRight select
+	o_output <= s_flippedOut when '1',
+				s_mux0 when others; 
+
+
+end dataflow;

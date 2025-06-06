@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 4 Solution - OverTheWire Bandit</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Tailwind CSS (after override) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="font-sans transition-all"
+      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <header class="w-full p-6 bg-grey/50 backdrop-blur-md sticky top-0 z-10 flex flex-wrap justify-between items-center">
+    <h1 class="text-2xl font-semibold text-white">Level 4: File Types (Human-Readable)</h1>
+    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
+  </header>
+
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
+      <p class="text-lg text-gray-200">
+        The password for the next level is hidden among several files (<code>-file00</code> through <code>-file09</code>) in the <code>inhere</code> directory. Only one is human-readable.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">1. Exit Level 3 and SSH into Level 4</h3>
+        <p class="mb-2 text-gray-200">
+          After retrieving the Level 4 password from <code>...Hiding-From-You</code>, exit the current session:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>exit</code></pre>
+        <p class="mt-2 text-gray-200">
+          Then connect as <code>bandit4</code>:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit4@bandit.labs.overthewire.org -p 2220</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">2. List the Home Directory Contents</h3>
+        <p class="mb-2 text-gray-200">
+          Once logged in as <code>bandit4</code>, list files:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          You will see a directory named <code>inhere</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">3. Change into <code>inhere</code></h3>
+        <p class="mb-2 text-gray-200">
+          Enter the <code>inhere</code> directory:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cd inhere</code></pre>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">4. Observe All Files with Leading Dashes</h3>
+        <p class="mb-2 text-gray-200">
+          Running a regular <code>ls</code> lists:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
+        <p class="mt-2 text-gray-200">
+          You will see files named <code>-file00</code>, <code>-file01</code>, …, up to <code>-file09</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">5. Identify the Human-Readable File</h3>
+        <p class="mb-2 text-gray-200">
+          Instead of opening each file individually, use the <code>file</code> command to check their types:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>file ./-*</code></pre>
+        <p class="mt-2 text-gray-200">
+          This will output each filename along with its file type. Search for the one marked <code>ASCII text</code>.
+        </p>
+        <p class="mt-2 text-gray-200">
+          The human-readable file is <code>-file07</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">6. Read <code>-file07</code> to Obtain the Password</h3>
+        <p class="mb-2 text-gray-200">
+          Display its contents:
+        </p>
+        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat ./-file07</code></pre>
+        <p class="mt-2 text-gray-200">
+          The output is the password for <code>bandit5</code>.
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
+        <ul class="list-disc list-inside ml-4 text-gray-200">
+          <li><code>exit</code> : return to local machine from Level 3.</li>
+          <li><code>ssh bandit4@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit4</code>.</li>
+          <li><code>ls</code> : list files; shows <code>inhere</code> directory.</li>
+          <li><code>cd inhere</code> : change into <code>inhere</code> directory.</li>
+          <li><code>ls</code> : list <code>-file00</code> through <code>-file09</code>.</li>
+          <li><code>file ./-*</code> : identify file types; locate <code>-file07</code> as <code>ASCII text</code>.</li>
+          <li><code>cat ./-file07</code> : display the human-readable file; retrieve the Level 5 password.</li>
+        </ul>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
+</body>
+</html>

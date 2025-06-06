@@ -1,0 +1,103 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity tb_Pipeline_IF_ID is
+
+end tb_Pipeline_IF_ID;
+
+
+architecture test of tb_Pipeline_IF_ID is
+
+component Pipeline_IF_ID is
+	port (	
+		i_CLK		: in std_logic;
+		i_RST		: in std_logic;
+		i_flush		: in std_logic;
+		i_stall		: in std_logic;
+		i_PCAdd4	: in std_logic_vector(31 downto 0);
+		i_Inst		: in std_logic_vector(31 downto 0);
+		o_PCAdd4	: out std_logic_vector(31 downto 0);
+		o_Inst		: out std_logic_vector(31 downto 0)
+		); 	
+end component;
+
+
+	signal	s_CLK		: std_logic;
+	signal	s_RST		: std_logic;
+	signal 	s_flush		: std_logic;
+	signal 	s_stall		: std_logic;
+	signal	s_i_PCAdd4	: std_logic_vector(31 downto 0);
+	signal 	s_i_Inst	: std_logic_vector(31 downto 0);
+	signal	s_o_PCAdd4	: std_logic_vector(31 downto 0);
+	signal	s_o_Inst	: std_logic_vector(31 downto 0);
+
+begin
+
+pipeline : Pipeline_IF_ID
+	port map (	i_CLK => s_CLK,
+				i_RST => s_RST,
+				i_flush => s_flush,
+				i_stall => s_stall,
+				i_PCAdd4 => s_i_PCAdd4,
+				i_Inst => s_i_Inst,
+				o_PCAdd4 => s_o_PCAdd4,
+				o_Inst => s_o_Inst);
+
+clock: process
+begin
+		s_CLK <= '0';
+		wait for 5 ns;
+		s_CLK <= '1';
+		wait for 5 ns;
+end process;
+
+test: process
+begin
+
+s_stall <= '0';
+s_flush <= '0';
+s_RST <= '1';
+wait for 5 ns;
+s_RST <= '0';
+wait for 5 ns;
+
+
+s_i_Inst <= x"10000000";
+s_i_PCAdd4 <= x"00000004";
+wait for 10 ns;
+
+
+s_i_Inst <= x"FFF00000";
+s_i_PCAdd4 <= x"00000008";
+wait for 10 ns;
+
+s_flush <= '1';
+s_i_Inst <= x"11111100";
+s_i_PCAdd4 <= x"0000000C";
+wait for 10 ns;
+
+s_flush <= '0';
+s_i_Inst <=   x"FFFFFFFF";
+s_i_PCAdd4 <= x"00000010";
+wait for 10 ns;
+
+s_stall <= '1';
+s_i_Inst <= x"00000100";
+s_i_PCAdd4 <= x"00000018";
+wait for 10 ns;
+
+s_stall <= '0';
+s_i_Inst <= x"000111FF";
+s_i_PCAdd4 <= x"0000001C";
+wait for 10 ns;
+
+s_stall <= '0';
+s_i_Inst <=   x"00011F11";
+s_i_PCAdd4 <= x"00000020";
+wait for 10 ns;
+
+wait;
+end process;
+end test;
+
+

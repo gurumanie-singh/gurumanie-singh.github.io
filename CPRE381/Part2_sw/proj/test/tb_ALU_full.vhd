@@ -1,0 +1,349 @@
+-------------------------------------------------------------------------
+-- Gurumanie Singh
+-------------------------------------------------------------------------
+-- tb_ALU_full.vhd
+-------------------------------------------------------------------------
+-- DESCRIPTION: This file contains a testbench for the ALU_full unit.
+-------------------------------------------------------------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity tb_ALU_full is
+	
+
+end tb_ALU_full;
+
+
+architecture mixed of tb_ALU_full is
+constant N : integer := 32; -- Constant of type integer for input/output data width. Default value is 32.
+
+component ALU_full is
+	generic (N : integer := 32);
+	port (  
+		i_A, i_B : in std_logic_vector(N-1 downto 0); -- inputs
+		ALUControl : in std_logic_vector(3 downto 0); -- controls AND/OR/ADD/SUB
+		i_shamt	 :	in std_logic_vector(4 downto 0); -- shift ammount
+		i_regShift: in std_logic;					 -- set for shift with reg
+		o_out	 : out std_logic_vector(N-1 downto 0);	-- ALU output
+		o_OvF 	 : out std_logic;						-- overflow
+		o_zero	 : out std_logic); 						-- zero output
+		
+end component;
+
+
+
+-- Input and output signals as needed.
+signal s_A        	: std_logic_vector (N-1 downto 0);     						
+signal s_B        	: std_logic_vector (N-1 downto 0);     						
+signal s_ALUControl     : std_logic_vector (3 downto 0);			
+signal s_out         	: std_logic_vector (N-1 downto 0);     	
+signal s_zero, s_regShift, s_OvF: std_logic;
+signal s_shamt			: std_logic_vector(4 downto 0);     	
+
+
+begin
+  DUT0: ALU_Full
+  port map(
+            i_A			=> s_A,
+            i_B			=> s_B,
+            ALUControl	=> s_ALUControl,
+			i_shamt 	=> s_shamt,
+			i_regShift  => s_regShift,
+	  	    o_out      	=> s_out,
+			o_OvF		=> s_OvF,
+            o_zero 		=> s_zero);
+  
+  
+  -- Testbench process  
+  P_TB: process
+  begin
+	
+	s_shamt <= "00000";
+	s_regShift <= '0';
+
+	-- Test 1 (AND):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0000";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (AND operation)
+	
+	-- Test 2 (AND):
+	s_A <= x"00000000"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0000";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (AND operation)
+	
+	-- Test 3 (AND):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0000";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (AND operation)
+	
+	-- Test 4 (OR):
+	s_A <= x"00000000"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0001";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (OR operation)
+	
+	-- Test 5 (OR):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0001";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (OR operation)
+	
+	-- Test 6 (OR):
+	s_A <= x"00000000"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0001";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (OR operation)
+	
+	-- Test 7 (OR):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0001";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (OR operation)
+	
+	-- Test 8 (OR):
+	s_A <= x"F0F0F0F0"; 
+	s_B <= x"0F0F0F0F";
+	s_ALUControl <= "0001";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (OR operation)
+	
+	-- Test 9 (ADD):
+	s_A <= x"00000000"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0010";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (ADD operation)
+	
+	-- Test 10 (ADD):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0010";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (ADD operation)
+	
+	-- Test 11 (ADD):
+	s_A <= x"00000000"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0010";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (ADD operation)
+	
+	-- Test 12 (ADD):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0010";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFE" (ADD operation)
+	
+	-- Test 13 (ADD):
+	s_A <= x"10101010"; 
+	s_B <= x"01010101";
+	s_ALUControl <= "0010";
+	wait for 10 ns;
+	-- Expected output: x"11111111" (ADD operation)
+
+	-- Test 13 (ADD Overflow):
+	s_A <= x"7FFFFFFF"; 
+	s_B <= x"00000FFF";
+	s_ALUControl <= "0010";
+	wait for 10 ns;
+	-- Expected output: overflow = 1
+	
+	-- Test 14 (SUB):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "1010";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (SUB operation)
+	
+	-- Test 15 (SUB):
+	s_A <= x"00000000"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "1010";
+	wait for 10 ns;
+	-- Expected output: x"00000001" (SUB operation)
+	
+	-- Test 16 (SUB):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "1010";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (SUB operation)
+	
+	-- Test 17 (SUB):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"00000001";
+	s_ALUControl <= "1010";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFE" (SUB operation)
+
+	-- Test 17 (SUB overflow):
+	s_A <= x"80000000"; 
+	s_B <= x"00000002";
+	s_ALUControl <= "1010";
+	wait for 10 ns;
+	-- Expected output: overflow = 1, result = 1
+	
+	-- Test 18 (NOR):
+	s_A <= x"00000000"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0011";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (NOR operation)
+	
+	-- Test 19 (NOR):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0011";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (NOR operation)
+	
+	-- Test 20 (NOR):
+	s_A <= x"10101010"; 
+	s_B <= x"01010101";
+	s_ALUControl <= "0011";
+	wait for 10 ns;
+	-- Expected output: x"EEEEEEEE" (NOR operation)
+	
+	-- Test 21 (XOR):
+	s_A <= x"00000000"; 
+	s_B <= x"00000000";
+	s_ALUControl <= "0100";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (XOR operation)
+	
+	-- Test 22 (XOR):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0100";
+	wait for 10 ns;
+	-- Expected output: x"00000000" (XOR operation)
+	
+	-- Test 23 (XOR):
+	s_A <= x"00000000"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "0100";
+	wait for 10 ns;
+	-- Expected output: x"FFFFFFFF" (XOR operation)
+
+	-- Test 24 (Less):
+	s_A <= x"00000000"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "1101";
+	wait for 10 ns;
+	-- Expected output: x"000000000"
+
+	-- Test 25 (Less):
+	s_A <= x"00000000"; 
+	s_B <= x"0FFFFFFF";
+	s_ALUControl <= "1101";
+	wait for 10 ns;
+	-- Expected output: x"000000001"
+
+	-- Test 26 (Less):
+	s_A <= x"FFFFFFFF"; 
+	s_B <= x"FFFFFFF0";
+	s_ALUControl <= "1101";
+	wait for 10 ns;
+	-- Expected output: x"000000000"
+
+	-- Test 27 (Less):
+	s_A <= x"FFFFFFF0"; 
+	s_B <= x"FFFFFFFF";
+	s_ALUControl <= "1101";
+	wait for 10 ns;
+	-- Expected output: x"000000001"
+
+	-- Test 27 (Less):
+	s_A <= x"7FFFFFFF"; 
+	s_B <= x"0FFFFFFF";
+	s_ALUControl <= "1101";
+	wait for 10 ns;
+	-- Expected output: x"000000000"
+
+-- already tested in barrelShifter test-bench, just making sure its compatable with ALU
+
+	-- Test 28 (shift left):		
+	s_A <= x"00000110"; 
+	s_B <= x"00000001";
+	s_ALUControl <= "0110";
+	s_shamt <= "00010";
+	wait for 10 ns;
+	-- Expected output: x"000000004"
+
+	-- Test 29 (shift right):
+	s_A <= x"00000110"; 
+	s_B <= x"80000000";
+	s_ALUControl <= "0111";
+	s_shamt <= "00010";
+	wait for 10 ns;
+	-- Expected output: x"200000000"
+
+	-- Test 29 (shift right arith):
+	s_A <= x"00000110"; 
+	s_B <= x"80000000";
+	s_ALUControl <= "1111";
+	s_shamt <= "00010";
+	wait for 10 ns;
+	-- Expected output: x"E00000000"
+
+	-- Test 29 (shift right):
+	s_A <= x"00000110"; 
+	s_B <= x"01000000";
+	s_ALUControl <= "0111";
+	s_shamt <= "00010";
+	wait for 10 ns;
+	-- Expected output: x"004000000"
+
+	-- Test 29 (shift right arith):
+	s_A <= x"00000110"; 
+	s_B <= x"80000000";
+	s_ALUControl <= "1111";
+	s_shamt <= "00010";
+	wait for 10 ns;
+	-- Expected output: x"004000000"
+
+	s_regShift <= '1';
+
+	-- Test 28 (shift left reg):		
+	s_A <= x"00000002"; 
+	s_B <= x"00000001";
+	s_ALUControl <= "0110";
+	s_shamt <= "11111";
+	wait for 10 ns;
+	-- Expected output: x"000000004"
+
+	-- Test 29 (shift right reg):
+	s_A <= x"00000002"; 
+	s_B <= x"80000000";
+	s_ALUControl <= "0111";
+	s_shamt <= "00000";
+	wait for 10 ns;
+	-- Expected output: x"200000000"
+
+	-- Test 29 (shift right arith reg):
+	s_A <= x"00FFF002"; 
+	s_B <= x"80000000";
+	s_ALUControl <= "1111";
+	s_shamt <= "10101";
+	wait for 10 ns;
+	-- Expected output: x"E00000000"
+
+	
+	
+
+
+    wait;
+  end process;
+  
+end mixed;

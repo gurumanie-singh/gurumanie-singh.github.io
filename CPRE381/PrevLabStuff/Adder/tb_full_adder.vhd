@@ -1,0 +1,78 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity tb_full_adder is
+	generic ( wait_time : time := 10 ns);
+end tb_full_adder;
+
+-- architecture
+architecture testbench of tb_full_adder is
+
+component full_adder is
+	port (  i_X, i_Y : in std_logic;
+		i_C	 : in std_logic;
+		o_S	 : out std_logic;
+		o_C	 : out std_logic );
+end component;
+
+
+-- define signals
+signal s_X, s_Y, s_Sum : std_logic;
+signal s_Cin, s_Cout : std_logic;
+
+-- map signals to ports
+begin
+my_adder : full_adder
+port map ( i_X => s_X,
+	   i_Y => s_Y,
+	   i_C => s_Cin,
+	   o_S => s_Sum,
+	   o_C => s_Cout );
+
+
+-- begin tests
+test: process begin
+	
+	-- test 1
+	s_X <= '0';
+	s_Y <= '0';
+	s_Cin <= '0';
+	wait for wait_time;
+	-- Expected: s_Sum = 0
+	--	     s_C  = 0
+
+	-- test 2
+	s_X <= '0';
+	s_Y <= '1';
+	s_Cin <= '0';
+	wait for wait_time;
+	-- Expected: s_Sum = 1
+	--	     s_C  = 0
+
+	-- test 3
+	s_X <= '1';
+	s_Y <= '1';
+	s_Cin <= '0';
+	wait for wait_time;
+	-- Expected: s_Sum = 0
+	--	     s_C  = 1
+
+	-- test 4
+	s_X <= '0';
+	s_Y <= '0';
+	s_Cin <= '1';
+	wait for wait_time;
+	-- Expected: s_Sum = 1
+	--	     s_C  = 0
+
+	-- test 1
+	s_X <= '1';
+	s_Y <= '1';
+	s_Cin <= '1';
+	wait for wait_time;
+	-- Expected: s_Sum = 1
+	--	     s_C  = 1
+
+end process;
+
+end testbench;

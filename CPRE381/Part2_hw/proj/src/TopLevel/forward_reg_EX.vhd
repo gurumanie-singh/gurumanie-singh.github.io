@@ -1,0 +1,101 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity forward_reg_EX is
+	port (
+			i_clk		: in std_logic;
+			i_rst		: in std_logic;
+			i_ForwardA 	: in std_logic_vector(1 downto 0);
+			i_ForwardB 	: in std_logic_vector(1 downto 0);
+			i_ForwardRtEX: in std_logic_vector(1 downto 0);
+			i_RegWrData	: in std_logic_vector(31 downto 0);
+			i_FlushEX	: in std_logic;
+			o_PastASel 	: out std_logic;
+			o_PastBSel 	: out std_logic;
+			o_PastRtEXSel : out std_logic;
+			o_PastWrData: out std_logic_vector(31 downto 0));
+
+end forward_reg_EX;
+
+
+architecture dataflow of forward_reg_EX is
+
+component reg_N is
+	generic( N : integer := 32);
+	port (
+		i_data   : in std_logic_vector(N-1 downto 0);
+		i_writeEn: in std_logic;
+		i_reset  : in std_logic;
+		i_clock  : in std_logic;
+		o_output : out std_logic_vector(N-1 downto 0));
+end component;
+
+component dffg is
+  port(i_CLK        : in std_logic;     -- Clock input
+       i_RST        : in std_logic;     -- Reset input
+       i_WE         : in std_logic;     -- Write enable input
+       i_D          : in std_logic;     -- Data value input
+       o_Q          : out std_logic);   -- Data value output
+end component;
+
+signal s_ForwardA : std_logic_vector(1 downto 0);
+signal s_ForwardB : std_logic_vector(1 downto 0);
+signal s_ForwardRtEx : std_logic_vector(1 downto 0);
+signal s_FlushEX : std_logic;
+
+begin
+
+forwardA : reg_N
+	generic map (N => 2)
+	port map (	i_data => i_ForwardA,
+				i_writeEn => '1',
+				i_reset => i_rst,
+				i_clock => i_clk,
+				o_output => s_ForwardA);
+
+forwardb : reg_N
+	generic map (N => 2)
+	port map (	i_data => i_ForwardB,
+				i_writeEn => '1',
+				i_reset => i_rst,
+				i_clock => i_clk,
+				o_output => s_ForwardB);
+
+forwardRt : reg_N
+	generic map (N => 2)
+	port map (	i_data => i_ForwardRtEX,
+				i_writeEn => '1',
+				i_reset => i_rst,
+				i_clock => i_clk,
+				o_output => s_ForwardRtEX);
+
+
+flush : dffg
+	port map (	i_CLK => i_clk,
+				i_RST => i_rst,
+				i_WE => '1',
+				i_D => i_FlushEX,
+				o_Q => s_FlushEX);
+
+RegWrData : reg_N
+	generic map (N => 32)
+	port map (	i_data => i_RegWrData,
+				i_writeEn => '1',
+				i_reset => i_rst,
+				i_clock => i_clk,
+				o_output => o_PastWrData);
+
+
+o_PastASel <= 	'1' when (s_FlushEX = '1' AND s_ForwardA = "01") else
+				'0';
+
+o_PastBSel <= 	'1' when (s_FlushEX = '1' AND s_ForwardB = "01") else
+				'0';
+
+o_PastRtEXSel <= 	'1' when (s_FlushEX = '1' AND s_ForwardRtEX = "01") else
+					'0';
+
+
+
+
+end dataflow;

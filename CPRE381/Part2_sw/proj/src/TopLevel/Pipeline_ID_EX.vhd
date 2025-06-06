@@ -1,0 +1,236 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity Pipeline_ID_EX is
+	port (
+			-- clock and reset
+			i_CLK	: in std_logic;
+			i_RST	: in std_logic;
+
+			-- inputs
+			i_MemToReg 	: in std_logic_vector(1 downto 0);
+			i_RegWrite	: in std_logic;
+			i_RegDst	: in std_logic_vector(1 downto 0);
+			i_luiSelect	: in std_logic_vector(1 downto 0);
+			i_halt		: in std_logic;						-- halt signal
+			i_signedLoad: in std_logic;
+			i_DMemWr	: in std_logic;
+			i_ALUControl: in std_logic_vector(3 downto 0);
+			i_ALUSrc	: in std_logic;
+			i_checkOvFl	: in std_logic;						
+			i_regShift	: in std_logic;
+			i_shamt		: in std_logic_vector(4 downto 0);  -- shamt field of Inst
+			i_RsAddr	: in std_logic_vector(4 downto 0);	-- Rs Address
+			i_RtAddr	: in std_logic_vector(4 downto 0);	-- Rt address
+			i_RdAddr	: in std_logic_vector(4 downto 0);	-- Rd address
+			i_extImm	: in std_logic_vector(31 downto 0);	-- sign extended immediate
+			i_RtVal		: in std_logic_vector(31 downto 0); -- Value in Rt reg
+			i_RsVal		: in std_logic_vector(31 downto 0); -- Value in Rs reg
+			i_luiValue	: in std_logic_vector(31 downto 0); -- Shifted Value for lui
+			i_PCAdd4	: in std_logic_vector(31 downto 0); -- PC+4
+
+			-- outputs
+			o_MemToReg 	: out std_logic_vector(1 downto 0);
+			o_RegWrite	: out std_logic;
+			o_RegDst	: out std_logic_vector(1 downto 0);
+			o_luiSelect	: out std_logic_vector(1 downto 0);
+			o_halt		: out std_logic;						-- halt signal
+			o_signedLoad: out std_logic;
+			o_DMemWr	: out std_logic;
+			o_ALUControl: out std_logic_vector(3 downto 0);
+			o_ALUSrc	: out std_logic;
+			o_checkOvFl	: out std_logic;						
+			o_regShift	: out std_logic;
+			o_shamt		: out std_logic_vector(4 downto 0);  -- shamt field of Inst
+			o_RsAddr	: out std_logic_vector(4 downto 0);	-- Rs Address
+			o_RtAddr	: out std_logic_vector(4 downto 0);	-- Rt address
+			o_RdAddr	: out std_logic_vector(4 downto 0);	-- Rd address
+			o_extImm	: out std_logic_vector(31 downto 0); -- sign extended immediate
+			o_RtVal		: out std_logic_vector(31 downto 0); -- Value in Rt reg
+			o_RsVal		: out std_logic_vector(31 downto 0); -- Value in Rs reg
+			o_luiValue	: out std_logic_vector(31 downto 0); -- Shifted Value for lui
+			o_PCAdd4	: out std_logic_vector(31 downto 0) -- PC+4
+	);
+end Pipeline_ID_EX;
+
+
+architecture structural of Pipeline_ID_EX is
+
+component dffg is
+  port(i_CLK        : in std_logic;     -- Clock input
+       i_RST        : in std_logic;     -- Reset input
+       i_WE         : in std_logic;     -- Write enable input
+       i_D          : in std_logic;     -- Data value input
+       o_Q          : out std_logic);   -- Data value output
+end component;
+
+component reg_N is
+	generic( N : integer := 32);
+	port (
+		i_data   : in std_logic_vector(N-1 downto 0);
+		i_writeEn: in std_logic;
+		i_reset  : in std_logic;
+		i_clock  : in std_logic;
+		o_output : out std_logic_vector(N-1 downto 0));
+end component;
+
+begin
+
+memToReg : reg_N
+	generic map (N => 2)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_MemToReg,
+				o_output => o_MemToReg);
+
+regWr : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_RegWrite,
+				o_Q => o_RegWrite);
+
+regDst : reg_N
+	generic map (N => 2)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_RegDst,
+				o_output => o_RegDst);
+
+lui : reg_N
+	generic map (N => 2)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_luiSelect,
+				o_output => o_luiSelect);
+
+halt : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_halt,
+				o_Q => o_halt);
+
+signedLoad : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_signedLoad,
+				o_Q => o_signedLoad);
+
+DmemWr : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_DMemWr,
+				o_Q => o_DMemWr);
+
+ALUControl : reg_N
+	generic map (N => 4)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_ALUControl,
+				o_output => o_ALUControl);
+
+ALUSrc : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_ALUSrc,
+				o_Q => o_ALUSrc);
+
+checkOvFl : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_checkOvFl,
+				o_Q => o_checkOvFl);
+
+regShift : dffg
+	port map (	i_CLK => i_CLK,
+				i_RST => i_RST,
+				i_WE => '1',
+				i_D => i_regShift,
+				o_Q => o_regShift);
+
+shamt : reg_N
+	generic map (N => 5)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_shamt,
+				o_output => o_shamt);
+
+RsAddr : reg_N
+	generic map (N => 5)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_RsAddr,
+				o_output => o_RsAddr);
+
+RtAddr : reg_N
+	generic map (N => 5)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_RtAddr,
+				o_output => o_RtAddr);
+
+RdAddr : reg_N
+	generic map (N => 5)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_RdAddr,
+				o_output => o_RdAddr);
+
+extImm : reg_N
+	generic map (N => 32)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_extImm,
+				o_output => o_extImm);
+
+RtVal : reg_N
+	generic map (N => 32)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_RtVal,
+				o_output => o_RtVal);
+
+RsVal : reg_N
+	generic map (N => 32)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_RsVal,
+				o_output => o_RsVal);
+
+luiValue : reg_N
+	generic map (N => 32)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_luiValue,
+				o_output => o_luiValue);
+
+PCAdd4 : reg_N
+	generic map (N => 32)
+	port map (	i_clock => i_CLK,
+				i_reset => i_RST,
+				i_writeEn => '1',
+				i_data => i_PCAdd4,
+				o_output => o_PCAdd4);
+
+
+
+end structural; 
+			
+			

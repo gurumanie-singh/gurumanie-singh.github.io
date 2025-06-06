@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OverTheWire Solutions Guide</title>
+
+  <!-- Override Tailwind’s gray palette with neutral grays -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS CSS for scroll animations -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Your custom overrides -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="font-sans transition-all"
+      style="font-family: 'Less Sans Minimal', sans-serif; background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+
+  <!-- Header -->
+  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-semibold text-white">
+      Gurumanie Singh | OverTheWire Solutions Guide
+    </h1>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
+    <h2 class="text-4xl font-semibold mb-4 text-white">
+      Welcome to the OverTheWire Solutions Guide
+    </h2>
+    <p class="text-lg max-w-2xl mx-auto text-gray-200">
+      Step-by-step walkthroughs for each Bandit level. Select a level below to reveal its solution.
+    </p>
+  </section>
+
+  <!-- Solutions Grid -->
+  <section id="overthewire" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-3xl font-medium text-center mb-8 text-white">
+      Available Level Solutions
+    </h3>
+
+    <!-- items-stretch makes all cards equal-height per row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
+
+      <!-- Level 0 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 0: SSH Login
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Log in via SSH and retrieve the next-level password.
+        </p>
+        <a href="level0.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 1 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 1: Read File Named “–”
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Read a file named “-” in your home directory.
+        </p>
+        <a href="level1.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 2 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 2: Spaces in Filename
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Handle filenames containing spaces to reveal the password.
+        </p>
+        <a href="level2.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 3 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 3: Hidden Files
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Locate a hidden file in the <code>inhere</code> directory.
+        </p>
+        <a href="level3.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 4 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 4: File Types (Human-Readable)
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Find the only human-readable file in <code>inhere</code>.
+        </p>
+        <a href="level4.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 5 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 5: File of Specific Size
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Identify files by size and type in <code>inhere</code>.
+        </p>
+        <a href="level5.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 6 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 6: Locate Password by File Attributes
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Find the file with specific user/group ownership.
+        </p>
+        <a href="level6.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 7 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 7: grep &amp; Piping
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Use <code>grep</code> and pipes to filter content.
+        </p>
+        <a href="level7.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 8 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 8: Find the Unique Line
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Find lines appearing only once using <code>uniq</code> and <code>sort</code>.
+        </p>
+        <a href="level8.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 9 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 9: Extract Human-Readable Password
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Extract the password from human-readable strings in a file.
+        </p>
+        <a href="level9.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 10 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 10: Decode Base64 Data
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Decode a Base64-encoded file.
+        </p>
+        <a href="level10.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 11 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 11: Rot13 Cipher
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Use <code>tr</code> to apply Rot13 to a file.
+        </p>
+        <a href="level11.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 12 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 12: Hexdump &amp; Compression
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Examine file signatures and decompress data.
+        </p>
+        <a href="level12.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 13 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 13: SSH with Key
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Log in using an SSH key and transfer a file from a remote host.
+        </p>
+        <a href="level13.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 14 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 14: Netcat Basics
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Use Netcat for simple network communication.
+        </p>
+        <a href="level14.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 15 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 15: OpenSSL Communication
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Establish a secure connection with OpenSSL.
+        </p>
+        <a href="level15.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 16 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 16: Nmap &amp; SSL
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Scan ports and analyze SSL using Nmap.
+        </p>
+        <a href="level16.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 17 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 17: diff Command
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Find differences between files using <code>diff</code>.
+        </p>
+        <a href="level17.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 18 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 18: Find Password File
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Locate and read the password file in <code>/etc/bandit_pass</code>.
+        </p>
+        <a href="level18.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 19 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 19: SUID Binary Exploitation
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Exploit a SUID binary to retrieve the next-level password.
+        </p>
+        <a href="level19.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 20 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 20: Cron Job Exploitation
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Leverage a cron job to discover the password for the next level.
+        </p>
+        <a href="level20.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 21 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 21: SSH Port Forwarding
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Use SSH port forwarding to access a remote service and obtain the password.
+        </p>
+        <a href="level21.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 22 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 22: XOR Decryption
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Decrypt a file with XOR to reveal the next-level password.
+        </p>
+        <a href="level22.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 23 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 23: SSL Certificate Extraction
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Extract the next-level password from an SSL certificate.
+        </p>
+        <a href="level23.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 24 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 24: Data Serialization
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Decode a serialized file to retrieve the next-level password.
+        </p>
+        <a href="level24.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 25 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 25: Linux Signals
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Use Linux signals to capture the password from a process.
+        </p>
+        <a href="level25.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 26 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 26: Password Cracking
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Crack a hashed password to gain access to the next level.
+        </p>
+        <a href="level26.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 27 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 27: Socket Programming
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Connect to a socket server to receive the next-level password.
+        </p>
+        <a href="level27.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 28 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 28: Database Query
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Query a MySQL database to find the next-level password.
+        </p>
+        <a href="level28.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 29 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 29: HTTP Request
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Make a crafted HTTP request to obtain the next-level password.
+        </p>
+        <a href="level29.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 30 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 30: Buffer Overflow
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Exploit a buffer overflow vulnerability to retrieve the next-level password.
+        </p>
+        <a href="level30.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 31 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 31: Real Machine Access
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Access a real machine to capture the next-level password.
+        </p>
+        <a href="level31.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+      <!-- Level 32 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 
+                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out 
+                  flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">
+          Level 32: One-Time Pad
+        </h4>
+        <p class="text-sm mb-4 text-gray-200">
+          Use a one-time pad cipher to decrypt the final password.
+        </p>
+        <a href="level32.html"
+           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100 
+                  hover:bg-gray-700">
+          View Solution
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AOS Initialization -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true });
+  </script>
+</body>
+
+</html>

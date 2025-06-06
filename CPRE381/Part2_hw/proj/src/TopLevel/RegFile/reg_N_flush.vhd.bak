@@ -1,0 +1,47 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+-- N-bit Register with flush select that will reset the reg only next cycle . Reset is async
+entity reg_N_flush is
+	generic ( N : integer := 32);
+	port (
+		i_data   : in std_logic_vector(N-1 downto 0);
+		i_writeEn: in std_logic;
+		i_reset	 : in std_logic;
+		i_flush  : in std_logic;
+		i_clock  : in std_logic;
+		o_output : out std_logic_vector(N-1 downto 0));
+end reg_N_flush;
+
+
+architecture mixed of reg_N_flush is
+
+component reg_N is
+	generic( N : integer := 32);
+	port (
+		i_data   : in std_logic_vector(N-1 downto 0);
+		i_writeEn: in std_logic;
+		i_reset  : in std_logic;
+		i_clock  : in std_logic;
+		o_output : out std_logic_vector(N-1 downto 0));
+end component;
+
+signal s_reset : std_logic;
+signal s_flush : std_logic := '0';
+
+begin
+
+with (rising_edge(i_clock)) select
+	s_flush <= i_flush when true,
+			   '0' when others;
+
+s_reset <= s_flush OR i_reset;
+
+reg : reg_N port map (	i_data => i_data,
+						i_writeEn => i_writeEn,
+						i_reset => s_reset,
+						i_clock => i_clock,
+						o_output => o_output);
+
+end mixed;
+

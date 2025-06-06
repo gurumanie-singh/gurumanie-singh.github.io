@@ -1,0 +1,76 @@
+/* ----------------------------------------
+   Reset headings & links on dark background
+   ---------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+}
+
+a, a:visited {
+  color: #e1e1e1;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ffffff;
+}
+
+/* ------------------------------
+   Force Tailwind gray replacements
+   ------------------------------ */
+.bg-gray-900 {
+  background-color: #1b1b1b !important;
+}
+
+.bg-gray-800 {
+  background-color: #2d2d2d !important;
+}
+
+.bg-gray-700 {
+  background-color: #3f3f3f !important;
+}
+
+.text-gray-100 {
+  color: #e1e1e1 !important;
+}
+
+.border-gray-100 {
+  border-color: #e1e1e1 !important;
+}
+
+/* ------------------------------
+   Button/Card overrides
+   ------------------------------ */
+a.inline-block {
+  background-color: transparent !important;
+  border: 1px solid #e1e1e1;
+  color: #e1e1e1 !important;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a.inline-block:hover {
+  background-color: #3f3f3f;
+  color: #ffffff !important;
+}
+
+/* ---------------------------------------
+   List styling on dark background
+   --------------------------------------- */
+ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  color: #e1e1e1;
+}
+
+ul li::marker {
+  color: #e1e1e1;
+}
+
+/* ---------------------------------------
+   Ensure AOS animations remain visible
+   --------------------------------------- */
+[data-aos] {
+  opacity: 1 !important;
+}

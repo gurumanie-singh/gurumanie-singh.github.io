@@ -1,0 +1,58 @@
+[inst #1] addiu $8,$0,0
+Register Write to Reg: 0x08 Val: 0x00000000
+[inst #2] bne $8,$0,30
+[inst #3] jal 4194320
+Register Write to Reg: 0x1F Val: 0x0040000C
+[inst #4] addiu $29,$29,-4
+Register Write to Reg: 0x1D Val: 0x7FFFEFF8
+[inst #5] sw $31,0($29)
+Memory Write to Addr: 0x7FFFEFF8 Val: 0x0040000C
+[inst #6] jal 4194344
+Register Write to Reg: 0x1F Val: 0x0040001C
+[inst #7] addiu $29,$29,-4
+Register Write to Reg: 0x1D Val: 0x7FFFEFF4
+[inst #8] sw $31,0($29)
+Memory Write to Addr: 0x7FFFEFF4 Val: 0x0040001C
+[inst #9] jal 4194368
+Register Write to Reg: 0x1F Val: 0x00400034
+[inst #10] addiu $29,$29,-4
+Register Write to Reg: 0x1D Val: 0x7FFFEFF0
+[inst #11] sw $31,0($29)
+Memory Write to Addr: 0x7FFFEFF0 Val: 0x00400034
+[inst #12] jal 4194392
+Register Write to Reg: 0x1F Val: 0x0040004C
+[inst #13] addiu $29,$29,-4
+Register Write to Reg: 0x1D Val: 0x7FFFEFEC
+[inst #14] sw $31,0($29)
+Memory Write to Addr: 0x7FFFEFEC Val: 0x0040004C
+[inst #15] jal 4194416
+Register Write to Reg: 0x1F Val: 0x00400064
+[inst #16] beq $8,$0,1
+[inst #17] addiu $8,$8,1
+Register Write to Reg: 0x08 Val: 0x00000001
+[inst #18] j 4194416
+[inst #19] beq $8,$0,1
+[inst #20] jr $31
+[inst #21] lw $31,0($29)
+Register Write to Reg: 0x1F Val: 0x0040004C
+[inst #22] addiu $29,$29,4
+Register Write to Reg: 0x1D Val: 0x7FFFEFF0
+[inst #23] jr $31
+[inst #24] lw $31,0($29)
+Register Write to Reg: 0x1F Val: 0x00400034
+[inst #25] addiu $29,$29,4
+Register Write to Reg: 0x1D Val: 0x7FFFEFF4
+[inst #26] jr $31
+[inst #27] lw $31,0($29)
+Register Write to Reg: 0x1F Val: 0x0040001C
+[inst #28] addiu $29,$29,4
+Register Write to Reg: 0x1D Val: 0x7FFFEFF8
+[inst #29] jr $31
+[inst #30] lw $31,0($29)
+Register Write to Reg: 0x1F Val: 0x0040000C
+[inst #31] addiu $29,$29,4
+Register Write to Reg: 0x1D Val: 0x7FFFEFFC
+[inst #32] jr $31
+[inst #33] j 4194440
+[inst #34] halt 
+

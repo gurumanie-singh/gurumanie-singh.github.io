@@ -1,0 +1,103 @@
+[inst #1] add $8,$9,$10
+Register Write to Reg: 0x08 Val: 0x00000000
+[inst #2] addi $11,$12,10
+Register Write to Reg: 0x0B Val: 0x0000000A
+[inst #3] addiu $13,$14,20
+Register Write to Reg: 0x0D Val: 0x00000014
+[inst #4] addu $15,$24,$25
+Register Write to Reg: 0x0F Val: 0x00000000
+[inst #5] nop 
+[inst #6] nop 
+[inst #7] nop 
+[inst #8] sub $12,$13,$14
+Register Write to Reg: 0x0C Val: 0x00000014
+[inst #9] nop 
+[inst #10] nop 
+[inst #11] nop 
+[inst #12] subu $15,$24,$25
+Register Write to Reg: 0x0F Val: 0x00000000
+[inst #13] nop 
+[inst #14] nop 
+[inst #15] nop 
+[inst #16] slt $24,$25,$8
+Register Write to Reg: 0x18 Val: 0x00000000
+[inst #17] nop 
+[inst #18] nop 
+[inst #19] nop 
+[inst #20] slti $9,$10,100
+Register Write to Reg: 0x09 Val: 0x00000001
+[inst #21] nop 
+[inst #22] nop 
+[inst #23] nop 
+[inst #24] and $8,$9,$10
+Register Write to Reg: 0x08 Val: 0x00000000
+[inst #25] nop 
+[inst #26] nop 
+[inst #27] nop 
+[inst #28] andi $11,$12,255
+Register Write to Reg: 0x0B Val: 0x00000014
+[inst #29] nop 
+[inst #30] nop 
+[inst #31] nop 
+[inst #32] nor $13,$14,$15
+Register Write to Reg: 0x0D Val: 0xFFFFFFFF
+[inst #33] nop 
+[inst #34] nop 
+[inst #35] nop 
+[inst #36] or $24,$25,$8
+Register Write to Reg: 0x18 Val: 0x00000000
+[inst #37] nop 
+[inst #38] nop 
+[inst #39] nop 
+[inst #40] ori $9,$10,15
+Register Write to Reg: 0x09 Val: 0x0000000F
+[inst #41] nop 
+[inst #42] nop 
+[inst #43] nop 
+[inst #44] xor $8,$9,$10
+Register Write to Reg: 0x08 Val: 0x0000000F
+[inst #45] nop 
+[inst #46] nop 
+[inst #47] nop 
+[inst #48] xori $11,$12,255
+Register Write to Reg: 0x0B Val: 0x000000EB
+[inst #49] nop 
+[inst #50] nop 
+[inst #51] nop 
+[inst #52] sll $11,$12,2
+Register Write to Reg: 0x0B Val: 0x00000050
+[inst #53] nop 
+[inst #54] nop 
+[inst #55] nop 
+[inst #56] sllv $13,$14,$15
+Register Write to Reg: 0x0D Val: 0x00000000
+[inst #57] nop 
+[inst #58] nop 
+[inst #59] nop 
+[inst #60] sra $11,$12,2
+Register Write to Reg: 0x0B Val: 0x00000005
+[inst #61] nop 
+[inst #62] nop 
+[inst #63] nop 
+[inst #64] srav $13,$14,$15
+Register Write to Reg: 0x0D Val: 0x00000000
+[inst #65] nop 
+[inst #66] nop 
+[inst #67] nop 
+[inst #68] srl $24,$25,2
+Register Write to Reg: 0x18 Val: 0x00000000
+[inst #69] nop 
+[inst #70] nop 
+[inst #71] nop 
+[inst #72] srlv $9,$10,$11
+Register Write to Reg: 0x09 Val: 0x00000000
+[inst #73] nop 
+[inst #74] nop 
+[inst #75] nop 
+[inst #76] beq $8,$9,49
+[inst #77] nop 
+[inst #78] nop 
+[inst #79] nop 
+[inst #80] bne $8,$9,45
+[inst #81] halt 
+

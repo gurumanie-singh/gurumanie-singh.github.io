@@ -1,0 +1,57 @@
+library IEEE;
+use ieee.std_logic_1164.all;
+
+entity full_adder is
+	port (
+		i_X, i_Y, i_C : in std_logic;
+		o_S, o_C      : out std_logic);
+end full_adder;
+
+-- architecture
+architecture structural of full_adder is
+
+component andg2 is
+  port(i_A      : in std_logic;
+       i_B      : in std_logic;
+       o_F      : out std_logic);
+end component;
+
+component org2 is
+  port(i_A      : in std_logic;
+       i_B      : in std_logic;
+       o_F      : out std_logic);
+end component;
+
+component xorg2 is
+  port(i_A      : in std_logic;
+       i_B      : in std_logic;
+       o_F      : out std_logic);
+end component;
+
+-- signals
+signal x_xor_y, x_and_y, xy_and_c : std_logic;
+
+-- structural
+begin
+
+xor1 : xorg2 port map ( i_A => i_X,
+			i_B => i_Y,
+			o_F => x_xor_y);
+
+xor2 : xorg2 port map ( i_A => x_xor_y,
+			i_B => i_C,
+			o_F => o_S );
+
+and1 : andg2 port map ( i_A => i_X,
+			i_B => i_Y,
+			o_F => x_and_y);
+
+and2 : andg2 port map ( i_A => x_xor_y,
+			i_B => i_C,
+			o_F => xy_and_c);
+
+or1 : org2 port map ( i_A => xy_and_c,
+		      i_B => x_and_y,
+		      o_F => o_C );
+
+end structural;

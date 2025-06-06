@@ -1,0 +1,52 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity tb_extenders is
+
+end tb_extenders;
+
+architecture test of tb_extenders is
+
+component extenders is
+	port (	i_signSelect : in std_logic;
+			i_imm : in std_logic_vector(15 downto 0);
+			o_out : out std_logic_vector(31 downto 0));
+end component;
+
+-- signals
+signal s_sel : std_logic;
+signal s_imm : std_logic_vector(15 downto 0);
+signal s_out : std_logic_vector(31 downto 0);
+
+-- port map
+begin
+extend : extenders port map (	i_signSelect => s_sel,
+								i_imm => s_imm,
+								o_out => s_out);
+
+-- test cases
+tests : process begin
+
+	-- test 1
+	s_sel <= '0';
+	s_imm <= x"0011";
+	wait for 10 ns;
+
+	-- test 2
+	s_sel <= '1';
+	s_imm <= x"0011";
+	wait for 10 ns;
+
+	-- test 3
+	s_sel <= '0';
+	s_imm <= x"FFFF";
+	wait for 10 ns;
+
+	-- test 4
+	s_sel <= '1';
+	s_imm <= x"FFFF";
+	wait for 10 ns;
+
+wait;
+end process;
+end test;
