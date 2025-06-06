@@ -1,0 +1,45 @@
+<!-- COMS309/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurumanie Singh | COMS309 Coursework</title>
+
+  <!-- Tailwind + custom colors -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="font-sans" style="background: linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1; font-family:'Less Sans Minimal',sans-serif;">
+
+  <!-- Header -->
+  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh | COMS309 Coursework</h1>
+    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
+  </header>
+
+  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold mb-6 text-white">COMS309: Software Development Practices</h2>
+    <p class="text-gray-200 mb-6">
+      In COMS309, I collaborated in a four-person team to build a full-stack job-search web application, designed to simplify how students discover and apply for on-campus positions. We followed Agile processes—conducting stakeholder interviews, crafting user stories, and iterating through sprints to deliver features on schedule.
+    </p>
+    <p class="text-gray-200 mb-6">
+      As lead backend developer, I architected the server logic using Java, designed a normalized MySQL database schema, and implemented RESTful APIs for user authentication, job posting, search filters, and application tracking. I wrote comprehensive unit and integration tests, set up continuous integration workflows, and monitored performance metrics to ensure scalability and reliability.
+    </p>
+    <p class="text-gray-200 mb-8">
+      This hands-on experience honed my skills in requirements analysis, object-oriented design, backend integration, and collaborative development—preparing me for complex software engineering challenges.
+    </p>
+    <div class="text-center">
+      <a href="https://github.com/gurumanie-singh/COMS309" class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">View Full Code on GitHub</a>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration:800, once:true });</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!-- CPRE381/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurumanie Singh | CPRE381 Coursework</title>
+
+  <!-- Tailwind + custom colors -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="font-sans" style="background: linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1; font-family:'Less Sans Minimal',sans-serif;">
+
+  <!-- Header -->
+  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh | CPRE381 Coursework</h1>
+    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
+  </header>
+
+  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold mb-6 text-white">CPRE381: Advanced Computer Architecture</h2>
+    <p class="text-gray-200 mb-6">
+      In CPRE381, I delved into computer organization and performance evaluation by designing and simulating pipelined processor architectures in VHDL. Projects included an 5-stage scalar pipeline CPU featuring an ALU, control unit, hazard detection, and forwarding logic to optimize instruction throughput.
+    </p>
+    <p class="text-gray-200 mb-6">
+      To validate design correctness, I authored comprehensive VHDL test benches and used ModelSim to generate waveform outputs, analyzing timing diagrams and resolving data/control hazards. I also implemented assembly-level test programs to exercise instruction set features, measured CPI, and experimented with memory hierarchy setups to evaluate cache impacts.
+    </p>
+    <p class="text-gray-200 mb-8">
+      This immersive coursework strengthened my understanding of ISA design, pipeline control, performance trade-offs, and hardware description languages—foundations critical for low-level systems and embedded development.
+    </p>
+    <div class="text-center">
+      <a href="https://github.com/gurumanie-singh/CPRE381" class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">View Full Code on GitHub</a>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration:800, once:true });</script>
+</body>
+</html>
