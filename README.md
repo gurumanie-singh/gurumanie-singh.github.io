@@ -59,7 +59,7 @@ Each folder contains the source files and a dedicated landing page:
 
 * **Email:** [dhiman@iastate.edu](mailto:dhiman@iastate.edu)
 * **GitHub:** [github.com/gurumanie-singh](https://github.com/gurumanie-singh)
-* **LinkedIn:** [linkedin.com/in/gurumaniesingh](https://linkedin.com/in/gurumaniesingh)
+* **LinkedIn:** [linkedin.com/in/gurumanie-singh](https://linkedin.com/in/gurumanie-singh)
 
 Feel free to browse the code, explore the write-ups, or reach out for collaboration opportunities. Thank you for visiting!
 =======
