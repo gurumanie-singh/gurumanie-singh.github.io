@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Gurumanie Singh • Portfolio
 
 Welcome to my consolidated GitHub Pages repository, showcasing my hands-on projects, coursework, and technical achievements. This site serves as a central hub for recruiters and collaborators to explore my work in cybersecurity, networking, software development, and computer architecture.
