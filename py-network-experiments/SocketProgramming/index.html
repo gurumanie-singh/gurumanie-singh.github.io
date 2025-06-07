@@ -1,51 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Gurumanie Singh | SocketProgramming</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocketProgramming | Gurumanie Singh</title>
 
+  <!-- Override Tailwind’s gray palette -->
   <script>
-    window.tailwind = window.tailwind||{};
-    window.tailwind.config={ theme:{extend:{colors:{gray:{
-      900:'#1b1b1b',800:'#2d2d2d',700:'#3f3f3f',600:'#525252',
-      500:'#6b6b6b',400:'#8a8a8a',300:'#a8a8a8',200:'#c7c7c7',100:'#e1e1e1'
-    }}}}};
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    };
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="../../css/styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans" style="background:linear-gradient(180deg,#1b1b1b,#2d2d2d);color:#e1e1e1;font-family:'Less Sans Minimal',sans-serif;">
+<body class="font-sans transition-all" style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1; font-family: 'Less Sans Minimal', sans-serif;">
 
   <!-- Header -->
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">SocketProgramming</h1>
-    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back</a></nav>
+    <a href="../index.html" class="text-gray-100 hover:underline">← Back</a>
   </header>
 
-  <section class="py-16 px-4 max-w-3xl mx-auto" data-aos="fade-up">
-    <h2 class="text-3xl font-semibold mb-4 text-white">TCP & UDP Socket Examples</h2>
-    <p class="text-gray-200 mb-4">
-      <strong>Sockets.py</strong> houses modular functions demonstrating:
-      <ul class="list-disc list-inside mt-2 text-gray-200">
-        <li>TCP server/client setup with <code>socket.AF_INET, socket.SOCK_STREAM</code>.</li>
-        <li>UDP datagram send/receive using <code>socket.SOCK_DGRAM</code>.</li>
-        <li>Blocking vs non-blocking modes and graceful shutdown handling.</li>
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+    <!-- Overview -->
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Project Overview</h2>
+      <p class="text-lg text-gray-200">
+        Demonstrates basic TCP socket creation, DNS resolution, and server connection using Python's <code>socket</code> module, with robust error handling.
+      </p>
+    </section>
+
+    <!-- Socket Creation -->
+    <section class="mb-8">
+      <h3 class="text-2xl font-semibold mb-2 text-white">Socket Creation</h3>
+      <p class="mb-2 text-gray-200">
+        Initializes a TCP socket and handles potential creation errors:
+      </p>
+      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("socket successfully created")
+except socket.error as err:
+    print(f"socket creation failed with error {err}")</code></pre>
+      <p class="mt-2 text-gray-200">
+        Uses <code>socket.AF_INET</code> for IPv4 and <code>socket.SOCK_STREAM</code> for TCP. Prints clear diagnostics on failure.
+      </p>
+    </section>
+
+    <!-- DNS Resolution & Connection -->
+    <section class="mb-8">
+      <h3 class="text-2xl font-semibold mb-2 text-white">DNS Resolution & Connection</h3>
+      <p class="mb-2 text-gray-200">
+        Resolves the target host and establishes a connection on port 80:
+      </p>
+      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>port = 80
+host_ip = socket.gethostbyname("www.google.com")
+s.connect((host_ip, port))
+print(f"Successfully connected on port {port} and host ip addr is {host_ip}")</code></pre>
+      <p class="mt-2 text-gray-200">
+        Captures <code>gaierror</code> for DNS failures and exits gracefully. Demonstrates real-world usage of <code>gethostbyname</code> and <code>connect</code>.
+      </p>
+    </section>
+
+    <!-- Key Takeaways -->
+    <section>
+      <h3 class="text-2xl font-semibold mb-2 text-white">Key Takeaways</h3>
+      <ul class="list-disc list-inside ml-4 text-gray-200">
+        <li>Basic socket API usage for TCP connections.</li>
+        <li>DNS lookup handling with exception management.</li>
+        <li>Connection establishment and status reporting.</li>
       </ul>
-    </p>
-    <p class="text-gray-200 mb-6">
-      Each function can be invoked via command-line arguments to spin up the desired example, providing a hands-on reference for socket basics.
-    </p>
-    <div class="text-center">
+    </section>
+
+    <!-- View Code Button -->
+    <div class="text-center mt-8">
       <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/SocketProgramming"
-         class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700">
-        View Full Code
+         class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
+        View Full Code on GitHub
       </a>
     </div>
-  </section>
+
+  </main>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration:800, once:true });</script>
+  <script> AOS.init({ duration:800, once:true }); </script>
 </body>
 </html>
