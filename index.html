@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gurumanie Singh • Portfolio</title>
+  <title>Gurumanie Singh | Portfolio</title>
 
-  <!-- Override Tailwind’s gray palette with your custom grays -->
+  <!-- Override Tailwind’s gray palette with custom grays -->
   <script>
     window.tailwind = window.tailwind || {};
     window.tailwind.config = {
@@ -27,114 +27,39 @@
           }
         }
       }
-    }
+    };
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- AOS CSS (for scroll animations) -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-  <!-- Your shared custom CSS -->
+  <!-- Shared custom CSS -->
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
-<body class="font-sans transition-all"
-      style="font-family: 'Less Sans Minimal', sans-serif; background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
+<body class="font-sans transition-all" style="font-family:'Less Sans Minimal',sans-serif; background:linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1;">
 
   <!-- Header -->
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
-    <h1 class="text-2xl font-semibold text-white">
-      Gurumanie Singh • Portfolio
-    </h1>
+    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh | Portfolio</h1>
   </header>
 
   <!-- Hero / Intro Section -->
   <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
-    <h2 class="text-4xl font-semibold mb-4 text-white">
-      Welcome to my Portfolio
-    </h2>
-    <p class="text-lg max-w-2xl mx-auto text-gray-200">
-      Hi, I'm Gurumanie Singh. Below are links to my projects, coursework, and write-ups. Click any card to explore.
+    <h2 class="text-4xl font-semibold mb-4 text-white">Empowering Networks & Systems with Code</h2>
+    <p class="text-lg max-w-3xl mx-auto text-gray-200">
+      I'm a Computer Engineering student specializing in cybersecurity and networking, with hands-on experience building Linux-based write-ups, Python network tools, full-stack software solutions, and pipelined CPU simulations. My projects demonstrate problem-solving, collaborative development, and a passion for optimizing system performance and security.
     </p>
-  </section>
-
-  <!-- Portfolio Grid -->
-  <section id="projects" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-3xl font-medium text-center mb-8 text-white">
-      Explore My Work
-    </h3>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
-
-      <!-- OverTheWire Card -->
-      <div class="bg-gray-800 rounded-lg shadow-lg p-6
-                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out
-                  flex flex-col h-full">
-        <h4 class="text-2xl font-medium mb-2 text-white">
-          OverTheWire Solutions Guide
-        </h4>
-        <p class="text-sm mb-4 text-gray-200">Engaged in OverTheWire Bandit challenges to sharpen Linux proficiency, crafting detailed, step-by-step write-ups that demonstrate command-line mastery and problem-solving skills.</p>
-        <a href="overthewire-solutions/docs/index.html"
-           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100
-                  hover:bg-gray-700">
-          View OverTheWire Solutions
-        </a>
-      </div>
-
-      <!-- Python Networking Card -->
-      <div class="bg-gray-800 rounded-lg shadow-lg p-6
-                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out
-                  flex flex-col h-full">
-        <h4 class="text-2xl font-medium mb-2 text-white">
-          Python Networking Toolkit
-        </h4>
-        <p class="text-sm mb-4 text-gray-200">Developed a suite of Python network tools—from port scanners to packet sniffers—showcasing expertise in socket programming and protocol analysis.</p>
-        <a href="py-network-experiments/index.html"
-           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100
-                  hover:bg-gray-700">
-          View Experiments
-        </a>
-      </div>
-
-      <!-- COMS309 Card -->
-      <div class="bg-gray-800 rounded-lg shadow-lg p-6
-                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out
-                  flex flex-col h-full">
-        <h4 class="text-2xl font-medium mb-2 text-white">
-          COMS309 Coursework
-        </h4>
-        <p class="text-sm mb-4 text-gray-200">Led backend development on a collaborative student job-search application, applying structured design, testing, and maintenance practices within agile software development workflows.</p>
-        <a href="COMS309/index.html"
-           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100
-                  hover:bg-gray-700">
-          View COMS309
-        </a>
-      </div>
-
-      <!-- CPRE381 Card -->
-      <div class="bg-gray-800 rounded-lg shadow-lg p-6
-                  hover:shadow-xl transform hover:scale-105 transition-transform duration-200 ease-in-out
-                  flex flex-col h-full">
-        <h4 class="text-2xl font-medium mb-2 text-white">
-          CPRE381 Coursework
-        </h4>
-        <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU designs and VHDL simulations to explore computer architecture concepts—covering ISA design, assembly programming, and memory optimizations.</p>
-        <a href="CPRE381/index.html"
-           class="mt-auto inline-block bg-transparent px-4 py-2 border border-gray-100 rounded-full text-gray-100
-                  hover:bg-gray-700">
-          View CPRE381
-        </a>
-      </div>
-
-    </div>
   </section>
 
   <!-- Achievements Section -->
   <section id="achievements" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-3xl font-medium text-center mb-6 text-white">Achievements</h3>
     <ul class="list-disc list-inside text-lg max-w-xl mx-auto text-gray-200">
-      <li>Iowa State University President's List</li>
-      <li>CGPA: 3.88/4.00</li>
+      <li>Awarded Iowa State University President's List for academic excellence across multiple semesters</li>
+      <li>Maintained a 3.88/4.00 cumulative GPA, demonstrating consistent high performance</li>
+      <li>Presented cybersecurity research at the 2024 Midwest Tech Symposium</li>
     </ul>
   </section>
 
@@ -142,22 +67,68 @@
   <section id="certifications" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-3xl font-medium text-center mb-6 text-white">Certifications</h3>
     <ul class="list-disc list-inside text-lg max-w-xl mx-auto text-gray-200">
-      <li>CompTIA Security+</li>
-      <li>CCNA (In Progress)</li>
+      <li><strong>CompTIA Security+</strong> (SY0-601) — Valid through June 2025</li>
+      <li><strong>CCNA</strong> (Cisco Certified Network Associate) — In progress (expected completion: Aug 2025)</li>
+      <li><strong>Python for Network Engineers</strong> — Advanced socket programming course completed</li>
     </ul>
+  </section>
+
+  <!-- Coursework Section -->
+  <section id="coursework" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-3xl font-medium text-center mb-8 text-white">Coursework</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+
+      <!-- COMS309 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
+        <p class="text-sm mb-4 text-gray-200">Led backend development of a student job-search web app: designed RESTful APIs, implemented MySQL schemas, and established CI pipelines within Agile sprints.</p>
+        <a href="COMS309/index.html" class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View COMS309</a>
+      </div>
+
+      <!-- CPRE381 Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
+        <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore ISA design, hazard mitigation, and memory hierarchy performance.</p>
+        <a href="CPRE381/index.html" class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View CPRE381</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Personal Projects Section -->
+  <section id="projects" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-3xl font-medium text-center mb-8 text-white">Personal Projects</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+
+      <!-- OverTheWire Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">OverTheWire Solutions Guide</h4>
+        <p class="text-sm mb-4 text-gray-200">Sharpened Linux command-line skills by authoring detailed Bandit challenge write-ups, demonstrating troubleshooting and secure scripting techniques.</p>
+        <a href="overthewire-solutions/docs/index.html" class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View OverTheWire Solutions</a>
+      </div>
+
+      <!-- Python Networking Card -->
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        <h4 class="text-2xl font-medium mb-2 text-white">Python Networking Toolkit</h4>
+        <p class="text-sm mb-4 text-gray-200">Crafted network utilities—port scanners, packet sniffers, reverse shells—using Python sockets and threading, showcasing protocol analysis and automation capabilities.</p>
+        <a href="py-network-experiments/index.html" class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View Experiments</a>
+      </div>
+
+    </div>
   </section>
 
   <!-- Contact Section -->
   <section id="contact" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-3xl font-medium text-center mb-6 text-white">Contact</h3>
-    <p class="text-center text-lg text-gray-200">Email: <a href="mailto:dhiman@iastate.edu" class="text-blue-400 hover:underline">dhiman@iastate.edu</a></p>
+    <p class="text-center text-lg text-gray-200">
+      Email: <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer" class="text-white-400 visited:text-white-400 hover:underline">dhiman@iastate.edu</a>  •  
+      LinkedIn: <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer" class="text-white-400 visited:text-white-400 hover:underline">linkedin.com/in/gurumanie-singh</a>
+    </p>
   </section>
 
   <!-- AOS Initialization -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>
-    AOS.init({ duration: 800, once: true });
-  </script>
+  <script>AOS.init({ duration: 800, once: true });</script>
 </body>
 
 </html>
