@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Gurumanie Singh | SocketProgramming</title>
+
+  <script>
+    window.tailwind = window.tailwind||{};
+    window.tailwind.config={ theme:{extend:{colors:{gray:{
+      900:'#1b1b1b',800:'#2d2d2d',700:'#3f3f3f',600:'#525252',
+      500:'#6b6b6b',400:'#8a8a8a',300:'#a8a8a8',200:'#c7c7c7',100:'#e1e1e1'
+    }}}}};
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../../css/styles.css"/>
+</head>
+<body class="font-sans" style="background:linear-gradient(180deg,#1b1b1b,#2d2d2d);color:#e1e1e1;font-family:'Less Sans Minimal',sans-serif;">
+
+  <!-- Header -->
+  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-semibold text-white">SocketProgramming</h1>
+    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back</a></nav>
+  </header>
+
+  <section class="py-16 px-4 max-w-3xl mx-auto" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold mb-4 text-white">TCP & UDP Socket Examples</h2>
+    <p class="text-gray-200 mb-4">
+      <strong>Sockets.py</strong> houses modular functions demonstrating:
+      <ul class="list-disc list-inside mt-2 text-gray-200">
+        <li>TCP server/client setup with <code>socket.AF_INET, socket.SOCK_STREAM</code>.</li>
+        <li>UDP datagram send/receive using <code>socket.SOCK_DGRAM</code>.</li>
+        <li>Blocking vs non-blocking modes and graceful shutdown handling.</li>
+      </ul>
+    </p>
+    <p class="text-gray-200 mb-6">
+      Each function can be invoked via command-line arguments to spin up the desired example, providing a hands-on reference for socket basics.
+    </p>
+    <div class="text-center">
+      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/SocketProgramming"
+         class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700">
+        View Full Code
+      </a>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration:800, once:true });</script>
+</body>
+</html>

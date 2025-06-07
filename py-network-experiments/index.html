@@ -2,18 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Python Networking Experiments</title>
-  <link rel="stylesheet" href="/assets/css/main.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gurumanie Singh | Python Networking Experiments</title>
+
+  <!-- Tailwind + custom grays -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { theme: { extend: { colors: { gray: {
+      900:'#1b1b1b',800:'#2d2d2d',700:'#3f3f3f',600:'#525252',
+      500:'#6b6b6b',400:'#8a8a8a',300:'#a8a8a8',200:'#c7c7c7',100:'#e1e1e1'
+    }}}}};
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
 </head>
-<body>
-  <nav>
-    <a href="/">← Back to Home</a>
-  </nav>
-  <h1>Python Networking Experiments</h1>
-  <ul>
-    <li><a href="port_scanner.py">port_scanner.py</a> — Custom port scanner using raw sockets</li>
-    <li><a href="packet_sniffer.py">packet_sniffer.py</a> — Live packet sniffing on interface</li>
-    <!-- etc. -->
-  </ul>
+<body class="font-sans transition-all"
+      style="background:linear-gradient(180deg,#1b1b1b,#2d2d2d);color:#e1e1e1;font-family:'Less Sans Minimal',sans-serif;">
+
+  <!-- Header -->
+  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh | Python Networking</h1>
+    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
+  </header>
+
+  <!-- Intro -->
+  <section class="text-center py-12 px-4" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold mb-4 text-white">Python Networking Toolkit</h2>
+    <p class="text-gray-200 max-w-2xl mx-auto">
+      A suite of custom tools demonstrating socket programming, protocol analysis, and network automation.
+      Browse any project for detailed explanations and code.
+    </p>
+  </section>
+
+  <!-- Cards Grid -->
+  <section class="py-16 px-4 max-w-6xl mx-auto" data-aos="fade-up">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full hover:scale-105 transition">
+        <h3 class="text-xl font-medium mb-2 text-white">TCPChatRoom</h3>
+        <p class="text-gray-200 flex-grow">
+          Real-time multi-client TCP chat server & client demonstrating concurrent socket handling.
+        </p>
+        <a href="TCPChatRoom/" class="mt-4 inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
+          View Details
+        </a>
+      </div>
+
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full hover:scale-105 transition">
+        <h3 class="text-xl font-medium mb-2 text-white">ReverseShell</h3>
+        <p class="text-gray-200 flex-grow">
+          TCP-based reverse shell enabling remote command execution—illustrates raw socket usage & thread management.
+        </p>
+        <a href="ReverseShell/" class="mt-4 inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
+          View Details
+        </a>
+      </div>
+
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full hover:scale-105 transition">
+        <h3 class="text-xl font-medium mb-2 text-white">SocketProgramming</h3>
+        <p class="text-gray-200 flex-grow">
+          Foundational examples covering TCP/UDP client-server patterns, blocking vs non-blocking sockets.
+        </p>
+        <a href="SocketProgramming/" class="mt-4 inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
+          View Details
+        </a>
+      </div>
+
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full hover:scale-105 transition">
+        <h3 class="text-xl font-medium mb-2 text-white">SQLInjectionScanner</h3>
+        <p class="text-gray-200 flex-grow">
+          Automated form/URL scanner to detect SQL injection vulnerabilities by injecting payloads and analyzing responses.
+        </p>
+        <a href="SQLInjectionScanner/" class="mt-4 inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
+          View Details
+        </a>
+      </div>
+
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full hover:scale-105 transition">
+        <h3 class="text-xl font-medium mb-2 text-white">Client-Server</h3>
+        <p class="text-gray-200 flex-grow">
+          Basic client-server demo for file transfer and messaging, illustrating socket streams and I/O buffering.
+        </p>
+        <a href="Client-Server/" class="mt-4 inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
+          View Details
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AOS Init -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration:800, once:true });</script>
+
 </body>
 </html>
