@@ -1,0 +1,22 @@
+5483 3ab4 724a							-- HW Destination
+3887 d552 29f2 						-- HW Source
+0800 										-- EtherType (IPV4)
+4800 										-- Version/IHL
+0040 										-- Total Length = IP + TCP Headers
+546c 										-- IP Identification
+4000 										-- Flags (3 bits 010 for don't fragment)
+1906 										-- TTL/Protocol
+01af 										-- Checksum
+c0a8 0173 								-- Source IP
+22d9 ed5b 								-- Destination IP
+850c 0127 9182 feef 182a c291 	-- IP Options
+
+f581										-- Source Port
+0050 										-- Destination Port
+57c9 40bc								-- Sequence Number
+ab98 037c 								-- Acknowledgement Number
+8014 										-- Data Offset / Flags (8 is header length)
+0400										-- Window (converted from Decimal to Hex)
+d276 										-- Checksum	
+0000										-- Urgent Pointer
+0204 05b4 0103 0308 0101 0402 	-- TCP Options
