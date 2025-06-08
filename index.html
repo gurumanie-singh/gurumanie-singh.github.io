@@ -49,7 +49,7 @@
   </header>
 
   <!-- Modal Overlay -->
-  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
+  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-50">
     <img id="modalImage" src="images/profile.jpg" alt="Gurumanie Singh Enlarged"
       class="rounded-full transform scale-0 transition-all duration-500" />
   </div>
@@ -59,28 +59,81 @@
     const modal = document.getElementById('profileModal');
     const modalImg = document.getElementById('modalImage');
 
-    pic.addEventListener('click', (e) => {
-      // compute click-origin (center of thumbnail)
-      const rect = pic.getBoundingClientRect();
-      const originX = rect.left + rect.width / 2;
-      const originY = rect.top + rect.height / 2;
-      modalImg.style.transformOrigin = `${originX}px ${originY}px`;
+    // --- Opening Animation ---
+    pic.addEventListener('click', () => {
+      // 1. Get the starting position from the small thumbnail
+      const picRect = pic.getBoundingClientRect();
 
-      // show modal & animate scale up
+      // Make the modal background visible but start it as transparent
       modal.classList.remove('hidden');
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+
+      // Hide the original thumbnail while the modal is open
+      pic.style.visibility = 'hidden';
+
+      // 2. Remove the modal image from the normal flow and style it
+      // to perfectly match the thumbnail's position and size.
+      modalImg.style.position = 'fixed';
+      modalImg.style.top = `${picRect.top}px`;
+      modalImg.style.left = `${picRect.left}px`;
+      modalImg.style.width = `${picRect.width}px`;
+      modalImg.style.height = `${picRect.height}px`;
+      modalImg.style.borderRadius = '50%'; // Match the starting border-radius
+      modalImg.style.transform = 'none'; // Ensure no other transforms are active
+      modalImg.style.transition = 'all 500ms cubic-bezier(0.4, 0, 0.2, 1)'; // A smooth easing
+
+      // Make the image visible for the animation
+      modalImg.classList.remove('scale-0');
+
+      // 3. In the next available frame, animate to the final state
       requestAnimationFrame(() => {
-        modalImg.classList.remove('scale-0');
-        modalImg.classList.add('scale-100');
+        // Animate the modal background to full opacity
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+
+        // Calculate the target size and centered position
+        const targetSize = Math.min(window.innerWidth, window.innerHeight) * 0.8;
+        const targetTop = `calc(50% - ${targetSize / 2}px)`;
+        const targetLeft = `calc(50% - ${targetSize / 2}px)`;
+
+        // Apply the final styles to trigger the transition
+        modalImg.style.top = targetTop;
+        modalImg.style.left = targetLeft;
+        modalImg.style.width = `${targetSize}px`;
+        modalImg.style.height = `${targetSize}px`;
       });
     });
 
+    // --- Closing Animation ---
     modal.addEventListener('click', () => {
-      // animate scale down then hide
-      modalImg.classList.remove('scale-100');
-      modalImg.classList.add('scale-0');
+      const picRect = pic.getBoundingClientRect();
+
+      // Animate the modal background to transparent
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+
+      // Animate the image back to the thumbnail's original position and size
+      modalImg.style.top = `${picRect.top}px`;
+      modalImg.style.left = `${picRect.left}px`;
+      modalImg.style.width = `${picRect.width}px`;
+      modalImg.style.height = `${picRect.height}px`;
+
+      // After the transition finishes, hide the modal and reset styles
       modalImg.addEventListener('transitionend', () => {
         modal.classList.add('hidden');
-      }, { once: true });
+        // Make the original thumbnail visible again
+        pic.style.visibility = 'visible';
+
+        // Reset inline styles so it works correctly the next time
+        modalImg.style.position = '';
+        modalImg.style.top = '';
+        modalImg.style.left = '';
+        modalImg.style.width = '';
+        modalImg.style.height = '';
+        modalImg.style.transition = '';
+        modalImg.style.transform = '';
+        modalImg.classList.add('scale-0'); // Re-apply the initial hiding class
+      }, {
+        once: true
+      }); // Use { once: true } to auto-remove the listener
     });
   </script>
 
