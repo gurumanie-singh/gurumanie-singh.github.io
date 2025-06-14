@@ -80,7 +80,8 @@
       modalImg.style.height = `${picRect.height}px`;
       modalImg.style.borderRadius = '50%'; // Match the starting border-radius
       modalImg.style.transform = 'none'; // Ensure no other transforms are active
-      modalImg.style.transition = 'all 500ms cubic-bezier(0.4, 0, 0.2, 1)'; // A smooth easing
+      modalImg.style.transition = 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)'; // A smooth easing
+      modalImg.style.willChange = 'transform, opacity'; // Improve performance
 
       // Make the image visible for the animation
       modalImg.classList.remove('scale-0');
@@ -141,10 +142,9 @@
   <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
     <h2 class="text-5xl font-semibold mb-4 text-white">Securing Tomorrow's Networks Today</h2>
     <p class="text-lg max-w-5xl mx-auto text-gray-200">
-      I'm a Computer Engineering student specializing in cybersecurity and networking, with hands-on experience building
-      Linux-based write-ups, Python network tools, full-stack software solutions, and pipelined CPU simulations. My
-      projects demonstrate problem-solving, collaborative development, and a passion for optimizing system performance
-      and security.
+      Hi! I'm a Computer Engineering Senior at Iowa State University specializing in cybersecurity and networking. This
+      website is a centralized hub highlighting my technical journey through hands-on projects, academic coursework, and
+      certifications.
     </p>
   </section>
 
@@ -152,8 +152,8 @@
   <section id="achievements" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Achievements</strong></h3>
     <ul class="list-disc list-outside pl-6 text-lg max-w-4xl mx-auto text-gray-200">
-      <li>Awarded Iowa State University President's List for academic excellence across multiple semesters</li>
-      <li>Maintained a 3.85/4.00 cumulative GPA, demonstrating consistent high performance</li>
+      <li>Awarded Iowa State University President's List for maintaining a 4.00 GPA for two consecutive semesters</li>
+      <li>Maintaining a 3.85/4.00 cumulative GPA, demonstrating consistent high performance</li>
     </ul>
   </section>
 
@@ -161,7 +161,7 @@
   <section id="certifications" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Certifications</strong></h3>
     <ul class="list-disc list-outside pl-6 text-lg max-w-4xl mx-auto text-gray-200">
-      <li><strong>CompTIA Security+</strong> (SY0-701) — Valid through August 2027</li>
+      <li><strong>CompTIA Security+</strong> (SY0-701) — Valid through Aug 2027</li>
       <li><strong>CCNA</strong> (Cisco Certified Network Associate) — In progress (expected completion: Aug 2025)</li>
     </ul>
   </section>
@@ -252,12 +252,24 @@
   <!-- Contact Section -->
   <section id="contact" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-4xl font-medium text-center mb-6 text-white"><strong>Contact</strong></h3>
-    <p class="text-center text-lg text-gray-200">
-      Email: <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer"
-        class="text-white-400 visited:text-white-400 hover:underline">dhiman@iastate.edu</a> •
-      LinkedIn: <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer"
-        class="text-white-400 visited:text-white-400 hover:underline">linkedin.com/in/gurumanie-singh</a>
-    </p>
+    <div class="flex justify-center items-center space-x-6 mt-6">
+
+      <!-- Email Icon -->
+      <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer">
+        <img src="images/email.png" alt="Email Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
+      </a>
+
+      <!-- LinkedIn Icon -->
+      <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer">
+        <img src="images/linkedin.png" alt="LinkedIn Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
+      </a>
+
+      <!-- GitHub Icon -->
+      <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener noreferrer">
+        <img src="images/github.png" alt="GitHub Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
+      </a>
+
+    </div>
   </section>
 
   <!-- AOS Initialization -->
