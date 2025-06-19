@@ -12,12 +12,6 @@ Access the live portfolio at: [https://gurumanie-singh.github.io](https://guruma
 
 ## 🚀 Highlights
 
-* **OverTheWire Solutions Guide**  
-  In-depth, level-by-level write-ups for the Bandit challenges. Demonstrates Linux command-line mastery, problem-solving, and documentation skills.
-
-* **Python Networking Experiments**  
-  A collection of custom Python tools—port scanners, packet sniffers, TCP/UDP demos—showcasing socket programming and protocol analysis.
-
 * **COMS309 Coursework**  
   Lead backend developer on a student-focused job-search platform: designed RESTful APIs, structured MySQL databases, and automated deployments with CI/CD pipelines.
 
@@ -29,6 +23,15 @@ Access the live portfolio at: [https://gurumanie-singh.github.io](https://guruma
 
 * **COMS415 Coursework**  
   Conducted systematic hazard and failure analyses (FTA, SFMECA) and employed formal verification and static analysis to identify, prioritize, and mitigate risks in safety-critical software systems.
+
+* **OverTheWire Solutions Guide**  
+  In-depth, level-by-level write-ups for the Bandit challenges. Demonstrates Linux command-line mastery, problem-solving, and documentation skills.
+
+* **Python Networking Experiments**  
+  A collection of custom Python tools—port scanners, packet sniffers, TCP/UDP demos—showcasing socket programming and protocol analysis.
+
+* **NMAP Basics Notes**  
+  Consolidated core scanning techniques, flag explanations, and command usage into a refined PDF guide, useful for penetration testing and network enumeration practice.
 
 * **Achievements & Certifications**  
   President’s List (CGPA 3.85/4.00), CompTIA Security+, CCNA (in progress).
