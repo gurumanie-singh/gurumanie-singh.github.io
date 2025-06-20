@@ -48,6 +48,7 @@ Each folder contains the source files and a dedicated landing page:
 ├── index.html                # Portfolio home (this README outlines it)
 ├── overthewire-solutions/    # Bandit solutions + write-ups
 ├── py-network-experiments/   # Python networking toolkits
+├── nmap-notes/               # Some basic notes of NMAP and frequently used commands
 ├── COMS309/                  # Software development coursework
 ├── CPRE381/                  # Computer architecture & VHDL projects
 ├── CPRE430/                  # Networking protocols & security coursework
