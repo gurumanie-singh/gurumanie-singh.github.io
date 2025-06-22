@@ -5,52 +5,76 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Frosted Glass Terminal Theme</title>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gray: {
+              900: '#1b1b1b',
+              800: '#2d2d2d',
+              700: '#3f3f3f',
+              600: '#525252',
+              500: '#6b6b6b',
+              400: '#8a8a8a',
+              300: '#a8a8a8',
+              200: '#c7c7c7',
+              100: '#e1e1e1'
+            }
+          }
+        }
+      }
+    };
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
 </head>
 
-<body class="bg-gray-900 text-white font-sans" style="font-family: 'Less Sans Minimal', sans-serif;">
-  <main class="max-w-5xl mx-auto px-6 py-12">
-    <section class="text-center" data-aos="fade-up">
-      <h1 class="text-5xl font-bold mb-4">Frosted Glass Terminal Theme</h1>
-      <p class="text-lg text-gray-300 mb-8">
-        A sleek, semi-transparent MacOS Terminal theme inspired by Hyper's Verminal aesthetic — featuring Monaco font,
-        frosted blur, and a vibrant color palette for daily terminal use.
-      </p>
-      <a href="FrostedGlass.terminal" download
-        class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition">
-        Download Theme
-      </a>
-    </section>
+<body class="font-sans transition-all"
+  style="font-family:'Less Sans Minimal',sans-serif; background:linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1;">
 
-    <section class="mt-16" data-aos="fade-up">
-      <h2 class="text-3xl font-semibold mb-4">Preview Screenshots</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <img src="Preview.png" alt="Preview 1" class="rounded-xl shadow-lg" />
-        <img src="FrostedGlass0.png" alt="Preview 2" class="rounded-xl shadow-lg" />
-        <img src="FrostedGlass1.png" alt="Preview 3" class="rounded-xl shadow-lg" />
-      </div>
-    </section>
+  <section class="text-center py-16 px-4" data-aos="fade-up">
+    <h1 class="text-5xl font-semibold mb-4 text-white">Frosted Glass Terminal Theme</h1>
+    <p class="text-lg max-w-4xl mx-auto text-gray-200">
+      A sleek, semi-transparent MacOS Terminal theme inspired by Hyper's Verminal aesthetic — featuring Monaco font,
+      frosted blur, and a vibrant color palette for daily terminal use.
+    </p>
+    <a href="FrostedGlass.terminal" download
+      class="mt-6 inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
+      Download Theme
+    </a>
+  </section>
 
-    <section class="mt-16" data-aos="fade-up">
-      <h2 class="text-3xl font-semibold mb-4">Installation Guide</h2>
-      <ol class="list-decimal list-inside text-gray-300 space-y-2">
-        <li>Download <code class="text-white">FrostedGlass.terminal</code> using the button above.</li>
-        <li>Double-click the file to import into your MacOS Terminal app.</li>
-        <li>Navigate to <strong>Terminal &gt; Settings &gt; Profiles</strong> and set "Frosted Glass" as default.</li>
-        <li>Restart Terminal to apply the theme.</li>
-      </ol>
-    </section>
+  <section class="py-16 px-4" data-aos="fade-up">
+    <h2 class="text-4xl font-medium text-center mb-8 text-white">Preview Screenshots</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+      <img src="Preview.png" alt="Preview 1" class="rounded-3xl shadow-lg" />
+      <img src="FrostedGlass0.png" alt="Preview 2" class="rounded-3xl shadow-lg" />
+      <img src="FrostedGlass1.png" alt="Preview 3" class="rounded-3xl shadow-lg md:col-span-2" />
+    </div>
+  </section>
 
-    <section class="mt-16" data-aos="fade-up">
-      <h2 class="text-3xl font-semibold mb-4">Recommended Fonts</h2>
-      <ul class="list-disc list-inside text-gray-300">
-        <li>Monaco (default for this theme)</li>
-        <li>JetBrains Mono (alternative)</li>
-        <li>SF Mono (MacOS system alternative)</li>
-      </ul>
-    </section>
-  </main>
+  <section class="py-16 px-4" data-aos="fade-up">
+    <h2 class="text-4xl font-medium text-center mb-8 text-white">Installation Guide</h2>
+    <ol class="list-decimal list-inside text-lg max-w-4xl mx-auto text-gray-200 space-y-2">
+      <li>Download <code class="text-white">FrostedGlass.terminal</code> using the button above.</li>
+      <li>Double-click the file to import it into your MacOS Terminal app.</li>
+      <li>Go to <strong>Terminal → Settings → Profiles</strong> and select "Frosted Glass".</li>
+      <li>Click <strong>Default</strong> to make it your default terminal theme.</li>
+      <li>Restart Terminal to apply the new theme.</li>
+    </ol>
+  </section>
+
+  <section class="py-16 px-4" data-aos="fade-up">
+    <h2 class="text-4xl font-medium text-center mb-8 text-white">Recommended Fonts</h2>
+    <ul class="list-disc list-inside text-lg max-w-4xl mx-auto text-gray-200">
+      <li><strong>Monaco</strong> (default and pre-configured)</li>
+      <li>Jetbrains Mono (alternative)</li>
+      <li>SF Mono (macOS system fallback)</li>
+    </ul>
+  </section>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init({ duration: 800, once: true });</script>
