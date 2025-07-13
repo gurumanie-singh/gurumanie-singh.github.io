@@ -38,14 +38,14 @@
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
-<body class="font-sans transition-all"
-  style="font-family:'Less Sans Minimal',sans-serif; background:linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1;">
+<body class="transition-all"
+  style="font-family:'Menlo', monospace; background:linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1;">
 
   <!-- Header -->
-  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+  <header class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Portfolio</h1>
     <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
-      class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover cursor-pointer" />
+      class="w-12 h-12 md:w-12 md:h-12 rounded-full object-cover cursor-pointer" />
   </header>
 
   <!-- Modal Overlay -->
@@ -140,11 +140,25 @@
 
   <!-- Hero / Intro Section -->
   <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
-    <h2 class="text-5xl font-semibold mb-4 text-white">Securing Tomorrow's Networks Today</h2>
+    <h2 class="text-5xl font-semibold mb-4 text-white">
+      I'm a <span id="typed-text" class="text-gray-100 font-light italic"></span>
+    </h2>
     <p class="text-lg max-w-5xl mx-auto text-gray-200">
       Hi! I'm a Computer Engineering Senior at Iowa State University specializing in cybersecurity and networking. This
       website is a centralized hub highlighting my technical journey through hands-on projects, academic coursework, and
       certifications.
+    </p>
+  </section>
+
+  <section id="why-me" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Why Me?</strong></h3>
+    <p class="text-lg max-w-4xl mx-auto text-gray-200 text-center">
+      Beyond my technical skills, I bring a proactive problem-solving mindset and a deep-seated curiosity for how
+      systems work and how they can be secured. I thrive in environments that challenge me to learn new technologies and
+      apply creative solutions to complex problems, particularly in the cybersecurity and networking domains. My unique
+      blend of academic rigor, hands-on project experience, and real-world military service has equipped me with not
+      just technical expertise, but also discipline, adaptability, and a strong sense of responsibility. I'm not just
+      looking for a job; I'm looking for an opportunity to contribute meaningfully and grow within a dynamic team.
     </p>
   </section>
 
@@ -165,6 +179,76 @@
       <li><strong>CCNA</strong> (Cisco Certified Network Associate) — In progress (expected completion: Aug 2025)</li>
     </ul>
   </section>
+
+  <section id="skills" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Technical Skills</strong></h3>
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-gray-200">
+      <div>
+        <h4 class="text-2xl font-semibold mb-4 text-white">Programming Languages</h4>
+        <ul class="space-y-2">
+          <li>Java <span class="text-gray-400 text-sm">(Proficient)</span></li>
+          <li>Python <span class="text-gray-400 text-sm">(Intermediate)</span></li>
+          <li>Bash/Shell <span class="text-gray-400 text-sm">(Familiar)</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-2xl font-semibold mb-4 text-white">Networking & Security Tools</h4>
+        <ul class="space-y-2">
+          <li>Wireshark <span class="text-gray-400 text-sm">(Proficient)</span></li>
+          <li>Nmap <span class="text-gray-400 text-sm">(Proficient)</span></li>
+          <li>Metasploit <span class="text-gray-400 text-sm">(Familiar)</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-2xl font-semibold mb-4 text-white">OS & Virtualization</h4>
+        <ul class="space-y-2">
+          <li>Linux (Ubuntu, Kali) <span class="text-gray-400 text-sm">(Expert)</span></li>
+          <li>VirtualBox/VMware <span class="text-gray-400 text-sm">(Proficient)</span></li>
+          <li>Docker <span class="text-gray-400 text-sm">(Intermediate)</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-2xl font-semibold mb-4 text-white">Methodologies & Other</h4>
+        <ul class="space-y-2">
+          <li>Git/GitHub <span class="text-gray-400 text-sm">(Expert)</span></li>
+          <li>CI/CD (basics) <span class="text-gray-400 text-sm">(Proficient)</span></li>
+          <li>Agile/Scrum <span class="text-gray-400 text-sm">(Familiar)</span></li>
+          <li>Technical Documentation <span class="text-gray-400 text-sm">(Familiar)</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Section -->
+  <section id="timeline" class="py-16 px-4" data-aos="fade-up">
+    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Experience & Research</strong></h3>
+    <div class="max-w-4xl mx-auto">
+      <ul class="border-l-2 border-gray-500 pl-4">
+        <li class="mb-6">
+          <span class="text-gray-100 font-semibold">Jun 2025 - Present</span><br />
+          <p class="text-gray-300">Research under Prof. Selim on Wireless Communications and Systems.</p>
+        </li>
+        <li class="mb-6">
+          <span class="text-gray-100 font-semibold">Jan 2025 - May 2025</span><br />
+          <p class="text-gray-300">Research with Prof. Ghazo on Anomaly Detection using AI in SCADA Systems.</p>
+        </li>
+        <li class="mb-6">
+          <span class="text-gray-100 font-semibold">Aug 2024 - Dec 2024</span><br />
+          <p class="text-gray-300">Worked as a Supplemental Instruction Leader for Data Structures & Algorithms,
+            mentoring 30+ students weekly.</p>
+        </li>
+        <li class="mb-6">
+          <span class="text-gray-100 font-semibold">Jun 2021 - May 2023</span><br />
+          <p class="text-gray-300">Completed National Service in the Singapore Armed Forces (SAF), ensuring secure
+            administration of critical personnel data.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
 
   <!-- Coursework Section -->
   <section id="coursework" class="py-16 px-4" data-aos="fade-up">
@@ -263,29 +347,6 @@
     </div>
   </section>
 
-  <!-- Side Quests Section -->
-  <section id="projects" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-6 text-white"><strong>Side Quests</strong></h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-
-      <!-- Frosted Glass Terminal Theme Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
-        <h4 class="text-2xl font-medium mb-2 text-white">Frosted Glass Terminal Theme</h4>
-        <p class="text-sm mb-4 text-gray-200">
-          A modern macOS Terminal theme featuring frosted-glass blur, Monaco font, and a vibrant cursor —
-          inspired by Hyper's Verminal style.
-        </p>
-        <a href="frosted-glass-terminal-theme/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
-          View Theme Details
-        </a>
-      </div>
-
-
-    </div>
-  </section>
-
   <!-- Contact Section -->
   <section id="contact" class="py-16 px-4" data-aos="fade-up">
     <h3 class="text-4xl font-medium text-center mb-6 text-white"><strong>Contact</strong></h3>
@@ -312,6 +373,21 @@
   <!-- AOS Initialization -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init({ duration: 800, once: true });</script>
+
+  <!-- Typed.js Typing Animation -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <script>
+    new Typed("#typed-text", {
+      strings: ["Cybersecurity Enthusiast", "Network Engineer"],
+      typeSpeed: 50,
+      backSpeed: 25,
+      backDelay: 1000,
+      loop: true,
+      showCursor: true,
+      cursorChar: "|"
+    });
+  </script>
+
 </body>
 
 </html>

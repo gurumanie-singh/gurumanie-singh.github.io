@@ -1,13 +1,23 @@
 /* ----------------------------------------
    Reset headings & links on dark background
    ---------------------------------------- */
-h1, h2, h3, h4, h5, h6 {
+* {
+  font-family: 'Menlo', monospace !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Menlo', monospace;
   margin: 0;
 }
 
-a, a:visited {
+a,
+a:visited {
   color: #e1e1e1;
   text-decoration: none;
 }
