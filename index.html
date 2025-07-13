@@ -42,7 +42,8 @@
   style="font-family:'Menlo', monospace; background:linear-gradient(180deg,#1b1b1b,#2d2d2d); color:#e1e1e1;">
 
   <!-- Header -->
-  <header class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+  <header
+    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
     <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Portfolio</h1>
     <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
       class="w-12 h-12 md:w-12 md:h-12 rounded-full object-cover cursor-pointer" />
@@ -140,9 +141,8 @@
 
   <!-- Hero / Intro Section -->
   <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
-    <h2 class="text-5xl font-semibold mb-4 text-white">
-      I'm a <span id="typed-text" class="text-gray-100 font-light italic"></span>
-    </h2>
+    <h2 class="text-5xl font-medium mb-4 text-white">
+      I'm a <span id="typed-text" class="text-violet-500 font-light italic"></span> </h2>
     <p class="text-lg max-w-5xl mx-auto text-gray-200">
       Hi! I'm a Computer Engineering Senior at Iowa State University specializing in cybersecurity and networking. This
       website is a centralized hub highlighting my technical journey through hands-on projects, academic coursework, and
@@ -150,73 +150,167 @@
     </p>
   </section>
 
-  <section id="why-me" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Why Me?</strong></h3>
-    <p class="text-lg max-w-4xl mx-auto text-gray-200 text-center">
-      Beyond my technical skills, I bring a proactive problem-solving mindset and a deep-seated curiosity for how
-      systems work and how they can be secured. I thrive in environments that challenge me to learn new technologies and
-      apply creative solutions to complex problems, particularly in the cybersecurity and networking domains. My unique
-      blend of academic rigor, hands-on project experience, and real-world military service has equipped me with not
-      just technical expertise, but also discipline, adaptability, and a strong sense of responsibility. I'm not just
-      looking for a job; I'm looking for an opportunity to contribute meaningfully and grow within a dynamic team.
-    </p>
-  </section>
-
   <!-- Achievements Section -->
   <section id="achievements" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Achievements</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-8 text-white">Achievements</h3>
     <ul class="list-disc list-outside pl-6 text-lg max-w-4xl mx-auto text-gray-200">
-      <li>Awarded Iowa State University President's List for maintaining a 4.00 GPA for two consecutive semesters</li>
-      <li>Maintaining a 3.85/4.00 cumulative GPA, demonstrating consistent high performance</li>
+      <li>Awarded Iowa State University <strong>President's List</strong> for maintaining a 4.00 GPA for two consecutive semesters.</li>
+      <li>Maintaining a <strong>3.85/4.00 cumulative GPA</strong>, demonstrating consistent high performance.</li>
     </ul>
   </section>
 
   <!-- Certifications Section -->
   <section id="certifications" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Certifications</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-8 text-white">Certifications</h3>
     <ul class="list-disc list-outside pl-6 text-lg max-w-4xl mx-auto text-gray-200">
       <li><strong>CompTIA Security+</strong> (SY0-701) — Valid through Aug 2027</li>
       <li><strong>CCNA</strong> (Cisco Certified Network Associate) — In progress (expected completion: Aug 2025)</li>
     </ul>
   </section>
 
+  <!-- Technical Skills Section-->
   <section id="skills" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Technical Skills</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-8 text-white">Technical Skills</h3>
     <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-gray-200">
+
       <div>
-        <h4 class="text-2xl font-semibold mb-4 text-white">Programming Languages</h4>
-        <ul class="space-y-2">
-          <li>Java <span class="text-gray-400 text-sm">(Proficient)</span></li>
-          <li>Python <span class="text-gray-400 text-sm">(Intermediate)</span></li>
-          <li>Bash/Shell <span class="text-gray-400 text-sm">(Familiar)</span></li>
+        <h4 class="text-2xl font-medium mb-4 text-white">Programming Languages</h4>
+        <ul class="space-y-6">
+          <li>
+            <div>
+              <span class="block">Java</span>
+              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Python</span>
+              <span class="text-gray-400 text-xs block mb-1">Intermediate</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Bash/Shell</span>
+              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+            </div>
+          </li>
         </ul>
       </div>
 
       <div>
-        <h4 class="text-2xl font-semibold mb-4 text-white">Networking & Security Tools</h4>
-        <ul class="space-y-2">
-          <li>Wireshark <span class="text-gray-400 text-sm">(Proficient)</span></li>
-          <li>Nmap <span class="text-gray-400 text-sm">(Proficient)</span></li>
-          <li>Metasploit <span class="text-gray-400 text-sm">(Familiar)</span></li>
+        <h4 class="text-2xl font-medium mb-4 text-white">Networking & Security Tools</h4>
+        <ul class="space-y-6">
+          <li>
+            <div>
+              <span class="block">Wireshark</span>
+              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Nmap</span>
+              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Metasploit</span>
+              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+            </div>
+          </li>
         </ul>
       </div>
 
       <div>
-        <h4 class="text-2xl font-semibold mb-4 text-white">OS & Virtualization</h4>
-        <ul class="space-y-2">
-          <li>Linux (Ubuntu, Kali) <span class="text-gray-400 text-sm">(Expert)</span></li>
-          <li>VirtualBox/VMware <span class="text-gray-400 text-sm">(Proficient)</span></li>
-          <li>Docker <span class="text-gray-400 text-sm">(Intermediate)</span></li>
+        <h4 class="text-2xl font-medium mb-4 text-white">OS & Virtualization</h4>
+        <ul class="space-y-6">
+          <li>
+            <div>
+              <span class="block">Linux</span>
+              <span class="text-gray-400 text-xs block mb-1">Expert</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">VirtualBox/VMware</span>
+              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Docker</span>
+              <span class="text-gray-400 text-xs block mb-1">Intermediate</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
+            </div>
+          </li>
         </ul>
       </div>
 
       <div>
-        <h4 class="text-2xl font-semibold mb-4 text-white">Methodologies & Other</h4>
-        <ul class="space-y-2">
-          <li>Git/GitHub <span class="text-gray-400 text-sm">(Expert)</span></li>
-          <li>CI/CD (basics) <span class="text-gray-400 text-sm">(Proficient)</span></li>
-          <li>Agile/Scrum <span class="text-gray-400 text-sm">(Familiar)</span></li>
-          <li>Technical Documentation <span class="text-gray-400 text-sm">(Familiar)</span></li>
+        <h4 class="text-2xl font-medium mb-4 text-white">Methodologies & Other</h4>
+        <ul class="space-y-6">
+          <li>
+            <div>
+              <span class="block">GitLab/GitHub</span>
+              <span class="text-gray-400 text-xs block mb-1">Expert</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">CI/CD (basic)</span>
+              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Agile/Scrum</span>
+              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <span class="block">Technical Documentation</span>
+              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
@@ -224,40 +318,50 @@
 
   <!-- Timeline Section -->
   <section id="timeline" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Experience & Research</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-8 text-white">Experience & Research</h3>
     <div class="max-w-4xl mx-auto">
-      <ul class="border-l-2 border-gray-500 pl-4">
-        <li class="mb-6">
-          <span class="text-gray-100 font-semibold">Jun 2025 - Present</span><br />
-          <p class="text-gray-300">Research under Prof. Selim on Wireless Communications and Systems.</p>
+      <ul class="border-l-2 border-violet-500">
+        <li class="mb-6 relative">
+          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+          <div class="pl-6"> <span class="text-gray-100 font-semibold">Jun 2025 - Present</span><br />
+            <p class="text-gray-300">Research under Prof. Selim on Wireless Communications and Systems.</p>
+          </div>
         </li>
-        <li class="mb-6">
-          <span class="text-gray-100 font-semibold">Jan 2025 - May 2025</span><br />
-          <p class="text-gray-300">Research with Prof. Ghazo on Anomaly Detection using AI in SCADA Systems.</p>
+        <li class="mb-6 relative">
+          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+          <div class="pl-6">
+            <span class="text-gray-100 font-semibold">Jan 2025 - May 2025</span><br />
+            <p class="text-gray-300">Research with Prof. Ghazo on Anomaly Detection using AI in SCADA Systems.</p>
+          </div>
         </li>
-        <li class="mb-6">
-          <span class="text-gray-100 font-semibold">Aug 2024 - Dec 2024</span><br />
-          <p class="text-gray-300">Worked as a Supplemental Instruction Leader for Data Structures & Algorithms,
-            mentoring 30+ students weekly.</p>
+        <li class="mb-6 relative">
+          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+          <div class="pl-6">
+            <span class="text-gray-100 font-semibold">Aug 2024 - Dec 2024</span><br />
+            <p class="text-gray-300">Worked as a Supplemental Instruction Leader for Data Structures & Algorithms,
+              mentoring 30+ students weekly.</p>
+          </div>
         </li>
-        <li class="mb-6">
-          <span class="text-gray-100 font-semibold">Jun 2021 - May 2023</span><br />
-          <p class="text-gray-300">Completed National Service in the Singapore Armed Forces (SAF), ensuring secure
-            administration of critical personnel data.</p>
+        <li class="mb-6 relative">
+          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+          <div class="pl-6">
+            <span class="text-gray-100 font-semibold">Jun 2021 - May 2023</span><br />
+            <p class="text-gray-300">Completed National Service in the Singapore Armed Forces (SAF), ensuring secure
+              administration of critical personnel data.</p>
+          </div>
         </li>
       </ul>
     </div>
   </section>
 
-
   <!-- Coursework Section -->
   <section id="coursework" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Coursework</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-8 text-white">Coursework</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
 
       <!-- COMS309 Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
         <p class="text-sm mb-4 text-gray-200">Built a backend app for students' job search that connects peers in
           similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</p>
@@ -268,7 +372,7 @@
 
       <!-- CPRE381 Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
         <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore ISA
           design, hazard mitigation, and memory hierarchy performance.</p>
@@ -279,7 +383,7 @@
 
       <!-- CPRE430 Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">CPRE430: Networking Protocols and Security</h4>
         <p class="text-sm mb-4 text-gray-200">Simulated network topologies and packet-level interactions to explore
           TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</p>
@@ -290,7 +394,7 @@
 
       <!-- COMS415 Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">COMS415: Software System Safety</h4>
         <p class="text-sm mb-4 text-gray-200">Conducted systematic hazard and failure analyses (FTA, SFMECA) and
           employed formal verification and static analysis to identify, prioritize, and mitigate risks in
@@ -305,12 +409,12 @@
 
   <!-- Personal Projects Section -->
   <section id="projects" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white"><strong>Personal Projects</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-8 text-white">Personal Projects</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
 
       <!-- OverTheWire Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">OverTheWire Solutions Guide</h4>
         <p class="text-sm mb-4 text-gray-200">Sharpened Linux command-line skills by authoring detailed Bandit challenge
           write-ups, demonstrating troubleshooting and secure scripting techniques.</p>
@@ -319,9 +423,9 @@
           OverTheWire Solutions</a>
       </div>
 
-      <!-- Python Networking Card -->
+      <!-- Python Toolkit Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">Python Networking Toolkit</h4>
         <p class="text-sm mb-4 text-gray-200">Crafted network tools such as port scanners, packet sniffers, and reverse
           shells using Python sockets and threading, showcasing protocol analysis and automation.</p>
@@ -330,9 +434,9 @@
           Experiments</a>
       </div>
 
-      <!-- NMAP Basics Card -->
+      <!-- NMAP Card -->
       <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full">
+        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
         <h4 class="text-2xl font-medium mb-2 text-white">NMAP Basics</h4>
         <p class="text-sm mb-4 text-gray-200">
           Consolidated core scanning techniques, flag explanations, and command usage into a refined PDF guide, useful
@@ -349,7 +453,7 @@
 
   <!-- Contact Section -->
   <section id="contact" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-6 text-white"><strong>Contact</strong></h3>
+    <h3 class="text-4xl font-medium text-center mb-6 text-white">Contact</h3>
     <div class="flex justify-center items-center space-x-6 mt-6">
 
       <!-- Email Icon -->
