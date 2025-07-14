@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,9 +41,8 @@
   <!-- Custom overrides -->
   <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans transition-all"
-      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
 
+<body class="transition-all">
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">Level 11: ROT13 Cipher</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
@@ -52,7 +52,8 @@
     <section class="mb-8">
       <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
       <p class="text-lg text-gray-200">
-        The password for the next level is stored in <code>data.txt</code>, where all lowercase (a-z) and uppercase (A-Z) letters have been rotated by 13 positions (ROT13).
+        The password for the next level is stored in <code>data.txt</code>, where all lowercase (a-z) and uppercase
+        (A-Z) letters have been rotated by 13 positions (ROT13).
       </p>
     </section>
 
@@ -68,7 +69,8 @@
         <p class="mt-2 text-gray-200">
           Then connect as <code>bandit11</code> using the password acquired:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit11@bandit.labs.overthewire.org -p 2220</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit11@bandit.labs.overthewire.org -p 2220</code></pre>
       </div>
 
       <div class="mb-6">
@@ -89,7 +91,8 @@
         </p>
         <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt</code></pre>
         <p class="mt-2 text-gray-200">
-          The file contains text with all letters rotated by 13 positions. The instructions indicate you must apply a ROT13 transformation to this text.
+          The file contains text with all letters rotated by 13 positions. The instructions indicate you must apply a
+          ROT13 transformation to this text.
         </p>
       </div>
 
@@ -98,9 +101,12 @@
         <p class="mb-2 text-gray-200">
           To reverse the ROT13 encoding, use:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code></pre>
         <p class="mt-2 text-gray-200">
-          The first string (<code>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</code>) represents the original alphabet, and the second string (<code>NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code>) shifts each letter by 13 positions. The output reveals the password for <code>bandit12</code>.
+          The first string (<code>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</code>) represents the original
+          alphabet, and the second string (<code>NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code>) shifts
+          each letter by 13 positions. The output reveals the password for <code>bandit12</code>.
         </p>
       </div>
 
@@ -109,9 +115,11 @@
         <p class="mb-2 text-gray-200">
           The same ROT13 transformation can also be done using:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt | tr A-Za-z N-ZA-Mn-za-m</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt | tr A-Za-z N-ZA-Mn-za-m</code></pre>
         <p class="mt-2 text-gray-200">
-          This shorter syntax maps each letter to the character 13 positions ahead in the alphabet. It produces the same decoded output.
+          This shorter syntax maps each letter to the character 13 positions ahead in the alphabet. It produces the same
+          decoded output.
         </p>
       </div>
 
@@ -122,7 +130,9 @@
           <li><code>ssh bandit11@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit11</code>.</li>
           <li><code>ls</code> : list files; shows <code>data.txt</code>.</li>
           <li><code>cat data.txt</code> : view ROT13-encoded contents.</li>
-          <li><code>cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code> : apply ROT13 decoding; retrieve the <code>bandit12</code> password.</li>
+          <li>
+            <code>cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code>
+            : apply ROT13 decoding; retrieve the <code>bandit12</code> password.</li>
           <li><code>cat data.txt | tr A-Za-z N-ZA-Mn-za-m</code> : alternative, shorter ROT13 decoding syntax.</li>
         </ul>
       </div>
@@ -132,4 +142,5 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
+
 </html>

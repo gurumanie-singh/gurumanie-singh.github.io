@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,9 +41,8 @@
   <!-- Custom overrides -->
   <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans transition-all"
-      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
 
+<body class="transition-all">
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">Level 0: SSH Login</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
@@ -86,7 +86,8 @@
       <div class="mb-6">
         <h3 class="text-2xl font-semibold mb-2 text-white">2. Connect via SSH</h3>
         <p class="mb-2 text-gray-200">
-          Run one of the following commands (they are equivalent). This logs you in as <code>bandit0</code> on port 2220:
+          Run one of the following commands (they are equivalent). This logs you in as <code>bandit0</code> on port
+          2220:
         </p>
         <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>
 # Option A:
@@ -130,4 +131,5 @@ ssh bandit0@bandit.labs.overthewire.org -p 2220
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
+
 </html>

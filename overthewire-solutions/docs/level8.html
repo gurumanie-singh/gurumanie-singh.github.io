@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,9 +41,8 @@
   <!-- Custom overrides -->
   <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans transition-all"
-      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
 
+<body class="transition-all">
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">Level 8: Find the Unique Line</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
@@ -68,7 +68,8 @@
         <p class="mt-2 text-gray-200">
           Then connect as <code>bandit8</code> using the password acquired:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit8@bandit.labs.overthewire.org -p 2220</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit8@bandit.labs.overthewire.org -p 2220</code></pre>
       </div>
 
       <div class="mb-6">
@@ -89,7 +90,8 @@
         </p>
         <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt</code></pre>
         <p class="mt-2 text-gray-200">
-          The file contains many numeric entries. According to the instructions, the password is the one number that appears only once.
+          The file contains many numeric entries. According to the instructions, the password is the one number that
+          appears only once.
         </p>
       </div>
 
@@ -98,9 +100,11 @@
         <p class="mb-2 text-gray-200">
           To find the unique entry, sort the file and filter out duplicate lines:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>sort -n data.txt | uniq -u</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>sort -n data.txt | uniq -u</code></pre>
         <p class="mt-2 text-gray-200">
-          This command first sorts the data numerically, then <code>uniq -u</code> outputs only the lines that occur once, revealing the password.
+          This command first sorts the data numerically, then <code>uniq -u</code> outputs only the lines that occur
+          once, revealing the password.
         </p>
       </div>
 
@@ -111,7 +115,8 @@
           <li><code>ssh bandit8@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit8</code>.</li>
           <li><code>ls</code> : list files; shows <code>data.txt</code>.</li>
           <li><code>cat data.txt</code> : view entire file contents.</li>
-          <li><code>sort -n data.txt | uniq -u</code> : sort numerically and display the line that occurs only once; this line is the password.</li>
+          <li><code>sort -n data.txt | uniq -u</code> : sort numerically and display the line that occurs only once;
+            this line is the password.</li>
         </ul>
       </div>
 
@@ -121,4 +126,5 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
+
 </html>

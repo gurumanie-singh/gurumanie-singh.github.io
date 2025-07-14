@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,9 +41,8 @@
   <!-- Custom overrides -->
   <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans transition-all"
-      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
 
+<body class="transition-all">
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">Level 2: Spaces in Filename</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
@@ -52,7 +52,8 @@
     <section class="mb-8">
       <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
       <p class="text-lg text-gray-200">
-        The password for the next level is stored in a file called <code>spaces in this filename</code> located in your home directory.
+        The password for the next level is stored in a file called <code>spaces in this filename</code> located in your
+        home directory.
       </p>
     </section>
 
@@ -68,7 +69,8 @@
         <p class="mt-2 text-gray-200">
           Then, connect to Level 2 using the password for <code>bandit2</code>:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code></pre>
       </div>
 
       <div class="mb-6">
@@ -87,11 +89,13 @@
         <p class="mb-2 text-gray-200">
           Since the filename contains spaces, either escape each space or quote the filename. For example:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat spaces\ in\ this\ filename</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat spaces\ in\ this\ filename</code></pre>
         <p class="mt-2 text-gray-200">
           Alternatively, use quotes:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat "spaces in this filename"</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat "spaces in this filename"</code></pre>
         <p class="mt-2 text-gray-200">
           This command will display the password for Level 3.
         </p>
@@ -101,7 +105,8 @@
         <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
         <ul class="list-disc list-inside ml-4 text-gray-200">
           <li><code>exit</code> : return to your local machine from the Level 1 SSH session.</li>
-          <li><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit2</code> on port 2220.</li>
+          <li><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit2</code> on port
+            2220.</li>
           <li><code>ls</code> : list files; shows <code>spaces in this filename</code>.</li>
           <li><code>cat spaces\ in\ this\ filename</code> : display contents of the file with spaces.</li>
           <li><code>cat "spaces in this filename"</code> : alternative method to display file contents.</li>
@@ -114,4 +119,5 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
+
 </html>

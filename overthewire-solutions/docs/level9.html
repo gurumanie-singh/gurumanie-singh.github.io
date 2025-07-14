@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,9 +41,8 @@
   <!-- Custom overrides -->
   <link rel="stylesheet" href="../../css/styles.css" />
 </head>
-<body class="font-sans transition-all"
-      style="background: linear-gradient(180deg, #1b1b1b, #2d2d2d); color: #e1e1e1;">
 
+<body class="transition-all">
   <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
     <h1 class="text-2xl font-semibold text-white">Level 9: Extract Human-Readable Password</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
@@ -52,7 +52,8 @@
     <section class="mb-8">
       <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
       <p class="text-lg text-gray-200">
-        The password for the next level is one of the few human-readable strings in <code>data.txt</code>, preceded by several “=” characters.
+        The password for the next level is one of the few human-readable strings in <code>data.txt</code>, preceded by
+        several “=” characters.
       </p>
     </section>
 
@@ -68,7 +69,8 @@
         <p class="mt-2 text-gray-200">
           Then connect as <code>bandit9</code> using the password acquired:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit9@bandit.labs.overthewire.org -p 2220</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit9@bandit.labs.overthewire.org -p 2220</code></pre>
       </div>
 
       <div class="mb-6">
@@ -89,7 +91,8 @@
         </p>
         <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat data.txt</code></pre>
         <p class="mt-2 text-gray-200">
-          The file is large and contains mostly non-printable characters. The password is one of the readable strings beginning with multiple “=” characters.
+          The file is large and contains mostly non-printable characters. The password is one of the readable strings
+          beginning with multiple “=” characters.
         </p>
       </div>
 
@@ -100,7 +103,9 @@
         </p>
         <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>strings data.txt</code></pre>
         <p class="mt-2 text-gray-200">
-          This command outputs every sequence of printable characters. Among them, look for the string preceded by multiple “=” characters. You may be able to spot the password. If it is still difficult to see, follow the next step.
+          This command outputs every sequence of printable characters. Among them, look for the string preceded by
+          multiple “=” characters. You may be able to spot the password. If it is still difficult to see, follow the
+          next step.
         </p>
       </div>
 
@@ -109,9 +114,11 @@
         <p class="mb-2 text-gray-200">
           To directly find the line containing several “=” characters:
         </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>strings data.txt | grep "==="</code></pre>
+        <pre
+          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>strings data.txt | grep "==="</code></pre>
         <p class="mt-2 text-gray-200">
-          This command displays the human-readable string that begins with multiple “=” characters. That string is the password for <code>bandit10</code>.
+          This command displays the human-readable string that begins with multiple “=” characters. That string is the
+          password for <code>bandit10</code>.
         </p>
       </div>
 
@@ -123,7 +130,8 @@
           <li><code>ls</code> : list files; shows <code>data.txt</code>.</li>
           <li><code>cat data.txt</code> : view file contents (mostly non-printable characters).</li>
           <li><code>strings data.txt</code> : extract all printable strings from the file.</li>
-          <li><code>strings data.txt | grep "==="{code}</code> : filter for the line starting with multiple “=” characters; this line is the password.</li>
+          <li><code>strings data.txt | grep "==="{code}</code> : filter for the line starting with multiple “=”
+            characters; this line is the password.</li>
         </ul>
       </div>
 
@@ -133,4 +141,5 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script> AOS.init({ duration: 800, once: true }); </script>
 </body>
+
 </html>
