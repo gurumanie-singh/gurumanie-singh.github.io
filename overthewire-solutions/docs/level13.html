@@ -43,7 +43,8 @@
 </head>
 
 <body class="transition-all">
-  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+  <header
+    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
     <h1 class="text-2xl font-semibold text-white">Level 13: Use the Provided SSH Key</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
   </header>
@@ -107,7 +108,8 @@
           <li><code>ls</code> : list files; shows <code>sshkey.private</code>.</li>
           <li><code>cat sshkey.private</code> : view the RSA private key.</li>
           <li><code>ssh bandit.labs.overthewire.org -l bandit14 -p 2220 -i sshkey.private</code> : authenticate as
-            <code>bandit14</code> using the provided key and access <code>/etc/bandit_pass/bandit14</code>.</li>
+            <code>bandit14</code> using the provided key and access <code>/etc/bandit_pass/bandit14</code>.
+          </li>
         </ul>
       </div>
     </section>

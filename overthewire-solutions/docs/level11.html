@@ -43,7 +43,8 @@
 </head>
 
 <body class="transition-all">
-  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
+  <header
+    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
     <h1 class="text-2xl font-semibold text-white">Level 11: ROT13 Cipher</h1>
     <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
   </header>
@@ -132,7 +133,8 @@
           <li><code>cat data.txt</code> : view ROT13-encoded contents.</li>
           <li>
             <code>cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm</code>
-            : apply ROT13 decoding; retrieve the <code>bandit12</code> password.</li>
+            : apply ROT13 decoding; retrieve the <code>bandit12</code> password.
+          </li>
           <li><code>cat data.txt | tr A-Za-z N-ZA-Mn-za-m</code> : alternative, shorter ROT13 decoding syntax.</li>
         </ul>
       </div>
