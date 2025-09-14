@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurumanie Singh | Senior Design</title>
+
+    <!-- Tailwind + custom colors -->
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f',
+                            600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a',
+                            300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/styles.css" />
+</head>
+
+<body class="transition-all">
+    <!-- Header -->
+    <header
+        class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
+        <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Senior Design Coursework</h1>
+        <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
+    </header>
+
+    <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
+        <h2 class="text-3xl font-semibold mb-6 text-white">Senior Design Project: Secure Wireless Aircraft Data Load
+        </h2>
+        <p class="text-gray-200 mb-6">
+            Loading software onto aircraft is a complex process that must account for numerous design and operational
+            considerations. These include strict airline procedures, certification requirements, cybersecurity concerns,
+            and compatibility with existing infrastructure. Unlike everyday software deployment, aviation systems demand
+            high reliability, adherence to regulatory standards, and careful planning to ensure safety and compliance.
+        </p>
+        <p class="text-gray-200 mb-6">
+            The project aims to create a simplified mockup of an aircraft dataload system with added support for
+            wireless dataloading. This approach provides a safe environment for exploring the technical and procedural
+            challenges involved in real-world aircraft systems. Wireless dataload introduces new dimensions of
+            flexibility, but it also raises additional security and feasibility concerns that must be addressed in the
+            design.
+        </p>
+        <p class="text-gray-200 mb-8">
+            Through this project, students gain practical exposure to key concepts such as Public Key Infrastructure
+            (PKI), threat modeling, and aircraft network design. They also work with aviation-specific standards and
+            protocols while learning to design within constraints such as intermittent connectivity, certification
+            hurdles, and the need to align with established airline procedures. The project balances technical
+            innovation with real-world limitations, offering valuable insight into the intersection of cybersecurity and
+            aviation systems engineering.
+        </p>
+        <div class="text-center">
+            <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/SeniorDesign" target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
+                View more on GitHub
+            </a>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({ duration: 800, once: true });</script>
+</body>
+
+</html>
