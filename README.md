@@ -12,6 +12,9 @@ Access the live portfolio at: [https://gurumanie-singh.github.io](https://guruma
 
 ## 🚀 Highlights
 
+* **Senior Design Project**  
+  This project involved designing a simplified aircraft dataload system with wireless support, addressing key challenges such as airline procedures, certification, cybersecurity, and infrastructure compatibility.
+
 * **COMS309 Coursework**  
   Lead backend developer on a student-focused job-search platform: designed RESTful APIs, structured MySQL databases, and automated deployments with CI/CD pipelines.
 
@@ -53,6 +56,7 @@ Each folder contains the source files and a dedicated landing page:
 ├── CPRE381/                  # Computer architecture & VHDL projects
 ├── CPRE430/                  # Networking protocols & security coursework
 ├── COMS415/                  # Software system safety coursework
+├── SeniorDesign              # Senior Design Project related files
 └── README.md                 # This overview
 ```
 
