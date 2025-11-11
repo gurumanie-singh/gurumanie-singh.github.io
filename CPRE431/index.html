@@ -1,0 +1,105 @@
+<!-- CPRE431/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurumanie Singh | CPRE431 Coursework</title>
+
+  <!-- Tailwind + custom colors -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+
+<body class="transition-all">
+  <!-- Header -->
+  <header
+    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
+    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | CPRE431 Coursework</h1>
+    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
+  </header>
+
+  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold mb-6 text-white">CPRE431: Basics of Information System Security</h2>
+    <p class="text-gray-200 mb-6">
+      CPRE431 introduces mechanisms for protecting information systems from accidental and intentional threats. Topics
+      include basic cryptography, authentication, access control, malicious code, network security mechanisms
+      (firewalls, intrusion detection, SSL/TLS), ethics, and legal issues. Labs and programming assignments focus on
+      practical security tools, cryptanalysis, and system configuration.
+    </p>
+    <h3 class="text-xl text-white font-medium mb-3">Representative labs (selected examples)</h3>
+
+    <div class="space-y-6 text-gray-200 mb-6">
+      <div>
+        <h4 class="text-lg font-semibold text-white mb-2">Lab: Encrypted attachment analysis</h4>
+        <p>
+          Scenario: Acting as the security administrator for a company, students analyze an encrypted attachment
+          suspected of leaking confidential data. The file name hints that the password is the MD5 hash of the file name
+          with extension. Students use OpenSSL to compute hashes, decrypt the archive, and identify hidden or encrypted
+          items inside.
+        </p>
+        <ol class="list-decimal list-inside mt-3">
+          <li>Compute MD5 hashes using OpenSSL and verify the correct hash (note hash is space sensitive).</li>
+          <li>Use file-decompression tools (WinRAR, unzip, etc.) to open the archive with the derived password.</li>
+          <li>Analyze decrypted files, identify OpenSSL-encrypted contents beginning with "Salted__", and use OpenSSL
+            symmetric decryption with candidate keys to recover plaintext.</li>
+        </ol>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-semibold text-white mb-2">Lab: Password cracking from /etc/shadow</h4>
+        <p>
+          Scenario: A VM is provided with an administrator and several users. Students are given an administrator's hash
+          from /etc/shadow and must determine hash type, salt, and crack other user passwords using appropriate tools
+          and
+          methods. This lab reinforces understanding of password hashing, salts, and practical cracking techniques.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-semibold text-white mb-2">Lab: Slowloris DoS experiment (CloudLab)</h4>
+        <p>
+          Students reproduce a Slowloris-style denial-of-service experiment on an isolated CloudLab slice. The lab
+          provides hands-on experience with resource exhaustion attacks in a controlled environment; students must be
+          careful not to affect external infrastructure and must follow CloudLab policies.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-semibold text-white mb-2">Lab: iptables rule creation</h4>
+        <p>
+          Students practice creating iptables rules to filter and control traffic, implement basic firewall rules,
+          and observe how changes affect connectivity and service accessibility.
+        </p>
+      </div>
+    </div>
+
+    <h3 class="text-xl text-white font-medium mb-3">Learning outcomes</h3>
+    <ul class="list-disc list-outside pl-6 text-gray-200 mb-6">
+      <li>Practical cryptography usage and decryption workflows</li>
+      <li>Understanding password hashing, salts, and practical password recovery techniques</li>
+      <li>Experience with network-level attacks and defensive configurations</li>
+      <li>Hands-on skills with system-level security tools and firewall configuration</li>
+      <li>Ability to document findings and prepare clear technical reports</li>
+    </ul>
+    <div class="text-center">
+      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/COMS309" target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
+        View Full Code on GitHub
+      </a>
+    </div>
+  </section>
+
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration: 800, once: true });</script>
+</body>
+
+</html>

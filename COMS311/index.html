@@ -1,0 +1,77 @@
+<!-- COMS311/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurumanie Singh | COMS311 Coursework</title>
+
+  <!-- Tailwind + custom colors -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+
+<body class="transition-all">
+  <!-- Header -->
+  <header
+    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
+    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | COMS311 Coursework</h1>
+    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
+  </header>
+
+  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold mb-6 text-white">COMS311: Design and Analysis of Algorithms</h2>
+    <p class="text-gray-200 mb-6">
+      COMS311 focuses on the fundamental principles and techniques for designing and analyzing algorithms. The course
+      covers sorting, searching, graph algorithms, string matching, and NP-completeness. Students learn multiple design
+      strategies including dynamic programming, divide and conquer, greedy methods, and approximation algorithms.
+      Performance analysis is explored through asymptotic, worst-case, average-case, and amortized approaches. Topics
+      also include advanced data structures such as balanced trees and hashing.
+    </p>
+
+    <h3 class="text-xl text-white font-medium mb-3">Key topics</h3>
+    <ul class="list-disc list-outside pl-6 text-gray-200 mb-6">
+      <li>Algorithm design paradigms: divide and conquer, greedy, dynamic programming, and approximation</li>
+      <li>Sorting and searching algorithms with performance analysis</li>
+      <li>Graph algorithms: DFS, BFS, shortest paths, and network flow</li>
+      <li>String matching algorithms and computational complexity</li>
+      <li>Asymptotic, worst-case, average-case, and amortized analyses</li>
+      <li>Balanced trees, hashing, and advanced data structures</li>
+      <li>Introduction to NP-completeness and problem reducibility</li>
+    </ul>
+
+    <h3 class="text-xl text-white font-medium mb-3">Representative assignments & projects</h3>
+    <p class="text-gray-200 mb-4">
+      Coursework included practical programming assignments to implement core algorithmic techniques. One project
+      involved writing a Depth-First Search (DFS) algorithm from scratch to analyze graph connectivity and traversal
+      efficiency. Another major coding assignment required designing a graph-based network analyzer to identify and
+      evaluate critical links using algorithmic efficiency principles.
+    </p>
+
+    <p class="text-gray-200 mb-8">
+      These exercises emphasized translating theoretical algorithmic design concepts into optimized and maintainable
+      code. Through hands-on practice, I gained a stronger understanding of performance trade-offs, data structure
+      selection, and algorithmic scalability.
+    </p>
+
+    <div class="text-center">
+      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/COMS309" target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
+        View Full Code on GitHub
+      </a>
+    </div>
+  </section>
+
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({ duration: 800, once: true });</script>
+</body>
+
+</html>
