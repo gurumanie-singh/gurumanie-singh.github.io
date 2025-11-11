@@ -5,11 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gurumanie Singh Dhiman | Portfolio</title>
-
-  <!-- Favicon -->
   <link rel="icon" href="images/Favicon.png" type="image/png">
-
-  <!-- Override Tailwind’s gray palette with custom grays -->
   <script>
     window.tailwind = window.tailwind || {};
     window.tailwind.config = {
@@ -17,15 +13,8 @@
         extend: {
           colors: {
             gray: {
-              900: '#1b1b1b',
-              800: '#2d2d2d',
-              700: '#3f3f3f',
-              600: '#525252',
-              500: '#6b6b6b',
-              400: '#8a8a8a',
-              300: '#a8a8a8',
-              200: '#c7c7c7',
-              100: '#e1e1e1'
+              900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252',
+              500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1'
             }
           }
         }
@@ -33,24 +22,49 @@
     };
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- AOS CSS (for scroll animations) -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-
-  <!-- Shared custom CSS -->
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
 </head>
 
 <body class="transition-all">
-  <!-- Header -->
-  <header
-    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
-    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Portfolio</h1>
-    <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
-      class="w-10 h-10 md:w-10 md:h-10 rounded-full object-cover cursor-pointer" />
+  <header class="w-full p-4 bg-gray-900 sticky top-0 z-50 border-b-2 border-violet-500">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Portfolio</h1>
+      <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
+        class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover cursor-pointer hover:scale-110 transition-transform" />
+    </div>
+    <nav class="flex flex-wrap gap-2 justify-center">
+      <button onclick="showTab('home')"
+        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition active bg-violet-600"
+        data-tab="home">Home</button>
+      <button onclick="showTab('experience')"
+        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition" data-tab="experience">Experience &
+        Research</button>
+      <button onclick="showTab('undergraduate')"
+        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
+        data-tab="undergraduate">Undergraduate Coursework</button>
+      <button onclick="showTab('seniordesign')"
+        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition" data-tab="seniordesign">Senior
+        Design Project</button>
+      <button onclick="showTab('graduate')" class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
+        data-tab="graduate">Graduate Coursework</button>
+      <button onclick="showTab('projects')" class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
+        data-tab="projects">Personal Projects</button>
+      <button onclick="downloadResume()"
+        class="tab-btn px-4 py-2 rounded-lg text-white bg-violet-600 hover:bg-violet-700 transition font-semibold">📄
+        Resume</button>
+    </nav>
   </header>
 
-  <!-- Modal Overlay -->
   <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-50">
     <img id="modalImage" src="images/profile.jpg" alt="Gurumanie Singh Enlarged"
       class="rounded-full transform scale-0 transition-all duration-500" />
@@ -61,71 +75,41 @@
     const modal = document.getElementById('profileModal');
     const modalImg = document.getElementById('modalImage');
 
-    // --- Opening Animation ---
     pic.addEventListener('click', () => {
-      // 1. Get the starting position from the small thumbnail
       const picRect = pic.getBoundingClientRect();
-
-      // Make the modal background visible but start it as transparent
       modal.classList.remove('hidden');
       modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-
-      // Hide the original thumbnail while the modal is open
       pic.style.visibility = 'hidden';
-
-      // 2. Remove the modal image from the normal flow and style it
-      // to perfectly match the thumbnail's position and size.
       modalImg.style.position = 'fixed';
       modalImg.style.top = `${picRect.top}px`;
       modalImg.style.left = `${picRect.left}px`;
       modalImg.style.width = `${picRect.width}px`;
       modalImg.style.height = `${picRect.height}px`;
-      modalImg.style.borderRadius = '50%'; // Match the starting border-radius
-      modalImg.style.transform = 'none'; // Ensure no other transforms are active
-      modalImg.style.transition = 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)'; // A smooth easing
-      modalImg.style.willChange = 'transform, opacity'; // Improve performance
-
-      // Make the image visible for the animation
+      modalImg.style.borderRadius = '50%';
+      modalImg.style.transform = 'none';
+      modalImg.style.transition = 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)';
+      modalImg.style.willChange = 'transform, opacity';
       modalImg.classList.remove('scale-0');
-
-      // 3. In the next available frame, animate to the final state
       requestAnimationFrame(() => {
-        // Animate the modal background to full opacity
         modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-
-        // Calculate the target size and centered position
         const targetSize = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-        const targetTop = `calc(50% - ${targetSize / 2}px)`;
-        const targetLeft = `calc(50% - ${targetSize / 2}px)`;
-
-        // Apply the final styles to trigger the transition
-        modalImg.style.top = targetTop;
-        modalImg.style.left = targetLeft;
+        modalImg.style.top = `calc(50% - ${targetSize / 2}px)`;
+        modalImg.style.left = `calc(50% - ${targetSize / 2}px)`;
         modalImg.style.width = `${targetSize}px`;
         modalImg.style.height = `${targetSize}px`;
       });
     });
 
-    // --- Closing Animation ---
     modal.addEventListener('click', () => {
       const picRect = pic.getBoundingClientRect();
-
-      // Animate the modal background to transparent
       modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-
-      // Animate the image back to the thumbnail's original position and size
       modalImg.style.top = `${picRect.top}px`;
       modalImg.style.left = `${picRect.left}px`;
       modalImg.style.width = `${picRect.width}px`;
       modalImg.style.height = `${picRect.height}px`;
-
-      // After the transition finishes, hide the modal and reset styles
       modalImg.addEventListener('transitionend', () => {
         modal.classList.add('hidden');
-        // Make the original thumbnail visible again
         pic.style.visibility = 'visible';
-
-        // Reset inline styles so it works correctly the next time
         modalImg.style.position = '';
         modalImg.style.top = '';
         modalImg.style.left = '';
@@ -133,468 +117,470 @@
         modalImg.style.height = '';
         modalImg.style.transition = '';
         modalImg.style.transform = '';
-        modalImg.classList.add('scale-0'); // Re-apply the initial hiding class
-      }, {
-        once: true
-      }); // Use { once: true } to auto-remove the listener
+        modalImg.classList.add('scale-0');
+      }, { once: true });
     });
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'bg-violet-600'));
+      const selectedTab = document.getElementById(tabName + '-tab');
+      if (selectedTab) selectedTab.classList.add('active');
+      const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+      if (activeButton) activeButton.classList.add('active', 'bg-violet-600');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function downloadResume() {
+      // Create a temporary link element to trigger download
+      const link = document.createElement('a');
+      link.href = 'Resume/GurumanieSinghDhiman_Resume.pdf'; 
+      link.download = 'GurumanieSinghDhiman_Resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   </script>
 
-  <!-- Hero / Intro Section -->
-  <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
-    <h2 class="text-5xl font-medium mb-4 text-white">
-      I'm a <span id="typed-text" class="text-violet-500 font-light italic"></span> </h2>
-    <p class="text-lg max-w-5xl mx-auto text-gray-200 text-justify">
-      Hi! I'm a concurrent Cybersecurity and Computer Engineering student at Iowa State University — pursuing my B.S. in
-      Computer Engineering (Class of 2026) and M.S. in Cybersecurity (Class of 2027). My academic and professional
-      journey
-      centers on building secure, scalable networked systems through hands-on research, applied cybersecurity projects,
-      and
-      advanced coursework in information assurance and network defense.
-    </p>
+  <!-- HOME TAB -->
+  <div id="home-tab" class="tab-content active">
+    <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
+      <h2 class="text-5xl font-medium mb-4 text-white">
+        I'm a <span id="typed-text" class="text-violet-500 font-light italic"></span>
+      </h2>
+      <p class="text-lg max-w-5xl mx-auto text-gray-200 text-justify">
+        Hi! I'm a concurrent Cybersecurity and Computer Engineering student at Iowa State University – pursuing my B.S.
+        in Computer Engineering (Class of 2026) and M.S. in Cybersecurity (Class of 2027). My academic and professional
+        journey centers on building secure, scalable networked systems through hands-on research, applied cybersecurity
+        projects, and advanced coursework in information assurance and network defense.
+      </p>
+    </section>
 
-  </section>
-
-  <!-- Achievements Section -->
-  <section id="achievements" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Achievements</h3>
-    <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
-      <li>Placed <strong>3rd</strong> during a Cybersecurity Defence Challenge 2025 hosted by Iowa State University.
-      </li>
-      <li>Awarded <strong>President's List</strong> for maintaining a 4.00 GPA for two consecutive semesters.</li>
-      <li>Maintaining a <strong>3.86/4.00 cumulative GPA</strong>, demonstrating consistent high performance.</li>
-      <li>Achieved <strong>Corporal</strong> rank with an excellent rating after completing National
-        Service in the Singapore Armed Forces.</li>
-    </ul>
-  </section>
-
-  <!-- Certifications Section -->
-  <section id="certifications" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Certifications</h3>
-    <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
-      <li><strong>CompTIA Security+</strong> (SY0-701) — Valid through Aug 2027</li>
-      <li><strong>CCNA</strong> (Cisco Certified Network Associate) — In progress (expected completion: Dec 2025)</li>
-    </ul>
-  </section>
-
-  <!-- Technical Skills Section-->
-  <section id="skills" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Technical Skills</h3>
-    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-gray-200">
-
-      <div>
-        <h4 class="text-2xl font-medium mb-4 text-white">Programming Languages</h4>
-        <ul class="space-y-6">
-          <li>
-            <div>
-              <span class="block">Java</span>
-              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Python</span>
-              <span class="text-gray-400 text-xs block mb-1">Intermediate</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Bash/Shell</span>
-              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h4 class="text-2xl font-medium mb-4 text-white">Networking & Security Tools</h4>
-        <ul class="space-y-6">
-          <li>
-            <div>
-              <span class="block">Wireshark</span>
-              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Nmap</span>
-              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Metasploit</span>
-              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h4 class="text-2xl font-medium mb-4 text-white">OS & Virtualization</h4>
-        <ul class="space-y-6">
-          <li>
-            <div>
-              <span class="block">Linux</span>
-              <span class="text-gray-400 text-xs block mb-1">Expert</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">VirtualBox/VMware</span>
-              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Docker</span>
-              <span class="text-gray-400 text-xs block mb-1">Intermediate</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h4 class="text-2xl font-medium mb-4 text-white">Methodologies & Other</h4>
-        <ul class="space-y-6">
-          <li>
-            <div>
-              <span class="block">GitLab/GitHub</span>
-              <span class="text-gray-400 text-xs block mb-1">Expert</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">CI/CD (basic)</span>
-              <span class="text-gray-400 text-xs block mb-1">Proficient</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Agile/Scrum</span>
-              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span class="block">Technical Documentation</span>
-              <span class="text-gray-400 text-xs block mb-1">Familiar</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Timeline Section -->
-  <section id="timeline" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Experience & Research</h3>
-    <div class="max-w-5xl mx-auto">
-      <ul class="border-l-2 border-violet-500">
-        <li class="mb-6 relative">
-          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
-          <div class="pl-8"> <span class="text-gray-100 font-semibold">Jun 2025 - Present</span><br />
-            <p class="text-gray-300">Administered a multi-node wireless network across Ames, IA, ensuring stable
-              connectivity for critical user equipment while troubleshooting system-level failures using
-              <strong>journalctl</strong> and
-              network diagnostic tools. I deployed configuration updates to base stations and user equipment through
-              <strong>Docker containerization</strong>, <strong>Systemd service orchestration</strong>, and
-              <strong>flco-cli automation</strong>, which enhanced
-              throughput, reliability, and interference mitigation. Additionally, I authored comprehensive technical
-              documentation with <strong>Sphinx</strong> and <strong>reStructuredText</strong>, streamlining deployment
-              procedures and reducing onboarding
-              time for new team members. Throughout the project, I collaborated closely with research staff and
-              engineers to align network modifications with evolving project requirements.
-            </p>
+    <!-- Skills Summary Card -->
+    <!-- <section id="skills-summary" class="py-8 px-4" data-aos="fade-up">
+      <div class="max-w-4xl mx-auto bg-gradient-to-r from-violet-600 to-purple-600 rounded-3xl shadow-2xl p-8 text-white">
+        <h3 class="text-3xl font-semibold text-center mb-6">Professional Summary</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-4xl font-bold mb-2">3+</div>
+            <div class="text-sm uppercase tracking-wide opacity-90">Years Experience</div>
           </div>
-        </li>
-        <li class="mb-6 relative">
-          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
-          <div class="pl-6">
-            <span class="text-gray-100 font-semibold">Aug 2024 - Dec 2024</span><br />
-            <p class="text-gray-300">
-              Worked as a Supplemental Instruction Leader for Data Structures & Algorithms, hosting <strong>three
-                after-class
-                sessions weekly</strong> with an average of <strong>13 students per session</strong> to prepare them for
-              tests and quizzes.
-              Additionally, I led <strong>2-hour review sessions</strong> before midterms and final exams, attended by
-              <strong>over 100
-                students.</strong> These efforts collectively led to a <strong>30% average improvement</strong> in
-              student scores compared to
-              non-attendees.
-            </p>
+          <div class="text-center">
+            <div class="text-4xl font-bold mb-2">3.86</div>
+            <div class="text-sm uppercase tracking-wide opacity-90">GPA (4.0 Scale)</div>
           </div>
-        </li>
-        <li class="mb-6 relative">
-          <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
-          <div class="pl-6">
-            <span class="text-gray-100 font-semibold">Jun 2021 - May 2023</span><br />
-            <p class="text-gray-300">
-              Completed National Service in the Singapore Armed Forces (SAF), where I securely managed close to
-              <strong>500+ personnel files</strong>, including physical fitness scores and medical information. I
-              meticulously tracked these scores for annual inter-battalion competitions, demonstrating strong data
-              integrity and organizational skills.
-            </p>
+          <div class="text-center">
+            <div class="text-4xl font-bold mb-2">7+</div>
+            <div class="text-sm uppercase tracking-wide opacity-90">Major Projects</div>
           </div>
+        </div>
+        <div class="mt-8 text-center">
+          <p class="text-lg font-medium mb-3">Core Specializations</p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Network Security</span>
+            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Wireless Systems</span>
+            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Linux Administration</span>
+            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Cybersecurity Research</span>
+          </div>
+        </div>
+      </div>
+    </section> -->
+
+    <!-- Looking For Section -->
+    <section id="looking-for" class="py-12 px-4" data-aos="fade-up">
+      <div class="max-w-4xl mx-auto bg-gray-800 rounded-3xl shadow-lg p-8 border-l-4 border-violet-500">
+        <h3 class="text-3xl font-semibold text-white mb-6 text-center">Currently Seeking</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-200">
+          <div>
+            <h4 class="text-xl font-medium text-violet-400 mb-3">🎯 Target Roles</h4>
+            <ul class="space-y-2 text-sm">
+              <li>• Cybersecurity Engineer</li>
+              <li>• Network Security Analyst</li>
+              <li>• Security Operations Center (SOC) Analyst</li>
+              <li>• Wireless Network Engineer</li>
+              <li>• Information Security Analyst</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xl font-medium text-violet-400 mb-3">📋 Preferences</h4>
+            <ul class="space-y-2 text-sm">
+              <li><strong>Position Type:</strong> Full-time / Internship</li>
+              <li><strong>Work Mode:</strong> On-site / Hybrid / Remote</li>
+              <li><strong>Location:</strong> Open to relocation</li>
+              <li><strong>Start Date:</strong> Immediate / Upon graduation</li>
+              <li><strong>Security Clearance:</strong> Ineligible</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <p class="text-gray-300 text-sm italic">Actively seeking opportunities to apply my expertise in network
+            security, cybersecurity operations, and secure system design.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="achievements" class="py-16 px-4" data-aos="fade-up">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Achievements</h3>
+      <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
+        <li>Placed <strong>3rd</strong> during a Cybersecurity Defence Challenge 2025 hosted by Iowa State University.
         </li>
+        <li>Awarded <strong>President's List</strong> for maintaining a 4.00 GPA for two consecutive semesters.</li>
+        <li>Maintaining a <strong>3.86/4.00 cumulative GPA</strong>, demonstrating consistent high performance.</li>
+        <li>Achieved <strong>Corporal</strong> rank with an excellent rating after completing National Service in the
+          Singapore Armed Forces.</li>
       </ul>
-    </div>
-  </section>
+    </section>
 
-  <!-- Undergraduate Coursework Section -->
-  <section id="undergraduate-coursework" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Undergraduate Coursework</h3>
-    <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">B.S. Computer Engineering (Class of 2026)</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+    <section id="certifications" class="py-16 px-4" data-aos="fade-up">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Certifications</h3>
+      <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
+        <li><strong>CompTIA Security+</strong> (SY0-701) – Valid through Aug 2027</li>
+        <li><strong>CCNA</strong> (Cisco Certified Network Associate) – In progress (expected completion: Dec 2025)</li>
+      </ul>
+    </section>
 
-      <!-- CPRE308 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">CPRE308: Operating Systems</h4>
-        <p class="text-sm mb-4 text-gray-200">Examined OS fundamentals including process management, memory allocation,
-          file systems, and concurrency, with practical implementation of scheduling algorithms and synchronization
-          primitives.</p>
-        <a href="CPRE308/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
+    <section id="skills" class="py-16 px-4" data-aos="fade-up">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Technical Skills</h3>
+      <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-gray-200">
+        <div>
+          <h4 class="text-2xl font-medium mb-4 text-white">Programming Languages</h4>
+          <ul class="space-y-6">
+            <li>
+              <div><span class="block">Java</span><span class="text-gray-400 text-xs block mb-1">Proficient</span></div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Python</span><span class="text-gray-400 text-xs block mb-1">Intermediate</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Bash/Shell</span><span class="text-gray-400 text-xs block mb-1">Familiar</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-2xl font-medium mb-4 text-white">Networking & Security Tools</h4>
+          <ul class="space-y-6">
+            <li>
+              <div><span class="block">Wireshark</span><span class="text-gray-400 text-xs block mb-1">Proficient</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Nmap</span><span class="text-gray-400 text-xs block mb-1">Proficient</span></div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Metasploit</span><span class="text-gray-400 text-xs block mb-1">Familiar</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-2xl font-medium mb-4 text-white">OS & Virtualization</h4>
+          <ul class="space-y-6">
+            <li>
+              <div><span class="block">Linux</span><span class="text-gray-400 text-xs block mb-1">Expert</span></div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">VirtualBox/VMware</span><span
+                  class="text-gray-400 text-xs block mb-1">Proficient</span></div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Docker</span><span class="text-gray-400 text-xs block mb-1">Intermediate</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-2xl font-medium mb-4 text-white">Methodologies & Other</h4>
+          <ul class="space-y-6">
+            <li>
+              <div><span class="block">GitLab/GitHub</span><span class="text-gray-400 text-xs block mb-1">Expert</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">CI/CD (basic)</span><span
+                  class="text-gray-400 text-xs block mb-1">Proficient</span></div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Agile/Scrum</span><span class="text-gray-400 text-xs block mb-1">Familiar</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+              </div>
+            </li>
+            <li>
+              <div><span class="block">Technical Documentation</span><span
+                  class="text-gray-400 text-xs block mb-1">Familiar</span></div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
+    </section>
 
-      <!-- COMS309 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
-        <p class="text-sm mb-4 text-gray-200">Built a backend app for students' job search that connects peers in
-          similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</p>
-        <a href="COMS309/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
-      </div>
-
-      <!-- COMS311 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">COMS311: Design and Analysis of Algorithms</h4>
-        <p class="text-sm mb-4 text-gray-200">Studied algorithm design paradigms including divide-and-conquer, dynamic
-          programming, and greedy methods, along with complexity analysis and optimization techniques for efficient
-          problem-solving.</p>
-        <a href="COMS311/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
-      </div>
-
-      <!-- CPRE381 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
-        <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore ISA
-          design, hazard mitigation, and memory hierarchy performance.</p>
-        <a href="CPRE381/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
-      </div>
-
-      <!-- COMS415 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">COMS415: Software System Safety</h4>
-        <p class="text-sm mb-4 text-gray-200">Conducted systematic hazard and failure analyses (FTA, SFMECA) and
-          employed formal verification and static analysis to identify, prioritize, and mitigate risks in
-          safety-critical software systems.</p>
-        <a href="COMS415/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
-      </div>
-
-      <!-- CPRE430 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">CPRE430: Networking Protocols and Security</h4>
-        <p class="text-sm mb-4 text-gray-200">Simulated network topologies and packet-level interactions to explore
-          TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</p>
-        <a href="CPRE430/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
-      </div>
-
-      <!-- CPRE431 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">CPRE431: Basics of Information System Security</h4>
-        <p class="text-sm mb-4 text-gray-200">Explored fundamental security principles including cryptography,
-          authentication mechanisms, access control models, and defensive strategies against common attack vectors.</p>
-        <a href="CPRE431/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Senior Design Coursework Section -->
-  <section id="senior-design-coursework" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Senior Design Project</h3>
-    <div class="flex justify-center">
-
-      <!-- Senior Design Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500 max-w-md">
-        <h4 class="text-xl font-medium mb-2 text-white">Secure Wireless Aircraft Data Load</h4>
-        <p class="text-sm mb-4 text-gray-200">
-          Developed a mock aircraft dataload system with wireless support, focusing on cybersecurity, network design,
-          and aviation standards within real-world operational and certification constraints.
-        </p>
-        <a href="SeniorDesign/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
-          View Detailed Summary
+    <section id="contact" class="py-16 px-4" data-aos="fade-up">
+      <h3 class="text-4xl font-medium text-center mb-6 text-white">Contact</h3>
+      <div class="flex justify-center items-center space-x-6 mt-6">
+        <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer">
+          <img src="images/email.png" alt="Email Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
+        </a>
+        <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer">
+          <img src="images/linkedin.png" alt="LinkedIn Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
+        </a>
+        <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener noreferrer">
+          <img src="images/github.png" alt="GitHub Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
         </a>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <!-- Graduate Coursework Section -->
-  <section id="graduate-coursework" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Graduate Coursework</h3>
-    <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">M.S. Cybersecurity (Class of 2027)</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-
-      <!-- CPRE532 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">CPRE532: Information Warfare</h4>
-        <p class="text-sm mb-4 text-gray-200">Analyzed offensive and defensive cyber operations, including threat
-          intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical
-          infrastructure.</p>
-        <a href="CPRE532/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
+  <!-- EXPERIENCE TAB -->
+  <div id="experience-tab" class="tab-content">
+    <section class="py-16 px-4">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Experience & Research</h3>
+      <div class="max-w-5xl mx-auto">
+        <ul class="border-l-2 border-violet-500">
+          <li class="mb-6 relative">
+            <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+            <div class="pl-8">
+              <span class="text-gray-100 font-semibold">Jun 2025 - Present</span><br />
+              <p class="text-gray-300">Administered a multi-node wireless network across Ames, IA, ensuring stable
+                connectivity for critical user equipment while troubleshooting system-level failures using
+                <strong>journalctl</strong> and network diagnostic tools. I deployed configuration updates to base
+                stations and user equipment through <strong>Docker containerization</strong>, <strong>Systemd service
+                  orchestration</strong>, and <strong>flco-cli automation</strong>, which enhanced throughput,
+                reliability, and interference mitigation. Additionally, I authored comprehensive technical documentation
+                with <strong>Sphinx</strong> and <strong>reStructuredText</strong>, streamlining deployment procedures
+                and reducing onboarding time for new team members. Throughout the project, I collaborated closely with
+                research staff and engineers to align network modifications with evolving project requirements.</p>
+            </div>
+          </li>
+          <li class="mb-6 relative">
+            <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+            <div class="pl-6">
+              <span class="text-gray-100 font-semibold">Aug 2024 - Dec 2024</span><br />
+              <p class="text-gray-300">Worked as a Supplemental Instruction Leader for Data Structures & Algorithms,
+                hosting <strong>three after-class sessions weekly</strong> with an average of <strong>13 students per
+                  session</strong> to prepare them for tests and quizzes. Additionally, I led <strong>2-hour review
+                  sessions</strong> before midterms and final exams, attended by <strong>over 100 students.</strong>
+                These efforts collectively led to a <strong>30% average improvement</strong> in student scores compared
+                to non-attendees.</p>
+            </div>
+          </li>
+          <li class="mb-6 relative">
+            <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
+            <div class="pl-6">
+              <span class="text-gray-100 font-semibold">Jun 2021 - May 2023</span><br />
+              <p class="text-gray-300">Completed National Service in the Singapore Armed Forces (SAF), where I securely
+                managed close to <strong>500+ personnel files</strong>, including physical fitness scores and medical
+                information. I meticulously tracked these scores for annual inter-battalion competitions, demonstrating
+                strong data integrity and organizational skills.</p>
+            </div>
+          </li>
+        </ul>
       </div>
+    </section>
+  </div>
 
-      <!-- CPRE536 Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">CPRE536: Computer and Network Forensics</h4>
-        <p class="text-sm mb-4 text-gray-200">Investigated digital evidence collection, preservation, and analysis
-          techniques for incident response, applying forensic tools to reconstruct attack timelines and identify
-          security breaches.</p>
-        <a href="CPRE536/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Detailed Summary</a>
+  <!-- UNDERGRADUATE TAB -->
+  <div id="undergraduate-tab" class="tab-content">
+    <section class="py-16 px-4">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Undergraduate Coursework</h3>
+      <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">B.S. Computer Engineering (Class of 2026)</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">CPRE308: Operating Systems</h4>
+          <p class="text-sm mb-4 text-gray-200">Examined OS fundamentals including process management, memory
+            allocation, file systems, and concurrency, with practical implementation of scheduling algorithms and
+            synchronization primitives.</p>
+          <a href="CPRE308/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
+          <p class="text-sm mb-4 text-gray-200">Built a backend app for students' job search that connects peers in
+            similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</p>
+          <a href="COMS309/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">COMS311: Design and Analysis of Algorithms</h4>
+          <p class="text-sm mb-4 text-gray-200">Studied algorithm design paradigms including divide-and-conquer, dynamic
+            programming, and greedy methods, along with complexity analysis and optimization techniques for efficient
+            problem-solving.</p>
+          <a href="COMS311/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
+          <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore
+            ISA design, hazard mitigation, and memory hierarchy performance.</p>
+          <a href="CPRE381/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">COMS415: Software System Safety</h4>
+          <p class="text-sm mb-4 text-gray-200">Conducted systematic hazard and failure analyses (FTA, SFMECA) and
+            employed formal verification and static analysis to identify, prioritize, and mitigate risks in
+            safety-critical software systems.</p>
+          <a href="COMS415/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">CPRE430: Networking Protocols and Security</h4>
+          <p class="text-sm mb-4 text-gray-200">Simulated network topologies and packet-level interactions to explore
+            TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</p>
+          <a href="CPRE430/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">CPRE431: Basics of Information System Security</h4>
+          <p class="text-sm mb-4 text-gray-200">Explored fundamental security principles including cryptography,
+            authentication mechanisms, access control models, and defensive strategies against common attack vectors.
+          </p>
+          <a href="CPRE431/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
       </div>
+    </section>
+  </div>
 
-    </div>
-  </section>
-
-  <!-- Personal Projects Section -->
-  <section id="projects" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-8 text-white">Personal Projects</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-
-      <!-- OverTheWire Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">OverTheWire Solutions Guide</h4>
-        <p class="text-sm mb-4 text-gray-200">Sharpened Linux command-line skills by authoring detailed Bandit challenge
-          write-ups, demonstrating troubleshooting and secure scripting techniques.</p>
-        <a href="overthewire-solutions/docs/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          OverTheWire Solutions</a>
+  <!-- SENIOR DESIGN TAB -->
+  <div id="seniordesign-tab" class="tab-content">
+    <section class="py-16 px-4">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Senior Design Project</h3>
+      <div class="flex justify-center">
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500 max-w-md">
+          <h4 class="text-xl font-medium mb-2 text-white">Secure Wireless Aircraft Data Load</h4>
+          <p class="text-sm mb-4 text-gray-200">Developed a mock aircraft dataload system with wireless support,
+            focusing on cybersecurity, network design, and aviation standards within real-world operational and
+            certification constraints.</p>
+          <a href="SeniorDesign/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
       </div>
+    </section>
+  </div>
 
-      <!-- Python Toolkit Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">Python Networking Toolkit</h4>
-        <p class="text-sm mb-4 text-gray-200">Crafted network tools such as port scanners, packet sniffers, and reverse
-          shells using Python sockets and threading, showcasing protocol analysis and automation.</p>
-        <a href="py-network-experiments/index.html"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-          Experiments</a>
+  <!-- GRADUATE TAB -->
+  <div id="graduate-tab" class="tab-content">
+    <section class="py-16 px-4">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Graduate Coursework</h3>
+      <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">M.S. Cybersecurity (Class of 2027)</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">CPRE532: Information Warfare</h4>
+          <p class="text-sm mb-4 text-gray-200">Analyzed offensive and defensive cyber operations, including threat
+            intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical
+            infrastructure.</p>
+          <a href="CPRE532/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">CPRE536: Computer and Network Forensics</h4>
+          <p class="text-sm mb-4 text-gray-200">Investigated digital evidence collection, preservation, and analysis
+            techniques for incident response, applying forensic tools to reconstruct attack timelines and identify
+            security breaches.</p>
+          <a href="CPRE536/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Detailed Summary</a>
+        </div>
       </div>
+    </section>
+  </div>
 
-      <!-- NMAP Card -->
-      <div
-        class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-        <h4 class="text-xl font-medium mb-2 text-white">NMAP Basics</h4>
-        <p class="text-sm mb-4 text-gray-200">
-          Consolidated core scanning techniques, flag explanations, and command usage into a refined PDF guide, useful
-          for penetration testing and network enumeration practice.
-        </p>
-        <a href="nmap-notes/nmap_notes.pdf" target="_blank"
-          class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">
-          View NMAP Notes (PDF)
-        </a>
+  <!-- PROJECTS TAB -->
+  <div id="projects-tab" class="tab-content">
+    <section class="py-16 px-4">
+      <h3 class="text-4xl font-medium text-center mb-8 text-white">Personal Projects</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">OverTheWire Solutions Guide</h4>
+          <p class="text-sm mb-4 text-gray-200">Sharpened Linux command-line skills by authoring detailed Bandit
+            challenge write-ups, demonstrating troubleshooting and secure scripting techniques.</p>
+          <a href="overthewire-solutions/docs/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            OverTheWire Solutions</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">Python Networking Toolkit</h4>
+          <p class="text-sm mb-4 text-gray-200">Crafted network tools such as port scanners, packet sniffers, and
+            reverse shells using Python sockets and threading, showcasing protocol analysis and automation.</p>
+          <a href="py-network-experiments/index.html"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            Experiments</a>
+        </div>
+        <div
+          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+          <h4 class="text-xl font-medium mb-2 text-white">NMAP Basics</h4>
+          <p class="text-sm mb-4 text-gray-200">Consolidated core scanning techniques, flag explanations, and command
+            usage into a refined PDF guide, useful for penetration testing and network enumeration practice.</p>
+          <a href="nmap-notes/nmap_notes.pdf" target="_blank"
+            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+            NMAP Notes (PDF)</a>
+        </div>
       </div>
+    </section>
+  </div>
 
-    </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact" class="py-16 px-4" data-aos="fade-up">
-    <h3 class="text-4xl font-medium text-center mb-6 text-white">Contact</h3>
-    <div class="flex justify-center items-center space-x-6 mt-6">
-
-      <!-- Email Icon -->
-      <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer">
-        <img src="images/email.png" alt="Email Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
-      </a>
-
-      <!-- LinkedIn Icon -->
-      <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer">
-        <img src="images/linkedin.png" alt="LinkedIn Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
-      </a>
-
-      <!-- GitHub Icon -->
-      <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener noreferrer">
-        <img src="images/github.png" alt="GitHub Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
-      </a>
-
-    </div>
-  </section>
-
-  <!-- AOS Initialization -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init({ duration: 800, once: false, easing: 'ease-out-cubic' });</script>
-
-  <!-- Typed.js Typing Animation -->
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
   <script>
     new Typed("#typed-text", {
@@ -607,7 +593,6 @@
       cursorChar: "|"
     });
   </script>
-
 </body>
 
 </html>
