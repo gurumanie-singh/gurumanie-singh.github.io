@@ -38,6 +38,26 @@
       animation: pulse-glow 2s ease-in-out infinite;
     }
 
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     @keyframes pulse-glow {
 
       0%,
@@ -49,10 +69,68 @@
         box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
       }
     }
+
+    .skill-bar {
+      transition: all 0.3s ease;
+    }
+
+    .skill-bar:hover {
+      transform: scaleX(1.02);
+      filter: brightness(1.2);
+    }
+
+    .skill-container:hover .skill-bar {
+      animation: pulse-skill 1s ease-in-out;
+    }
+
+    @keyframes pulse-skill {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(1.2); }
+    }
+
+    body {
+      animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .contact-icon {
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .contact-icon:hover {
+      transform: translateY(-5px) scale(1.1);
+    }
+
+    .contact-icon::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(124, 58, 237, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .contact-icon:hover::after {
+      opacity: 1;
+    }
+
   </style>
 </head>
 
-<body class="transition-all">
+<body class="transition-all" style="background: linear-gradient(135deg, #0f0f0f 0%, #1b1b1b 50%, #0f0f0f 100%); background-size: 200% 200%;"></body>
   <header class="w-full p-4 bg-gray-900 sticky top-0 z-50 border-b-2 border-violet-500">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Portfolio</h1>
@@ -160,7 +238,7 @@
   <!-- HOME TAB -->
   <div id="home-tab" class="tab-content active">
     <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
-      <h2 class="text-5xl font-medium mb-4 text-white">
+      <h2 class="text-5xl font-medium mb-4 text-white" data-aos="fade-up" data-aos-delay="100">
         I'm a <span id="typed-text" class="text-violet-500 font-light italic"></span>
       </h2>
       <p class="text-lg max-w-5xl mx-auto text-gray-200 text-justify">
@@ -259,10 +337,10 @@
         <div>
           <h4 class="text-2xl font-medium mb-4 text-white">Programming Languages</h4>
           <ul class="space-y-6">
-            <li>
+            <li class="skill-container">
               <div><span class="block">Java</span><span class="text-gray-400 text-xs block mb-1">Proficient</span></div>
               <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
+                <div class="skill-bar bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
               </div>
             </li>
             <li>
@@ -370,13 +448,13 @@
     <section id="contact" class="py-16 px-4" data-aos="fade-up">
       <h3 class="text-4xl font-medium text-center mb-6 text-white">Contact</h3>
       <div class="flex justify-center items-center space-x-6 mt-6">
-        <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer">
+        <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer" class="contact-icon" data-tooltip="Email Me">
           <img src="images/email.png" alt="Email Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
         </a>
-        <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer">
+        <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer" class="contact-icon" data-tooltip="My LinkedIn">
           <img src="images/linkedin.png" alt="LinkedIn Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
         </a>
-        <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener noreferrer">
+        <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener noreferrer" class="contact-icon" data-tooltip="My GitHub">
           <img src="images/github.png" alt="GitHub Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
         </a>
       </div>
@@ -563,7 +641,6 @@
   <div id="projects-tab" class="tab-content">
     <section class="py-16 px-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        <!-- Featured iOS App -->
         <div
           class="md:col-span-2 bg-gradient-to-br from-violet-600 to-purple-700 rounded-3xl shadow-2xl p-8 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col border-4 border-violet-400">
           <div class="flex justify-between items-start mb-4">
@@ -619,6 +696,23 @@
       </div>
     </section>
   </div>
+
+  <script>
+    // Magnetic effect for resume button
+    const resumeBtn = document.querySelector('button[onclick="downloadResume()"]');
+    
+    resumeBtn.addEventListener('mousemove', (e) => {
+      const rect = resumeBtn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      
+      resumeBtn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+    });
+    
+    resumeBtn.addEventListener('mouseleave', () => {
+      resumeBtn.style.transform = 'translate(0, 0)';
+    });
+  </script>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init({ duration: 800, once: false, easing: 'ease-out-cubic' });</script>
