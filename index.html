@@ -32,6 +32,23 @@
     .tab-content.active {
       display: block;
     }
+
+    .featured-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+      }
+    }
   </style>
 </head>
 
@@ -49,14 +66,12 @@
       <button onclick="showTab('experience')"
         class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition" data-tab="experience">Experience &
         Research</button>
-      <button onclick="showTab('undergraduate')"
+      <button onclick="showTab('coursework')"
         class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
-        data-tab="undergraduate">Undergraduate Coursework</button>
+        data-tab="coursework">Coursework</button>
       <button onclick="showTab('seniordesign')"
         class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition" data-tab="seniordesign">Senior
         Design Project</button>
-      <button onclick="showTab('graduate')" class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
-        data-tab="graduate">Graduate Coursework</button>
       <button onclick="showTab('projects')" class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
         data-tab="projects">Personal Projects</button>
       <button onclick="downloadResume()"
@@ -150,7 +165,7 @@
       </h2>
       <p class="text-lg max-w-5xl mx-auto text-gray-200 text-justify">
         Hi! I'm a concurrent Cybersecurity and Computer Engineering student at Iowa State University – pursuing my B.S.
-        in Computer Engineering (Class of 2026) and M.S. in Cybersecurity (Class of 2027). My academic and professional
+        in Computer Engineering (Class of 2026). My academic and professional
         journey centers on building secure, scalable networked systems through hands-on research, applied cybersecurity
         projects, and advanced coursework in information assurance and network defense.
       </p>
@@ -224,7 +239,7 @@
         <li>Placed <strong>3rd</strong> during a Cybersecurity Defence Challenge 2025 hosted by Iowa State University.
         </li>
         <li>Awarded <strong>President's List</strong> for maintaining a 4.00 GPA for two consecutive semesters.</li>
-        <li>Maintaining a <strong>3.86/4.00 cumulative GPA</strong>, demonstrating consistent high performance.</li>
+        <li>Maintaining a <strong>3.89/4.00 cumulative GPA</strong>, demonstrating consistent high performance.</li>
         <li>Achieved <strong>Corporal</strong> rank with an excellent rating after completing National Service in the
           Singapore Armed Forces.</li>
       </ul>
@@ -234,7 +249,7 @@
       <h3 class="text-4xl font-medium text-center mb-8 text-white">Certifications</h3>
       <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
         <li><strong>CompTIA Security+</strong> (SY0-701) - Valid through Aug 2027</li>
-        <li><strong>CCNA</strong> (Cisco Certified Network Associate) - In progress (expected completion: Dec 2025)</li>
+        <li><strong>CCNA</strong> (Cisco Certified Network Associate) - In progress</li>
       </ul>
     </section>
 
@@ -371,7 +386,6 @@
   <!-- EXPERIENCE TAB -->
   <div id="experience-tab" class="tab-content">
     <section class="py-16 px-4">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Experience & Research</h3>
       <div class="max-w-5xl mx-auto">
         <ul class="border-l-2 border-violet-500">
           <li class="mb-6 relative">
@@ -417,78 +431,111 @@
     </section>
   </div>
 
-  <!-- UNDERGRADUATE TAB -->
-  <div id="undergraduate-tab" class="tab-content">
+  <!-- COURSEWORK TAB -->
+  <div id="coursework-tab" class="tab-content">
     <section class="py-16 px-4">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Undergraduate Coursework</h3>
-      <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">B.S. Computer Engineering (Class of 2026)</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">CPRE308: Operating Systems</h4>
-          <p class="text-sm mb-4 text-gray-200">Examined OS fundamentals including process management, memory
-            allocation, file systems, and concurrency, with practical implementation of scheduling algorithms and
-            synchronization primitives.</p>
-          <a href="CPRE308/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
+
+      <!-- Graduate Coursework Section -->
+      <div class="mb-16">
+        <h4 class="text-3xl font-medium text-center mb-4 text-violet-400">Graduate Coursework</h4>
+        <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">M.S. Cybersecurity (Class of 2027)</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">CPRE532: Information Warfare</h4>
+            <p class="text-sm mb-4 text-gray-200">Analyzed offensive and defensive cyber operations, including threat
+              intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical
+              infrastructure.</p>
+            <a href="CPRE532/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">CPRE536: Computer and Network Forensics</h4>
+            <p class="text-sm mb-4 text-gray-200">Investigated digital evidence collection, preservation, and analysis
+              techniques for incident response, applying forensic tools to reconstruct attack timelines and identify
+              security breaches.</p>
+            <a href="CPRE536/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
         </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
-          <p class="text-sm mb-4 text-gray-200">Built a backend app for students' job search that connects peers in
-            similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</p>
-          <a href="COMS309/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">COMS311: Design and Analysis of Algorithms</h4>
-          <p class="text-sm mb-4 text-gray-200">Studied algorithm design paradigms including divide-and-conquer, dynamic
-            programming, and greedy methods, along with complexity analysis and optimization techniques for efficient
-            problem-solving.</p>
-          <a href="COMS311/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
-          <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore
-            ISA design, hazard mitigation, and memory hierarchy performance.</p>
-          <a href="CPRE381/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">COMS415: Software System Safety</h4>
-          <p class="text-sm mb-4 text-gray-200">Conducted systematic hazard and failure analyses (FTA, SFMECA) and
-            employed formal verification and static analysis to identify, prioritize, and mitigate risks in
-            safety-critical software systems.</p>
-          <a href="COMS415/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">CPRE430: Networking Protocols and Security</h4>
-          <p class="text-sm mb-4 text-gray-200">Simulated network topologies and packet-level interactions to explore
-            TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</p>
-          <a href="CPRE430/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">CPRE431: Basics of Information System Security</h4>
-          <p class="text-sm mb-4 text-gray-200">Explored fundamental security principles including cryptography,
-            authentication mechanisms, access control models, and defensive strategies against common attack vectors.
-          </p>
-          <a href="CPRE431/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
+      </div>
+
+      <!-- Undergraduate Coursework Section -->
+      <div>
+        <h4 class="text-3xl font-medium text-center mb-4 text-violet-400">Undergraduate Coursework</h4>
+        <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">B.S. Computer Engineering (Class of 2026)</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">CPRE308: Operating Systems</h4>
+            <p class="text-sm mb-4 text-gray-200">Examined OS fundamentals including process management, memory
+              allocation, file systems, and concurrency, with practical implementation of scheduling algorithms and
+              synchronization primitives.</p>
+            <a href="CPRE308/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
+            <p class="text-sm mb-4 text-gray-200">Built a backend app for students' job search that connects peers in
+              similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</p>
+            <a href="COMS309/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">COMS311: Design and Analysis of Algorithms</h4>
+            <p class="text-sm mb-4 text-gray-200">Studied algorithm design paradigms including divide-and-conquer,
+              dynamic
+              programming, and greedy methods, along with complexity analysis and optimization techniques for efficient
+              problem-solving.</p>
+            <a href="COMS311/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
+            <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore
+              ISA design, hazard mitigation, and memory hierarchy performance.</p>
+            <a href="CPRE381/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">COMS415: Software System Safety</h4>
+            <p class="text-sm mb-4 text-gray-200">Conducted systematic hazard and failure analyses (FTA, SFMECA) and
+              employed formal verification and static analysis to identify, prioritize, and mitigate risks in
+              safety-critical software systems.</p>
+            <a href="COMS415/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">CPRE430: Networking Protocols and Security</h4>
+            <p class="text-sm mb-4 text-gray-200">Simulated network topologies and packet-level interactions to explore
+              TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</p>
+            <a href="CPRE430/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
+          <div
+            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
+            <h4 class="text-xl font-medium mb-2 text-white">CPRE431: Basics of Information System Security</h4>
+            <p class="text-sm mb-4 text-gray-200">Explored fundamental security principles including cryptography,
+              authentication mechanisms, access control models, and defensive strategies against common attack vectors.
+            </p>
+            <a href="CPRE431/index.html"
+              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
+              Detailed Summary</a>
+          </div>
         </div>
       </div>
     </section>
@@ -497,7 +544,6 @@
   <!-- SENIOR DESIGN TAB -->
   <div id="seniordesign-tab" class="tab-content">
     <section class="py-16 px-4">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Senior Design Project</h3>
       <div class="flex justify-center">
         <div
           class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500 max-w-md">
@@ -513,41 +559,36 @@
     </section>
   </div>
 
-  <!-- GRADUATE TAB -->
-  <div id="graduate-tab" class="tab-content">
-    <section class="py-16 px-4">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Graduate Coursework</h3>
-      <p class="text-center text-gray-300 mb-8 max-w-3xl mx-auto">M.S. Cybersecurity (Class of 2027)</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">CPRE532: Information Warfare</h4>
-          <p class="text-sm mb-4 text-gray-200">Analyzed offensive and defensive cyber operations, including threat
-            intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical
-            infrastructure.</p>
-          <a href="CPRE532/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">CPRE536: Computer and Network Forensics</h4>
-          <p class="text-sm mb-4 text-gray-200">Investigated digital evidence collection, preservation, and analysis
-            techniques for incident response, applying forensic tools to reconstruct attack timelines and identify
-            security breaches.</p>
-          <a href="CPRE536/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-      </div>
-    </section>
-  </div>
-
   <!-- PROJECTS TAB -->
   <div id="projects-tab" class="tab-content">
     <section class="py-16 px-4">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Personal Projects</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <!-- Featured iOS App -->
+        <div
+          class="md:col-span-2 bg-gradient-to-br from-violet-600 to-purple-700 rounded-3xl shadow-2xl p-8 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col border-4 border-violet-400">
+          <div class="flex justify-between items-start mb-4">
+            <h4 class="text-2xl font-bold text-white">📱 ForFriendSake - iOS App</h4>
+            <span class="featured-badge text-white text-xs px-3 py-1 rounded-full font-semibold">Featured Project</span>
+          </div>
+          <p class="text-base mb-4 text-gray-100">A social networking iOS application built with Swift, SwiftUI, and
+            SwiftData, enabling users to connect, share experiences, and build meaningful friendships through an
+            intuitive mobile interface.</p>
+          <div class="mb-4">
+            <h5 class="text-sm font-semibold text-gray-200 mb-2">Key Features:</h5>
+            <ul class="text-sm text-gray-100 space-y-1 list-disc list-inside">
+              <li>Native iOS development using Swift and SwiftUI</li>
+              <li>Local data persistence with SwiftData framework</li>
+              <li>Modern, responsive user interface design</li>
+              <li>Privacy-focused friend connection system</li>
+            </ul>
+          </div>
+          <div class="flex gap-4 mt-auto">
+            <a href="https://www.forfriendsake.com" target="_blank" rel="noopener noreferrer"
+              class="inline-block bg-white px-6 py-3 rounded-full text-violet-700 font-semibold hover:bg-gray-100 transition-colors">
+              Visit App Website →
+            </a>
+          </div>
+        </div>
         <div
           class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
           <h4 class="text-xl font-medium mb-2 text-white">OverTheWire Solutions Guide</h4>
