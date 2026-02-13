@@ -11,13 +11,13 @@
 
 ## The Adversarial Process
 
-![The Adversarial Process](./TheAdversarialProcess.png)
+![The Adversarial Process](./Screenshots/TheAdversarialProcess.png)
 
 ## Understanding the Adversary's Mindset
 
 ### Define Goals, Motivation, and Objectives
 
-![Goals, Motivation, Objectives](./GoalsMotivationObjectives.png)
+![Goals, Motivation, Objectives](./Screenshots/GoalsMotivationObjectives.png)
 
 - **Goals are the specific outcomes.**
 - **Motivation is the driving force.** It's why an adversary engages in certain behaviors or chooses a specific course of action. (Ideological beliefs, Desire for revenge)
