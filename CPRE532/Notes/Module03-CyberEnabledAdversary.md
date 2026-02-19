@@ -1,315 +1,177 @@
-# Cyber-Enabled Adversary
+# Module 3: Cyber-Enabled Adversary
 
-## Introduction
+---
 
-### Why do adversaries use cyber?
+## Why Adversaries Use Cyber
 
-- Accessibility and Reach
-  - conduct operations remotely
-  - enables them to impact targets beyong physical location
-- Anonymity and Low Risk Detection
-  - difficult to trace attacks back to perpetrator
-  - reduces risk of detection and subsequent legal consequences
-- High Impact with Lower Resources
-  - can achieve significant disruption or damage with fewer resources
-  - costs lower than a physical operation
-- Reconnaissance
-  - gather info about target
-  - includes scanning for network vulnerabilities, researching employee info for social engineering, or identifying valuable data for theft
-- Exploitation of Digital Dependence
-  - modern world is heavily reliant on digital infra
-  - adversaries exploit this dependence (causing maximum disruption, steal valuable data, gain strategic advantage)
-- Versatility and Scalability
-  - cyber tools and tactics can be adapted to wide range of objectives
-  - can also be scaled to impact single individual or an entire nation
-- Speed and Efficiency
-  - can be executed rapidly (often in real-time)
-  - allowing for exploiting vulnerabilities before they can be addressed
-- Exploiting Vulnerabilities
-  - tools such as malware, ransomware, phishing techniques
-  - exploit technical or human vulnerabilities to gain unauthorized access to systems
+Cyber operations offer significant advantages over traditional physical attacks:
 
-### How Adversaries use Cyber
+- **Reach & Accessibility** — operations can be conducted remotely, targeting systems anywhere in the world
+- **Anonymity** — attacks are difficult to trace, reducing legal and physical risk
+- **Cost Efficiency** — significant disruption can be achieved with far fewer resources than a physical operation
+- **Speed** — attacks can be executed rapidly, exploiting vulnerabilities before they're patched
+- **Scalability** — the same tools and tactics can target a single individual or an entire nation
+- **Exploitation of Digital Dependence** — modern infrastructure (power, finance, healthcare) is deeply reliant on digital systems, making it highly vulnerable
+- **Reconnaissance** — cyber enables intelligence gathering: scanning for vulnerabilities, researching employees for social engineering, and identifying valuable data
 
-- Cyber to aid in physical attack
-- Cyber-only attacks
-- Physical attack to aid in a cyber attack
+---
 
-### Cyber to Aid in Physical Attack
+## How Adversaries Combine Cyber and Physical
 
-- Intelligence Gathering:
-  - collect info about target, such as security protocols, layout of facility, and schedules
-- Disabling Security Systems:
-  - alarms, surveillance cameras, or access control systems (making physical intrusion easier)
-- Communication Disruption:
-  - hinder the target's ability to respond effectively to the physical attack
-- Manipulating Operational Technology:
-  - in industrial target cases operational technology can be manipulated to create physical vulnerabilities or distractions
+### Cyber to Aid a Physical Attack
+- **Intelligence Gathering**: Map security protocols, facility layouts, and schedules
+- **Disable Security Systems**: Take down alarms, cameras, or access controls before intrusion
+- **Disrupt Communications**: Prevent effective response to a physical attack
+- **Manipulate OT (Operational Technology)**: Create physical vulnerabilities or distractions in industrial environments
 
-### Cyber-Only Attack
-
-- Data Breach
-- Financial Theft
-- Ransomware Attacks
+### Cyber-Only Attacks
+- Data breaches and theft
+- Financial theft and fraud
+- Ransomware
 - Espionage
-- Disruption and Sabotage
-- Estabilishing Persistence (seek to maintain long-term access)
-- Manipulation and Disinformation
+- Disruption and sabotage
+- Establishing persistent long-term access
+- Disinformation and manipulation
 
-### Physical Attack to Aid in a Cyber Attack
-
-- Hardware Interference
-  - tampering with devices to install malware, such as USB drops or hardware modification
-- Access to Restricted Areas
-  - gaining physical access to secure locations to breach network security
-  - plugging into a network port within a secure facility
-- Interception of Equipment
-  - intercepting and modifying hardware during transit
-  - implanting surveillance tools or backdoor in technology products
+### Physical to Aid a Cyber Attack
+- **Hardware Interference**: Install malware via USB drops or device tampering
+- **Access to Restricted Areas**: Plug directly into a secure network port
+- **Supply Chain Interception**: Intercept and modify hardware in transit to implant backdoors or surveillance tools
 
 ### Additional Considerations
+- **Hybrid Attacks**: Coordinated simultaneous use of physical and cyber methods
+- **Social Engineering**: Used in both domains to manipulate people
+- **Supply Chain Attacks**: Compromise a supplier or third party to reach the primary target
 
-- Hybrid Attacks
-  - combination of physical and cyber attacks in a coordinated manner
-- Social Engineering
-  - both in physical and cyber realms
-- Supply Chain Attacks
-  - targeting a supplier or third-party service provider to compromise the primary target (can be physical or cyber)
+---
 
-## Cyber-Enabled Adversarial Tactics
+## The Cyber Adversary
 
-### Who is the Cyber Adversary?
+### Levels of Expertise
+- **Script Kiddies** — use existing tools with little technical knowledge
+- **Amateur** — some skill, often opportunistic
+- **Professional** — skilled, targeted, well-resourced
 
-- Expertise
-  - Script Kiddies
-  - Amateur
-  - Professional
-- Methods
-  - Remote Access
-  - Social Engineering
-  - Physical Access
+### Methods
+- Remote access
+- Social engineering
+- Physical access
 
-#### How are they organized?
+### Organizational Structure
+- Individual actor
+- Cause-based group
+- Loose collective (e.g., hacktivist groups)
+- Criminal enterprise (organized as a business)
+- State-based: state-*supported*, state-*sponsored*, or state-*run*
 
-- Individual
-- Cause based
-- Lose collective
-- As a business
-- State based
-  - State supported
-  - State sponsored
-  - State run
+---
 
-### What are their goals?
+## Adversary Goals
 
-They can be inter-related and often tied to money.
+Goals are often interrelated and frequently tied to financial gain.
 
-- Data
-- Trust
-- Disruption
-- Influence
+### Money
+Achieved through: theft (account access, redirecting funds, purchasing fraud), ransomware, and extortion.
 
-#### Goal #1: Money
+### Data
+- **Types**: PII, medical records, IP, operational/infrastructure plans
+- **Threats**: Disclosure, reuse (identity theft, account access), or as a stepping stone to a larger attack
+- Data can also be held hostage for ransom
 
-- Theft
-  - Redirection/diversion
-  - Account access
-  - Purchasing
-  - Fraud
-  - Ransomware
+### Disruption
+- **Physical services**: Power grids, water, traffic, gas, building controls, medical devices
+- **IT services**: 911 systems, government services, communications
+- Disruption can be used as leverage (ransom) or as an end goal (terror/chaos)
 
-#### Goal #2: Data
+### Influence
+- **Personal attacks**: Swatting, fake kidnapping claims, direct threats — often demanding money
+- **Public attacks**: Sole purpose is to cause fear and chaos, not necessarily financial gain
 
-- Types
-  - Personal Identifiable Information (PII)
-  - Records, operational and infra plans
-- Threats
-  - Disclosure
-  - Reuse (ID theft, bank accounts)
-  - First step to another attack
-- Holding it hostage for money
+### Public Trust
+- Eroding trust in governments, elected officials, public services, elections, or corporate brands
 
-#### Goal #3: Disruption
+---
 
-- Physical services
-  - Power, Traffic, Water, Gas
-  - Building control, medical
-- IT Services
-  - 911, communications
-  - Medical, government services
-- Holding it hostage for money
-
-#### Goal #4: Influence
-
-- Personal Attacks (often demanding money)
-  - Swatting
-  - Fake messages, kidnapping, family arrested
-  - Direct threats
-- Public attacks to cause fear
-  - Disruption - Ransom = Terror
-  - Sole purpose is not to gain money but to cause chaos and fear
-
-#### Goal #5: Public Trust
-
-- Eroding trust in:
-  - Government
-  - Elected Officials
-  - Certain Services
-  - Elections
-  - Company brands
-
-### Executing the Attack
+## How Attacks Are Executed
 
 ![Executing the Attack](./Screenshots/ExecutingTheAttack.png)
 
-#### How They do it: Attacks of Opportunity
+### Attacks of Opportunity
+- Typically carried out by script kiddies
+- Target systems that are unpatched or misconfigured (initial or reconfiguration errors)
+- May use general social engineering techniques
 
-- Often carried out by script kiddies
-- Pick on vulnerable systems, not installing patches
-- Misconfigured systems
-  - Initial config problems
-  - Reconfig problems
-- General social engineering
+### Advanced Persistent Threat (APT)
+- Attackers select specific targets and wait patiently for a mistake — a misconfiguration or missed patch
+- Alternatively, they target employees via phishing: credential theft, drive-by malware downloads, or malicious attachments
+- **Likely APT Targets**: IoT infrastructure (water, power, transport), financial institutions, organizations with valuable intellectual property (agriculture, manufacturing, technology)
 
-#### How they do it: Advanced Persistent Threat
+---
 
-- Attackers pick their target(s) and will wait until you make a mistake
-  - Misconfig
-  - Not patching a system
-- Or they target your employees with phishing emails
-  - Get them to disclose passwords
-  - Go to websites to get malware
-  - Send attachments with malware
+## What Attackers Target
 
-#### Advanced Persistent Threat - Likely Targets
+![Examples(Target)](<./Screenshots/Examples(Target).png>)
 
-- The internet of things (IoT):
-  - Water, Power, Transportation, etc
-- Where the money is:
-  - Banks, People, Organizations (lower tech = targets)
-- Intellectual Property:
-  - Technology (ag sector, manufacturing, etc)
-- Gain Access
+### Vulnerable Systems
+- Bad access controls
+- Misconfigured systems (initial setup errors, reconfiguration errors)
+- Unpatched or legacy systems
+- Zero-day vulnerabilities
 
-#### What they target: Vulnerabilities
+### Three Categories of Target Systems
 
-![Executing the Attack](./Screenshots/ExecutingTheAttack.png)
+| System Type | Description | Example Attack |
+|-------------|-------------|----------------|
+| **Data Systems** | Store critical data (IP, PII, credit cards) | Ransomware: encrypt and steal, threaten to release |
+| **Process Systems** | Run essential operations (billing, inventory, medical) | Ransomware: shut down operations to demand payment |
+| **Control Systems** | Manage physical assets (pipelines, power grids, traffic) | Manipulate sensor data or settings to cause physical damage |
 
-#### Vulnerable Systems
+### Vulnerable People
+Over 50% of data loss stems from social engineering. Attack vectors include:
+- Phishing and spear phishing emails
+- Malicious email attachments
+- Drive-by or directed malicious websites
+- Poor access control policies
 
-- Attackers pick on vulnerable systems
-- Bad access control
-- Misconfig systems
-  - Initial config problems
-  - Reconfig problems
-  - Not installing patches or old systems
-  - Zero day
+### Insiders
+It is often easier to exploit a person on the inside — intentionally (recruited/coerced), accidentally (untrained), or "intentionally accidental" (social engineering tricks users into acting as unwitting accomplices).
 
-#### Types of Systems
+### Vulnerable Processes
+- **Internal**: Attackers gather knowledge of internal workflows to use them against the organization
+- **External**: Supply chain and partner security are common weak points
 
-- Data Systems:
-  - contain critical data
-  - IP, credit card numbers, etc
-- Processes Systems:
-  - needed for operation
-  - often part of ransomware attacks
-  - billing, inventory, medical
-- Control systems:
-  - controls physical assets
-  - pipelines, power grid, traffic control
+---
 
-#### Vulnerable People
+## Real-World Examples
 
-- People are the weakest link. Over 50% of data loss is from social engineering, which is a tactic used by attackers directly against people.
-- Malware (ransomware):
-  - phishing and spear phishing
-  - email attachments
-  - websites
-    - drive by
-    - directed
-  - poor access policies
+### Target (Retail Breach)
+- Attackers gained credentials via a compromised HVAC contractor
+- Installed memory-scraping malware on POS terminals (tested Nov 15–28, deployed Nov 30)
+- Stole millions of credit card numbers
 
-#### How they do it: People on the Inside
+### Sony
+- Believed to be an APT; exact entry point unclear
+- One of the first attacks to cause widespread destruction of computing resources
+- Well-written, highly complex malware; involved data theft and operational disruption
 
-- Often easier to get someone on the inside to:
-  - Install Malware
-  - Transfer money
-  - Expose data
-  - Allow access
+### Colonial Pipeline
+- Ransomware attack affecting business processes and fuel distribution across the U.S. East Coast
 
-#### Attackers Use People on the Inside
+### Florida Water Plant
+- Attacker gained remote access and attempted to raise sodium hydroxide (lye) levels to dangerous concentrations
 
-- Intentional: Think of the number of egress points and the number of protocols involved
-- Accidental: As applications become more integrated and seamless, it becomes easier to send data
-- Intentionally Accidental: As we harden our defenses, the attackers
-  are using more social engineering-based attacked to get users to
+### Ukraine Power Grid
+- Russian-attributed cyberattack that caused widespread power outages
 
-#### Vulnerable Processes
+### Iranian Centrifuges (Stuxnet)
+- Malware manipulated sensor data to cause physical damage while reporting normal readings — also exploited process vulnerabilities
 
-- Internal processes
-  - Gather information
-  - Use knowledge of processes against you
-- External processes
-  - Supply chain security
-  - Partner security
+### Turkish Pipeline (2008)
+- One of the earliest known cyber-physical attacks
+- Gained access via internet-connected cameras, changed pipeline pressure settings, and disabled monitoring systems
 
-### Examples
+### 2016 DNC Email Leak
+- Spear phishing used to gain access; leaked emails influenced public opinion during a presidential election
 
-#### Data Systems - Examples
-
-- New ransomware - Encrypt and Steal
-  - Threaten release of data
-  - Police info, PII, etc
-- Target
-  - Malware (through supplier), Theft of CC #
-- Sony
-  - Malware, APT, Disruption, Revenge
-
-#### Target - Examples
-
-- Attackers had malware that reads memory and sends it to a drop site
-- Unclear if they picked certain retailers or just looked for ones, they could insert the malware
-- Used weak security at HVAC company to get login name and password to Target
-- Tested software Nov 15-28
-- Nov 30 pushed to most POS terminals
-  ![Examples(Target)](<./Screenshots/Examples(Target).png>)
-
-#### Example: Sony
-
-- Still unclear how they gained access
-- Appears to be APT
-- Attackers raised the stakes in this, one of the first attacks that caused widespread destruction of computing resources
-  - Well written and very complex malware
-
-#### Process Systems - Examples
-
-- Hospitals
-  - Ransomware, shutdown medical systems
-- Colonial pipelines
-  - Ransomware, effected business processes
-- JBS
-  - Ransomware, effected business processes
-- Co-op
-  - Effected grain handling and farmer data
-
-#### Control Systems - Examples
-
-- Florida water plant
-  - Remote access, added toxic chemical
-- Ukraine power grid
-  - Russian attack
-- Iranian centrifuges
-  - Changed sensor data
-  - Also, a process vuln
-
-#### Example: Turkish Pipeline
-
-- 2008, some reports one of the earliest cyber physical attacks
-- Gained access via internet cameras
-- Changed settings
-- Turned off monitors
-
-#### People Vulnerabilities - Examples
-
-- 2016 DNC email leak
-- 2020 Twitter bitcoin scam
+### 2020 Twitter Bitcoin Scam
+- Insiders were social-engineered into granting access to high-profile accounts to run a cryptocurrency scam

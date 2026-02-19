@@ -1,122 +1,93 @@
-# Ethics & Networking Intro
-
-## Ethical and Legal Issues
-
-### What is Information Assurance
-
-- Confidentiality
-- Integrity
-- Availability
-- Policy / Privacy
-
-### Legal
-
-- Different types of laws are used to protect data
-  - Copyright
-  - Unauthorized access
-    - Ambiguous
-    - Hard to prosecute
-  - Theft
-  - Domain specific (eg: Medical info)
-- International Issues
+# Module 4: Ethics & Networking Intro
 
 ---
 
-- Two Types:
-  - Criminal
-  - Civil
-- Focus on criminal option
-  - Need to have “beyond a reasonable doubt”
-  - Since cyber crime is new, the legal system is not up to speed
-  - With newer laws there have been more prosecutions based on violation of a cyber crime
-  - Hard to get juries to understand
+## Information Assurance (IA)
+
+The four pillars of information assurance:
+
+- **Confidentiality** — ensuring information is accessible only to authorized parties
+- **Integrity** — ensuring information is accurate and unaltered
+- **Availability** — ensuring systems and data are accessible when needed
+- **Policy / Privacy** — governing how data is handled and who can access it
 
 ---
 
-- Civil Lawsuits
-  - Need 50%+ to win
-  - More typical in:
-    - Intellectual Property issues
-    - Defamation
-    - Harassment
-  - Hard to set damages
-  - Have not seen people sue software companies
-    - Bugs
-    - Security
-  - Possible in the future that people will sue companies for security breaches
+## Legal Issues in Cybersecurity
 
-### Ethical
+### Types of Law
+- **Criminal Law**: Requires proof "beyond a reasonable doubt." Cybercrime is relatively new, so the legal system is still catching up — juries often struggle to understand technical details, making prosecution difficult. Newer laws have led to more cybercrime prosecutions.
+- **Civil Law**: Requires only a >50% standard of proof ("preponderance of evidence"). More common in intellectual property disputes, defamation, and harassment cases.
 
-- Security people typically have access to everything
-- First Amendment rights
-- Privacy
-  - Watching what people do
-  - Monitoring all traffic or monitoring down to keystrokes
-    - Monitor for productivity issues
-    - Defamation of character
-    - Sexual Harassment
+### Key Legal Challenges
+- **Unauthorized access laws** are often ambiguous and hard to prosecute
+- **Setting damages** in civil cases is difficult
+- Software companies have historically not been sued for security bugs, though this may change as breaches become more severe
+- **International jurisdiction** creates major complications — laws differ across borders, and attribution is difficult
 
-### Privacy
-
-- Just because technology allows it, does not mean that society should.
-- Technology is moving faster than the rules and regulations
-
-## Access Methods
-
-- Physical access to information
-  - At rest
-  - In motion (lost laptops, tossed data)
-- 3rd party physical access to information
-  - Deliberate (untrusted insider)
-  - Accidental (untrained insider)
-- Network access to information
-  - Active (break-in)
-  - Passive (watching)
-  - Social (use the network to cause 3rd party access)
-
-### Overview of Networking
-
-- A vulnerability in an App allows an attacker to take the App offline
-- Vulnerability in the OS allows the attacker to take the whole system down
-- A common problem is addressing:
-  - Everything that connects to the same media needs a hardware address
-  - IP address is a globally unique identifier that is used in the IP layer
-  - Addresses are not checked
-    - Example: attacker can use any source IP address that they want
+### Types of Protected Information
+- Copyright
+- Unauthorized access statutes
+- Theft laws
+- Domain-specific regulations (e.g., HIPAA for medical information)
 
 ---
 
-- Protocols
-  - TCP
-  - UDP
-- Application Address
-  - Port number that application binds to
+## Ethical Issues in Cybersecurity
 
-### Ethernet
+Security professionals often have access to everything on a network, which creates significant ethical responsibilities:
 
+- **Privacy vs. Monitoring**: Monitoring employee activity (traffic, keystrokes, browsing) may be technically legal but raises serious ethical questions around privacy and dignity
+- **First Amendment**: Free speech considerations apply in certain monitoring contexts
+- **Productivity Monitoring vs. Surveillance**: Monitoring for productivity or policy violations (sexual harassment, defamation) can cross into invasive territory
+
+> Just because technology *allows* something doesn't mean society *should* permit it. Technology is consistently outpacing the rules and regulations meant to govern it.
+
+---
+
+## Access Methods (Attack Surface)
+
+| Access Type | Mode | Examples |
+|-------------|------|---------|
+| **Physical** | At rest | Accessing a stored device or file |
+| **Physical** | In motion | Lost laptops, improperly discarded data |
+| **3rd Party Physical** | Deliberate | Untrusted insider with physical access |
+| **3rd Party Physical** | Accidental | Untrained insider mishandling data |
+| **Network** | Active | Break-in, exploitation |
+| **Network** | Passive | Traffic sniffing/eavesdropping |
+| **Network** | Social | Using the network to cause a third party to expose data |
+
+---
+
+## Networking Overview
+
+### Core Concepts
+
+- A vulnerability in an **application** can take that app offline
+- A vulnerability in the **OS** can take the entire system down
+- **Addressing** is a common problem area:
+  - Every device on the same media needs a hardware (MAC) address
+  - IP addresses provide globally unique identifiers at the network layer
+  - Critically: **addresses are not verified** — an attacker can spoof any source IP address they choose
+
+### Protocols
+- **TCP** — connection-oriented, reliable delivery
+- **UDP** — connectionless, faster but no delivery guarantee
+- **Port numbers** — identify which application on a host should receive a packet (e.g., port 80 for HTTP, port 443 for HTTPS)
+
+### Network Devices
 ![Ethernet](./Screenshots/Ethernet.png)
+- **Hub**: Broadcasts every packet to all connected devices — all machines see all traffic
+- **Switch**: Forwards packets only to the correct destination device
+- **Router**: Connects networks together; uses routing tables to forward packets based on destination IP and metrics (e.g., fastest path)
 
-### Devices
-
-- Router
-- Hub
-  - Packets arrive at every computer
-- Switches
-  - Packet is switched on to the correct path to the destination computer
-
-### Client / Server
-
-- Server waits for connection from a client
-  - Tell OS application an address
-  - Toss packets that do not match address
-
+### Client/Server Model
 ![ClientServer](./Screenshots/ClientServer.png)
+- The **server** binds to a port and waits for incoming connections
+- The **client** initiates a connection to the server's address and port
+- The OS filters and discards packets that don't match the bound address
 
 ### Routing
-
-- Routers have to know what their neighbors can do for them
-- Routers do not know the infrastructure of the internet
-- Routers have routing tables
-  - These tables have the ranges of IPs that the neighbor routers know how to route
-  - Based on destination address
-  - Contain metrics to determine fastest route
+- Routers maintain **routing tables** containing IP ranges their neighboring routers can handle
+- Routers do not need to know the full topology of the internet — they only need to know what their neighbors can reach
+- Routes are chosen based on destination address and path metrics (e.g., hop count, latency)

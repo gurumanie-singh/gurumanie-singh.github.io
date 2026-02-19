@@ -1,317 +1,189 @@
-# Reconnaissance
+# Module 5: Reconnaissance, Scanning & Enumeration
 
-## Footprinting
+---
 
-Footprinting builds profile of target
+## 1. Footprinting
 
-- People information
-- Backdoor information
-- Network
-- Analogous to casing a bank
+Footprinting is the process of building a profile of a target before an attack — analogous to casing a bank. It targets three areas:
 
-### Information
+- **Internet**: Domain names, network addresses, network topology
+- **Intranet**: Technologies in use, VPNs, remote access methods
+- **Extranet**: Access controls used by the target
 
-- Internet
-  - Domain name
-  - Network addresses
-  - Topology of target network
-- Intranet
-  - Obtain technology used
-  - VPNs
-  - Remote access
-- Extranet
-  - Access control that the target uses
+### Techniques
 
-### Steps
+**Website Analysis**
+- Download entire website to analyze offline
+- Gather location, related sites, M&A activity, contact info, and privacy policies (which can hint at security practices)
+- Review HTML source for comments left by developers
 
-- Check web site
-  - Possible to download entire web site
-  - Can obtain
-    - Location
-    - Related sites
-    - Merger and acquisition
-    - Contact information
-    - Privacy policies
-      - Use policy to infer what security is in place
-    - Comments in html source
-- Newsgroups
-  - Look for posting from the target’s IT team
-- Tools
-  - FerretPro
-    - Advanced searching, Newsgroups, IRC, etc..
-  - AltaVista or other search engines
-    - “Link: www.issl.org”, this search will find any web page that links to issl.org
-    - Used to find backdoors
-    - Employees usually link back to the company they work for, build employee list
-- Public Databases
-  - State and local government databases
-  - Gather information on partnerships or subsidiaries, looking for trust relationship to exploit
-- DNS (Domain Name Service)
-  - Registration information
-  - Use whois searches and domain query
-    - Finds organizational information
-    - Address of register
-    - Admin contact
-    - DNS server
-    - NSlookup will query DNS for IP address of target
-    - Domain table transfers (usually blocked)
-      - ls –d acme.net >> file
-    - Tools for DNS
-      - Sam Spade whois lookup and zone transfers
-- Network query
-  - Ask what networks belong to target’s name
-- Point of contact
-  - List of names
-  - Social engineering targets
-- Trace route
-  - Unix program, in Nt called tracert
-  - Figures out the various machines along the path from attacker to target
-  - Uses time to live field
-    - The device that decreases the time to live field to zero sends a packet back to originator telling who killed the packet
-  - Visual Route is a graphical trace route, shows geography
-    - Graphical helpful for denial of service attack
-- UDP
-  - Mostly blocked
-  - Port 53 is usually open for UDP, DNS service runs on port 53
+**Newsgroups & Social Engineering**
+- Search for posts from the target's IT staff
+- Build employee lists by finding pages that link back to the company (e.g., `link:www.company.com` in search engines)
 
-## Intro to Scanning
+**Public Databases**
+- State/local government databases for partnerships or subsidiaries
+- Useful for finding trust relationships to exploit
 
-### Header Attacks
+**DNS Enumeration**
+- `whois` lookups reveal: organization info, admin contacts, DNS servers, and registrar address
+- `nslookup` queries DNS for IP addresses
+- Zone transfers (`ls -d acme.net >> file`) can expose the full domain table — usually blocked
+- Tools: **Sam Spade** (whois + zone transfers)
 
-- Creation of invalid packets, different protocols handle bad packets differently
-- Source and destination address manipulation
-- Device can be confused by setting source and destination to the same address
-- Setting bits in the header that should not be set
-- Putting values in the header that are above or below the level specified in the standard
+**Network Mapping**
+- Query which networks belong to a target's organization name
+- **Traceroute** (`tracert` on Windows) maps the path from attacker to target using the TTL field — each hop that drops TTL to 0 responds with its identity
+- **Visual Route** provides a graphical/geographic view, useful for planning DoS attacks
+- Port 53 UDP is commonly open (DNS); most other UDP ports are blocked
 
-### Protocol Attacks
+**Tools**
+- **FerretPro**: Advanced searching, newsgroups, IRC
+- **AltaVista / search engines**: Link searches, employee discovery
 
-- You can shutdown the protocol itself
-- Send packets telling the device to stop talking
-- For connectionless protocols you can answer as the server and tell the client the server is down.
-- Ex: Syn flood
+---
 
-#### Network Protocol Issues
+## 2. Scanning
 
-- Timing / procedural
-  - Who talks first, who says what and when
-  - Think of a phone call conversations, there is a protocol, the person picking up the phone talks first
-  - Attacks usually involve valid packets that are out of order, arrive too fast, or are missing packets
+Once footprinting identifies targets, scanning determines whether vulnerabilities exist. Scanning can be detected, so attackers use various countermeasures.
 
-### Authentication Attacks
+### ICMP / Ping Techniques
 
-- Authentication is the proof of one’s identity to another.
-- Often thought of as username & password based
-- In a network addresses are often used to authenticate packets.
-  - Like the 4 addresses used to identify a packet in the Internet
+- **Ping**: Uses ICMP echo request/reply to confirm a host is alive and the TCP/IP stack is running
+- **Ping Sweep**: Sends pings across a range of IPs to find live hosts
+  - `fping` (Unix): sends multiple pings without waiting for replies
+  - Windows equivalent: **Pinger**
+- **TCP Ping**: Tests if a specific port is open (commonly port 80, which firewalls typically allow); also ports 25 (SMTP), 110 (POP), 143 (IMAP)
+- **ICMPenum**: Lets the attacker choose specific ICMP message types (e.g., timestamp) to probe hosts using obscure packets that might bypass filters
 
-### Traffic Attacks
+### IDS Detection & Evasion
 
-- Too much data
-  - To a single:
-    - Application
-    - Network device
-    - Protocol layer
-  - From:
-    - Multiple machines
-    - Single attackers
-- Traffic Capture (sniffing)
-- You can shutdown a service by:
-  - flooding it with packets
-  - opening a large number of connections
-- You can shutdown network by:
-  - flooding it with a large number of packets.
-  - Broadcast packets will do the most damage
-- You can shutdown a machine by:
-  - flooding a machine with packets on multiple services
-  - Broadcast storms
-
-Traffic Capture:
-
-- Packet sniffing can be played out against any layer in the network if the attacker is in a position to “see” the traffic.
-
-### Application Attacks
-
-- TCP stream Service
-- Socket Layer
-- Common Attack Methods
-
-## Scanning
-
-- Footprinting has identified some targets
-- Scanning will tell one if there are vulnerabilities
-- Scanning can be detected
-- Talk about countermeasures to these detection methods
-- Ping
-  - Dos prompt has access to ping
-  - All UNIX variants have ping
-  - Uses ICMP
-    - Used to report errors in IP layer
-    - Carried as payload in an IP packet
-    - Part of kernel code
-  - ICMP echo
-  - ICMP echo reply
-  - Both used to support ping
-
-### Ping
-
-- Send echo request
-- Echo reply is sent back
-- Tells if a computer is alive and TCP/IP stack is in operation
-- Ping sweeps
-  - Sweep through IP addresses to see what IPs are returning with echo reply
-  - Iowa State has a possible 65,000 possible addresses, would take long time to ping if one waited for a response to each ping
-  - Fping, UNIX, sends out multiple pings and doesn’t wait for the answer to come back
-  - Windows has Pinger
-  - Administrators might block echo requests
-
-### TCP Ping
-
-- Checks if a particular port is open
-- Usually use port 80
-- Firewalls typically allow port 80 to pass
-- Other ports
-  - 25 mail
-  - 110 pop
-  - 143 Imap
-
-### ICMPenum
-
-- Allows a user to pick ICMP packet to use
-- ICMP time stamp
-- Using obscure ICMP messages to tell if a computer lives at the IP address
-
-### Detection
-
-- Need a device that watches all traffic to determine ping sweeps
-- Intrusion detection can detect
-- Snort is a free IDS
-- Most common ones are like virus scanners, use signatures
-- Can get past IDS by changing signature of scan
-- Typical rule of IDS if (icmp; =icmp++) or if walking through IPs linearly then problem
-- Attacker changes scanner to randomly select IPs in subnet so that they are not scanned linearly
-- Very simple example
+- **Snort** is a common free IDS; most IDS tools use signatures (similar to antivirus)
+- Typical IDS rule: flag if ICMP count increases or if IPs are scanned linearly
+- **Evasion**: Randomize the order of scanned IPs to avoid linear-scan signatures
 
 ### Prevention
-
-- Block ICMP
-  - Some ICMP messages are essential to network
-  - Usually allow (incoming only, never respond to)
-    - Echo reply
-    - Host unreachable
-    - Time exceeded
-  - Remove ICMP from kernel and put in user defined space, UNIX only
+- Block ICMP at the firewall (with care — some ICMP types are essential)
+- Recommended to allow **incoming only** (never respond to): Echo Reply, Host Unreachable, Time Exceeded
+- On Unix: move ICMP from kernel to user space for finer control
 
 ---
 
-SCANNING PHASE 1 COMPLETE
+## 3. Port Scanning
+
+TCP/IP supports 65,535 TCP ports and 65,535 UDP ports. Port scanning identifies which are open.
+
+### TCP Scan Types
+
+| Scan Type | How It Works | Notes |
+|-----------|-------------|-------|
+| **Full Connect** | Complete 3-way handshake (SYN → SYN/ACK → ACK) | Logged by target |
+| **Half-Open (SYN)** | SYN → SYN/ACK → RST/ACK (never completes) | Not logged as a full connection |
+| **FIN Scan** | Sends FIN to a port; closed ports reply with RST | Open ports do not reply (per RFC) |
+| **Null Scan** | No flags set; closed ports reply with RST | Open ports are silent |
+| **ACK Scan** | Exploits stateless firewalls that only filter SYN/SYN-ACK | Stateful firewalls block this |
+
+### UDP Scanning
+- Send a UDP packet to a port; closed ports reply with ICMP "host unreachable"
+- Rarely used — most firewalls block UDP, and few apps use it
 
 ---
 
-### Services Offered
+## 4. OS Fingerprinting
 
-- TCP/IP protocol suite
-  - 65k ports for TCP and 65k for UDP ports
-- How does an attacker find out what ports a server opens for communication
-  - Try TCP connections to all ports
-    - Example: Use telnet to try to open all ports and see if target responds
-  - TCP connection, 3 way handshaking
-    - Client sends SYN
-    - Server responds with Syn/Ack
-    - Client Acks
-  - This completed connection gets logged
-  - Attackers got more intelligent and devised the half open scan
-    - Attacker sends Syn
-    - Server responds with Syn/Ack
-    - Attacker sends Rst/Ack
-  - This is not a complete connection so it would not have been logged
-  - TCP Fin
-    - If a FIN comes to a close port, a RST must be sent back
-    - Attackers use the TCP/IP standard to send a RST packet as a way of telling if a port is closed, if a port doesn’t send this back then it must be open
-- TCP Null scan
-  - No flags are set, closed ports would send back a RST
-- TCP Ack scan
-  - Takes advantage of poorly configured firewalls
-  - Some firewalls filter the opening of connections by looking at the Syn and the Syn/Ack packets
-  - Assumption that is made:
-    - the firewalls do not care about other packets because they stopped all bad connections
-  - Ack will go through because firewall thinks the connection has been allowed
-  - Statefull firewalls block this type of scan
+### Active Fingerprinting
+Probes the target to infer the OS from TCP/IP stack behavior differences:
+- Response to a FIN sent to an open port (some OSes respond when they shouldn't)
+- Bogus flags in SYN packets
+- Initial sequence number patterns
+- Don't Fragment (DF) bit behavior
+- Initial TCP window size
+- ICMP header/message return behavior
 
-### UDP for Scanning
+### Passive Fingerprinting
+Sniff traffic without sending probes — look for TTL, window size, and fragmentation behavior.
 
-- UDP is stateless
-- Send UDP packet to port
-- Port responds with ICMP message with host unreachable
-- Minimal use of UDP scans because most firewalls block this access, UDP not used by many applications
+### Banners
+Telnet or FTP to a service and read the banner — often reveals OS and software version.
 
-## Tools for Scanning
-
-- Strobe
-  - TCP port scanner
-- UDP scan
-- Netcat or Nc
-  - Robust scanning tools, has many uses
-- Nmap
-  - Insecure.org is the homepage
-  - List services that are available
-  - Makes guesses on operation system running on target computer by active stack fingerprinting
-  - Allows spoofing of packets
-- Ident UNIX
-  - Determines the user of an connection, used as a reverse authentication product
-- NetScan Tools – Windows
-- Super Scan - Windows
+### Tools
+- **Nmap** (`nmap -O <IP>`): Active fingerprinting, ping sweeps (`nmap -sP <IP/CIDR>`), supports packet spoofing
+- **Cheops**: Draws a graphical map of the network
+- **NetScan Tools**, **Super Scan**: Windows-based scanners
+- **Strobe**, **Netcat (nc)**: TCP port scanners; Netcat is highly versatile
+- **Ident (Unix)**: Identifies the user behind a connection (reverse authentication)
 
 ### Countermeasures
-
-- Personal firewalls
-- IDS
-- Unix utilities
+- Personal firewalls and IDS
+- Limit services running on systems (reduces attack surface)
 - Massive port scans are easy to detect
-- Limit services offered on system
-  - Usually limits usefulness of computer
 
-### Determining OS
+---
 
-- Try Telnet and FTP and read the banners
-- Active stack finger printing
-  - Fin probe, send fin to open port, this fin is an invalid packet, TCP/IP standard tells the OS manufacturers not to respond, some Operating Systems do
-  - Bogus flag in Syn packet, different OS respond differently
-  - Initial sequence numbers are picked differently
-  - Don’t fragment bit
-  - Initial TCP/IP window size
-  - ICMP differences
-    - Header return
-    - Message return rate
-  - Not looking for flaws or vulnerabilities, looking for TCP/IP stack implementation differences and from these differences determine OS
+## 5. Enumeration
 
-### NMAP
+Enumeration goes deeper than scanning — it extracts specific information from identified systems. It is heavily OS-dependent.
 
-- Nmap –sp IP address / Cidr for ping sweeps
-- CIDR is way to specify IPs
-- IP address is 4, 8 bit chunks
-- Example 129.186.215.0
-- Basically telling where the network and hosts are defined in the IP address
+**What it looks for:**
+- Shared network resources
+- Usernames and group memberships
+- Application banners
+- SNMP and DNS data
+- Machine names, routing tables
+- Active Directory or other authentication systems
 
-### Determining Operating System
+### Windows Enumeration
 
-- Type of Service field, some stacks give back non-zero values
-- Fragmentation issues
-  - Overlapping fragments
-- TCP options
-  - Send packets with options defined, new options continue to be defined
+**Null Sessions & NetBIOS**
+- A null session is an unauthenticated connection to a Windows share that can expose user lists, share names, and network info
+- Block Windows file-sharing ports (NetBIOS) at the firewall
+- `net view`: Lists domain shares
+- `nbtstat`: Queries machines for NetBIOS names, logged-in user, and MAC address
 
-### Tools and Passive Fingerprinting
+**Domain Controller Tools**
+- **DumpSec**: Extracts share and user info from domain controllers
+- **Legion**: Scans an IP range for shares, displays them as a tree, and attempts dictionary attacks
 
-- Nmap
-  - Doesn’t do fragment test but does most of these determining techniques
-  - Nmap –o IP
-- Cheops
-  - Draws picture of network
-- Passive finger printing
-  - More difficult
-  - Monitor the network with sniffer
-  - Look for
-    - TTL
-    - Window size
-    - Fragment
+**Windows Services**
+- DHCP: Standard implementation
+- DNS: Watch for zone transfer vulnerabilities
+
+### SNMP (Simple Network Management Protocol)
+- Port 161; used to query routers, bridges, and gateways
+- Can expose: device type, administrator info, shares, usernames, domain names
+- "SNMP walking" tools can enumerate entire networks
+
+### Unix Enumeration
+- **NFS (Network File System)**: Can be queried for shares; sometimes exposes the password file
+- **Finger** (`finger 0@host`): Shows logged-in users, real names, and user IDs; `rwho` shows remote logins
+- **Samba**: Allows Unix machines to interact with Windows shares
+- **TFTP**: Unauthenticated file transfer — often a data leak risk
+- **RPC / Portmapper**: Exposes remote services; Nmap works well here
+- **SMTP VRFY** (port 25): Can verify if a username exists (usually disabled)
+
+---
+
+## 6. Header & Protocol Attacks (Overview)
+
+### Header Attacks
+- Crafting invalid packets to confuse protocol stacks
+- Setting source and destination to the same address
+- Setting reserved/illegal header bits
+- Values outside the range defined by the standard
+
+### Protocol Attacks
+- Sending packets that instruct a device to stop communicating
+- For connectionless protocols: spoof a "server is down" response to the client
+- **Example**: SYN flood — overwhelms a server by sending many SYN packets without completing the handshake
+
+### Network Timing Attacks
+- Valid packets that arrive out of order, too fast, or are deliberately missing
+
+### Authentication Attacks
+- Network addresses are often used to authenticate packets (the 4-tuple IP header)
+- Exploiting IP-based trust rather than credential-based auth
+
+### Traffic Attacks
+- **Flooding**: Too many packets to a single app, device, or protocol layer — can come from one attacker or many (DDoS)
+- **Broadcast storms**: Broadcast packets amplify damage across the network
+- **Sniffing**: Capture traffic at any layer if the attacker can see it; exploits shared network segments

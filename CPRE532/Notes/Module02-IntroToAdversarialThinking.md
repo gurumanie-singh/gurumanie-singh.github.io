@@ -1,68 +1,51 @@
-# Introduction to Adversarial Thinking
+# Module 2: Introduction to Adversarial Thinking
 
-## What is Adversarial Thinking?
+---
 
-### What is an Adversary?
+## What is an Adversary?
 
-- An adversary is an individual, group, or entity that opposes or acts in conflict against another. In various contexts, adversaries seek to achieve specific goals, often at the expense of others.
-- They work across multiple domains.
+An adversary is an individual, group, or entity that opposes or acts in conflict against another, seeking to achieve specific goals — often at the expense of others. They operate across multiple domains (physical, cyber, social, etc.).
 
-### Characteristics of an Adversary
+---
 
 ## The Adversarial Process
 
 ![The Adversarial Process](./Screenshots/TheAdversarialProcess.png)
 
-## Understanding the Adversary's Mindset
+---
 
-### Define Goals, Motivation, and Objectives
+## The Adversarial Mindset: Goals, Motivation & Objectives
 
 ![Goals, Motivation, Objectives](./Screenshots/GoalsMotivationObjectives.png)
 
-- **Goals are the specific outcomes.**
-- **Motivation is the driving force.** It's why an adversary engages in certain behaviors or chooses a specific course of action. (Ideological beliefs, Desire for revenge)
-- **Objectives are specific, concrete steps** that need to be achieved in pursuit of a goal. They are more precise and measurable.
+These three concepts are distinct but deeply connected:
 
-### Defining Goals: The "What"
+- **Goals** — the specific outcomes an adversary wants to achieve. They are concrete, measurable, outcome-focused, and can evolve over time.
+- **Motivation** — the *why* behind the adversary's actions. Can be internal or external, tends to be broad and abstract, and directly influences decision-making (e.g., ideological beliefs, desire for revenge).
+- **Objectives** — the *steps* taken to reach a goal. Specific, quantifiable, short-to-medium-term milestones that are directly actionable.
 
-- Characteristics:
-  - Concrete and Measurable
-  - Outcome-Focused
-  - Can Evolve Over Time
+**In short:** Goals give direction, motivation provides the driving force, and objectives are the concrete steps that get you there.
 
-### Defining Motivation: The "Why"
+---
 
-- Characteristics:
-  - Internal or External
-  - Broad and Abstract
-  - Influences Decision-Making
+## Types of Adversarial Motivation
 
-### Defining Objectives: The "Steps"
+- **Political** — influence or destabilize governments and policy
+- **Economic** — financial gain or competitive advantage
+- **Ideological/Religious** — advance a belief system or cause
+- **Personal** — revenge, grievance, or personal gain
+- **Technological** — acquire or disrupt technology and IP
+- **Strategic/Military** — gain tactical or geopolitical advantage
 
-- Characteristics:
-  - Specific, Clear, and often Quantifiable
-  - Short to medium-term targets or milestones
-  - Directly actionable and serve as steps towards achieving a broader goal
+---
 
-### Goals vs Objectives
+## Crosscutting Goals of Adversaries
 
-- While goals provide a general direction, objectives are the specific steps
-  taken to achieve these goals.
+Regardless of motivation, adversaries tend to pursue a common set of objectives:
 
-### Adversary's Motivation, Goals, and Objectives
-
-- Political Motivations
-- Economic Motivations
-- Ideological/Religious Motivation
-- Personal Motivations
-- Technological Motivations
-- Strategic/Military Motivations
-
-### Crosscutting Goals of Adversaries
-
-- Espionage
-- Disruption
-- Reputation Damage
-- Resource Control
-- Social Engineering
-- Intimidation/Coercion
+- **Espionage** — covert intelligence gathering
+- **Disruption** — degrading systems, services, or operations
+- **Reputation Damage** — undermining trust in a person or organization
+- **Resource Control** — acquiring or denying access to assets
+- **Social Engineering** — manipulating people to achieve access or information
+- **Intimidation/Coercion** — using threats to influence behavior
