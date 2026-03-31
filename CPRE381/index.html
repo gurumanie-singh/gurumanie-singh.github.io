@@ -1,58 +1,114 @@
-<!-- CPRE381/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gurumanie Singh | CPRE381 Coursework</title>
-
-  <!-- Tailwind + custom colors -->
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPRE381 — Gurumanie Singh</title>
+  <link rel="icon" href="../images/Favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../css/design-system.css" />
 </head>
+<body>
 
-<body class="transition-all">
-  <!-- Header -->
-  <header
-    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
-    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | CPRE381 Coursework</h1>
-    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
-  </header>
+  <canvas id="particle-canvas"></canvas>
 
-  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
-    <h2 class="text-3xl font-semibold mb-6 text-white">CPRE381: Advanced Computer Architecture</h2>
-    <p class="text-gray-200 mb-6">
-      In CPRE381, I delved into computer organization and performance evaluation by designing and simulating pipelined
-      processor architectures in VHDL. Projects included an 5-stage scalar pipeline CPU featuring an ALU, control unit,
-      hazard detection, and forwarding logic to optimize instruction throughput.
-    </p>
-    <p class="text-gray-200 mb-6">
-      To validate design correctness, I authored comprehensive VHDL test benches and used ModelSim to generate waveform
-      outputs, analyzing timing diagrams and resolving data/control hazards. I also implemented assembly-level test
-      programs to exercise instruction set features, measured CPI, and experimented with memory hierarchy setups to
-      evaluate cache impacts.
-    </p>
-    <p class="text-gray-200 mb-8">
-      This immersive coursework strengthened my understanding of ISA design, pipeline control, performance trade-offs,
-      and hardware description languages—foundations critical for low-level systems and embedded development.
-    </p>
-    <div class="text-center">
-      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/CPRE381" target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
-        View Full Code on GitHub
-      </a>
+  <nav class="ds-nav">
+    <a href="../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+    <a href="../index.html" class="ds-nav-back">← Back to Portfolio</a>
+    <div class="ds-nav-right">
+      <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
     </div>
-  </section>
+  </nav>
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration: 800, once: true });</script>
+  <main class="ds-main">
+
+    <div class="ds-page-hero">
+      <div class="ds-badge ds-fade-up ds-fade-up-1">CPRE381 · Computer Architecture</div>
+      <h1 class="ds-page-title ds-fade-up ds-fade-up-2">
+        Pipelined Processors —<br /><em>hardware design.</em>
+      </h1>
+      <p class="ds-page-desc ds-fade-up ds-fade-up-3">
+        Designed and simulated pipelined CPU architectures in VHDL, exploring ISA design, hazard mitigation, forwarding logic, and memory hierarchy performance.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">overview</p>
+      <h2 class="ds-section-title">What I<br /><em>built.</em></h2>
+
+      <p class="ds-body">
+        In CPRE381 I delved into computer organisation and performance evaluation by designing and simulating pipelined processor architectures in VHDL. The centrepiece project was a <strong>5-stage scalar pipeline CPU</strong> featuring an ALU, control unit, hazard detection, and forwarding logic to optimise instruction throughput.
+      </p>
+      <p class="ds-body">
+        To validate design correctness I authored comprehensive <strong>VHDL test benches</strong> and used <strong>ModelSim</strong> to generate waveform outputs, analysing timing diagrams and resolving data/control hazards. I also implemented assembly-level test programs to exercise instruction set features, measured CPI, and experimented with memory hierarchy setups to evaluate cache impacts.
+      </p>
+      <p class="ds-body">
+        This immersive coursework strengthened my understanding of ISA design, pipeline control, performance trade-offs, and hardware description languages — foundations critical for low-level systems and embedded development.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">highlights</p>
+      <h2 class="ds-section-title">Key<br /><em>contributions.</em></h2>
+
+      <div class="ds-card-grid">
+        <div class="ds-card">
+          <div class="ds-card-title">5-Stage Pipeline CPU</div>
+          <div class="ds-card-desc">Engineered a complete scalar pipeline with fetch, decode, execute, memory, and write-back stages in VHDL, including hazard detection and data forwarding.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">VHDL Test Benches</div>
+          <div class="ds-card-desc">Wrote comprehensive test benches to validate each pipeline stage, using ModelSim waveform analysis to identify and resolve timing issues.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">ISA &amp; Assembly Testing</div>
+          <div class="ds-card-desc">Implemented assembly-level programs to exercise instruction set features, measure CPI, and verify correct execution through simulation.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Cache &amp; Memory Hierarchy</div>
+          <div class="ds-card-desc">Experimented with memory hierarchy configurations to evaluate cache impacts on processor performance and throughput.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">technology</p>
+      <h2 class="ds-section-title">Stack &amp;<br /><em>tools.</em></h2>
+
+      <div class="ds-highlight">
+        Hardware design and simulation workflow centred on VHDL with ModelSim for waveform verification and MIPS assembly for functional testing.
+      </div>
+
+      <div class="ds-pill-row">
+        <span class="ds-pill">VHDL</span>
+        <span class="ds-pill">ModelSim</span>
+        <span class="ds-pill">MIPS Assembly</span>
+        <span class="ds-pill">Pipeline Design</span>
+        <span class="ds-pill">Hazard Detection</span>
+        <span class="ds-pill">Cache Design</span>
+      </div>
+
+      <div class="ds-btn-row">
+        <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/CPRE381"
+           target="_blank" rel="noopener noreferrer" class="ds-btn-primary">
+          View Code on GitHub →
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="ds-footer">
+    <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+
+  <script src="../js/design-system.js"></script>
+
 </body>
-
 </html>

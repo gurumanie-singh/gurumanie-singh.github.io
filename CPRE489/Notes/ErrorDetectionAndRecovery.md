@@ -126,3 +126,4 @@
 "cumulative acknowledgement"
 - Ex: ACK(20) => all data frames with SN < 20 have been received correctly.
               => the next data frame that the receiver is waiting for is #20.
+

@@ -1,67 +1,109 @@
-<!-- CPRE536/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gurumanie Singh | CPRE536 Coursework</title>
-
-  <!-- Tailwind + custom colors -->
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPRE536 — Gurumanie Singh</title>
+  <link rel="icon" href="../images/Favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../css/design-system.css" />
 </head>
+<body>
 
-<body class="transition-all">
-  <!-- Header -->
-  <header
-    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
-    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | CPRE536 Coursework</h1>
-    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
-  </header>
+  <canvas id="particle-canvas"></canvas>
 
-  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
-    <h2 class="text-3xl font-semibold mb-6 text-white">CPRE536: Computer and Network Forensics</h2>
-    <p class="text-gray-200 mb-6">
-      CPRE536 introduces the fundamentals of computer and network forensics, including forensic duplication and
-      analysis, network surveillance, intrusion detection and response, incident response workflows, and privacy
-      protection techniques. The course also covers cyber law, policy, and communicating findings through court-ready
-      reports and testimony.
-    </p>
-    <h3 class="text-xl text-white font-medium mb-3">Key topics</h3>
-    <ul class="list-disc list-outside pl-6 text-gray-200 mb-6">
-      <li>Forensic duplication and chain-of-custody best practices</li>
-      <li>Network surveillance and intrusion detection techniques</li>
-      <li>Incident response processes and reporting</li>
-      <li>Anonymity, pseudonymity, and privacy-preserving techniques</li>
-      <li>Cyber law, security policy, and legal considerations for evidence</li>
-      <li>Hands-on case studies emphasizing practical tool use</li>
-    </ul>
-
-    <h3 class="text-xl text-white font-medium mb-3">Hands-on labs</h3>
-    <p class="text-gray-200 mb-6">
-      Labs emphasize practical experience with standard forensic tools and methodologies. Students work with tools such
-      as FTK and EnCase for disk imaging, evidence analysis, and timeline creation. Exercises also include network
-      packet capture and analysis, intrusion detection signatures, and preparing professional reports suitable for legal
-      contexts.
-    </p>
-    <div class="text-center">
-      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/CPRE536" target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
-        View Full Code on GitHub
-      </a>
+  <nav class="ds-nav">
+    <a href="../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+    <a href="../index.html" class="ds-nav-back">← Back to Portfolio</a>
+    <div class="ds-nav-right">
+      <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
     </div>
-  </section>
+  </nav>
 
+  <main class="ds-main">
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration: 800, once: true });</script>
+    <div class="ds-page-hero">
+      <div class="ds-badge ds-fade-up ds-fade-up-1">CPRE536 · Computer &amp; Network Forensics</div>
+      <h1 class="ds-page-title ds-fade-up ds-fade-up-2">
+        Digital Forensics —<br /><em>evidence &amp; analysis.</em>
+      </h1>
+      <p class="ds-page-desc ds-fade-up ds-fade-up-3">
+        Investigated digital evidence collection, preservation, and analysis techniques for incident response, applying forensic tools to reconstruct attack timelines and prepare court-ready reports.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">overview</p>
+      <h2 class="ds-section-title">What I<br /><em>learned.</em></h2>
+
+      <p class="ds-body">
+        CPRE536 introduces the fundamentals of computer and network forensics, including <strong>forensic duplication and analysis</strong>, <strong>network surveillance</strong>, <strong>intrusion detection and response</strong>, incident response workflows, and privacy protection techniques. The course also covers cyber law, policy, and communicating findings through court-ready reports and testimony.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">highlights</p>
+      <h2 class="ds-section-title">Key<br /><em>topics.</em></h2>
+
+      <div class="ds-card-grid">
+        <div class="ds-card">
+          <div class="ds-card-title">Forensic Duplication</div>
+          <div class="ds-card-desc">Practised forensic imaging and chain-of-custody procedures to ensure evidence integrity for legal proceedings.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Network Surveillance</div>
+          <div class="ds-card-desc">Captured and analysed network traffic to detect intrusions, reconstruct attack timelines, and identify compromised systems.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Incident Response</div>
+          <div class="ds-card-desc">Followed structured incident response workflows — identification, containment, eradication, recovery, and lessons learned.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Cyber Law &amp; Policy</div>
+          <div class="ds-card-desc">Studied legal frameworks governing digital evidence, privacy protections, and the admissibility of forensic findings in court.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">labs</p>
+      <h2 class="ds-section-title">Hands-on<br /><em>work.</em></h2>
+
+      <p class="ds-body">
+        Labs emphasised practical experience with standard forensic tools and methodologies. I worked with tools such as <strong>FTK</strong> and <strong>EnCase</strong> for disk imaging, evidence analysis, and timeline creation. Exercises also included network packet capture and analysis, intrusion detection signatures, and preparing professional reports suitable for legal contexts.
+      </p>
+
+      <div class="ds-pill-row">
+        <span class="ds-pill">FTK</span>
+        <span class="ds-pill">EnCase</span>
+        <span class="ds-pill">Disk Imaging</span>
+        <span class="ds-pill">Wireshark</span>
+        <span class="ds-pill">Intrusion Detection</span>
+        <span class="ds-pill">Incident Response</span>
+        <span class="ds-pill">Chain of Custody</span>
+      </div>
+
+      <div class="ds-btn-row">
+        <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/CPRE536"
+           target="_blank" rel="noopener noreferrer" class="ds-btn-primary">
+          View on GitHub →
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="ds-footer">
+    <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+
+  <script src="../js/design-system.js"></script>
+
 </body>
-
 </html>

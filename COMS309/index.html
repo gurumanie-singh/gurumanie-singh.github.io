@@ -1,65 +1,130 @@
-<!-- COMS309/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gurumanie Singh | COMS309 Coursework</title>
-
-  <!-- Tailwind + custom colors -->
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COMS309 — Gurumanie Singh</title>
+  <link rel="icon" href="../images/Favicon.png" type="image/png" />
+  <!-- Shared design system (tokens, nav, cards, animations) -->
+  <link rel="stylesheet" href="../css/design-system.css" />
 </head>
+<body>
 
-<body class="transition-all">
-  <!-- Header -->
-  <header
-    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
-    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | COMS309 Coursework</h1>
-    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
-  </header>
+  <!-- Particle canvas — driven by design-system.js -->
+  <canvas id="particle-canvas"></canvas>
 
-  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
-    <h2 class="text-3xl font-semibold mb-6 text-white">COMS309: Software Development Practices</h2>
-    <p class="text-gray-200 mb-6">
-      For our CareerConnect application, I collaborated with a four-person team to build a full-stack job-search
-      platform that was organized by career clusters (engineering, business, etc.), making it effortless for students to
-      discover and connect with peers and mentors in their field. We followed Scrum processes, gathered user feedback,
-      planned two-week sprints, delivered incremental features with continuous feedback from our TAs, and <strong>won
-        2nd place</strong> in the course competition.
-    </p>
-    <p class="text-gray-200 mb-6">
-      As lead backend developer, I integrated a Hugging Face AI model for chat moderation, designed a MySQL import
-      pipeline to ingest 1,000+ universities and 2,000+ majors from Excel on each run, and built RESTful APIs for
-      cluster-based user search, one-to-one encrypted messaging, and real-time notifications for both individual and
-      group conversations.
-    </p>
-    <p class="text-gray-200 mb-8">
-      This hands-on work sharpened my skills in API design, secure data ingestion, real-time communication, and Scrum
-      delivery—preparing me to craft scalable, user-centric applications.
-    </p>
-    <div class="text-center">
-      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/COMS309" target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
-        View Full Code on GitHub
-      </a>
-      <a href="https://youtu.be/6HS6Ora1hDE?si=uHet-HNUV5WV5WVmsuj" target="_blank" rel="noopener noreferrer"
-        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
-        Watch Demo
-      </a>
+  <!-- ── NAV ── -->
+  <nav class="ds-nav">
+    <a href="../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+    <a href="../index.html" class="ds-nav-back">← Back to Portfolio</a>
+    <div class="ds-nav-right">
+      <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
     </div>
-  </section>
+  </nav>
 
+  <!-- ── MAIN ── -->
+  <main class="ds-main">
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration: 800, once: true });</script>
+    <!-- Page hero -->
+    <div class="ds-page-hero">
+      <div class="ds-badge ds-fade-up ds-fade-up-1">COMS309 · Software Development Practices</div>
+      <h1 class="ds-page-title ds-fade-up ds-fade-up-2">
+        CareerConnect —<br /><em>2nd Place.</em>
+      </h1>
+      <p class="ds-page-desc ds-fade-up ds-fade-up-3">
+        A full-stack job-search platform organised by career clusters, built with a four-person team following Scrum practices over a semester of two-week sprints.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <!-- Overview -->
+    <div class="ds-section">
+      <p class="ds-section-label">overview</p>
+      <h2 class="ds-section-title">What We<br /><em>built.</em></h2>
+
+      <p class="ds-body">
+        CareerConnect made it effortless for students to discover and connect with peers and mentors in their career cluster — engineering, business, and more. We followed Scrum processes, gathered continuous feedback from TAs, and delivered incremental features across the semester, ultimately <strong>winning 2nd place</strong> in the course competition.
+      </p>
+      <p class="ds-body">
+        As lead backend developer I integrated a <strong>Hugging Face AI model</strong> for chat moderation, designed a MySQL import pipeline to ingest <strong>1,000+ universities and 2,000+ majors</strong> from Excel on each run, and built RESTful APIs for cluster-based user search, one-to-one encrypted messaging, and real-time notifications for both individual and group conversations.
+      </p>
+      <p class="ds-body">
+        This hands-on work sharpened my skills in API design, secure data ingestion, real-time communication, and Scrum delivery — preparing me to craft scalable, user-centric applications.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <!-- Highlights -->
+    <div class="ds-section">
+      <p class="ds-section-label">highlights</p>
+      <h2 class="ds-section-title">Key<br /><em>contributions.</em></h2>
+
+      <div class="ds-card-grid">
+        <div class="ds-card">
+          <div class="ds-card-title">AI Chat Moderation</div>
+          <div class="ds-card-desc">Integrated a Hugging Face model to automatically flag and filter inappropriate messages in real time across individual and group conversations.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Data Ingestion Pipeline</div>
+          <div class="ds-card-desc">Built a MySQL import pipeline that ingested 1,000+ universities and 2,000+ majors from Excel spreadsheets on every server run — ensuring data freshness without manual intervention.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">RESTful API Design</div>
+          <div class="ds-card-desc">Architected cluster-based user search endpoints, one-to-one encrypted messaging, and a real-time notification system serving both individual and group threads.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">2nd Place — Course Competition</div>
+          <div class="ds-card-desc">Out of all project teams in the cohort, CareerConnect placed 2nd, recognised for its polish, feature completeness, and real-world applicability.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <!-- Tech stack -->
+    <div class="ds-section">
+      <p class="ds-section-label">technology</p>
+      <h2 class="ds-section-title">Stack &amp;<br /><em>tools.</em></h2>
+
+      <div class="ds-highlight">
+        Full-stack Spring Boot + React application with a MySQL relational database, CI/CD via GitLab, and WebSocket connections for real-time messaging.
+      </div>
+
+      <div class="ds-pill-row">
+        <span class="ds-pill">Spring Boot</span>
+        <span class="ds-pill">React</span>
+        <span class="ds-pill">MySQL</span>
+        <span class="ds-pill">Hugging Face</span>
+        <span class="ds-pill">WebSocket</span>
+        <span class="ds-pill">GitLab CI/CD</span>
+        <span class="ds-pill">REST APIs</span>
+        <span class="ds-pill">Scrum</span>
+      </div>
+
+      <div class="ds-btn-row">
+        <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/COMS309"
+           target="_blank" rel="noopener noreferrer" class="ds-btn-primary">
+          View Code on GitHub →
+        </a>
+        <a href="https://youtu.be/6HS6Ora1hDE?si=uHet-HNUV5WV5WVmsuj"
+           target="_blank" rel="noopener noreferrer" class="ds-btn-ghost">
+          Watch Demo
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="ds-footer">
+    <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+
+  <!-- Shared behaviour: theme, particles, scroll-reveal -->
+  <script src="../js/design-system.js"></script>
+
 </body>
-
 </html>

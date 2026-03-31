@@ -1,105 +1,110 @@
-<!-- CPRE431/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gurumanie Singh | CPRE431 Coursework</title>
-
-  <!-- Tailwind + custom colors -->
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { theme: { extend: { colors: { gray: { 900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252', 500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1' } } } } };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPRE431 — Gurumanie Singh</title>
+  <link rel="icon" href="../images/Favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../css/design-system.css" />
 </head>
+<body>
 
-<body class="transition-all">
-  <!-- Header -->
-  <header
-    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
-    <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | CPRE431 Coursework</h1>
-    <nav><a href="../index.html" class="text-gray-100 hover:text-white">← Back to Portfolio</a></nav>
-  </header>
+  <canvas id="particle-canvas"></canvas>
 
-  <section class="py-16 px-4 max-w-4xl mx-auto" data-aos="fade-up">
-    <h2 class="text-3xl font-semibold mb-6 text-white">CPRE431: Basics of Information System Security</h2>
-    <p class="text-gray-200 mb-6">
-      CPRE431 introduces mechanisms for protecting information systems from accidental and intentional threats. Topics
-      include basic cryptography, authentication, access control, malicious code, network security mechanisms
-      (firewalls, intrusion detection, SSL/TLS), ethics, and legal issues. Labs and programming assignments focus on
-      practical security tools, cryptanalysis, and system configuration.
-    </p>
-    <h3 class="text-xl text-white font-medium mb-3">Representative labs (selected examples)</h3>
+  <nav class="ds-nav">
+    <a href="../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+    <a href="../index.html" class="ds-nav-back">← Back to Portfolio</a>
+    <div class="ds-nav-right">
+      <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+    </div>
+  </nav>
 
-    <div class="space-y-6 text-gray-200 mb-6">
-      <div>
-        <h4 class="text-lg font-semibold text-white mb-2">Lab: Encrypted attachment analysis</h4>
-        <p>
-          Scenario: Acting as the security administrator for a company, students analyze an encrypted attachment
-          suspected of leaking confidential data. The file name hints that the password is the MD5 hash of the file name
-          with extension. Students use OpenSSL to compute hashes, decrypt the archive, and identify hidden or encrypted
-          items inside.
-        </p>
-        <ol class="list-decimal list-inside mt-3">
-          <li>Compute MD5 hashes using OpenSSL and verify the correct hash (note hash is space sensitive).</li>
-          <li>Use file-decompression tools (WinRAR, unzip, etc.) to open the archive with the derived password.</li>
-          <li>Analyze decrypted files, identify OpenSSL-encrypted contents beginning with "Salted__", and use OpenSSL
-            symmetric decryption with candidate keys to recover plaintext.</li>
-        </ol>
-      </div>
+  <main class="ds-main">
 
-      <div>
-        <h4 class="text-lg font-semibold text-white mb-2">Lab: Password cracking from /etc/shadow</h4>
-        <p>
-          Scenario: A VM is provided with an administrator and several users. Students are given an administrator's hash
-          from /etc/shadow and must determine hash type, salt, and crack other user passwords using appropriate tools
-          and
-          methods. This lab reinforces understanding of password hashing, salts, and practical cracking techniques.
-        </p>
-      </div>
+    <div class="ds-page-hero">
+      <div class="ds-badge ds-fade-up ds-fade-up-1">CPRE431 · Information System Security</div>
+      <h1 class="ds-page-title ds-fade-up ds-fade-up-2">
+        Security Foundations —<br /><em>attack &amp; defence.</em>
+      </h1>
+      <p class="ds-page-desc ds-fade-up ds-fade-up-3">
+        Explored fundamental security principles including cryptography, authentication, access control, and defensive strategies, with hands-on labs covering encryption, password cracking, DoS attacks, and firewall configuration.
+      </p>
+    </div>
 
-      <div>
-        <h4 class="text-lg font-semibold text-white mb-2">Lab: Slowloris DoS experiment (CloudLab)</h4>
-        <p>
-          Students reproduce a Slowloris-style denial-of-service experiment on an isolated CloudLab slice. The lab
-          provides hands-on experience with resource exhaustion attacks in a controlled environment; students must be
-          careful not to affect external infrastructure and must follow CloudLab policies.
-        </p>
-      </div>
+    <div class="ds-divider"></div>
 
-      <div>
-        <h4 class="text-lg font-semibold text-white mb-2">Lab: iptables rule creation</h4>
-        <p>
-          Students practice creating iptables rules to filter and control traffic, implement basic firewall rules,
-          and observe how changes affect connectivity and service accessibility.
-        </p>
+    <div class="ds-section">
+      <p class="ds-section-label">overview</p>
+      <h2 class="ds-section-title">What I<br /><em>learned.</em></h2>
+
+      <p class="ds-body">
+        CPRE431 introduces mechanisms for protecting information systems from accidental and intentional threats. Topics include <strong>basic cryptography</strong>, <strong>authentication</strong>, <strong>access control</strong>, malicious code, and network security mechanisms such as firewalls, intrusion detection, and SSL/TLS. Ethics and legal issues round out the curriculum, with labs and programming assignments focusing on practical security tools, cryptanalysis, and system configuration.
+      </p>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">labs</p>
+      <h2 class="ds-section-title">Hands-on<br /><em>exercises.</em></h2>
+
+      <div class="ds-card-grid">
+        <div class="ds-card">
+          <div class="ds-card-title">Encrypted Attachment Analysis</div>
+          <div class="ds-card-desc">Acted as a security administrator to analyse a suspected data-leak attachment — computed MD5 hashes with OpenSSL, decrypted archives, and recovered plaintext from OpenSSL-encrypted files using symmetric decryption.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Password Cracking from /etc/shadow</div>
+          <div class="ds-card-desc">Identified hash types and salts from a provided VM's /etc/shadow file, then used appropriate tools and methods to crack user passwords, reinforcing understanding of password hashing.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">Slowloris DoS Experiment</div>
+          <div class="ds-card-desc">Reproduced a Slowloris-style denial-of-service attack on an isolated CloudLab slice, gaining hands-on experience with resource exhaustion attacks in a controlled environment.</div>
+        </div>
+        <div class="ds-card">
+          <div class="ds-card-title">iptables Firewall Rules</div>
+          <div class="ds-card-desc">Created iptables rules to filter and control traffic, implemented basic firewall policies, and observed how rule changes affect connectivity and service accessibility.</div>
+        </div>
       </div>
     </div>
 
-    <h3 class="text-xl text-white font-medium mb-3">Learning outcomes</h3>
-    <ul class="list-disc list-outside pl-6 text-gray-200 mb-6">
-      <li>Practical cryptography usage and decryption workflows</li>
-      <li>Understanding password hashing, salts, and practical password recovery techniques</li>
-      <li>Experience with network-level attacks and defensive configurations</li>
-      <li>Hands-on skills with system-level security tools and firewall configuration</li>
-      <li>Ability to document findings and prepare clear technical reports</li>
-    </ul>
-    <div class="text-center">
-      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/CPRE431" target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
-        View Full Code on GitHub
-      </a>
+    <div class="ds-divider"></div>
+
+    <div class="ds-section">
+      <p class="ds-section-label">outcomes</p>
+      <h2 class="ds-section-title">Skills<br /><em>gained.</em></h2>
+
+      <div class="ds-highlight">
+        Practical cryptography usage, password hashing and recovery, network-level attacks and defences, firewall configuration, and clear technical report writing.
+      </div>
+
+      <div class="ds-pill-row">
+        <span class="ds-pill">Cryptography</span>
+        <span class="ds-pill">OpenSSL</span>
+        <span class="ds-pill">Password Cracking</span>
+        <span class="ds-pill">iptables</span>
+        <span class="ds-pill">CloudLab</span>
+        <span class="ds-pill">DoS Attacks</span>
+        <span class="ds-pill">SSL/TLS</span>
+        <span class="ds-pill">Access Control</span>
+      </div>
+
+      <div class="ds-btn-row">
+        <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/CPRE431"
+           target="_blank" rel="noopener noreferrer" class="ds-btn-primary">
+          View Code on GitHub →
+        </a>
+      </div>
     </div>
-  </section>
 
+  </main>
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration: 800, once: true });</script>
+  <footer class="ds-footer">
+    <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+
+  <script src="../js/design-system.js"></script>
+
 </body>
-
 </html>
