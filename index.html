@@ -1,713 +1,1193 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gurumanie Singh Dhiman | Portfolio</title>
-  <link rel="icon" href="images/Favicon.png" type="image/png">
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            gray: {
-              900: '#1b1b1b', 800: '#2d2d2d', 700: '#3f3f3f', 600: '#525252',
-              500: '#6b6b6b', 400: '#8a8a8a', 300: '#a8a8a8', 200: '#c7c7c7', 100: '#e1e1e1'
-            }
-          }
-        }
-      }
-    };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <title>Gurumanie Singh Dhiman — Portfolio</title>
+  <link rel="icon" href="images/Favicon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
-    .tab-content {
-      display: none;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #f7f7f5;
+      --bg2:            #f0f0ec;
+      --surface:        rgba(255,255,255,0.72);
+      --surface-border: rgba(0,0,0,0.07);
+      --text:           #111110;
+      --text2:          #5a5a56;
+      --text3:          #9a9a94;
+      --accent:         #7c3aed;
+      --accent-rgb:     124,58,237;
+      --accent-soft:    rgba(124,58,237,0.10);
+      --accent-softer:  rgba(124,58,237,0.05);
+      --radius:         20px;
+      --transition:     0.4s cubic-bezier(0.16,1,0.3,1);
     }
 
-    .tab-content.active {
-      display: block;
+    [data-theme="dark"] {
+      --bg:             #0d0d0c;
+      --bg2:            #131312;
+      --surface:        rgba(255,255,255,0.04);
+      --surface-border: rgba(255,255,255,0.08);
+      --text:           #f0f0ec;
+      --text2:          #9a9a94;
+      --text3:          #5a5a56;
+      --accent:         #a78bfa;
+      --accent-rgb:     167,139,250;
+      --accent-soft:    rgba(167,139,250,0.12);
+      --accent-softer:  rgba(167,139,250,0.06);
     }
 
-    .featured-badge {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      animation: pulse-glow 2s ease-in-out infinite;
-    }
-
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes pulse-glow {
-
-      0%,
-      100% {
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
-      }
-
-      50% {
-        box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
-      }
-    }
-
-    .skill-bar {
-      transition: all 0.3s ease;
-    }
-
-    .skill-bar:hover {
-      transform: scaleX(1.02);
-      filter: brightness(1.2);
-    }
-
-    .skill-container:hover .skill-bar {
-      animation: pulse-skill 1s ease-in-out;
-    }
-
-    @keyframes pulse-skill {
-      0%, 100% { transform: scaleY(1); }
-      50% { transform: scaleY(1.2); }
-    }
+    html { scroll-behavior: smooth; }
+    html, body { scroll-snap-type: none; }
 
     body {
-      animation: gradientShift 15s ease infinite;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
     }
 
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+    #particle-canvas {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
     }
 
-    .contact-icon {
-      position: relative;
-      transition: transform 0.3s ease;
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 4vw, 48px);
+      height: 64px;
+      background: rgba(247,247,245,0.82);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--surface-border);
+      transition: background var(--transition), border-color var(--transition);
+      gap: 16px;
+    }
+    [data-theme="dark"] nav { background: rgba(13,13,12,0.88); }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem; color: var(--text);
+      text-decoration: none; letter-spacing: -0.02em;
+      white-space: nowrap; flex-shrink: 0;
     }
 
-    .contact-icon:hover {
-      transform: translateY(-5px) scale(1.1);
+    .nav-tabs {
+      display: flex; align-items: center; gap: 4px;
+      overflow-x: auto; scrollbar-width: none; flex: 1; justify-content: center;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      font-size: 0.8125rem; font-weight: 500;
+      color: var(--text3); background: none; border: none;
+      padding: 7px 14px; border-radius: 100px; cursor: pointer;
+      white-space: nowrap; transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+    .nav-tab:hover { color: var(--text); background: var(--accent-soft); }
+    .nav-tab.active {
+      color: var(--accent); background: var(--accent-soft);
     }
 
-    .contact-icon::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(124, 58, 237, 0.9);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+    .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+    .nav-resume {
+      font-size: 0.8125rem; font-weight: 500;
+      color: #fff; background: var(--accent);
+      padding: 7px 16px; border-radius: 100px; border: none;
+      cursor: pointer; transition: all 0.25s ease;
+      white-space: nowrap; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.28);
+    }
+    .nav-resume:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(var(--accent-rgb),0.38); }
+
+    .theme-toggle {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text2); transition: all 0.25s ease;
+    }
+    .theme-toggle:hover { color: var(--accent); }
+    .theme-toggle svg { width: 15px; height: 15px; stroke-width: 2; }
+
+    /* ── MAIN & TABS ── */
+    main { position: relative; z-index: 1; padding-top: 64px; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── SECTIONS ── */
+    .section-inner {
+      max-width: 900px; margin: 0 auto;
+      padding: 80px clamp(24px, 5vw, 48px);
+    }
+
+    .section-label {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.0; letter-spacing: -0.03em;
+      color: var(--text); margin-bottom: 20px;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+
+    .section-desc {
+      font-size: 1rem; font-weight: 300;
+      color: var(--text2); line-height: 1.75; max-width: 640px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: calc(100dvh - 64px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 60px clamp(24px, 6vw, 80px);
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      border: 1px solid rgba(var(--accent-rgb),0.2);
+      padding: 6px 14px; border-radius: 100px;
+      margin-bottom: 32px;
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.7s 0.05s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .hero-eyebrow-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 8vw, 6.5rem);
+      line-height: 0.95; letter-spacing: -0.03em;
+      color: var(--text); margin-bottom: 24px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp 0.9s 0.15s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+
+    .hero-typed {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic; color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.1rem); font-weight: 300;
+      color: var(--text2); max-width: 560px; line-height: 1.7;
+      margin-bottom: 44px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp 0.9s 0.28s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    .hero-actions {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp 0.9s 0.42s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9375rem; font-weight: 500;
+      padding: 14px 28px; border-radius: 100px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 32px rgba(var(--accent-rgb),0.28);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(var(--accent-rgb),0.38); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface); color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9375rem; font-weight: 400;
+      padding: 14px 28px; border-radius: 100px;
+      text-decoration: none;
+      border: 1px solid var(--surface-border);
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease; cursor: pointer;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* ── CARDS ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-top: 48px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius); padding: 28px;
+      backdrop-filter: blur(16px);
+      transition: all 0.35s ease;
+      opacity: 0; transform: translateY(20px);
+    }
+    .card.visible { opacity: 1; transform: translateY(0); }
+    .card:hover {
+      border-color: rgba(var(--accent-rgb),0.3);
+      box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.08), 0 20px 60px rgba(0,0,0,0.05);
+      transform: translateY(-4px);
+    }
+    [data-theme="dark"] .card:hover {
+      box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.15), 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .card-featured {
+      grid-column: 1 / -1;
+      background: var(--accent-soft);
+      border-color: rgba(var(--accent-rgb),0.25);
+    }
+
+    .card-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--accent-soft);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; color: var(--accent);
+    }
+    .card-icon svg { width: 20px; height: 20px; stroke-width: 1.75; }
+
+    .card-title {
+      font-size: 1rem; font-weight: 500;
+      color: var(--text); margin-bottom: 8px; letter-spacing: -0.01em;
+    }
+    .card-title-lg {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 12px;
+    }
+
+    .card-desc {
+      font-size: 0.9rem; font-weight: 300;
+      color: var(--text2); line-height: 1.6; margin-bottom: 20px;
+    }
+
+    .card-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8125rem; font-weight: 500;
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid rgba(var(--accent-rgb),0.3);
+      transition: border-color 0.2s;
+    }
+    .card-link:hover { border-color: var(--accent); }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px;
+      background: var(--accent-soft); color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline { margin-top: 48px; }
+
+    .timeline-item {
+      display: flex; gap: 24px; margin-bottom: 40px;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+    .timeline-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+
+    .timeline-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0; margin-top: 6px;
+    }
+
+    .timeline-line {
+      width: 1px; background: var(--surface-border);
+      flex: 1; margin-top: 8px; min-height: 40px;
+    }
+
+    .timeline-date {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 10px;
       white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
     }
 
-    .contact-icon:hover::after {
-      opacity: 1;
+    .timeline-content {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius); padding: 24px 28px;
+      backdrop-filter: blur(16px); flex: 1;
     }
 
+    .timeline-role {
+      font-size: 1rem; font-weight: 500;
+      color: var(--text); margin-bottom: 4px;
+    }
+
+    .timeline-body {
+      font-size: 0.875rem; font-weight: 300;
+      color: var(--text2); line-height: 1.7;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-top: 48px;
+    }
+
+    .skill-group {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius); padding: 24px;
+      backdrop-filter: blur(16px);
+      opacity: 0; transform: translateY(16px);
+      transition: all 0.4s ease;
+    }
+    .skill-group.visible { opacity: 1; transform: translateY(0); }
+
+    .skill-group-title {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--text); margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .skill-item { margin-bottom: 16px; }
+    .skill-item:last-child { margin-bottom: 0; }
+
+    .skill-name {
+      font-size: 0.8125rem; font-weight: 400;
+      color: var(--text2); margin-bottom: 6px;
+      display: flex; justify-content: space-between;
+    }
+    .skill-level {
+      font-size: 0.7rem; color: var(--accent);
+      font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .skill-track {
+      width: 100%; height: 3px; border-radius: 100px;
+      background: var(--accent-soft); overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%; border-radius: 100px;
+      background: var(--accent); width: 0;
+      transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* ── STAT CARD ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px; margin-top: 48px;
+    }
+
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: var(--radius); padding: 28px 24px;
+      backdrop-filter: blur(16px); text-align: center;
+      opacity: 0; transform: translateY(16px); transition: all 0.4s ease;
+    }
+    .stat-card.visible { opacity: 1; transform: translateY(0); }
+    .stat-card:hover { border-color: rgba(var(--accent-rgb),0.3); transform: translateY(-3px); }
+
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem; color: var(--accent); line-height: 1; margin-bottom: 8px;
+    }
+    .stat-label { font-size: 0.875rem; font-weight: 400; color: var(--text2); }
+
+    /* ── LOOKING FOR ── */
+    .looking-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;
+    }
+    @media (max-width: 540px) { .looking-grid { grid-template-columns: 1fr; } }
+
+    .looking-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 16px; padding: 20px 24px; backdrop-filter: blur(16px);
+    }
+
+    .looking-card-title {
+      font-size: 0.8125rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px;
+    }
+
+    .looking-list {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .looking-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 0.875rem; font-weight: 300; color: var(--text2); line-height: 1.5;
+    }
+    .looking-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0; margin-top: 7px;
+    }
+
+    /* ── CONTACT ICONS ── */
+    .contact-row {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .contact-link {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 100px; padding: 12px 20px;
+      text-decoration: none; color: var(--text2);
+      font-size: 0.875rem; font-weight: 400;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .contact-link img { width: 18px; height: 18px; object-fit: contain; }
+
+    /* ── PILL ── */
+    .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+    .pill {
+      font-size: 0.8rem; font-weight: 400;
+      padding: 6px 14px; border-radius: 100px;
+      border: 1px solid var(--surface-border);
+      background: var(--surface); color: var(--text2);
+      backdrop-filter: blur(10px);
+    }
+
+    /* ── HIGHLIGHT BLOCK ── */
+    .highlight-block {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      padding: 16px 20px; margin: 24px 0;
+      font-size: 0.9rem; font-weight: 300;
+      color: var(--text2); line-height: 1.65;
+      backdrop-filter: blur(12px);
+    }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: var(--surface-border); margin: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      padding: 32px clamp(24px, 6vw, 64px);
+      border-top: 1px solid var(--surface-border);
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem; color: var(--text);
+      letter-spacing: -0.02em; text-decoration: none;
+    }
+    .footer-text { font-size: 0.8125rem; color: var(--text3); }
+
+    /* ── PROFILE MODAL ── */
+    #profileModal {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0);
+      display: none; transition: background 0.3s ease;
+    }
+    #profileModal.open { display: block; }
+    #modalImage {
+      position: fixed; border-radius: 50%;
+      transition: all 400ms cubic-bezier(0.4,0,0.2,1);
+      object-fit: cover;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.4; transform:scale(0.7); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .nav-tabs { display: none; }
+      .mobile-nav-toggle { display: flex; }
+      footer { justify-content: center; text-align: center; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── MOBILE MENU ── */
+    .mobile-nav-toggle {
+      display: none; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--accent-soft); cursor: pointer; color: var(--accent);
+    }
+    @media (max-width: 640px) { .mobile-nav-toggle { display: flex; } }
+
+    .mobile-menu {
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
+      background: rgba(247,247,245,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 16px 24px; display: none; flex-direction: column; gap: 4px;
+    }
+    [data-theme="dark"] .mobile-menu { background: rgba(13,13,12,0.96); }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-tab { text-align: left; border-radius: 12px; }
+
+    /* cursor on tabs */
+    .nav-tab { cursor: pointer; }
   </style>
 </head>
+<body>
 
-<body class="transition-all" style="background: linear-gradient(135deg, #0f0f0f 0%, #1b1b1b 50%, #0f0f0f 100%); background-size: 200% 200%;"></body>
-  <header class="w-full p-4 bg-gray-900 sticky top-0 z-50 border-b-2 border-violet-500">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-semibold text-white">Gurumanie Singh Dhiman | Portfolio</h1>
-      <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
-        class="w-8 h-8 md:w-14 md:h-14 rounded-full object-cover cursor-pointer hover:scale-110 transition-transform" />
+  <canvas id="particle-canvas"></canvas>
+
+  <nav>
+    <a href="#" class="nav-logo">Gurumanie Singh</a>
+
+    <div class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" onclick="showTab('home')">Home</button>
+      <button class="nav-tab" onclick="showTab('experience')">Experience</button>
+      <button class="nav-tab" onclick="showTab('coursework')">Coursework</button>
+      <button class="nav-tab" onclick="showTab('seniordesign')">Senior Design</button>
+      <button class="nav-tab" onclick="showTab('projects')">Projects</button>
     </div>
-    <nav class="flex flex-wrap gap-2 justify-center">
-      <button onclick="showTab('home')"
-        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition active bg-violet-600"
-        data-tab="home">Home</button>
-      <button onclick="showTab('experience')"
-        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition" data-tab="experience">Experience &
-        Research</button>
-      <button onclick="showTab('coursework')"
-        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
-        data-tab="coursework">Coursework</button>
-      <button onclick="showTab('seniordesign')"
-        class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition" data-tab="seniordesign">Senior
-        Design Project</button>
-      <button onclick="showTab('projects')" class="tab-btn px-4 py-2 rounded-lg text-white hover:bg-gray-700 transition"
-        data-tab="projects">Personal Projects</button>
-      <button onclick="downloadResume()"
-        class="tab-btn px-4 py-2 rounded-lg text-white bg-violet-600 hover:bg-violet-700 transition font-semibold">📄
-        Resume</button>
-    </nav>
-  </header>
 
-  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-50">
-    <img id="modalImage" src="images/profile.jpg" alt="Gurumanie Singh Enlarged"
-      class="rounded-full transform scale-0 transition-all duration-500" />
+    <div class="nav-right">
+      <button class="mobile-nav-toggle" id="mobileMenuToggle" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <button class="nav-resume" onclick="downloadResume()">Resume ↓</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+      <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
+        style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(var(--accent-rgb),0.3);transition:transform 0.2s ease;"
+        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" />
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="nav-tab active" onclick="showTab('home');closeMobileMenu()">Home</button>
+    <button class="nav-tab" onclick="showTab('experience');closeMobileMenu()">Experience</button>
+    <button class="nav-tab" onclick="showTab('coursework');closeMobileMenu()">Coursework</button>
+    <button class="nav-tab" onclick="showTab('seniordesign');closeMobileMenu()">Senior Design</button>
+    <button class="nav-tab" onclick="showTab('projects');closeMobileMenu()">Projects</button>
   </div>
 
+  <div id="profileModal">
+    <img id="modalImage" src="images/profile.jpg" alt="Gurumanie Singh" />
+  </div>
+
+  <main>
+
+    <!-- ── HOME ── -->
+    <div id="home-panel" class="tab-panel active">
+
+      <section class="hero">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          Open to full-time roles · May 2026
+        </div>
+        <h1 class="hero-title">
+          Cybersecurity &amp;<br /><em>Network Engineer.</em>
+        </h1>
+        <p class="hero-sub">
+          B.S. Computer Engineering student at Iowa State University (Class of 2026), specialising in network security, wireless systems, and secure system design.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="showTab('projects')">View Projects</button>
+          <button class="btn-ghost" onclick="showTab('experience')">Experience &amp; Research</button>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Stats -->
+      <div class="section-inner">
+        <p class="section-label">at a glance</p>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">3.89</div>
+            <div class="stat-label">Cumulative GPA</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3+</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">7+</div>
+            <div class="stat-label">Major Projects</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3rd</div>
+            <div class="stat-label">Cyber Defence Challenge</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Currently Seeking -->
+      <div class="section-inner" style="padding-bottom:40px;">
+        <p class="section-label">currently seeking</p>
+        <h2 class="section-title">What I'm<br /><em>looking for.</em></h2>
+        <div class="looking-grid">
+          <div class="looking-card">
+            <div class="looking-card-title">Target Roles</div>
+            <div class="looking-list">
+              <div class="looking-item"><div class="looking-dot"></div>Cybersecurity Engineer</div>
+              <div class="looking-item"><div class="looking-dot"></div>Network Security Analyst</div>
+              <div class="looking-item"><div class="looking-dot"></div>SOC Analyst</div>
+              <div class="looking-item"><div class="looking-dot"></div>Information Security Analyst</div>
+            </div>
+          </div>
+          <div class="looking-card">
+            <div class="looking-card-title">Preferences</div>
+            <div class="looking-list">
+              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Type:</strong> Full-time</span></div>
+              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Mode:</strong> On-site / Hybrid / Remote</span></div>
+              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Location:</strong> Open to relocation</span></div>
+              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Start:</strong> May 2026</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Achievements -->
+      <div class="section-inner" style="padding-bottom:40px;">
+        <p class="section-label">achievements</p>
+        <h2 class="section-title">Recognition &amp;<br /><em>milestones.</em></h2>
+        <div class="card-grid" style="margin-top:32px;">
+          <div class="card">
+            <div class="card-icon"><i data-lucide="trophy"></i></div>
+            <div class="card-title">3rd Place — Cyber Defence Challenge 2025</div>
+            <div class="card-desc">Placed 3rd in the Cybersecurity Defence Challenge hosted by Iowa State University.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="star"></i></div>
+            <div class="card-title">President's List</div>
+            <div class="card-desc">Awarded President's List for maintaining a 4.00 GPA for two consecutive semesters.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="bar-chart-2"></i></div>
+            <div class="card-title">3.89 Cumulative GPA</div>
+            <div class="card-desc">Consistent high academic performance across both undergraduate and graduate coursework.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="shield"></i></div>
+            <div class="card-title">Corporal — Singapore Armed Forces</div>
+            <div class="card-desc">Achieved Corporal rank with an excellent rating after completing National Service in the SAF.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Certifications -->
+      <div class="section-inner" style="padding-bottom:40px;">
+        <p class="section-label">certifications</p>
+        <h2 class="section-title">Credentials &amp;<br /><em>qualifications.</em></h2>
+        <div class="card-grid" style="margin-top:32px;">
+          <div class="card">
+            <div class="card-icon"><i data-lucide="badge-check"></i></div>
+            <div class="card-title">CompTIA Security+ (SY0-701)</div>
+            <div class="card-desc">Valid through August 2027. Industry-standard certification covering network security, cryptography, and threat management.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i data-lucide="network"></i></div>
+            <div class="card-title">CCNA — In Progress</div>
+            <div class="card-desc">Cisco Certified Network Associate. Covering routing, switching, and network security fundamentals.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Skills -->
+      <div class="section-inner" style="padding-bottom:40px;">
+        <p class="section-label">technical skills</p>
+        <h2 class="section-title">Tools &amp;<br /><em>technologies.</em></h2>
+        <div class="skills-grid">
+          <div class="skill-group">
+            <div class="skill-group-title">Programming Languages</div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Java</span><span class="skill-level">Proficient</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Python</span><span class="skill-level">Intermediate</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="50"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Bash / Shell</span><span class="skill-level">Familiar</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="30"></div></div>
+            </div>
+          </div>
+          <div class="skill-group">
+            <div class="skill-group-title">Security Tools</div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Wireshark</span><span class="skill-level">Proficient</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Nmap</span><span class="skill-level">Proficient</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Metasploit</span><span class="skill-level">Familiar</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="30"></div></div>
+            </div>
+          </div>
+          <div class="skill-group">
+            <div class="skill-group-title">OS & Virtualization</div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Linux</span><span class="skill-level">Expert</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>VirtualBox / VMware</span><span class="skill-level">Proficient</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Docker</span><span class="skill-level">Intermediate</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="50"></div></div>
+            </div>
+          </div>
+          <div class="skill-group">
+            <div class="skill-group-title">Methodologies</div>
+            <div class="skill-item">
+              <div class="skill-name"><span>GitLab / GitHub</span><span class="skill-level">Expert</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>CI/CD</span><span class="skill-level">Proficient</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="70"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-name"><span>Agile / Scrum</span><span class="skill-level">Familiar</span></div>
+              <div class="skill-track"><div class="skill-fill" data-width="30"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Contact -->
+      <div class="section-inner">
+        <p class="section-label">contact</p>
+        <h2 class="section-title">Get in<br /><em>touch.</em></h2>
+        <p class="section-desc">Open to cybersecurity and network engineering roles starting May 2026. Feel free to reach out via email or connect on LinkedIn.</p>
+        <div class="contact-row">
+          <a href="mailto:dhiman@iastate.edu" class="contact-link">
+            <img src="images/email.png" alt="Email" /> dhiman@iastate.edu
+          </a>
+          <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener" class="contact-link">
+            <img src="images/linkedin.png" alt="LinkedIn" /> LinkedIn
+          </a>
+          <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener" class="contact-link">
+            <img src="images/github.png" alt="GitHub" /> GitHub
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── EXPERIENCE ── -->
+    <div id="experience-panel" class="tab-panel">
+      <div class="section-inner">
+        <p class="section-label">experience & research</p>
+        <h2 class="section-title">Where I've<br /><em>worked.</em></h2>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-left">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <div>
+              <div class="timeline-date">Jun 2025 – Dec 2025</div>
+              <div class="timeline-content">
+                <div class="timeline-role">Wireless Network Research Assistant</div>
+                <div class="timeline-body">Administered a multi-node wireless network across Ames, IA, ensuring stable connectivity for critical user equipment while troubleshooting system-level failures using <strong>journalctl</strong> and network diagnostic tools. Deployed configuration updates to base stations and user equipment through <strong>Docker containerization</strong>, <strong>Systemd service orchestration</strong>, and <strong>flco-cli automation</strong>, enhancing throughput, reliability, and interference mitigation. Authored comprehensive technical documentation with <strong>Sphinx</strong> and <strong>reStructuredText</strong>, streamlining deployment procedures and reducing onboarding time for new team members.</div>
+                <div class="pill-row" style="margin-top:16px;">
+                  <span class="pill">Docker</span>
+                  <span class="pill">Systemd</span>
+                  <span class="pill">Linux</span>
+                  <span class="pill">Sphinx</span>
+                  <span class="pill">Wireless Networks</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-left">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <div>
+              <div class="timeline-date">Aug 2024 – Dec 2024</div>
+              <div class="timeline-content">
+                <div class="timeline-role">Supplemental Instruction Leader — Data Structures & Algorithms</div>
+                <div class="timeline-body">Hosted <strong>three after-class sessions weekly</strong> averaging 13 students per session to prepare them for tests and quizzes. Led <strong>2-hour review sessions</strong> before midterms and finals, attended by <strong>over 100 students</strong>. These efforts led to a <strong>30% average improvement</strong> in student scores compared to non-attendees.</div>
+                <div class="pill-row" style="margin-top:16px;">
+                  <span class="pill">Teaching</span>
+                  <span class="pill">Algorithms</span>
+                  <span class="pill">Mentorship</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-left">
+              <div class="timeline-dot"></div>
+            </div>
+            <div>
+              <div class="timeline-date">Jun 2021 – May 2023</div>
+              <div class="timeline-content">
+                <div class="timeline-role">Corporal — Singapore Armed Forces (National Service)</div>
+                <div class="timeline-body">Securely managed <strong>500+ personnel files</strong>, including physical fitness scores and medical information. Meticulously tracked scores for annual inter-battalion competitions, demonstrating strong data integrity and organisational skills. Achieved Corporal rank with an excellent rating.</div>
+                <div class="pill-row" style="margin-top:16px;">
+                  <span class="pill">Data Management</span>
+                  <span class="pill">Leadership</span>
+                  <span class="pill">Security Clearance</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COURSEWORK ── -->
+    <div id="coursework-panel" class="tab-panel">
+      <div class="section-inner">
+        <p class="section-label">coursework</p>
+        <h2 class="section-title">Academic<br /><em>foundations.</em></h2>
+
+        <p class="section-label" style="margin-top:48px;">Graduate</p>
+        <div class="card-grid">
+          <div class="card">
+            <div class="badge">CPRE532</div>
+            <div class="card-title">Information Warfare</div>
+            <div class="card-desc">Analysed offensive and defensive cyber operations, including threat intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical infrastructure.</div>
+            <a href="CPRE532/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">CPRE536</div>
+            <div class="card-title">Computer and Network Forensics</div>
+            <div class="card-desc">Investigated digital evidence collection, preservation, and analysis techniques for incident response, applying forensic tools to reconstruct attack timelines.</div>
+            <a href="CPRE536/index.html" class="card-link">View Summary →</a>
+          </div>
+        </div>
+
+        <p class="section-label" style="margin-top:48px;">Undergraduate</p>
+        <div class="card-grid">
+          <div class="card">
+            <div class="badge">CPRE308</div>
+            <div class="card-title">Operating Systems</div>
+            <div class="card-desc">Examined OS fundamentals including process management, memory allocation, file systems, and concurrency, with practical implementation of scheduling algorithms.</div>
+            <a href="CPRE308/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">COMS309</div>
+            <div class="card-title">Software Development Practices</div>
+            <div class="card-desc">Built a backend app for students' job search connecting peers in similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</div>
+            <a href="COMS309/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">COMS311</div>
+            <div class="card-title">Design and Analysis of Algorithms</div>
+            <div class="card-desc">Studied algorithm design paradigms including divide-and-conquer, dynamic programming, and greedy methods, along with complexity analysis techniques.</div>
+            <a href="COMS311/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">CPRE381</div>
+            <div class="card-title">Computer Architecture</div>
+            <div class="card-desc">Engineered pipelined CPU architectures and VHDL simulations to explore ISA design, hazard mitigation, and memory hierarchy performance.</div>
+            <a href="CPRE381/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">COMS415</div>
+            <div class="card-title">Software System Safety</div>
+            <div class="card-desc">Conducted systematic hazard and failure analyses (FTA, SFMECA) and employed formal verification to identify and mitigate risks in safety-critical software systems.</div>
+            <a href="COMS415/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">CPRE430</div>
+            <div class="card-title">Networking Protocols and Security</div>
+            <div class="card-desc">Simulated network topologies and packet-level interactions to explore TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</div>
+            <a href="CPRE430/index.html" class="card-link">View Summary →</a>
+          </div>
+          <div class="card">
+            <div class="badge">CPRE431</div>
+            <div class="card-title">Basics of Information System Security</div>
+            <div class="card-desc">Explored fundamental security principles including cryptography, authentication mechanisms, access control models, and defensive strategies against common attack vectors.</div>
+            <a href="CPRE431/index.html" class="card-link">View Summary →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SENIOR DESIGN ── -->
+    <div id="seniordesign-panel" class="tab-panel">
+      <div class="section-inner">
+        <p class="section-label">senior design project</p>
+        <h2 class="section-title">Capstone<br /><em>work.</em></h2>
+        <div class="card-grid" style="margin-top:48px;">
+          <div class="card card-featured">
+            <div class="badge">Capstone · 2025–2026</div>
+            <div class="card-title-lg">Secure Wireless Aircraft Data Load</div>
+            <div class="card-desc">Developed a mock aircraft dataload system with wireless support, focusing on cybersecurity, network design, and aviation standards within real-world operational and certification constraints. The project addresses the challenge of securely transmitting avionics software updates over wireless channels while complying with DO-178C and related aviation security frameworks.</div>
+            <div class="pill-row" style="margin-bottom:24px;">
+              <span class="pill">Avionics Security</span>
+              <span class="pill">Wireless Networks</span>
+              <span class="pill">DO-178C</span>
+              <span class="pill">Cryptography</span>
+              <span class="pill">Embedded Systems</span>
+            </div>
+            <a href="SeniorDesign/index.html" class="card-link">View Full Project →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROJECTS ── -->
+    <div id="projects-panel" class="tab-panel">
+      <div class="section-inner">
+        <p class="section-label">personal projects</p>
+        <h2 class="section-title">Things I've<br /><em>built.</em></h2>
+        <div class="card-grid" style="margin-top:48px;">
+
+          <div class="card card-featured">
+            <div class="badge">Featured · iOS App · Live on App Store</div>
+            <div class="card-title-lg">ForFriendSake</div>
+            <div class="card-desc">A social networking iOS application built with Swift, SwiftUI, and Firebase, enabling users to form squads, plan real-world activities, check in with GPS verification, and compete on global leaderboards. Designed to turn online friendships into real-world adventures.</div>
+            <div class="pill-row" style="margin-bottom:24px;">
+              <span class="pill">Swift</span>
+              <span class="pill">SwiftUI</span>
+              <span class="pill">Firebase</span>
+              <span class="pill">MapKit</span>
+              <span class="pill">GPS Check-ins</span>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="https://www.forfriendsake.com" target="_blank" rel="noopener" class="btn-primary" style="font-size:0.875rem;padding:10px 20px;">Visit Website →</a>
+              <a href="https://apps.apple.com/us/app/forfriendsake/id6757169962" target="_blank" rel="noopener" class="btn-ghost" style="font-size:0.875rem;padding:10px 20px;">App Store</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-icon"><i data-lucide="terminal"></i></div>
+            <div class="card-title">OverTheWire Solutions Guide</div>
+            <div class="card-desc">Sharpened Linux command-line skills by authoring detailed Bandit challenge write-ups, demonstrating troubleshooting and secure scripting techniques.</div>
+            <a href="overthewire-solutions/docs/index.html" class="card-link">View Solutions →</a>
+          </div>
+
+          <div class="card">
+            <div class="card-icon"><i data-lucide="code-2"></i></div>
+            <div class="card-title">Python Networking Toolkit</div>
+            <div class="card-desc">Crafted network tools such as port scanners, packet sniffers, and reverse shells using Python sockets and threading, showcasing protocol analysis and automation.</div>
+            <a href="py-network-experiments/index.html" class="card-link">View Experiments →</a>
+          </div>
+
+          <div class="card">
+            <div class="card-icon"><i data-lucide="file-text"></i></div>
+            <div class="card-title">NMAP Basics Guide</div>
+            <div class="card-desc">Consolidated core scanning techniques, flag explanations, and command usage into a refined PDF guide, useful for penetration testing and network enumeration practice.</div>
+            <a href="nmap-notes/nmap_notes.pdf" target="_blank" class="card-link">View PDF →</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span class="footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+
   <script>
+    if (history.scrollRestoration) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  </script>
+
+  <script>
+    // LUCIDE
+    function initLucide() { if (typeof lucide !== 'undefined') lucide.createIcons(); }
+    initLucide(); window.addEventListener('load', initLucide);
+
+    // THEME
+    const toggle  = document.getElementById('themeToggle');
+    const root    = document.documentElement;
+    const sunSVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`;
+    const moonSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+    function applyTheme(t) {
+      root.setAttribute('data-theme', t);
+      toggle.innerHTML = t === 'dark' ? moonSVG : sunSVG;
+    }
+    applyTheme(localStorage.getItem('theme') || 'light');
+    toggle.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next); localStorage.setItem('theme', next);
+    });
+
+    // PARTICLES
+    const canvas = document.getElementById('particle-canvas');
+    const ctx    = canvas.getContext('2d');
+    let W, H;
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+
+    function getAccentRgb() {
+      return root.getAttribute('data-theme') === 'dark' ? '167,139,250' : '124,58,237';
+    }
+
+    class Particle {
+      constructor(s) { this.init(s); }
+      init(s) {
+        this.x = Math.random() * W; this.y = s ? Math.random() * H : -8;
+        this.r = Math.random() * 1.8 + 0.4;
+        this.vy = Math.random() * 0.55 + 0.18; this.vx = (Math.random() - 0.5) * 0.12;
+        this.alpha = Math.random() * 0.22 + 0.04;
+      }
+      update() {
+        this.y += this.vy; this.x += this.vx;
+        if (this.y > H + 10) this.init(false);
+        if (this.x < -5) this.x = W + 5;
+        if (this.x > W + 5) this.x = -5;
+      }
+      draw() {
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${getAccentRgb()},${this.alpha})`; ctx.fill();
+      }
+    }
+    const particles = [];
+    for (let i = 0; i < 80; i++) particles.push(new Particle(true));
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(loop);
+    })();
+
+    // TABS
+    function showTab(name) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+      const panel = document.getElementById(name + '-panel');
+      if (panel) panel.classList.add('active');
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'"))
+          b.classList.add('active');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(triggerReveal, 100);
+    }
+
+    // MOBILE MENU
+    const mobileMenu = document.getElementById('mobileMenu');
+    document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+    function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+
+    // RESUME DOWNLOAD
+    function downloadResume() {
+      const link = document.createElement('a');
+      link.href = 'resume/GurumanieSinghDhiman_Resume.pdf';
+      link.download = 'GurumanieSinghDhiman_Resume.pdf';
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+
+    // SCROLL REVEAL
+    function triggerReveal() {
+      const els = document.querySelectorAll('.card, .timeline-item, .stat-card, .skill-group');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const idx = Array.from(e.target.parentElement?.children || []).indexOf(e.target);
+            setTimeout(() => e.target.classList.add('visible'), idx * 70);
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      els.forEach(el => { if (!el.classList.contains('visible')) io.observe(el); });
+    }
+    triggerReveal();
+
+    // SKILL BAR ANIMATION
+    function animateSkillBars() {
+      document.querySelectorAll('.skill-fill').forEach(bar => {
+        const target = bar.getAttribute('data-width');
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              bar.style.width = target + '%';
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.3 });
+        io.observe(bar);
+      });
+    }
+    animateSkillBars();
+
+    // PROFILE MODAL
     const pic = document.getElementById('profilePicture');
     const modal = document.getElementById('profileModal');
     const modalImg = document.getElementById('modalImage');
 
     pic.addEventListener('click', () => {
-      const picRect = pic.getBoundingClientRect();
-      modal.classList.remove('hidden');
-      modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+      const r = pic.getBoundingClientRect();
+      modal.style.display = 'block';
+      modal.style.backgroundColor = 'rgba(0,0,0,0)';
       pic.style.visibility = 'hidden';
-      modalImg.style.position = 'fixed';
-      modalImg.style.top = `${picRect.top}px`;
-      modalImg.style.left = `${picRect.left}px`;
-      modalImg.style.width = `${picRect.width}px`;
-      modalImg.style.height = `${picRect.height}px`;
-      modalImg.style.borderRadius = '50%';
-      modalImg.style.transform = 'none';
-      modalImg.style.transition = 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)';
-      modalImg.style.willChange = 'transform, opacity';
-      modalImg.classList.remove('scale-0');
+      modalImg.style.cssText = `position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;border-radius:50%;transition:all 400ms cubic-bezier(0.4,0,0.2,1);object-fit:cover;`;
       requestAnimationFrame(() => {
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        const targetSize = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-        modalImg.style.top = `calc(50% - ${targetSize / 2}px)`;
-        modalImg.style.left = `calc(50% - ${targetSize / 2}px)`;
-        modalImg.style.width = `${targetSize}px`;
-        modalImg.style.height = `${targetSize}px`;
+        modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+        const s = Math.min(window.innerWidth, window.innerHeight) * 0.8;
+        modalImg.style.top = `calc(50% - ${s/2}px)`;
+        modalImg.style.left = `calc(50% - ${s/2}px)`;
+        modalImg.style.width = `${s}px`;
+        modalImg.style.height = `${s}px`;
       });
     });
 
     modal.addEventListener('click', () => {
-      const picRect = pic.getBoundingClientRect();
-      modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-      modalImg.style.top = `${picRect.top}px`;
-      modalImg.style.left = `${picRect.left}px`;
-      modalImg.style.width = `${picRect.width}px`;
-      modalImg.style.height = `${picRect.height}px`;
+      const r = pic.getBoundingClientRect();
+      modal.style.backgroundColor = 'rgba(0,0,0,0)';
+      modalImg.style.top = `${r.top}px`;
+      modalImg.style.left = `${r.left}px`;
+      modalImg.style.width = `${r.width}px`;
+      modalImg.style.height = `${r.height}px`;
       modalImg.addEventListener('transitionend', () => {
-        modal.classList.add('hidden');
+        modal.style.display = 'none';
         pic.style.visibility = 'visible';
-        modalImg.style.position = '';
-        modalImg.style.top = '';
-        modalImg.style.left = '';
-        modalImg.style.width = '';
-        modalImg.style.height = '';
-        modalImg.style.transition = '';
-        modalImg.style.transform = '';
-        modalImg.classList.add('scale-0');
+        modalImg.style.cssText = '';
       }, { once: true });
     });
-
-    function showTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'bg-violet-600'));
-      const selectedTab = document.getElementById(tabName + '-tab');
-      if (selectedTab) selectedTab.classList.add('active');
-      const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
-      if (activeButton) activeButton.classList.add('active', 'bg-violet-600');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function downloadResume() {
-      // Create a temporary link element to trigger download
-      const link = document.createElement('a');
-      link.href = 'resume/GurumanieSinghDhiman_Resume.pdf';
-      link.download = 'GurumanieSinghDhiman_Resume.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
   </script>
 
-  <!-- HOME TAB -->
-  <div id="home-tab" class="tab-content active">
-    <section id="hero" class="text-center py-16 px-4" data-aos="fade-up">
-      <h2 class="text-5xl font-medium mb-4 text-white" data-aos="fade-up" data-aos-delay="100">
-        I'm a <span id="typed-text" class="text-violet-500 font-light italic"></span>
-      </h2>
-      <p class="text-lg max-w-5xl mx-auto text-gray-200 text-justify">
-        Hi! I'm a concurrent Cybersecurity and Computer Engineering student at Iowa State University – pursuing my B.S.
-        in Computer Engineering (Class of 2026). My academic and professional
-        journey centers on building secure, scalable networked systems through hands-on research, applied cybersecurity
-        projects, and advanced coursework in information assurance and network defense.
-      </p>
-    </section>
-
-    <!-- Skills Summary Card -->
-    <!-- <section id="skills-summary" class="py-8 px-4" data-aos="fade-up">
-      <div class="max-w-4xl mx-auto bg-gradient-to-r from-violet-600 to-purple-600 rounded-3xl shadow-2xl p-8 text-white">
-        <h3 class="text-3xl font-semibold text-center mb-6">Professional Summary</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="text-center">
-            <div class="text-4xl font-bold mb-2">3+</div>
-            <div class="text-sm uppercase tracking-wide opacity-90">Years Experience</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl font-bold mb-2">3.86</div>
-            <div class="text-sm uppercase tracking-wide opacity-90">GPA (4.0 Scale)</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl font-bold mb-2">7+</div>
-            <div class="text-sm uppercase tracking-wide opacity-90">Major Projects</div>
-          </div>
-        </div>
-        <div class="mt-8 text-center">
-          <p class="text-lg font-medium mb-3">Core Specializations</p>
-          <div class="flex flex-wrap justify-center gap-3">
-            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Network Security</span>
-            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Wireless Systems</span>
-            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Linux Administration</span>
-            <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">Cybersecurity Research</span>
-          </div>
-        </div>
-      </div>
-    </section> -->
-
-    <!-- Looking For Section -->
-    <section id="looking-for" class="py-12 px-4" data-aos="fade-up">
-      <div class="max-w-4xl mx-auto bg-gray-800 rounded-3xl shadow-lg p-8 border-l-4 border-violet-500">
-        <h3 class="text-3xl font-semibold text-white mb-6 text-center">Currently Seeking</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-200">
-          <div>
-            <h4 class="text-xl font-medium text-violet-400 mb-3">🎯 Target Roles</h4>
-            <ul class="space-y-2 text-sm">
-              <li>• Cybersecurity Engineer</li>
-              <li>• Network Security Analyst</li>
-              <li>• Security Operations Center (SOC) Analyst</li>
-              <li>• Information Security Analyst</li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-xl font-medium text-violet-400 mb-3">📋 Preferences</h4>
-            <ul class="space-y-2 text-sm">
-              <li><strong>Position Type:</strong> Full-time</li>
-              <li><strong>Work Mode:</strong> On-site / Hybrid / Remote</li>
-              <li><strong>Location:</strong> Open to relocation</li>
-              <li><strong>Start Date:</strong> May 2026</li>
-            </ul>
-          </div>
-        </div>
-        <div class="mt-6 text-center">
-          <p class="text-gray-300 text-sm italic">Actively seeking opportunities to apply my expertise in network
-            security, cybersecurity operations, and secure system design.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="achievements" class="py-16 px-4" data-aos="fade-up">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Achievements</h3>
-      <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
-        <li>Placed <strong>3rd</strong> during a Cybersecurity Defence Challenge 2025 hosted by Iowa State University.
-        </li>
-        <li>Awarded <strong>President's List</strong> for maintaining a 4.00 GPA for two consecutive semesters.</li>
-        <li>Maintaining a <strong>3.89/4.00 cumulative GPA</strong>, demonstrating consistent high performance.</li>
-        <li>Achieved <strong>Corporal</strong> rank with an excellent rating after completing National Service in the
-          Singapore Armed Forces.</li>
-      </ul>
-    </section>
-
-    <section id="certifications" class="py-16 px-4" data-aos="fade-up">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Certifications</h3>
-      <ul class="list-disc list-outside pl-6 text-lg max-w-5xl mx-auto text-gray-200">
-        <li><strong>CompTIA Security+</strong> (SY0-701) - Valid through Aug 2027</li>
-        <li><strong>CCNA</strong> (Cisco Certified Network Associate) - In progress</li>
-      </ul>
-    </section>
-
-    <section id="skills" class="py-16 px-4" data-aos="fade-up">
-      <h3 class="text-4xl font-medium text-center mb-8 text-white">Technical Skills</h3>
-      <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-gray-200">
-        <div>
-          <h4 class="text-2xl font-medium mb-4 text-white">Programming Languages</h4>
-          <ul class="space-y-6">
-            <li class="skill-container">
-              <div><span class="block">Java</span><span class="text-gray-400 text-xs block mb-1">Proficient</span></div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="skill-bar bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Python</span><span class="text-gray-400 text-xs block mb-1">Intermediate</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Bash/Shell</span><span class="text-gray-400 text-xs block mb-1">Familiar</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-2xl font-medium mb-4 text-white">Networking & Security Tools</h4>
-          <ul class="space-y-6">
-            <li>
-              <div><span class="block">Wireshark</span><span class="text-gray-400 text-xs block mb-1">Proficient</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Nmap</span><span class="text-gray-400 text-xs block mb-1">Proficient</span></div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Metasploit</span><span class="text-gray-400 text-xs block mb-1">Familiar</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-2xl font-medium mb-4 text-white">OS & Virtualization</h4>
-          <ul class="space-y-6">
-            <li>
-              <div><span class="block">Linux</span><span class="text-gray-400 text-xs block mb-1">Expert</span></div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">VirtualBox/VMware</span><span
-                  class="text-gray-400 text-xs block mb-1">Proficient</span></div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Docker</span><span class="text-gray-400 text-xs block mb-1">Intermediate</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%;"></div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-2xl font-medium mb-4 text-white">Methodologies & Other</h4>
-          <ul class="space-y-6">
-            <li>
-              <div><span class="block">GitLab/GitHub</span><span class="text-gray-400 text-xs block mb-1">Expert</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-emerald-500 h-2 rounded-full" style="width: 90%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">CI/CD (basic)</span><span
-                  class="text-gray-400 text-xs block mb-1">Proficient</span></div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Agile/Scrum</span><span class="text-gray-400 text-xs block mb-1">Familiar</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-              </div>
-            </li>
-            <li>
-              <div><span class="block">Technical Documentation</span><span
-                  class="text-gray-400 text-xs block mb-1">Familiar</span></div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-red-500 h-2 rounded-full" style="width: 25%;"></div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="py-16 px-4" data-aos="fade-up">
-      <h3 class="text-4xl font-medium text-center mb-6 text-white">Contact</h3>
-      <div class="flex justify-center items-center space-x-6 mt-6">
-        <a href="mailto:dhiman@iastate.edu" target="_blank" rel="noopener noreferrer" class="contact-icon" data-tooltip="Email Me">
-          <img src="images/email.png" alt="Email Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
-        </a>
-        <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener noreferrer" class="contact-icon" data-tooltip="My LinkedIn">
-          <img src="images/linkedin.png" alt="LinkedIn Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
-        </a>
-        <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener noreferrer" class="contact-icon" data-tooltip="My GitHub">
-          <img src="images/github.png" alt="GitHub Icon" class="w-8 h-8 hover:scale-110 transition-transform" />
-        </a>
-      </div>
-    </section>
-  </div>
-
-  <!-- EXPERIENCE TAB -->
-  <div id="experience-tab" class="tab-content">
-    <section class="py-16 px-4">
-      <div class="max-w-5xl mx-auto">
-        <ul class="border-l-2 border-violet-500">
-          <li class="mb-6 relative">
-            <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
-            <div class="pl-8">
-              <span class="text-gray-100 font-semibold">Jun 2025 - Dec 2025</span><br />
-              <p class="text-gray-300">Administered a multi-node wireless network across Ames, IA, ensuring stable
-                connectivity for critical user equipment while troubleshooting system-level failures using
-                <strong>journalctl</strong> and network diagnostic tools. I deployed configuration updates to base
-                stations and user equipment through <strong>Docker containerization</strong>, <strong>Systemd service
-                  orchestration</strong>, and <strong>flco-cli automation</strong>, which enhanced throughput,
-                reliability, and interference mitigation. Additionally, I authored comprehensive technical documentation
-                with <strong>Sphinx</strong> and <strong>reStructuredText</strong>, streamlining deployment procedures
-                and reducing onboarding time for new team members. Throughout the project, I collaborated closely with
-                research staff and engineers to align network modifications with evolving project requirements.
-              </p>
-            </div>
-          </li>
-          <li class="mb-6 relative">
-            <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
-            <div class="pl-6">
-              <span class="text-gray-100 font-semibold">Aug 2024 - Dec 2024</span><br />
-              <p class="text-gray-300">Worked as a Supplemental Instruction Leader for Data Structures & Algorithms,
-                hosting <strong>three after-class sessions weekly</strong> with an average of <strong>13 students per
-                  session</strong> to prepare them for tests and quizzes. Additionally, I led <strong>2-hour review
-                  sessions</strong> before midterms and final exams, attended by <strong>over 100 students.</strong>
-                These efforts collectively led to a <strong>30% average improvement</strong> in student scores compared
-                to non-attendees.</p>
-            </div>
-          </li>
-          <li class="mb-6 relative">
-            <div class="absolute w-3 h-3 bg-violet-500 rounded-full -left-1.5 top-1/2 -translate-y-1/2"></div>
-            <div class="pl-6">
-              <span class="text-gray-100 font-semibold">Jun 2021 - May 2023</span><br />
-              <p class="text-gray-300">Completed National Service in the Singapore Armed Forces (SAF), where I securely
-                managed close to <strong>500+ personnel files</strong>, including physical fitness scores and medical
-                information. I meticulously tracked these scores for annual inter-battalion competitions, demonstrating
-                strong data integrity and organizational skills.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-  </div>
-
-  <!-- COURSEWORK TAB -->
-  <div id="coursework-tab" class="tab-content">
-    <section class="py-16 px-4">
-
-      <!-- Graduate Coursework Section -->
-      <div class="mb-16">
-        <h4 class="text-3xl font-medium text-center mb-4 text-violet-400">Graduate Coursework</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">CPRE532: Information Warfare</h4>
-            <p class="text-sm mb-4 text-gray-200">Analyzed offensive and defensive cyber operations, including threat
-              intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical
-              infrastructure.</p>
-            <a href="CPRE532/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">CPRE536: Computer and Network Forensics</h4>
-            <p class="text-sm mb-4 text-gray-200">Investigated digital evidence collection, preservation, and analysis
-              techniques for incident response, applying forensic tools to reconstruct attack timelines and identify
-              security breaches.</p>
-            <a href="CPRE536/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Undergraduate Coursework Section -->
-      <div>
-        <h4 class="text-3xl font-medium text-center mb-4 text-violet-400">Undergraduate Coursework</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">CPRE308: Operating Systems</h4>
-            <p class="text-sm mb-4 text-gray-200">Examined OS fundamentals including process management, memory
-              allocation, file systems, and concurrency, with practical implementation of scheduling algorithms and
-              synchronization primitives.</p>
-            <a href="CPRE308/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">COMS309: Software Development Practices</h4>
-            <p class="text-sm mb-4 text-gray-200">Built a backend app for students' job search that connects peers in
-              similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</p>
-            <a href="COMS309/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">COMS311: Design and Analysis of Algorithms</h4>
-            <p class="text-sm mb-4 text-gray-200">Studied algorithm design paradigms including divide-and-conquer,
-              dynamic
-              programming, and greedy methods, along with complexity analysis and optimization techniques for efficient
-              problem-solving.</p>
-            <a href="COMS311/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">CPRE381: Computer Architecture</h4>
-            <p class="text-sm mb-4 text-gray-200">Engineered pipelined CPU architectures and VHDL simulations to explore
-              ISA design, hazard mitigation, and memory hierarchy performance.</p>
-            <a href="CPRE381/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">COMS415: Software System Safety</h4>
-            <p class="text-sm mb-4 text-gray-200">Conducted systematic hazard and failure analyses (FTA, SFMECA) and
-              employed formal verification and static analysis to identify, prioritize, and mitigate risks in
-              safety-critical software systems.</p>
-            <a href="COMS415/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">CPRE430: Networking Protocols and Security</h4>
-            <p class="text-sm mb-4 text-gray-200">Simulated network topologies and packet-level interactions to explore
-              TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</p>
-            <a href="CPRE430/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-          <div
-            class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-            <h4 class="text-xl font-medium mb-2 text-white">CPRE431: Basics of Information System Security</h4>
-            <p class="text-sm mb-4 text-gray-200">Explored fundamental security principles including cryptography,
-              authentication mechanisms, access control models, and defensive strategies against common attack vectors.
-            </p>
-            <a href="CPRE431/index.html"
-              class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-              Detailed Summary</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- SENIOR DESIGN TAB -->
-  <div id="seniordesign-tab" class="tab-content">
-    <section class="py-16 px-4">
-      <div class="flex justify-center">
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500 max-w-md">
-          <h4 class="text-xl font-medium mb-2 text-white">Secure Wireless Aircraft Data Load</h4>
-          <p class="text-sm mb-4 text-gray-200">Developed a mock aircraft dataload system with wireless support,
-            focusing on cybersecurity, network design, and aviation standards within real-world operational and
-            certification constraints.</p>
-          <a href="SeniorDesign/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Detailed Summary</a>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- PROJECTS TAB -->
-  <div id="projects-tab" class="tab-content">
-    <section class="py-16 px-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        <div
-          class="md:col-span-2 bg-gradient-to-br from-violet-600 to-purple-700 rounded-3xl shadow-2xl p-8 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col border-4 border-violet-400">
-          <div class="flex justify-between items-start mb-4">
-            <h4 class="text-2xl font-bold text-white">📱 ForFriendSake - iOS App</h4>
-            <span class="featured-badge text-white text-xs px-3 py-1 rounded-full font-semibold">Featured Project</span>
-          </div>
-          <p class="text-base mb-4 text-gray-100">A social networking iOS application built with Swift, SwiftUI, and
-            SwiftData, enabling users to connect, share experiences, and build meaningful friendships through an
-            intuitive mobile interface.</p>
-          <div class="mb-4">
-            <h5 class="text-sm font-semibold text-gray-200 mb-2">Key Features:</h5>
-            <ul class="text-sm text-gray-100 space-y-1 list-disc list-inside">
-              <li>Native iOS development using Swift and SwiftUI</li>
-              <li>Local data persistence with SwiftData framework</li>
-              <li>Modern, responsive user interface design</li>
-              <li>Privacy-focused friend connection system</li>
-            </ul>
-          </div>
-          <div class="flex gap-4 mt-auto">
-            <a href="https://www.forfriendsake.com" target="_blank" rel="noopener noreferrer"
-              class="inline-block bg-white px-6 py-3 rounded-full text-violet-700 font-semibold hover:bg-gray-100 transition-colors">
-              Visit App Website →
-            </a>
-          </div>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">OverTheWire Solutions Guide</h4>
-          <p class="text-sm mb-4 text-gray-200">Sharpened Linux command-line skills by authoring detailed Bandit
-            challenge write-ups, demonstrating troubleshooting and secure scripting techniques.</p>
-          <a href="overthewire-solutions/docs/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            OverTheWire Solutions</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">Python Networking Toolkit</h4>
-          <p class="text-sm mb-4 text-gray-200">Crafted network tools such as port scanners, packet sniffers, and
-            reverse shells using Python sockets and threading, showcasing protocol analysis and automation.</p>
-          <a href="py-network-experiments/index.html"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            Experiments</a>
-        </div>
-        <div
-          class="bg-gray-800 rounded-3xl shadow-lg p-6 hover:shadow-xl transform hover:scale-105 transition duration-200 flex flex-col h-full border-b-4 border-violet-500">
-          <h4 class="text-xl font-medium mb-2 text-white">NMAP Basics</h4>
-          <p class="text-sm mb-4 text-gray-200">Consolidated core scanning techniques, flag explanations, and command
-            usage into a refined PDF guide, useful for penetration testing and network enumeration practice.</p>
-          <a href="nmap-notes/nmap_notes.pdf" target="_blank"
-            class="mt-auto inline-block border border-gray-100 px-4 py-2 rounded-full text-gray-100 hover:bg-gray-700">View
-            NMAP Notes (PDF)</a>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({ duration: 800, once: false, easing: 'ease-out-cubic' });</script>
-  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-  <script>
-    new Typed("#typed-text", {
-      strings: ["Cybersecurity Enthusiast", "Wireless Network Engineer", "Research Assistant"],
-      typeSpeed: 50,
-      backSpeed: 25,
-      backDelay: 1000,
-      loop: true,
-      showCursor: true,
-      cursorChar: "|"
-    });
-  </script>
 </body>
-
 </html>
