@@ -1,113 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SocketProgramming | Gurumanie Singh</title>
-
-  <!-- Override Tailwind’s gray palette -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            gray: {
-              900: '#1b1b1b',
-              800: '#2d2d2d',
-              700: '#3f3f3f',
-              600: '#525252',
-              500: '#6b6b6b',
-              400: '#8a8a8a',
-              300: '#a8a8a8',
-              200: '#c7c7c7',
-              100: '#e1e1e1'
-            }
-          }
-        }
-      }
-    };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../../css/styles.css" />
+  <title>Socket Programming — Gurumanie Singh</title>
+  <link rel="icon" href="../../images/Favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../../css/design-system.css" />
 </head>
-
-<body class="transition-all">
-
-  <!-- Header -->
-  <header class="w-full p-6 bg-gray-900 sticky top-0 flex justify-between items-center z-50">
-    <h1 class="text-2xl font-semibold text-white">SocketProgramming</h1>
-    <a href="../index.html" class="text-gray-100 hover:underline">← Back to Toolkit</a>
-  </header>
-
-  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
-    <!-- Overview -->
-    <section class="mb-8">
-      <h2 class="text-3xl font-medium mb-4 text-white">Project Overview</h2>
-      <p class="text-lg text-gray-200">
-        Demonstrates basic TCP socket creation, DNS resolution, and server connection using Python's <code>socket</code>
-        module, with robust error handling.
-      </p>
+<body>
+  <canvas id="particle-canvas"></canvas>
+  <nav class="ds-nav">
+    <a href="../../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+    <a href="../index.html" class="ds-nav-back">← Back to Toolkit</a>
+    <div class="ds-nav-right">
+      <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+    </div>
+  </nav>
+  <main class="ds-main">
+    <div class="ds-page-hero">
+      <div class="ds-badge ds-fade-up ds-fade-up-1">Socket Programming</div>
+      <h1 class="ds-page-title ds-fade-up ds-fade-up-2">Socket<br /><em>programming.</em></h1>
+      <p class="ds-page-desc ds-fade-up ds-fade-up-3">Demonstrates basic TCP socket creation, DNS resolution, and server connection using Python's socket module, with robust error handling.</p>
+    </div>
+    <div class="ds-divider"></div>
+    <section class="ds-section">
+      <p class="ds-section-label">Overview</p>
+      <h2 class="ds-section-title">Project Overview</h2>
+      <p class="ds-body">Demonstrates basic TCP socket creation, DNS resolution, and server connection using Python's <code>socket</code> module, with robust error handling.</p>
+      <div class="ds-pill-row">
+        <span class="ds-pill">Python</span>
+        <span class="ds-pill">TCP/IP</span>
+        <span class="ds-pill">DNS</span>
+        <span class="ds-pill">Socket API</span>
+      </div>
     </section>
-
-    <!-- Socket Creation -->
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-2 text-white">Socket Creation</h3>
-      <p class="mb-2 text-gray-200">
-        Initializes a TCP socket and handles potential creation errors:
-      </p>
-      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>try:
+    <div class="ds-divider"></div>
+    <section class="ds-section">
+      <p class="ds-section-label">Implementation</p>
+      <h2 class="ds-section-title">Socket Creation</h2>
+      <p class="ds-body">Initializes a TCP socket and handles potential creation errors:</p>
+      <pre class="ds-code-block"><code>try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("socket successfully created")
 except socket.error as err:
     print(f"socket creation failed with error {err}")</code></pre>
-      <p class="mt-2 text-gray-200">
-        Uses <code>socket.AF_INET</code> for IPv4 and <code>socket.SOCK_STREAM</code> for TCP. Prints clear diagnostics
-        on failure.
-      </p>
+      <p class="ds-body">Uses <code>socket.AF_INET</code> for IPv4 and <code>socket.SOCK_STREAM</code> for TCP. Prints clear diagnostics on failure.</p>
     </section>
-
-    <!-- DNS Resolution & Connection -->
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-2 text-white">DNS Resolution & Connection</h3>
-      <p class="mb-2 text-gray-200">
-        Resolves the target host and establishes a connection on port 80:
-      </p>
-      <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>port = 80
+    <div class="ds-divider"></div>
+    <section class="ds-section">
+      <p class="ds-section-label">Connection</p>
+      <h2 class="ds-section-title">DNS Resolution &amp; Connection</h2>
+      <p class="ds-body">Resolves the target host and establishes a connection on port 80:</p>
+      <pre class="ds-code-block"><code>port = 80
 host_ip = socket.gethostbyname("www.google.com")
 s.connect((host_ip, port))
 print(f"Successfully connected on port {port} and host ip addr is {host_ip}")</code></pre>
-      <p class="mt-2 text-gray-200">
-        Captures <code>gaierror</code> for DNS failures and exits gracefully. Demonstrates real-world usage of
-        <code>gethostbyname</code> and <code>connect</code>.
-      </p>
+      <p class="ds-body">Captures <code>gaierror</code> for DNS failures and exits gracefully. Demonstrates real-world usage of <code>gethostbyname</code> and <code>connect</code>.</p>
     </section>
-
-    <!-- Key Takeaways -->
-    <section>
-      <h3 class="text-2xl font-semibold mb-2 text-white">Key Takeaways</h3>
-      <ul class="list-disc list-inside ml-4 text-gray-200">
-        <li>Basic socket API usage for TCP connections.</li>
-        <li>DNS lookup handling with exception management.</li>
-        <li>Connection establishment and status reporting.</li>
-      </ul>
+    <div class="ds-divider"></div>
+    <section class="ds-section">
+      <p class="ds-section-label">Learnings</p>
+      <h2 class="ds-section-title">Key Takeaways</h2>
+      <div class="ds-highlight">
+        <ul>
+          <li>Basic socket API usage for TCP connections.</li>
+          <li>DNS lookup handling with exception management.</li>
+          <li>Connection establishment and status reporting.</li>
+        </ul>
+      </div>
+      <div class="ds-btn-row">
+        <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/SocketProgramming" target="_blank" rel="noopener noreferrer" class="ds-btn-primary">View Full Code on GitHub</a>
+      </div>
     </section>
-
-    <!-- View Code Button -->
-    <div class="text-center mt-8">
-      <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/SocketProgramming"
-        target="_blank" rel="noopener noreferrer"
-        class="inline-block border border-gray-100 px-6 py-3 rounded-full text-gray-100 hover:bg-gray-700 transition">
-        View Full Code on GitHub
-      </a>
-    </div>
-
   </main>
-
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script> AOS.init({ duration: 800, once: true }); </script>
+  <footer class="ds-footer">
+    <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+  <script src="../../js/design-system.js"></script>
 </body>
-
 </html>

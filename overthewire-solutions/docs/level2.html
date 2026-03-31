@@ -1,124 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Level 2 Solution - OverTheWire Bandit</title>
-
-  <!-- Override Tailwind’s gray palette with neutral grays -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            gray: {
-              900: '#1b1b1b',
-              800: '#2d2d2d',
-              700: '#3f3f3f',
-              600: '#525252',
-              500: '#6b6b6b',
-              400: '#8a8a8a',
-              300: '#a8a8a8',
-              200: '#c7c7c7',
-              100: '#e1e1e1'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Tailwind CSS (after override) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Inter font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
-
-  <!-- AOS CSS -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-
-  <!-- Custom overrides -->
-  <link rel="stylesheet" href="../../css/styles.css" />
+  <title>Level 2: Spaces in Filename — Gurumanie Singh</title>
+  <link rel="icon" href="../../images/Favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../../css/design-system.css" />
 </head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+  <nav class="ds-nav">
+    <a href="../../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+    <a href="index.html" class="ds-nav-back">← Back to Guide</a>
+    <div class="ds-nav-right">
+      <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+    </div>
+  </nav>
 
-<body class="transition-all">
-  <header
-    class="w-full p-4 bg-gray-900 sticky top-0 flex justify-between items-center z-50 border-b-2 border-violet-500">
-    <h1 class="text-2xl font-semibold text-white">Level 2: Spaces in Filename</h1>
-    <a href="index.html" class="text-gray-100 hover:underline">← Back to Guide</a>
-  </header>
+  <main class="ds-main">
+    <section class="ds-page-hero">
+      <span class="ds-badge ds-fade-up">Bandit · Level 2</span>
+      <h1 class="ds-page-title ds-fade-up-1">Spaces in Filename</h1>
+      <p class="ds-page-desc ds-fade-up-2">Handle filenames containing spaces to reveal the password for the next level.</p>
+    </section>
 
-  <main class="max-w-2xl mx-auto py-12 px-4" data-aos="fade-up">
-    <section class="mb-8">
-      <h2 class="text-3xl font-medium mb-4 text-white">Level Goal</h2>
-      <p class="text-lg text-gray-200">
-        The password for the next level is stored in a file called <code>spaces in this filename</code> located in your
-        home directory.
+    <div class="ds-divider"></div>
+
+    <section class="ds-section">
+      <span class="ds-section-label ds-fade-up">Goal</span>
+      <h2 class="ds-section-title ds-fade-up-1">Level Goal</h2>
+      <p class="ds-body ds-fade-up-2">
+        The password for the next level is stored in a file called <code>spaces in this filename</code> located in your home directory.
       </p>
     </section>
 
-    <section class="mb-8">
-      <h2 class="text-3xl font-medium mb-4 text-white">Step-by-Step Solution</h2>
+    <div class="ds-divider"></div>
 
-      <div class="mb-6">
-        <h3 class="text-2xl font-semibold mb-2 text-white">1. Exit Level 1 and SSH into Level 2</h3>
-        <p class="mb-2 text-gray-200">
-          After retrieving the Level 2 password from <code>-</code>, exit the current SSH session (Level 1):
-        </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>exit</code></pre>
-        <p class="mt-2 text-gray-200">
-          Then, connect to Level 2 using the password for <code>bandit2</code>:
-        </p>
-        <pre
-          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code></pre>
-      </div>
+    <section class="ds-section">
+      <span class="ds-section-label ds-fade-up">Solution</span>
+      <h2 class="ds-section-title ds-fade-up-1">Step-by-Step Solution</h2>
 
-      <div class="mb-6">
-        <h3 class="text-2xl font-semibold mb-2 text-white">2. List Files in the Bandit2 Directory</h3>
-        <p class="mb-2 text-gray-200">
-          Once logged in as <code>bandit2</code>, list the files:
-        </p>
-        <pre class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>ls</code></pre>
-        <p class="mt-2 text-gray-200">
-          You will see a file named <code>spaces in this filename</code>.
-        </p>
-      </div>
+      <h3 class="ds-step-title ds-fade-up-2">1. Exit Level 1 and SSH into Level 2</h3>
+      <p class="ds-body ds-fade-up-2">
+        After retrieving the Level 2 password from <code>-</code>, exit the current SSH session (Level 1):
+      </p>
+      <pre class="ds-code-block ds-fade-up-2"><code>exit</code></pre>
+      <p class="ds-body ds-fade-up-2">
+        Then, connect to Level 2 using the password for <code>bandit2</code>:
+      </p>
+      <pre class="ds-code-block ds-fade-up-2"><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code></pre>
 
-      <div class="mb-6">
-        <h3 class="text-2xl font-semibold mb-2 text-white">3. Read the File with Spaces</h3>
-        <p class="mb-2 text-gray-200">
-          Since the filename contains spaces, either escape each space or quote the filename. For example:
-        </p>
-        <pre
-          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat spaces\ in\ this\ filename</code></pre>
-        <p class="mt-2 text-gray-200">
-          Alternatively, use quotes:
-        </p>
-        <pre
-          class="bg-gray-800 p-4 rounded-md overflow-x-auto text-gray-100"><code>cat "spaces in this filename"</code></pre>
-        <p class="mt-2 text-gray-200">
-          This command will display the password for Level 3.
-        </p>
-      </div>
+      <h3 class="ds-step-title ds-fade-up-2">2. List Files in the Bandit2 Directory</h3>
+      <p class="ds-body ds-fade-up-2">
+        Once logged in as <code>bandit2</code>, list the files:
+      </p>
+      <pre class="ds-code-block ds-fade-up-2"><code>ls</code></pre>
+      <p class="ds-body ds-fade-up-2">
+        You will see a file named <code>spaces in this filename</code>.
+      </p>
 
-      <div class="mb-6">
-        <h3 class="text-2xl font-semibold mb-2 text-white">Summary &amp; Key Commands</h3>
-        <ul class="list-disc list-inside ml-4 text-gray-200">
-          <li><code>exit</code> : return to your local machine from the Level 1 SSH session.</li>
-          <li><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code> : connect as <code>bandit2</code> on port
-            2220.</li>
-          <li><code>ls</code> : list files; shows <code>spaces in this filename</code>.</li>
-          <li><code>cat spaces\ in\ this\ filename</code> : display contents of the file with spaces.</li>
-          <li><code>cat "spaces in this filename"</code> : alternative method to display file contents.</li>
+      <h3 class="ds-step-title ds-fade-up-2">3. Read the File with Spaces</h3>
+      <p class="ds-body ds-fade-up-2">
+        Since the filename contains spaces, either escape each space or quote the filename. For example:
+      </p>
+      <pre class="ds-code-block ds-fade-up-2"><code>cat spaces\ in\ this\ filename</code></pre>
+      <p class="ds-body ds-fade-up-2">
+        Alternatively, use quotes:
+      </p>
+      <pre class="ds-code-block ds-fade-up-2"><code>cat "spaces in this filename"</code></pre>
+      <p class="ds-body ds-fade-up-2">
+        This command will display the password for Level 3.
+      </p>
+    </section>
+
+    <div class="ds-divider"></div>
+
+    <section class="ds-section">
+      <span class="ds-section-label ds-fade-up">Summary</span>
+      <h2 class="ds-section-title ds-fade-up-1">Key Commands</h2>
+      <div class="ds-highlight ds-fade-up-2">
+        <ul>
+          <li><code>exit</code> — return to your local machine from the Level 1 SSH session.</li>
+          <li><code>ssh bandit2@bandit.labs.overthewire.org -p 2220</code> — connect as <code>bandit2</code> on port 2220.</li>
+          <li><code>ls</code> — list files; shows <code>spaces in this filename</code>.</li>
+          <li><code>cat spaces\ in\ this\ filename</code> — display contents of the file with spaces.</li>
+          <li><code>cat "spaces in this filename"</code> — alternative method to display file contents.</li>
         </ul>
       </div>
-
     </section>
   </main>
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script> AOS.init({ duration: 800, once: true }); </script>
+  <footer class="ds-footer">
+    <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
+    <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  </footer>
+  <script src="../../js/design-system.js"></script>
 </body>
-
 </html>
