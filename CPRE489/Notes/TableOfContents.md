@@ -1,0 +1,379 @@
+# CPR E 4890 — Exam Study Index
+> **How to use:** Find your question type below. Each entry tells you exactly which file to open and which section number/heading to navigate to. Sections are numbered to match the headings in each .md file.
+
+---
+
+## FILE QUICK REFERENCE
+
+| File | Topic Coverage |
+|---|---|
+| `Intro.md` | Network architectures, OSI/TCP-IP models, switching types |
+| `PhysicalLayer.md` | Bit rate, Nyquist, Shannon capacity, line coding |
+| `ErrorDetectionAndRecovery.md` | CRC, error vectors, ARQ basics |
+| `DataLink.md` | CSMA/CD, IEEE 802.3, Ethernet, switches vs hubs |
+| `NetworkLayer.md` | IP addressing, routing, subnets, CIDR, routing protocols |
+| `TransportLayer.md` | TCP header, ACK, flow/error/congestion control, all TCP variants |
+
+---
+
+## INTRO / ARCHITECTURE (`Intro.md`)
+
+| Question Type | Section |
+|---|---|
+| Difference between circuit, message, and packet switching | `## Layered Networking Architecture` |
+| What network architecture does the Internet use? | `## Features of the Internet` |
+| OSI model — how many layers, what each layer does | `## OSI (Open Systems Interconnect)` |
+| TCP/IP model — how many layers, what each layer does | `## TCP/IP` |
+| What protocols live at which layer (FTP, HTTP, TCP, IP, Ethernet) | `## TCP/IP` and `## OSI` |
+| Which layers have congestion vs flow control | `## OSI` (Data Link = flow only; Transport = both) |
+| Store-and-forward vs reserve-and-use | `## Layered Networking Architecture` |
+| What is ARPANET / what is a packet | `## ARPANET` |
+
+---
+
+## PHYSICAL LAYER (`PhysicalLayer.md`)
+
+| Question Type | Section |
+|---|---|
+| What is bit rate? Formula relating bit rate, coding rate, baud rate | `## Bit Rate` |
+| What is baud rate / coding rate | `## Bit Rate → Key Definitions` |
+| What is channel bandwidth? | `## Transmission Channel and Channel Bandwidth` |
+| Nyquist rate formula (max baud rate for noiseless channel) | `## Nyquist Rate` |
+| Shannon capacity formula; when is reliable comm possible? | `## Shannon Channel Capacity` |
+| SNR definition, SNR in dB formula | `## Signal-to-Noise Ratio (SNR)` |
+| How noise affects BER / number of signal levels | `## Noise and Reliable Communication` |
+| Unipolar NRZ — signal levels, drawbacks | `### 1. Unipolar NRZ` |
+| Polar NRZ — signal levels, advantages/drawbacks | `### 2. Polar NRZ` |
+| Bipolar coding — alternating 1s, zero substitution (B8ZS/B6ZS/B3ZS) | `### 3. Bipolar Coding` |
+| Manchester coding — bit rate vs baud rate, self-clocking | `### 4. Manchester Coding` |
+| mBnL coding — constraint formula, coding rate, examples (2B1Q, 4B3T) | `### 5. mBnL Coding` |
+| NRZI — differential encoding, polarity insensitive, errors in pairs | `### 6. NRZ Inverted (NRZI)` |
+| Differential Manchester — mid-bit transition, polarity insensitive | `### 7. Differential Manchester Coding` |
+| Design considerations for line coding | `## Line Coding Schemes` (intro paragraph) |
+
+---
+
+## ERROR DETECTION & RECOVERY (`ErrorDetectionAndRecovery.md`)
+
+| Question Type | Section |
+|---|---|
+| What are k, n, n−k in the context of error coding? | `## Error Detection and Recovery` (intro) |
+| Error vector definition; received = codeword XOR error | `## Error Vector` |
+| FUE (Fraction of Undetectable Errors) definition and calculation | `## Error Vector → FUE` |
+| Why are even-number bit errors undetectable? | `## Error Vector` |
+| Error burst definition (length L, start/end positions) | `## Error Burst` |
+| FUE formula for error bursts of length L | `## Error Burst → FUE(L)` |
+| CRC encoding — 6-step approach | `## Cyclic Redundancy Check (CRC) code` |
+| CRC information polynomial, dividend, divisor, codeword polynomials | `## CRC → 6 Step Approach` |
+| 2's complement arithmetic for CRC division | `## 2's complement arithmetic` |
+| CRC hardware implementation (shift register circuit) | `## Hardware Implementation of CRC` |
+| CRC error burst detection capability | `## Examples → CRC Error Burst` |
+| FUE formula with CRC for length L bursts | `## Examples → FUE(L)` |
+| ARQ goals (3 design goals) | `## Error Recovery → ARQ → Three Design Goals` |
+| 5 basic elements of ARQ | `## Error Recovery → ARQ → 5 Basic Elements` |
+| Cumulative acknowledgement definition | `## Error Recovery → ARQ → 5 Basic Elements` (end) |
+
+---
+
+## DATA LINK LAYER (`DataLink.md`)
+
+| Question Type | Section |
+|---|---|
+| Static channelization vs dynamic MAC — overview | `## 1. Medium Sharing Techniques` |
+| ALOHA — basic concept | `## 2. Random Access Protocols → ALOHA` |
+| CSMA — carrier sensing, 1-persistent vs non-persistent | `## 2. Random Access Protocols → CSMA` |
+| CSMA/CD — collision detection, abort, jam signal, backoff | `## 2. Random Access Protocols → CSMA/CD` |
+| Why CSMA/CD is better than plain CSMA | `## 2. Random Access Protocols → CSMA/CD` |
+| Why a transmitter must hold carrier for 2t_prop | `## 3. CSMA/CD Reaction Time` |
+| IEEE 802.3 truncated binary exponential backoff | `## 4. IEEE 802.3 MAC Protocol → Truncated Binary Exponential Backoff` |
+| Minimum frame size calculation (why 64 bytes, formula) | `## 4. IEEE 802.3 MAC Protocol → Minimum Frame Size` |
+| Why higher-speed Ethernet needs smaller network diameter | `## 4. IEEE 802.3 MAC Protocol → Minimum Frame Size` (implication) |
+| IEEE 802.3 frame structure (all fields, sizes, purposes) | `## 5. IEEE 802.3 MAC Frame Structure` |
+| What is Preamble / Start Delimiter for? | `## 5. IEEE 802.3 MAC Frame Structure` (table) |
+| What does FCS cover / what is CRC-32? | `## 5. IEEE 802.3 MAC Frame Structure` (table) |
+| Ethernet standards (10Base5, 10Base2, 10BaseT, 100BaseT) | `## 6. Ethernet Physical Layer Standards` |
+| Hub vs switch — collision domain, broadcast domain | `## 6. Ethernet Physical Layer Standards → Hubs vs Switches` |
+| Repeater vs switch vs router vs gateway — which layer each | `## 7. Network Interconnection Devices` |
+| Ethernet history / timeline milestones | `## 8. Ethernet LAN Evolution` |
+
+---
+
+## NETWORK LAYER (`NetworkLayer.md`)
+
+### Addresses & Naming
+| Question Type | Section |
+|---|---|
+| DNS name vs IP address — difference | `## 1. Name and Address` |
+| IP address in dotted-decimal vs binary | `## 1. Name and Address` |
+| Who manages MAC addresses vs IP addresses | `## 4. IP Addressing → Address Management` |
+| ARP — purpose, how it works (request/response) | `## 2. ARP` |
+| DHCP — what it is, what BOOTP is, UDP ports | `## 3. DHCP` |
+| DHCP 4-step operation (Discover, Offer, Request, ACK) | `## 3. DHCP → DHCP Operation` |
+| DHCP lease timers T1, T2, T (values and what happens at each) | `## 3. DHCP → DHCP Operation` |
+| DHCPv6 ports | `## 3. DHCP` |
+| Reading a Windows `ipconfig /all` output (MAC, IP, lease, gateway) | `## 3. DHCP → Real-World Example` |
+| IP address — what does it identify (connection vs computer) | `## 4. IP Addressing → Fundamentals` |
+| Multi-homed host definition | `## 4. IP Addressing → Fundamentals` |
+| netid vs hostid — what each identifies | `## 4. IP Addressing → Structure` |
+
+### Classful Addressing
+| Question Type | Section |
+|---|---|
+| Class A/B/C/D/E — prefix bits, netid/hostid sizes, host counts | `## 5. Classful Addressing Scheme` |
+| Given an IP address, determine its class | `## 5. Classful Addressing Scheme → Identifying Address Classes` |
+| Network address — what it is, how to compute (bitwise AND) | `## 6. Network Address` |
+| Slash notation / CIDR notation for network mask | `## 6. Network Address` |
+| Reserved IP addresses (all-0s, all-1s, 127.x.x.x, loopback) | `## 7. Reserved IP Addresses` |
+| Which addresses CANNOT represent an individual host | `## 7. Reserved IP Addresses → Summary` |
+| Private IP address ranges (3 ranges, their classes) | `## 8. Private IP Addresses` |
+| Why do public routers discard private IP packets? | `## 8. Private IP Addresses` |
+
+### NAT
+| Question Type | Section |
+|---|---|
+| NAT — purpose, how private-to-public mapping works | `## 9. NAT` |
+| Address Translation Table — what it stores | `## 9. NAT` |
+| NAT entry format: (IP address, port number) | `## 9. NAT` |
+
+### Routing Tables
+| Question Type | Section |
+|---|---|
+| Routing table structure (fields: Dest, Mask, Next-hop, Interface, Metric) | `## 10. Routing Table` |
+| How "Destination" in routing table is computed | `## 10. Routing Table` |
+| Routing table search order (4 steps) | `## 10. Routing Table → Routing Table Search Order` |
+| What happens if no route found (ICMP Host Unreachable) | `## 10. Routing Table → Routing Table Search Order` (step 4) |
+| Longest Prefix Match — definition and example | `## 10. Routing Table → Longest Prefix Match` |
+
+### Subnetting
+| Question Type | Section |
+|---|---|
+| Subnet addressing — what it is, how hostid becomes subnetid | `## 11. Subnet Addressing` |
+| Subnet mask formula: subnet address = IP AND subnet mask | `## 11. Subnet Addressing → Key Formula` |
+| How to find the subnet of an IP address (worked example) | `## 11. Subnet Addressing → Subnet Example` |
+| Given a requirement for N hosts, find the host ID bit count and subnet mask | `## 11. Subnet Addressing → Subnet Example` |
+| Directed broadcast address for a subnet (all host bits = 1) | `## 11. Subnet Addressing → Subnet Example` |
+| Usable host count formula (2^h − 2) | `## 11. Subnet Addressing → Subnet Example` |
+| Rules for subnetting (4 rules: spec, sizes, no overlap, multiple) | `## 11. Subnet Addressing → Rules for Subnetting` |
+| Variable-length subnet design (different sizes for different depts) | `## 11. Subnet Addressing → Subnetting Example with Variable-Length Subnets` |
+| When two subnets overlap (invalid configuration) | `## 11. Subnet Addressing → Subnetting Example with Variable-Length Subnets` |
+| Real subnet example with /22 mask (10.24.101.130) | `## 11. Subnet Addressing → Real-World Example` |
+
+### Supernetting / CIDR
+| Question Type | Section |
+|---|---|
+| Why classless addressing was adopted (Class B too big, Class C too small) | `## 12. Supernet Addressing (CIDR)` |
+| Supernet — definition, how to find common prefix | `## 12. Supernet Addressing (CIDR) → Supernet Example` |
+| CIDR notation and network mask for a supernet | `## 12. Supernet Addressing (CIDR) → Supernet Example` |
+| CIDR effect on routing table size (16 entries → 1 entry) | `## 12. Supernet Addressing (CIDR) → CIDR Effect on Routing` |
+| Longest prefix match with CIDR (multiple matching entries) | `## 12. Supernet Addressing (CIDR) → Longest Prefix Match with CIDR` |
+
+### Routing Algorithms
+| Question Type | Section |
+|---|---|
+| Distance Vector routing — three data structures (H, D, C) | `## 14. Distance Vector (DV) Routing → Data Structures per Node` |
+| Bellman-Ford algorithm — formulas for D_ij and H_ij | `## 14. Distance Vector (DV) Routing → Routing Algorithm: Bellman-Ford` |
+| Bellman-Ford convergence example (table with iterations) | `## 14. Distance Vector (DV) Routing → Bellman-Ford Convergence Example` |
+| Counting-to-Infinity problem — what causes it, example | `## 15. The Counting-to-Infinity Problem` |
+| Split Horizon with Poisoned Reverse (SHPR) — rule and example | `## 16. Split Horizon with Poisoned Reverse (SHPR)` |
+| SHPR limitation (only fixes 2-node loops) | `## 16. SHPR → Limitation of SHPR` |
+| Path Vector routing — how it avoids loops, BGP uses this | `## 17. Path Vector Routing` |
+| Link State routing — routing protocol (flooding) vs DV (local exchange) | `## 18. Link State (LS) Routing` |
+| Dijkstra's algorithm — notations (s, N), initialization, Step A, Step B | `## 18. Link State (LS) Routing → Routing Algorithm: Dijkstra's Algorithm` |
+| Dijkstra's worked example (6-node graph with full table) | `## 18. Link State (LS) Routing → Dijkstra's Example` |
+| LS reaction to link failure (flood update, fast recovery) | `## 18. Link State (LS) Routing → Reaction to Link Failure` |
+| DV vs LS comparison (protocol, convergence, loops) | `## 19. DV vs LS Routing Comparison` |
+
+### Autonomous Systems & Protocols
+| Question Type | Section |
+|---|---|
+| Autonomous System — definition, Stub vs Multi-homed vs Transit | `## 20. Autonomous Systems (AS)` |
+| IGP vs EGP — definition, which protocols belong to each | `## 21. IGP and EGP` |
+| RIP — DV, UDP port 520, max hops=15, 16=infinity, SHPR | `## 22. RIP` |
+| OSPF — LS, runs over IP (protocol field=89), faster than RIP | `## 23. OSPF` |
+| BGP — Path Vector, uses TCP, policy routing, reachability | `## 24. BGP` |
+| Protocol stack: where DNS/DHCP/RIP/OSPF/BGP sit | `## 25. Protocol Stack Summary` |
+
+### IPv4 Header
+| Question Type | Section |
+|---|---|
+| All IPv4 header fields — name, size, purpose | `## 26. IPv4 Packet Header → Field Descriptions` |
+| What TTL does; what happens when TTL=0 | `## 26. IPv4 Packet Header → Field Descriptions` (TTL row) |
+| Protocol field values (TCP=6, UDP=17, ICMP=1, OSPF=89) | `## 26. IPv4 Packet Header → Field Descriptions` (Protocol row) |
+| Identification, Flags (DF, MF), Fragment Offset — purpose | `## 26. IPv4 Packet Header → Field Descriptions` |
+| IHL field — units (32-bit words), min value | `## 26. IPv4 Packet Header → Field Descriptions` |
+| Total Length max value (2^16 − 1 = 65535 bytes) | `## 26. IPv4 Packet Header → Field Descriptions` |
+| Options field — what features it supports, max size | `## 26. IPv4 Packet Header → Field Descriptions` |
+| Padding — why it exists | `## 26. IPv4 Packet Header → Field Descriptions` |
+| IPv4 vs IPv6 header comparison (what's kept, removed, added) | `## 27. IPv4 vs IPv6 Packet Header Comparison` |
+
+---
+
+## TRANSPORT LAYER — TCP (`TransportLayer.md`)
+
+### TCP Header
+| Question Type | Section |
+|---|---|
+| TCP segment header — all fields and their purpose | `## TCP Segment Header` |
+| Control bits — URG, ACK, PSH, RST, SYN, FIN meanings | `## TCP Segment Header → Control Bits` |
+| Sequence number — what it represents (byte index) | `## TCP Segment Header` and `## 1. TCP ACK` |
+
+### TCP ACK & Error Control
+| Question Type | Section |
+|---|---|
+| ACK number — byte index of NEXT expected byte (not segment) | `## 1. TCP ACK → Acknowledgment Number` |
+| Why TCP ACK is byte-indexed, not segment-indexed | `## 1. TCP ACK → Acknowledgment Number` |
+| TCP ACK is cumulative — definition | `## 1. TCP ACK → TCP ACK is Cumulative` |
+| Duplicate ACK — what it means, how many before retransmit | `## 1. TCP ACK → Duplicate ACK as Implicit NAK` |
+| TCP error control — which ARQ type (SR), no NAKs | `## 5. TCP Error Control` |
+| What triggers retransmission (RTO vs 3rd dup ACK) | `## 5. TCP Error Control` |
+| Fast Retransmit — definition (4th ACK with same seq#) | `## 5. TCP Error Control` |
+
+### Connection Setup & Teardown
+| Question Type | Section |
+|---|---|
+| Three-way handshake — SYN, SYN+ACK, ACK sequence | `## 2. Establishing a TCP Connection` |
+| ISN — Initial Sequence Number definition | `## 2. Establishing a TCP Connection` |
+| SYN/FIN consume 1 sequence number each | `## 2. Establishing a TCP Connection` |
+| SYN Flood attack — what it is, how it exploits the SYN queue | `## 2. Establishing a TCP Connection → SYN Queue and SYN Flood Attack` |
+| SYN Cookies — how they work, the 3-part y value (t, m, s) | `## 2. Establishing a TCP Connection → SYN Cookies Defense` |
+| TCP connection teardown — FIN, ACK, FIN+ACK, ACK | `## 3. Terminating a TCP Connection` |
+| Half-close — what it means (one side can still receive) | `## 3. Terminating a TCP Connection` |
+
+### Flow Control
+| Question Type | Section |
+|---|---|
+| TCP flow control — purpose (prevent overwhelming receiver) | `## 4. TCP Flow Control` |
+| rwnd — what it is, where it is advertised (Window field) | `## 4. TCP Flow Control` |
+| swnd ≤ rwnd constraint | `## 4. TCP Flow Control` |
+
+### RTO Estimation
+| Question Type | Section |
+|---|---|
+| RTT_EST formula (EWMA, α=0.875) | `## 6. TCP Retransmission Timeout (RTO)` |
+| Basic RTO formula (RTO = β × RTT_EST, β=2) | `## 6. TCP Retransmission Timeout (RTO)` |
+| Problem with too-small or too-large RTO | `## 6. TCP Retransmission Timeout (RTO) → Problems with Poorly Selected RTO` |
+| Sender RTO algorithm (timer, timeout, doubling RTO) | `## 6. TCP Retransmission Timeout (RTO) → Sender Algorithm` |
+| ACK ambiguity problem — which transmission does ACK belong to? | `## 7. Problem #1 — ACK Ambiguity` |
+| Karn's Algorithm — only sample non-retransmitted; double RTO on retransmit | `## 7. Problem #1 — ACK Ambiguity → Karn's Algorithm` |
+| High Variance in RTT problem (heavy tail, packets past RTO) | `## 8. Problem #2 — High Variance in RTT` |
+| Jacobson's Algorithm — 3-step formula (D_EST, RTT_EST, RTO) | `## 8. Problem #2 — High Variance in RTT → Jacobson's Algorithm` |
+
+### Congestion Control — Mechanisms
+| Question Type | Section |
+|---|---|
+| Three steps of TCP congestion control (probe, detect, slow down) | `## 9. TCP Congestion Control` |
+| cwnd — congestion window definition | `## 9. TCP Congestion Control` |
+| swnd = min(rwnd, cwnd) | `## 9. TCP Congestion Control → Combined Window Constraint` |
+| Slow Start — cwnd starts at 1, doubles each RTT, rule | `## 10. Probing Network Capacity: Two Phases → Phase 1` |
+| Congestion Avoidance — cwnd grows by 1 per RTT, rule | `## 10. Probing Network Capacity: Two Phases → Phase 2` |
+| ssthresh — when to switch from SS to CA | `## 10. Probing Network Capacity: Two Phases → Phase 2` |
+| MSS default value (536 bytes) | `## 10. Probing Network Capacity: Two Phases → Phase 1` |
+| How TCP detects congestion (packet loss = congestion signal) | `## 11. Congestion Detection` |
+
+### TCP Tahoe
+| Question Type | Section |
+|---|---|
+| TCP Tahoe response to congestion (any loss → cwnd=1, restart SS) | `## 12. Slowing Down: TCP Tahoe` |
+| TCP Tahoe flowchart | `## 12. Slowing Down: TCP Tahoe → TCP Tahoe Flowchart` |
+| new_ssthresh = ⌊cwnd/2⌋ after congestion | `## 12. Slowing Down: TCP Tahoe` |
+
+### TCP Reno
+| Question Type | Section |
+|---|---|
+| TCP Reno — distinguish RTO vs 3rd dup ACK | `## 13. Slowing Down: TCP Reno` |
+| TCP Reno Fast Recovery — what it does, how it works | `## 13. Slowing Down: TCP Reno → Case 2` |
+| Fast Recovery flowchart | `## 13. Slowing Down: TCP Reno → TCP Reno Flowchart` |
+| #OPs formula in Fast Recovery (#unACKed − #dup ACKs) | `## 13. Slowing Down: TCP Reno → Fast Recovery (in detail)` |
+| M = new_cwnd − #OPs (new packets to send in FR) | `## 13. Slowing Down: TCP Reno → Fast Recovery (in detail)` |
+| Detailed worked example of TCP Reno (5RTT/6RTT walk-through) | `## 14. TCP Reno — Worked Example` |
+| TCP Reno weakness: exits FR on partial ACK → exposes 2nd loss | `## 15. TCP Reno — RTO During Fast Recovery` |
+| What happens when RTO fires during Fast Recovery | `## 15. TCP Reno — RTO During Fast Recovery` |
+
+### TCP New Reno
+| Question Type | Section |
+|---|---|
+| Partial ACK vs complete ACK — definitions | `## 16. TCP New Reno` (intro) |
+| TCP New Reno flowchart — how it handles partial ACK | `## 16. TCP New Reno → TCP New Reno Flowchart` |
+| TCP Reno vs New Reno comparison table | `## 16. TCP New Reno → Difference from TCP Reno` |
+| TCP New Reno worked example | `## 16. TCP New Reno → TCP New Reno Worked Example` |
+
+### TCP Congestion Control — Classification & Advanced Variants
+| Question Type | Section |
+|---|---|
+| Packet loss based vs packet delay based — classification, examples | `## 17. TCP Congestion Control — Classification` |
+| Throughput = cwnd / RTT relationship | `## 17. TCP Congestion Control — Classification → RTT vs cwnd Relationship` |
+| Why SampleRTT rises when cwnd exceeds network capacity | `## 17. TCP Congestion Control — Classification → RTT vs cwnd Relationship` |
+| TCP Vegas — overview, ActualTH formula, N formula | `## 18. TCP Vegas` |
+| TCP Vegas cwnd rules (N < α, N > β, else unchanged) | `## 18. TCP Vegas → cwnd Adjustment During Congestion Avoidance` |
+| TCP Vegas default α=1 MSS, β=3 MSS | `## 18. TCP Vegas → cwnd Adjustment` |
+| TCP Vegas worked example | `## 18. TCP Vegas → TCP Vegas Example` |
+| TCP BBR — BDP definition (B_max × RTT_min), goal | `## 19. TCP BBR` |
+| TCP BBR bandwidth probing pattern [1.25, 0.75, 1×6] | `## 19. TCP BBR → Key Idea: Periodic Bandwidth Probing` |
+| TCP BBR version history (v1=2016, v2=2020, v3=2024) | `## 19. TCP BBR → Version History` |
+| TCP CUBIC — formula, C=0.4, β=0.2, at t=0 → (1−β)×old_cwnd | `## 20. TCP CUBIC` |
+| TCP CUBIC initial drop after congestion (80% of cwnd, not 50%) | `## 20. TCP CUBIC → Behavior` |
+| TCP CUBIC example (RTT=500ms, ssthresh=4) | `## 20. TCP CUBIC → TCP CUBIC Example` |
+
+### Summary Tables
+| Question Type | Section |
+|---|---|
+| All TCP variants side-by-side comparison | `## 21. TCP Congestion Control Comparison` |
+| All TCP parameters with values (α, β, δ, γ, η, C, MSS, etc.) | `## 22. Key TCP Parameter Summary` |
+| Complete TCP feature overview (all mechanisms in one table) | `## 23. Full TCP Feature Overview` |
+
+---
+
+## COMMON EXAM QUESTION PATTERNS
+
+### "Given an IP address, find its..."
+| Task | File → Section |
+|---|---|
+| Address class (A/B/C) | `NetworkLayer.md → §5` |
+| Network address | `NetworkLayer.md → §6` |
+| Subnet (given mask) | `NetworkLayer.md → §11` |
+| Supernet | `NetworkLayer.md → §12` |
+| Whether it is reserved/private | `NetworkLayer.md → §7, §8` |
+
+### "Given a network topology, run..."
+| Task | File → Section |
+|---|---|
+| Bellman-Ford (DV routing) — fill in the iteration table | `NetworkLayer.md → §14` |
+| Dijkstra's algorithm — fill in the iteration table | `NetworkLayer.md → §18` |
+| SHPR example (what does each node advertise?) | `NetworkLayer.md → §16` |
+
+### "Given a routing table, find the next hop for packet with dest X"
+→ `NetworkLayer.md → §10 (Routing Table → Longest Prefix Match)`
+
+### "Given a TCP scenario, trace cwnd/ssthresh over time"
+| TCP Variant | File → Section |
+|---|---|
+| TCP Tahoe | `TransportLayer.md → §12` |
+| TCP Reno | `TransportLayer.md → §13, §14, §15` |
+| TCP New Reno | `TransportLayer.md → §16` |
+| TCP Vegas (compute N, decide +1/−1) | `TransportLayer.md → §18` |
+| TCP CUBIC (apply formula) | `TransportLayer.md → §20` |
+
+### "Compute RTO given RTT samples"
+→ `TransportLayer.md → §6 (basic), §7 (Karn's), §8 (Jacobson's)`
+
+### "Design subnets for an organization with N departments"
+→ `NetworkLayer.md → §11 (Subnet Addressing)`
+
+### "How many routing table entries with/without CIDR?"
+→ `NetworkLayer.md → §12 (CIDR Effect on Routing)`
+
+### "What is the minimum frame size for Ethernet and why?"
+→ `DataLink.md → §4 (IEEE 802.3 MAC Protocol → Minimum Frame Size)`
+
+### "What is the maximum bit rate for a channel with bandwidth W and SNR?"
+→ `PhysicalLayer.md → §Shannon Channel Capacity`
+
+### "Encode/decode this bit sequence using Manchester / NRZI / etc."
+→ `PhysicalLayer.md → §Line Coding Schemes` (find the specific scheme)
+
+### "Compute CRC checksum / detect errors"
+→ `ErrorDetectionAndRecovery.md → §CRC 6-Step Approach`
+
+---
+
+*This index covers all content from Intro.md, PhysicalLayer.md, ErrorDetectionAndRecovery.md, DataLink.md, NetworkLayer.md, and TransportLayer.md (including new TCP New Reno, Vegas, BBR, and CUBIC content from slides a_slide06_042826, a_slide06_050526, and 050726).*

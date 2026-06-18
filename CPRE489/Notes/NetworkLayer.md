@@ -1,44 +1,823 @@
-# Network Layer
+# CPR E 4890 — Topic 5: Network Layer
+> Complete study notes compiled from all lecture slides.
 
-## Name and Address
+---
 
-- DNS name in ASCII string: (dns)
-  - www.uni.edu
-- IP address in dotted-decimal ASCII string (dd):
-  - 134.161.7.207
-- IP address in 32-bit binary representation (b):
-  - 10000110 10100001 00000111 11001111
-- Difference between a DNS name and an IP address
-  - Names are meaningful, easy to remember
-    - Variable-length, difficult for router to process
-  - Addresses have fixed length, rigid hierarchical structure
-    - Easy for router to process
+## 1. Name and Address
 
-## Address Resolution Protocol (ARP)
+### DNS Name
+- Human-readable ASCII string (e.g., `www.uni.edu`)
+- **Variable-length** — meaningful and easy to remember, but difficult for routers to process
 
-- ARP allows a host to find the MAC address of a target host on the same physical network, given the target host’s IP address
+### IP Address (IPv4)
+- Written in **dotted-decimal (dd)** notation: `134.161.7.207`
+- Stored as a **32-bit binary** representation: `10000110 10100001 00000111 11001111`
 
-[ARP](./Screenshots/ARP.png)
+### Key Difference
+| DNS Name | IP Address |
+|---|---|
+| Meaningful, easy to remember | Fixed-length, rigid hierarchical structure |
+| Variable-length | Easy for routers to process |
 
-## Dynamic Host Configuration Protocol (DHCP)
+---
 
-- BOOTP allows a diskless workstation to be remotely booted up in a network
-  - Well-known UDP ports 67 (server) & 68 (client)
-- DHCP builds on BOOTP to allow servers to deliver configuration information to a host
-  - Used extensively to assign temporary IP addresses to hosts
-  - Allows ISP to maximize usage of their limited IP addresses
-- DHCPv6 for IPv6
-  - UDP ports 547 (server) & 546 (client)
+## 2. ARP — Address Resolution Protocol
 
-## DHCP Operation
+**Purpose:** Given a target host's **IP address**, find its **MAC address** (physical/hardware address) on the same physical network.
 
-- Host broadcasts DHCP Discover message on its physical network
-- Servers reply with DHCP Offer messages:
-  - (IP Address + Configuration Information)
-- Host selects one offer and broadcasts DHCP Request message
-- The selected server allocates IP address for lease time T
-  - Sends DHCP ACK message with T, and two time thresholds
-    - T1 (= 0.5T) and T2 (= 0.875T)
-  - At T1, host attempts to renew lease by sending DHCP Request message to the original server
-  - If no reply by T2, host broadcasts DHCP Request to any server
-  - If no reply by T, host must relinquish the IP address and begin the DHCP process from scratch
+> "Given IP address → find out MAC address"
+
+### Operation
+1. **Host A broadcasts** an **ARP Request** containing the IP address of the target (I_B)
+2. **Host B replies** with an **ARP Response** containing the pair (I_B, P_B), where P_B is B's MAC (physical) address
+3. All other hosts on the network receive the broadcast but do not respond
+
+### Notes
+- Only works within the **same physical network**
+- Results are typically **cached** in an ARP table to avoid repeated broadcasts
+
+---
+
+## 3. DHCP — Dynamic Host Configuration Protocol
+
+### Background: BOOTP
+- **BOOTP** (Bootstrap Protocol) allows a **diskless workstation** to be remotely booted up on a network
+- Well-known UDP ports: **67** (server), **68** (client)
+
+> "Given MAC address → find out IP assignment"
+
+### DHCP
+- Builds on BOOTP to allow servers to **deliver configuration information** to a host
+- Used extensively to **assign temporary IP addresses** to hosts
+- Allows ISPs to **maximize usage** of their limited IP address pool
+- **DHCPv6** for IPv6 uses UDP ports **547** (server) and **546** (client)
+
+### DHCP Operation (4-Step Process)
+
+```
+Time ──────────────────────────────────────────────────────────►
+  ↑             ↑↑           ↑            ↑         ↑
+DHCP         DHCP         DHCP         DHCP      DHCP
+Discover     Offers       Request      ACK       Request      Request
+(broadcast)  (servers)    (broadcast)            to original  to any
+                                                 server       server
+                                      ├──────────────T─────────┤
+                                                 T₁        T₂
+```
+
+**Step 1 — DHCP Discover:** Host broadcasts a DHCP Discover message on its physical network.
+
+**Step 2 — DHCP Offer:** One or more servers reply with DHCP Offer messages containing: IP Address + Configuration Information.
+
+**Step 3 — DHCP Request:** Host selects one offer and broadcasts a DHCP Request message.
+
+**Step 4 — DHCP ACK:** The selected server allocates the IP address for **lease time T** and sends a DHCP ACK with:
+- Lease time **T**
+- **T₁ = 0.5T = T/2** — at T₁, host attempts to renew by sending DHCP Request to the **original server**
+- **T₂ = 0.875T = 7T/8** — if no reply by T₂, host broadcasts DHCP Request to **any server**
+- If no reply by **T**, host must **relinquish** the IP address and restart the DHCP process from scratch
+
+### What DHCP ACK Contains
+- IP Address
+- Lease time T
+- Configuration info (subnet mask, default gateway, DNS servers, etc.)
+
+### Real-World Example (Windows `ipconfig /all` output)
+```
+Physical Address  : B0-7B-25-2C-6B-48   ← MAC Address (OUI)
+DHCP Enabled      : Yes
+IPv4 Address      : 10.24.101.130        ← IP Address
+Subnet Mask       : 255.255.252.0
+Default Gateway   : 10.24.103.254
+DHCP Server       : 10.10.67.136
+Lease Obtained    : Monday, March 2, 2026 9:47:54 AM
+Lease Expires     : Thursday, March 26, 2026 11:02:30 AM
+DNS Servers       : 129.186.78.200 / 129.186.140.200 / 129.186.142.200 / 129.186.1.200
+```
+- **OUI** (Organizationally Unique Identifier) in MAC address = Organizationally Unique Identifier
+- **DNS Name** = Host Name + Primary DNS Suffix (e.g., `du313-01.ece.iastate.edu`)
+
+---
+
+## 4. IP Addressing
+
+### Fundamentals
+- Each host on the Internet is assigned a **unique 32-bit IP address** (IPv4)
+- An IP address identifies a **connection to the Internet**, not an individual computer
+  - A host might be **"multi-homed"** (connected to multiple networks, has multiple IP addresses)
+  - IP addresses might be **reused** (e.g., private addresses, NAT)
+
+### Structure: (netid, hostid)
+- **netid** — identifies the network
+- **hostid** — identifies a specific host on that network
+
+**Example:**
+```
+www.uni.edu  →  134.161.7.207
+Binary: 10000110 10100001 | 00000111 11001111
+                  netid   |     hostid
+                          ↑ class boundary (Class B for this example)
+```
+
+### Address Management
+- **MAC Addresses (OUI)** managed by: **IEEE**
+- **IP Addresses** managed by:
+  - **ICANN** (Internet Corporation for Assigned Names and Numbers)
+  - **IANA** (Internet Assigned Numbers Authority)
+
+---
+
+## 5. Classful Addressing Scheme
+
+```
+Bits:    0 1 2 3 4        8           16          24          31
+         ├───┼────────────┼───────────────────────────────────┤
+Class A  │ 0 │  netid     │              hostid               │
+         │   │  (7 bits)  │           (24 bits = 16 mil)      │
+         ├───┴────────────┼───────────────────────────────────┤
+Class B  │ 1 0  netid     │           hostid                  │
+         │    (14 bits)   │         (16 bits = 65,536)        │
+         ├────────────────┼───────────────────────────────────┤
+Class C  │ 1 1 0  netid   │        hostid                     │
+         │   (21 bits)    │      (8 bits = 256)               │
+         ├────────────────┴───────────────────────────────────┤
+Class D  │ 1 1 1 0        multicast address                   │
+         ├────────────────────────────────────────────────────┤
+Class E  │ 1 1 1 1        reserved for future use             │
+         └────────────────────────────────────────────────────┘
+```
+
+### Identifying Address Classes
+| First Bits | Class | Example |
+|---|---|---|
+| `0` | Class A | `52.252.224.122` → `00110100...` |
+| `10` | Class B | `134.161.7.207` → `10000110...` |
+| `110` | Class C | `198.7.223.244` → `11000110...` |
+| `1110` | Class D | Multicast |
+| `1111` | Class E | Reserved |
+
+**Examples from slides:**
+- `198.7.223.244` → `11000110` → **Class C** (www.drake.edu)
+- `52.252.224.122` → `00110100` → **Class A** (www.iastate.edu)
+
+---
+
+## 6. Network Address
+
+- An IP address with **all hostid bits = 0** is reserved to refer to the **network itself**
+- **Formula:** `network address = IP address AND network mask`
+- **Slash notation** specifies the number of netid bits (e.g., `/16`)
+
+**Example:**
+```
+IP:      134.161.7.207
+Mask:    255.255.0.0   (= "/16")
+AND:     134.161.0.0   ← network address
+```
+
+---
+
+## 7. Reserved IP Addresses
+
+| Address Pattern | Meaning | Notes |
+|---|---|---|
+| All 0s (32 bits) | "This host" | Allowed only at startup; never a valid destination |
+| All 0s + host | "Host on this network" | Used by BOOTP/DHCP; never a valid destination |
+| All 1s (32 bits) | Limited broadcast (local net) = `255.255.255.255` | Never a valid source address |
+| net + all 1s | Directed broadcast for net | Never a valid source address |
+| `127.x.x.x` (often `127.0.0.1`) | Loopback | Should **never** appear on a network |
+
+> Class D and Class E addresses also **cannot** represent individual hosts in the public domain.
+
+### Summary: Addresses that CANNOT represent an individual host in the public domain:
+1. Class D addresses (multicast)
+2. Class E addresses (reserved)
+3. Network addresses (hostid = all 0s)
+4. Reserved addresses (all 0s, all 1s, loopback)
+5. Private addresses
+
+---
+
+## 8. Private IP Addresses
+
+Private addresses are **unregistered** and restricted to private internets not directly connected to the public Internet. **Public Internet routers discard packets** with these source/destination addresses.
+
+| Range | Class | Description |
+|---|---|---|
+| `10.0.0.0 — 10.255.255.255` | Class A | Single Class A block (`00001010`) |
+| `172.16.0.0 — 172.31.255.255` | Class B | 16 Class B blocks (`10101100`) |
+| `192.168.0.0 — 192.168.255.255` | Class C | 256 Class C blocks (`11000000`) |
+
+---
+
+## 9. NAT — Network Address Translation
+
+**Purpose:** Convert between **private** and **global** IP addresses, allowing multiple private hosts to share one public IP address.
+
+### Operation
+- Hosts inside private networks generate packets with **private IP address + TCP/UDP port number**
+- NAT maps each **(private IP, port)** pair to a **(shared global IP, available port)** pair
+- An **Address Translation Table** allows packets to be forwarded unambiguously
+
+```
+Private Network           NAT Router            Public Network
+─────────────────                              ─────────────────
+192.168.0.10; x  ──►  Address Translation  ──►  128.100.10.15; y
+192.168.0.13; w  ──►       Table           ──►  128.100.10.15; z
+
+Address Translation Table:
+  192.168.0.10; x  ↔  128.100.10.15; y
+  192.168.0.13; w  ↔  128.100.10.15; z
+```
+
+Each entry maps: **(IP address, port number)** — private side ↔ public side
+
+---
+
+## 10. Routing Table
+
+- The **IP layer** in each host and router maintains a routing table
+- Structure:
+
+| Destination | Network Mask | Next-hop Router | Network Interface | Metric |
+|---|---|---|---|---|
+| ... | ... | ... | ... | ... |
+
+- **"Destination"** in the table = **(network mask) AND (destination IP address extracted from packet header)**
+
+### Routing Table Search Order
+1. Whether the **destination IP address** appears exactly in one of the table entries (host-specific route, `/32`)
+2. Whether the **destination network address** appears in one of the table entries (using network mask)
+3. The **default router** entry (destination `0.0.0.0`, mask `/0`)
+4. If none succeed → declare packet **undeliverable** → send **ICMP "Host Unreachable Error"** packet back to sender
+
+### Longest Prefix Match
+When multiple entries match, pick the **most specific** (longest prefix / smallest subnet). This is used in CIDR routing.
+
+**Example (Routing Table at R1):**
+```
+Dest           Mask    Next-hop       Interface
+129.186.0.0    /16     129.187.0.2    #2
+129.186.205.13 /32     129.186.205.13 #1
+0.0.0.0        /0      129.188.0.2    #3    ← default entry
+```
+- IP packet with dest `129.186.200.3`:
+  - `129.186.200.3 AND /16` = `129.186.0.0` → matches entries #1 and #3
+  - **Longest Prefix Match** → pick #1 (more specific, /16 > /0)
+- IP packet with dest `129.186.205.13`:
+  - Matches entries #1, #2, #3 → longest prefix = #2 (`/32`)
+
+---
+
+## 11. Subnet Addressing
+
+### Motivation
+Subnet addressing introduces a **third hierarchical level** by taking bits from the "Host ID" and using them as a "Subnet ID."
+
+```
+Original (Class B):
+  10 | ←────── Net ID (14 bits) ─────→ | ←────── Host ID (16 bits) ──────→ |
+
+Subnet:
+  10 | ←────── Net ID (14 bits) ─────→ | ← Subnet ID (9 bits) → | Host ID (7 bits) |
+                                                                   subnet mask = /25
+```
+
+### Key Formula
+```
+subnet address = IP address AND subnet mask
+```
+
+### Subnet Mask in Slash Notation
+- `/25` means the first 25 bits are the network+subnet prefix
+
+### Subnet Example (Class B: `150.100.x.x`)
+**Problem:** Organization has Class B block (network ID: `150.100`). Create subnets with up to **100 hosts each**.
+
+**Solution:**
+- 7 bits for host ID → 2⁷ = 128 addresses, 2⁷ - 2 = **126 usable hosts** (sufficient for 100)
+- 16 - 7 = **9 bits** for subnet ID → 2⁹ = 512 subnets possible
+- Subnet mask = `11111111 11111111 11111111 10000000` = `255.255.255.128` = **`/25`**
+
+**Find subnet for `150.100.12.176`:**
+```
+IP:      10010110 01100100 00001100 10110000  (150.100.12.176)
+Mask:    11111111 11111111 11111111 10000000  (255.255.255.128 = /25)
+AND:     10010110 01100100 00001100 10000000  = 150.100.12.128  ← subnet address
+```
+- **Directed broadcast** for this subnet: `150.100.12.255` (all host bits = 1)
+- **Usable host range:** `150.100.12.129` – `150.100.12.254` → 2⁷ - 2 = **126 hosts**
+
+### Real-World Example (`10.24.101.130`, mask `255.255.252.0 = /22`):
+```
+IP:   00001010 00011000 01100101 10000010  (10.24.101.130)
+Mask: 11111111 11111111 11111100 00000000  (255.255.252.0 = /22)
+AND:  00001010 00011000 01100100 00000000  = 10.24.100.0/22  ← subnet address
+```
+- Usable range: `10.24.100.1` – `10.24.103.254` → 2¹⁰ - 2 = **1022 hosts**
+
+### Rules for Subnetting
+1. Subnets shall be **specified** using the subnet address and the subnet mask
+2. Subnets may have **different sizes**
+3. If assigned to different departments, subnets shall **not overlap**
+4. One department may be assigned **multiple** subnets
+
+### Subnetting Example with Variable-Length Subnets (195.100.20.0/24, Class C)
+Given: 8-bit host ID, 3 departments
+
+| Dept | Hosts Needed | Host ID bits | Subnet Mask | Subnet ID bits | Subnet |
+|---|---|---|---|---|---|
+| D1 | 90 | 7 bits (126 usable) | /25 | 1 bit | `195.100.20.0/25` |
+| D2 | 60 | 6 bits (62 usable) | /26 | 2 bits | `195.100.20.128/26` |
+| D3 | 60 | 6 bits (62 usable) | /26 | 2 bits | `195.100.20.192/26` |
+
+- D1's subnet ID = `0xxxxxxx`
+- D2's subnet ID = `10xxxxxx`
+- D3's subnet ID = `11xxxxxx` — but `11xxxxxx` overlaps with `1xxxxxxx` of D1 if D1 used /25 incorrectly
+  - Correct: D3 gets `195.100.20.192/26` and `195.100.20.96/27` (multiple subnets)
+
+### Subnet Addresses in Routing Tables
+- Subnet addresses are used by routers **within** the organization
+- Longest prefix match applies when a packet matches both a network-wide and a subnet-specific entry
+
+**Example:**
+```
+Routing Table at R0:
+Dest          Mask    Next-hop    Interface
+150.100.0.0   /16     R1          I1
+150.100.12.128 /25    R2          I2
+
+IP packet arriving at R0 with dest 150.100.12.176:
+  Matches both #1 (/16) and #2 (/25)
+  Longest Prefix Match → pick #2 (/25 is longer)
+```
+
+---
+
+## 12. Supernet Addressing (CIDR)
+
+### Why Classless Addressing?
+- **Class B** too large for most organizations — would be exhausted quickly
+- **Class C** too small (only 256 addresses)
+- **Short-term solution:** Supernet Addressing (Classless Inter-Domain Routing — CIDR)
+- **Long-term solution:** IPv6 with 128-bit address space
+
+### Supernet Addressing
+Allows addresses assigned to a **single organization** to span **multiple classed address blocks**.
+
+### Supernet Example (16 Class C blocks)
+```
+From: 11001101 01100100 00000000 00000000  (205.100.0.0)
+To:   11001101 01100100 00001111 00000000  (205.100.15.0)
+
+Common prefix (20 bits): 11001101 01100100 0000
+Supernet address:  11001101 01100100 00000000 00000000  = 205.100.0.0
+Network mask:      11111111 11111111 11110000 00000000  = 255.255.240.0
+Slash notation:    205.100.0.0/20
+```
+
+### CIDR Effect on Routing
+**Without CIDR (Pre-CIDR):** 16 separate Class C entries in routing table for the same block.
+
+**With CIDR (Post-CIDR):** Only **1 entry** (`205.100.0.0/20`) covers all 16 Class C blocks.
+
+> CIDR collapses a block of contiguous Class C address blocks into a **single routing table entry**.
+
+Routing is now based on the **network prefix** (supernet address), not the class.
+
+### Longest Prefix Match with CIDR
+With CIDR, multiple routing table entries may match a given destination. Always use the **most specific route** (longest prefix = smallest supernet).
+
+**Example:**
+- Table has `205.100.0.0/20` and `205.100.0.0/22`
+- A packet destined for `205.100.1.5` matches both
+- **Pick `205.100.0.0/22`** — longer prefix, more specific
+
+---
+
+## 13. Routing
+
+### Goal
+Find the **"best" route** (path with smallest total cost) between two nodes.
+
+### Components
+- **Routing Protocol** — distributes routing-related info between nodes
+- **Routing Algorithm** — computes the best route based on collected info
+
+---
+
+## 14. Distance Vector (DV) Routing
+
+### Data Structures per Node i
+Each node i maintains **three lists**:
+
+| List | Symbol | Meaning |
+|---|---|---|
+| Routing table | H_ij | Next hop toward destination j |
+| Distance vector | D_ij | Shortest known distance to destination j (global info) |
+| Link cost table | C_ij | Cost of direct link to neighbor j; ∞ for non-neighbors (local info) |
+
+**Example at Node 1 (graph: 1–2 cost 1, 1–3 cost 5, 2–3 cost 1, 3–4 cost 1):**
+```
+Dest j | H_1j | D_1j | C_1j
+   1   |   1  |   0  |   0
+   2   |   2  |   1  |   1
+   3   |   2  |   2  |   5
+   4   |   2  |   3  |   ∞
+```
+
+### Routing Protocol
+- **Only distance vectors** are exchanged between **neighbor nodes** (local exchange)
+- D_ij = global info (learned from neighbors); C_ij = local info (direct links)
+
+### Routing Algorithm: Bellman-Ford
+
+#### Initialization Step
+- Set H_ij, D_ij, C_ij for all known neighbors
+
+#### Send Step
+- Each node sends its **distance vector (DV)** to its **immediate neighbors** across local links
+
+#### Loop (Triggered Update)
+If node **i** receives a DV from neighbor **k** OR sees a link cost change to **k**, it recalculates:
+
+```
+D_ij = min_k { C_ik + D_kj }
+H_ij = argmin_k { C_ik + D_kj }   ← the k that minimizes (C_ik + D_kj)
+```
+
+- If a new D_ij or H_ij is found → go to **Send Step** (triggered update)
+- Otherwise → **periodic broadcast** (no change)
+
+### Bellman-Ford Convergence Example
+
+**Network:**
+```
+  1 ──5── 3 ──1── 4
+  │       │
+  1       1
+  │       │
+  2 ──────┘
+```
+(Edges: 1-2=1, 1-3=5, 2-3=1, 3-4=1)
+
+**Convergence toward Destination Node 4:**
+
+| Iteration | Node 1 (H,D) | Node 2 (H,D) | Node 3 (H,D) |
+|---|---|---|---|
+| Initial | (-, ∞) | (-, ∞) | (-, ∞) |
+| 1 | (-, ∞) | (-, ∞) | **(4, 1)** — direct neighbor |
+| 2 | **(3, 6)** — via 3, cost 5+1 | **(3, 2)** — via 3, cost 1+1 | (4, 1) |
+| 3 | **(2, 3)** — via 2, cost 1+2 | (3, 2) | (4, 1) |
+| 4 (converged) | (2, 3) | (3, 2) | (4, 1) |
+
+**Final state at Node 1:**
+```
+Dest | H_1j | D_1j | C_1j
+  1  |   1  |   0  |   0
+  2  |   2  |   1  |   1
+  3  |   2  |   2  |   5
+  4  |   2  |   3  |   ∞
+```
+
+---
+
+## 15. The Counting-to-Infinity Problem
+
+### Scenario: Link 2–3 breaks
+
+**Before break:**
+```
+Node 1: H=2, D=3    Node 2: H=3, D=2    Node 3: H=4, D=1
+```
+
+**After break** (no SHPR): Node 2 loses its route to 4 via 3. It uses Node 1's stale info (D=3) and computes:
+- D24 = C21 + D14 = 1 + 3 = **4** (routed through Node 1)
+- But Node 1's route goes through Node 2 → **routing loop!**
+
+| Iteration | Node 1 | Node 2 | Node 3 |
+|---|---|---|---|
+| Initial | (2, 3) | (3, 2) | (4, 1) |
+| After break | (2, 3) | **(1, 4)** | (4, 1) |
+| 1 | **(2, 5)** | (1, 4) | (4, 1) |
+| 2 | (2, 5) | **(1, 6)** | (4, 1) |
+| 3 | **(2, 7)** | (1, 6) | (4, 1) |
+| ... | ↑ counting to infinity | ... | ... |
+
+### Causes
+- Router does not know whether it is **in its neighbor's path** to a destination
+- **Inconsistent routing tables** — updates do not reflect reality
+
+---
+
+## 16. Split Horizon with Poisoned Reverse (SHPR)
+
+### Rule
+> For node **W**, its neighbor **X**, and destination **Y**: if **H_WY = X** (W routes to Y through X), then set **D_WY = ∞** in W's DV report **to neighbor X**.
+
+- Report ∞ instead of the true distance to prevent X from using W as a path back to itself
+- **Note:** The DV report to neighbor X ≠ W's local D list (they may differ)
+
+### SHPR Example: Link 2–3 breaks
+- Before break: Node 1's H_14 = 2 → Node 1 advertises D_14 = **∞** to Node 2
+- After break: Node 2 sees D_24 via Node 3 is gone AND D_14 from Node 1 = ∞ → Node 2 sets D_24 = **∞**
+
+| Iteration | Node 1 | Node 2 | Node 3 |
+|---|---|---|---|
+| Initial | (2, 3) | (3, 2) | (4, 1) |
+| After break | (2, 3) | **(-, ∞)** | (4, 1) |
+| 1 | **(-, ∞)** | (-, ∞) | (4, 1) |
+| 2 (converged) | (-, ∞) | (-, ∞) | (4, 1) |
+
+✅ Loop resolved immediately!
+
+### Limitation of SHPR
+- **SHPR only eliminates loops involving exactly 2 nodes**
+- It does **NOT** eliminate loops involving **>2 nodes**
+
+---
+
+## 17. Path Vector Routing (Loop-Free Solution)
+
+- Each node sends neighbors the **entire path** (sequence of nodes) to every destination
+- A node uses a neighbor's path only if **it itself is not on that path**
+- Each node **prepends itself** to paths before forwarding
+
+**Example — Node 1's path vector:**
+```
+Dest |  1  |  2   |   3    |     4
+Dist |  0  |  1   |   2    |     3
+Path | <1> | <1,2>| <1,2,3>| <1,2,3,4>
+```
+
+> Used by **BGP** (Border Gateway Protocol) for inter-AS routing.
+
+---
+
+## 18. Link State (LS) Routing
+
+### Key Difference from DV
+- **DV Routing:** only distance vectors exchanged locally between neighbors
+- **LS Routing:** each node broadcasts its **local link state** info to **all other nodes** (flooding)
+
+> "Local information exchanged globally"
+
+Each node ends up with **complete information about all links** in the network.
+
+### Routing Protocol
+Each node **broadcasts its local link state** (its direct link costs to all neighbors) to all other nodes — typically via flooding.
+
+### Routing Algorithm: Dijkstra's Algorithm
+
+Used to compute **shortest paths from a source node to all other nodes**.
+
+#### Notations
+- **s**: source node
+- **N**: set of nodes whose shortest paths have already been determined
+
+#### Algorithm Steps
+
+**Initialization:**
+```
+N = {s}
+D_sj = C_sj    for all j  (direct link cost from s, or ∞ if not neighbor)
+H_sj = j       for all j
+```
+
+**Step A — Find next closest node i:**
+```
+Find node i ∉ N such that D_si = min{ D_sj } for all j ∉ N
+Add i to N
+If N contains all nodes → STOP
+```
+
+**Step B — Update costs through i:**
+```
+For each node j ∉ N:
+  if (D_si + C_ij) < D_sj:
+    D_sj = D_si + C_ij
+    H_sj = H_si       ← NOT necessarily i; same first hop as to i
+Go to Step A
+```
+
+#### Dijkstra's Example: From Source Node A
+
+**Graph:**
+```
+        2
+   A ─────── C
+   │ \    2 /│
+   3   5  /  1
+   │   \ /   │
+   B    D    F
+    \   │   /
+     4  3  2
+      \ │ /
+        E
+```
+Edges: A-C=2, A-B=3, A-D=5, C-D=2, C-F=1, B-D=1(?), B-E=4, D-E=3, F-E=2
+
+**Iteration table:**
+
+| Iter | N | H_AB; D_AB | H_AC; D_AC | H_AD; D_AD | H_AE; D_AE | H_AF; D_AF |
+|---|---|---|---|---|---|---|
+| Init | {A} | B; 3 | **C; 2** | D; 5 | E; ∞ | F; ∞ |
+| 1 | {A,C} | B; 3 | C; 2 | **C; 4** | E; ∞ | **C; 3** |
+| 2 | {A,B,C} | B; 3 | C; 2 | C; 4 | **B; 7** | **C; 3** |
+| 3 | {A,B,C,F} | B; 3 | C; 2 | C; 4 | **C; 5** | C; 3 |
+| 4 | {A,B,C,D,F} | B; 3 | C; 2 | C; 4 | **C; 5** | C; 3 |
+| 5 | {A,B,C,D,E,F} | B; 3 | C; 2 | C; 4 | C; 5 | C; 3 |
+
+**Final routing table at A:**
+```
+j | H_Aj | D_Aj | C_Aj
+A |   A  |   0  |   0
+B |   B  |   3  |   3
+C |   C  |   2  |   2
+D |   C  |   4  |   5
+E |   C  |   5  |   ∞
+F |   C  |   3  |   ∞
+```
+
+**Shortest path tree from A:** A→C→F→E, A→C→D, A→B
+
+### Reaction to Link Failure (LS)
+1. Affected nodes set link cost to **∞** and **flood** the network with update packets
+2. All nodes immediately update their link database and re-run Dijkstra
+3. **Recovery is very quick**
+
+### Important Note
+- **LS Routing is NOT loop-free** — due to **delay in link state information propagation** (not all nodes have updated info at the same time)
+
+---
+
+## 19. DV vs LS Routing Comparison
+
+| Aspect | DV Routing | LS Routing |
+|---|---|---|
+| Protocol | Exchange distance vectors with **neighbors only** | **Flood** link state to ALL nodes |
+| Info scope | Global info (learned gradually) | Local info exchanged globally |
+| Algorithm | Bellman-Ford (distributed) | Dijkstra (centralized per node) |
+| Convergence | Slower | Faster |
+| Loop-free? | Not guaranteed (counting-to-infinity) | Not guaranteed (propagation delay) |
+| Real protocol | RIP | OSPF |
+
+---
+
+## 20. Autonomous Systems (AS)
+
+An **Autonomous System (AS)** = a set of routers or networks administered by a **single organization**.
+
+### Types of AS
+| Type | Description |
+|---|---|
+| **Stub AS** | Only a **single connection** to the outside world |
+| **Multi-homed AS** | Multiple connections, but **refuses transit traffic** |
+| **Transit AS** | Multiple connections, **can carry transit and local** traffic |
+
+---
+
+## 21. IGP and EGP
+
+```
+┌─────────────┐         EGP          ┌─────────────┐
+│   AS A      │  ←──────────────►   │   AS C      │
+│  IGP (RIP)  │   (gateway router)   │  IGP (OSPF) │
+│  stub AS    │                      │  transit AS │
+└─────────────┘                      └─────────────┘
+                    ┌─────────────┐
+                    │   AS B      │
+                    │  IGP (RIP)  │
+                    │  stub AS    │
+                    └─────────────┘
+```
+
+| Protocol Type | Scope | Examples |
+|---|---|---|
+| **IGP** (Interior Gateway Protocol) | Routing **within** an AS | RIP, OSPF |
+| **EGP** (Exterior Gateway Protocol) | Routing **between** ASs | BGPv4 |
+
+---
+
+## 22. RIP — Routing Information Protocol
+
+- **Type:** Distance Vector routing protocol
+- **Uses SHPR** (Split Horizon with Poisoned Reverse)
+- **Runs on top of:** UDP, port **#520**, `routed` BSD Unix program (RIP/UDP/IP)
+- **Routing metric:** Number of hops
+- **Max hops:** Limited to **15** (16 = infinity)
+  - Suitable for **small networks** (local area environments)
+  - Limiting max hops helps constrain the Counting-to-Infinity problem
+
+**Protocol stack:** Application (RIP) → Transport (UDP) → Network (IP)
+
+---
+
+## 23. OSPF — Open Shortest Path First
+
+- **Type:** Link State routing protocol
+- **Runs directly over IP** (not UDP or TCP)
+- **Protocol field** in IP header = **89**
+- **Typically converges faster than RIP** when there is a network failure
+
+**Protocol stack:** Application (OSPF) → Network (IP)
+
+---
+
+## 24. BGP — Border Gateway Protocol (BGPv4)
+
+- **Type:** Path Vector Routing Protocol (loop-free by design)
+- **Is a reachability protocol** — focuses on whether destinations are reachable, not optimal path cost
+- **Uses TCP** to send updates (BGP/TCP/IP)
+  - Provides reliable transmission
+  - Allows incremental updates
+- **Allows policy routing** — path selection by policy rather than path optimality
+
+**Protocol stack:** Application (BGP) → Transport (TCP) → Network (IP)
+
+---
+
+## 25. Protocol Stack Summary
+
+```
+Application:  DNS   DHCP    |    RIP    OSPF    BGP
+              ↓     ↓       |    ↓      ↓       ↓
+Transport:   UDP   UDP      |   UDP     —       TCP
+              ↓     ↓       |    ↓      ↓       ↓
+Network:      IP    IP      |    IP     IP      IP
+                            |
+Data Link:           Ethernet, Wi-Fi
+Physical:            ...
+```
+- ARP operates between Network and Data Link layers
+- IP uses the **Routing Table**
+
+---
+
+## 26. IPv4 Packet Header
+
+```
+ 0       4       8               16  19          24              31
+ ├───────┼───────┼───────────────┼───┼───────────┼───────────────┤
+ │Version│  IHL  │Type of Service│        Total Length           │
+ ├───────────────┼───────┬───────┴───────────────────────────────┤
+ │   Identification      │ Flags │      Fragment Offset          │
+ ├───────────────┬───────┴───────┴───────────────────────────────┤
+ │  Time to Live │ Protocol      │      Header Checksum          │
+ ├───────────────────────────────────────────────────────────────┤
+ │                     Source IP Address                         │
+ ├───────────────────────────────────────────────────────────────┤
+ │                   Destination IP Address                      │
+ ├───────────────────────────────────────────┬───────────────────┤
+ │                  Options                  │     Padding       │
+ └───────────────────────────────────────────┴───────────────────┘
+```
+
+### Field Descriptions
+
+| Field | Size | Description |
+|---|---|---|
+| **Version** | 4 bits | IP version = **4** |
+| **IHL** (Internet Header Length) | 4 bits | Length of header in **32-bit words** (min 5 = 20 bytes) |
+| **Type of Service (ToS)** | 8 bits | Priority of packet at each router |
+| **Total Length** | 16 bits | Length of entire IP packet in **bytes** (header + data); max = 2¹⁶ − 1 = **65,535 bytes** |
+| **Identification** | 16 bits | Identifies a particular IP packet (for reassembly of fragments) |
+| **Flags** | 3 bits | **Reserved bit**, **DF** (Don't Fragment), **MF** (More Fragments) |
+| **Fragment Offset** | 13 bits | Location of fragment within IP packet; unit = **8 bytes** |
+| **Time to Live (TTL)** | 8 bits | Max hops packet may traverse; each router **decrements by 1**; if reaches 0 → discard + send error |
+| **Protocol** | 8 bits | Upper-layer protocol: **TCP=6, UDP=17, ICMP=1, OSPF=89** |
+| **Header Checksum** | 16 bits | Verifies integrity of the IP **header only** |
+| **Source IP Address** | 32 bits | IP address of sending host |
+| **Destination IP Address** | 32 bits | IP address of receiving host |
+| **Options** | 0–40 bytes | Variable-length; supports: security level, source route, timestamp at each router |
+| **Padding** | Variable | Makes header a multiple of **32 bits** |
+
+---
+
+## 27. IPv4 vs IPv6 Packet Header Comparison
+
+| IPv4 Field | IPv6 Equivalent |
+|---|---|
+| Version | Version (kept) |
+| IHL | Removed (fixed 40-byte header) |
+| Type of Service | Traffic Class (renamed/repositioned) |
+| Total Length | Payload Length (renamed) |
+| Identification | Removed |
+| Flags | Removed |
+| Fragment Offset | Removed (fragmentation handled by source) |
+| Time to Live | Hop Limit (renamed) |
+| Protocol | Next Header (renamed) |
+| Header Checksum | Removed (handled by upper layers) |
+| Source/Dest Address | Source/Dest Address (128 bits each) |
+| Options+Padding | Removed (replaced by extension headers) |
+| — | Flow Label (new field) |
+
+**Key IPv6 improvements:**
+- Fixed **40-byte** base header (no IHL needed)
+- **128-bit** addresses (vastly larger address space)
+- No header checksum (reduces per-hop processing)
+- No fragmentation by routers (done at source only)
+
+---
+
+*End of Network Layer Notes*
