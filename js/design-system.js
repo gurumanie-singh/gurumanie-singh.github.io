@@ -105,11 +105,12 @@ function initReveal() {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      const delay = Math.min(orderIndex(el), 8) * 80;
+      // Stagger 80ms per sibling, capped at 6 (480ms) so long lists don't lag.
+      const delay = Math.min(orderIndex(el), 6) * 80;
       window.setTimeout(() => show(el), delay);
       obs.unobserve(el);
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -48px 0px' });
 
   els.forEach((el) => observer.observe(el));
 }

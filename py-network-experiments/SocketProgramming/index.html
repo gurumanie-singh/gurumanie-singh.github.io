@@ -28,56 +28,56 @@
     </div>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Overview</p>
-      <h2 class="ds-section-title">Project Overview</h2>
-      <p class="ds-body">Demonstrates basic TCP socket creation, DNS resolution, and server connection using Python's <code>socket</code> module, with robust error handling.</p>
-      <div class="ds-pill-row">
-        <span class="ds-pill">Python</span>
-        <span class="ds-pill">TCP/IP</span>
-        <span class="ds-pill">DNS</span>
-        <span class="ds-pill">Socket API</span>
+      <p data-reveal class="ds-section-label">Overview</p>
+      <h2 data-reveal class="ds-section-title">Project Overview</h2>
+      <p data-reveal class="ds-body">Demonstrates basic TCP socket creation, DNS resolution, and server connection using Python's <code>socket</code> module, with robust error handling.</p>
+      <div data-reveal-group class="ds-pill-row">
+        <span data-reveal class="ds-pill">Python</span>
+        <span data-reveal class="ds-pill">TCP/IP</span>
+        <span data-reveal class="ds-pill">DNS</span>
+        <span data-reveal class="ds-pill">Socket API</span>
       </div>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Implementation</p>
-      <h2 class="ds-section-title">Socket Creation</h2>
-      <p class="ds-body">Initializes a TCP socket and handles potential creation errors:</p>
-      <pre class="ds-code-block"><code>try:
+      <p data-reveal class="ds-section-label">Implementation</p>
+      <h2 data-reveal class="ds-section-title">Socket Creation</h2>
+      <p data-reveal class="ds-body">Initializes a TCP socket and handles potential creation errors:</p>
+      <pre data-reveal class="ds-code-block"><code>try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("socket successfully created")
 except socket.error as err:
     print(f"socket creation failed with error {err}")</code></pre>
-      <p class="ds-body">Uses <code>socket.AF_INET</code> for IPv4 and <code>socket.SOCK_STREAM</code> for TCP. Prints clear diagnostics on failure.</p>
+      <p data-reveal class="ds-body">Uses <code>socket.AF_INET</code> for IPv4 and <code>socket.SOCK_STREAM</code> for TCP. Prints clear diagnostics on failure.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Connection</p>
-      <h2 class="ds-section-title">DNS Resolution &amp; Connection</h2>
-      <p class="ds-body">Resolves the target host and establishes a connection on port 80:</p>
-      <pre class="ds-code-block"><code>port = 80
+      <p data-reveal class="ds-section-label">Connection</p>
+      <h2 data-reveal class="ds-section-title">DNS Resolution &amp; Connection</h2>
+      <p data-reveal class="ds-body">Resolves the target host and establishes a connection on port 80:</p>
+      <pre data-reveal class="ds-code-block"><code>port = 80
 host_ip = socket.gethostbyname("www.google.com")
 s.connect((host_ip, port))
 print(f"Successfully connected on port {port} and host ip addr is {host_ip}")</code></pre>
-      <p class="ds-body">Captures <code>gaierror</code> for DNS failures and exits gracefully. Demonstrates real-world usage of <code>gethostbyname</code> and <code>connect</code>.</p>
+      <p data-reveal class="ds-body">Captures <code>gaierror</code> for DNS failures and exits gracefully. Demonstrates real-world usage of <code>gethostbyname</code> and <code>connect</code>.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Learnings</p>
-      <h2 class="ds-section-title">Key Takeaways</h2>
-      <div class="ds-highlight">
+      <p data-reveal class="ds-section-label">Learnings</p>
+      <h2 data-reveal class="ds-section-title">Key Takeaways</h2>
+      <div data-reveal class="ds-highlight">
         <ul>
           <li>Basic socket API usage for TCP connections.</li>
           <li>DNS lookup handling with exception management.</li>
           <li>Connection establishment and status reporting.</li>
         </ul>
       </div>
-      <div class="ds-btn-row">
+      <div data-reveal class="ds-btn-row">
         <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/SocketProgramming" target="_blank" rel="noopener noreferrer" class="ds-btn-primary">View Full Code on GitHub</a>
       </div>
     </section>
   </main>
-  <footer class="ds-footer">
+  <footer data-reveal class="ds-footer">
     <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
     <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
   </footer>

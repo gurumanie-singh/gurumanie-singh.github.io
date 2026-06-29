@@ -28,71 +28,71 @@
     </div>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Overview</p>
-      <h2 class="ds-section-title">Project Overview</h2>
-      <p class="ds-body">This tool implements a real-time chat server and client using TCP sockets. It supports multiple clients, each handled in a separate thread, enabling concurrent message exchange.</p>
-      <div class="ds-pill-row">
-        <span class="ds-pill">Python</span>
-        <span class="ds-pill">TCP Sockets</span>
-        <span class="ds-pill">Threading</span>
+      <p data-reveal class="ds-section-label">Overview</p>
+      <h2 data-reveal class="ds-section-title">Project Overview</h2>
+      <p data-reveal class="ds-body">This tool implements a real-time chat server and client using TCP sockets. It supports multiple clients, each handled in a separate thread, enabling concurrent message exchange.</p>
+      <div data-reveal-group class="ds-pill-row">
+        <span data-reveal class="ds-pill">Python</span>
+        <span data-reveal class="ds-pill">TCP Sockets</span>
+        <span data-reveal class="ds-pill">Threading</span>
       </div>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Implementation</p>
-      <h2 class="ds-section-title">Server Implementation</h2>
-      <p class="ds-body">The server initializes with:</p>
-      <pre class="ds-code-block"><code>server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      <p data-reveal class="ds-section-label">Implementation</p>
+      <h2 data-reveal class="ds-section-title">Server Implementation</h2>
+      <p data-reveal class="ds-body">The server initializes with:</p>
+      <pre data-reveal class="ds-code-block"><code>server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
 server.listen()</code></pre>
-      <p class="ds-body">Upon <code>accept()</code>, each new client socket is passed to <code>threading.Thread</code>:</p>
-      <pre class="ds-code-block"><code>thread = threading.Thread(target=handle_client, args=(client_socket,))
+      <p data-reveal class="ds-body">Upon <code>accept()</code>, each new client socket is passed to <code>threading.Thread</code>:</p>
+      <pre data-reveal class="ds-code-block"><code>thread = threading.Thread(target=handle_client, args=(client_socket,))
 thread.start()</code></pre>
-      <p class="ds-body">The <code>handle_client()</code> function prefixes messages with usernames and invokes <code>broadcast(message, sender)</code> to distribute to all peers.</p>
+      <p data-reveal class="ds-body">The <code>handle_client()</code> function prefixes messages with usernames and invokes <code>broadcast(message, sender)</code> to distribute to all peers.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Broadcasting</p>
-      <h2 class="ds-section-title">Message Broadcasting</h2>
-      <p class="ds-body">The <code>broadcast()</code> helper ensures that messages from one client reach the others:</p>
-      <pre class="ds-code-block"><code>def broadcast(msg, sender):
+      <p data-reveal class="ds-section-label">Broadcasting</p>
+      <h2 data-reveal class="ds-section-title">Message Broadcasting</h2>
+      <p data-reveal class="ds-body">The <code>broadcast()</code> helper ensures that messages from one client reach the others:</p>
+      <pre data-reveal class="ds-code-block"><code>def broadcast(msg, sender):
     for client in clients:
         if client != sender:
             client.send(msg)</code></pre>
-      <p class="ds-body">This design filters out the sender, preventing echo, and loops through the <code>clients</code> list for distribution.</p>
+      <p data-reveal class="ds-body">This design filters out the sender, preventing echo, and loops through the <code>clients</code> list for distribution.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Client</p>
-      <h2 class="ds-section-title">Client Implementation</h2>
-      <p class="ds-body">The client connects via:</p>
-      <pre class="ds-code-block"><code>client_socket.connect((HOST, PORT))</code></pre>
-      <p class="ds-body">It spawns two threads for non-blocking I/O: one to receive data:</p>
-      <pre class="ds-code-block"><code>recv_thread = threading.Thread(target=receive_messages)
+      <p data-reveal class="ds-section-label">Client</p>
+      <h2 data-reveal class="ds-section-title">Client Implementation</h2>
+      <p data-reveal class="ds-body">The client connects via:</p>
+      <pre data-reveal class="ds-code-block"><code>client_socket.connect((HOST, PORT))</code></pre>
+      <p data-reveal class="ds-body">It spawns two threads for non-blocking I/O: one to receive data:</p>
+      <pre data-reveal class="ds-code-block"><code>recv_thread = threading.Thread(target=receive_messages)
 recv_thread.daemon = True
 recv_thread.start()</code></pre>
-      <p class="ds-body">And one to capture user input and send:</p>
-      <pre class="ds-code-block"><code>while True:
+      <p data-reveal class="ds-body">And one to capture user input and send:</p>
+      <pre data-reveal class="ds-code-block"><code>while True:
     msg = input()
     client_socket.send(msg.encode())</code></pre>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Learnings</p>
-      <h2 class="ds-section-title">Key Takeaways</h2>
-      <div class="ds-highlight">
+      <p data-reveal class="ds-section-label">Learnings</p>
+      <h2 data-reveal class="ds-section-title">Key Takeaways</h2>
+      <div data-reveal class="ds-highlight">
         <ul>
           <li>Concurrent client handling with <code>threading</code>.</li>
           <li>Message routing via a centralized broadcast function.</li>
           <li>Non-blocking I/O to maintain responsiveness.</li>
         </ul>
       </div>
-      <div class="ds-btn-row">
+      <div data-reveal class="ds-btn-row">
         <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/TCPChatRoom" target="_blank" rel="noopener noreferrer" class="ds-btn-primary">View Full Code on GitHub</a>
       </div>
     </section>
   </main>
-  <footer class="ds-footer">
+  <footer data-reveal class="ds-footer">
     <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
     <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
   </footer>

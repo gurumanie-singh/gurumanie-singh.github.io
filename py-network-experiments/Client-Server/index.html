@@ -28,21 +28,21 @@
     </div>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Overview</p>
-      <h2 class="ds-section-title">Project Overview</h2>
-      <p class="ds-body">A simple TCP-based client-server demonstration: the server listens for connections, sends a greeting message, and cleanly closes the socket; the client connects, receives the message, and terminates—illustrating basic socket lifecycle and data exchange.</p>
-      <div class="ds-pill-row">
-        <span class="ds-pill">Python</span>
-        <span class="ds-pill">TCP Sockets</span>
-        <span class="ds-pill">Networking</span>
+      <p data-reveal class="ds-section-label">Overview</p>
+      <h2 data-reveal class="ds-section-title">Project Overview</h2>
+      <p data-reveal class="ds-body">A simple TCP-based client-server demonstration: the server listens for connections, sends a greeting message, and cleanly closes the socket; the client connects, receives the message, and terminates—illustrating basic socket lifecycle and data exchange.</p>
+      <div data-reveal-group class="ds-pill-row">
+        <span data-reveal class="ds-pill">Python</span>
+        <span data-reveal class="ds-pill">TCP Sockets</span>
+        <span data-reveal class="ds-pill">Networking</span>
       </div>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Server</p>
-      <h2 class="ds-section-title">Server Implementation</h2>
-      <p class="ds-body">Initializes and binds a socket, then listens for up to 5 connections:</p>
-      <pre class="ds-code-block"><code>import socket
+      <p data-reveal class="ds-section-label">Server</p>
+      <h2 data-reveal class="ds-section-title">Server Implementation</h2>
+      <p data-reveal class="ds-body">Initializes and binds a socket, then listens for up to 5 connections:</p>
+      <pre data-reveal class="ds-code-block"><code>import socket
 
 s = socket.socket()
 print("Socket successfully created!")
@@ -52,8 +52,8 @@ s.bind(("", port))
 print(f"Socket binded to port {port}")
 s.listen(5)
 print("Socket is listening")</code></pre>
-      <p class="ds-body">In the main loop, accepts each client, logs its address, sends a thank-you message, and closes the connection:</p>
-      <pre class="ds-code-block"><code>while True:
+      <p data-reveal class="ds-body">In the main loop, accepts each client, logs its address, sends a thank-you message, and closes the connection:</p>
+      <pre data-reveal class="ds-code-block"><code>while True:
     c, addr = s.accept()
     print("Got connection from", addr)
     message = "Thank you for connecting with us"
@@ -62,10 +62,10 @@ print("Socket is listening")</code></pre>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Client</p>
-      <h2 class="ds-section-title">Client Implementation</h2>
-      <p class="ds-body">Creates a socket, connects to the server, receives the greeting, and prints it:</p>
-      <pre class="ds-code-block"><code>import socket
+      <p data-reveal class="ds-section-label">Client</p>
+      <h2 data-reveal class="ds-section-title">Client Implementation</h2>
+      <p data-reveal class="ds-body">Creates a socket, connects to the server, receives the greeting, and prints it:</p>
+      <pre data-reveal class="ds-code-block"><code>import socket
 
 s = socket.socket()
 port = 56789
@@ -73,25 +73,25 @@ port = 56789
 s.connect(("127.0.0.1", port))
 print(s.recv(1024))
 s.close()</code></pre>
-      <p class="ds-body">Demonstrates a single-request lifecycle: <code>connect()</code>, <code>recv()</code>, and <code>close()</code>.</p>
+      <p data-reveal class="ds-body">Demonstrates a single-request lifecycle: <code>connect()</code>, <code>recv()</code>, and <code>close()</code>.</p>
     </section>
     <div class="ds-divider"></div>
     <section class="ds-section">
-      <p class="ds-section-label">Learnings</p>
-      <h2 class="ds-section-title">Key Takeaways</h2>
-      <div class="ds-highlight">
+      <p data-reveal class="ds-section-label">Learnings</p>
+      <h2 data-reveal class="ds-section-title">Key Takeaways</h2>
+      <div data-reveal class="ds-highlight">
         <ul>
           <li>Socket creation, binding, listening, and accepting connections.</li>
           <li>Data transmission through <code>send</code> and <code>recv</code>.</li>
           <li>Proper connection teardown via <code>close()</code>.</li>
         </ul>
       </div>
-      <div class="ds-btn-row">
+      <div data-reveal class="ds-btn-row">
         <a href="https://github.com/gurumanie-singh/gurumanie-singh.github.io/tree/main/py-network-experiments/Client-Server" target="_blank" rel="noopener noreferrer" class="ds-btn-primary">View Full Code on GitHub</a>
       </div>
     </section>
   </main>
-  <footer class="ds-footer">
+  <footer data-reveal class="ds-footer">
     <span class="ds-footer-logo">Gurumanie Singh Dhiman</span>
     <p class="ds-footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
   </footer>
