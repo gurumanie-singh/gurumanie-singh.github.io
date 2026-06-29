@@ -59,7 +59,7 @@ a.inline-block {
   border: 1px solid #e1e1e1;
   color: #e1e1e1 !important;
   border-radius: 9999px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 a.inline-block:hover {

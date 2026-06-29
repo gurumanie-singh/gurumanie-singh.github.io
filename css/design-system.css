@@ -897,9 +897,9 @@ code { font-family: var(--font-mono); }
 .ds-body li { margin-bottom: var(--sp-1); }
 
 .ds-fade-up { opacity: 0; transform: translateY(24px); animation: rise var(--duration-enter) var(--ease-out) forwards; }
-.ds-fade-up-1 { animation-delay: 0.05s; }
-.ds-fade-up-2 { animation-delay: 0.14s; }
-.ds-fade-up-3 { animation-delay: 0.23s; }
+.ds-fade-up-1 { animation-delay: 0.1s; }
+.ds-fade-up-2 { animation-delay: 0.2s; }
+.ds-fade-up-3 { animation-delay: 0.3s; }
 @media (prefers-reduced-motion: reduce) {
   .ds-fade-up { opacity: 1; transform: none; animation: none; }
   .ds-card { opacity: 1; transform: none; }
