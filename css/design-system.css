@@ -75,15 +75,15 @@
   --container: 1080px;
   --gutter: clamp(24px, 5vw, 48px);
 
-  /* motion */
-  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
-  --dur-press:  120ms;
-  --dur-hover:  180ms;
-  --dur-ui:     240ms;
-  --dur-reveal: 600ms;
-  --dur-hero:   400ms;
+  /* motion — single source of truth for every duration and easing */
+  --ease-out:        cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast:   200ms;
+  --duration-base:   280ms;
+  --duration-reveal: 600ms;
+  --duration-enter:  700ms;
+
+  /* resting card elevation (used to reset hover lift on touch devices) */
+  --shadow-base:     none;
 }
 
 @media (prefers-color-scheme: light) {
@@ -152,8 +152,8 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
-  transition: background var(--dur-ui) var(--ease-out),
-              color var(--dur-ui) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
 }
 
 a { color: inherit; text-decoration: none; }
@@ -168,8 +168,9 @@ a { color: inherit; text-decoration: none; }
 
 img { max-width: 100%; display: block; }
 
-/* legacy decorative canvas: kept for sub-page markup compatibility, unused */
-#particle-canvas { display: none; }
+/* hero particle field: canvas is injected by design-system.js and sits
+   behind hero content. Stacking is set on the hero itself (see HERO). */
+.hero-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 
 /* skip link */
 .skip-link {
@@ -183,7 +184,7 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: var(--fs-sm);
-  transition: top var(--dur-ui) var(--ease-out);
+  transition: top var(--duration-fast) var(--ease-out);
 }
 .skip-link:focus { top: var(--sp-4); }
 
@@ -232,21 +233,34 @@ img { max-width: 100%; display: block; }
 /* ── REVEAL / ENTRANCE ───────────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity var(--dur-reveal) var(--ease-out),
-              transform var(--dur-reveal) var(--ease-out);
+  transform: translateY(20px);
+  transition: opacity var(--duration-reveal) var(--ease-out),
+              transform var(--duration-reveal) var(--ease-out);
 }
 .reveal.is-visible { opacity: 1; transform: none; }
 
+/* scroll-reveal: initial state lives in CSS so there is no flash before JS runs */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--duration-reveal) var(--ease-out),
+              transform var(--duration-reveal) var(--ease-out);
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .rise { opacity: 0; animation: rise var(--dur-hero) var(--ease-out) forwards; }
-  .rise.d1 { animation-delay: 0.05s; }
-  .rise.d2 { animation-delay: 0.11s; }
-  .rise.d3 { animation-delay: 0.17s; }
-  .rise.d4 { animation-delay: 0.23s; }
+  .rise { opacity: 0; animation: rise var(--duration-enter) var(--ease-out) forwards; }
+  .rise.d1 { animation-delay: 0s; }
+  .rise.d2 { animation-delay: 0.1s; }
+  .rise.d3 { animation-delay: 0.2s; }
+  .rise.d4 { animation-delay: 0.3s; }
+  .rise.d5 { animation-delay: 0.4s; }
 }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: none; }
 }
 
@@ -257,9 +271,9 @@ img { max-width: 100%; display: block; }
   display: flex; align-items: center;
   background: transparent;
   border-bottom: 1px solid transparent;
-  transition: background var(--dur-ui) var(--ease-out),
-              border-color var(--dur-ui) var(--ease-out),
-              backdrop-filter var(--dur-ui) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              backdrop-filter var(--duration-fast) var(--ease-out);
 }
 .site-nav.is-scrolled {
   background: var(--nav-bg);
@@ -290,7 +304,7 @@ img { max-width: 100%; display: block; }
   font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--text-secondary);
-  transition: color var(--dur-hover) ease, background var(--dur-hover) ease;
+  transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
 }
 .nav-link:hover { color: var(--text-primary); }
 .nav-link.is-active { color: var(--accent); }
@@ -303,8 +317,8 @@ img { max-width: 100%; display: block; }
   border: 1px solid transparent; border-radius: var(--radius-md);
   background: transparent; color: var(--text-secondary);
   cursor: pointer;
-  transition: color var(--dur-hover) ease, border-color var(--dur-hover) ease,
-              background var(--dur-hover) ease;
+  transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
 }
 .icon-btn:hover { color: var(--text-primary); border-color: var(--border); }
 .icon-btn svg { width: 18px; height: 18px; }
@@ -340,10 +354,10 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform var(--dur-press) var(--ease-out),
-              background var(--dur-hover) ease,
-              border-color var(--dur-hover) ease,
-              color var(--dur-hover) ease;
+  transition: transform var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
 }
 .btn:active { transform: scale(0.97); }
 
@@ -357,17 +371,18 @@ img { max-width: 100%; display: block; }
 }
 .btn-secondary:hover { border-color: var(--border-strong); background: var(--surface); }
 
-.btn-magnetic { will-change: transform; }
-
-.btn .arrow { transition: transform var(--dur-hover) var(--ease-out); }
+.btn .arrow { transition: transform var(--duration-fast) var(--ease-out); }
 
 /* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero {
+  position: relative;
+  isolation: isolate;
   min-height: 100dvh;
   display: flex; flex-direction: column; justify-content: center;
   padding-top: 64px;
   padding-bottom: var(--sp-16);
 }
+.hero > :not(.hero-canvas) { position: relative; z-index: 1; }
 .hero-avail {
   display: inline-flex; align-items: center;
   font-family: var(--font-mono);
@@ -409,9 +424,12 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--sp-8);
-  transition: transform var(--dur-hover) var(--ease-out),
-              border-color var(--dur-hover) ease,
-              box-shadow var(--dur-hover) ease;
+  transition: transform var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .featured:hover { transform: translateY(-3px); border-color: var(--border-strong); box-shadow: var(--shadow-hover); }
 }
 .featured-top {
   display: flex; align-items: center; justify-content: space-between;
@@ -449,8 +467,8 @@ img { max-width: 100%; display: block; }
   gap: var(--sp-6);
   padding: var(--sp-6) var(--sp-3);
   border-bottom: 1px solid var(--border);
-  transition: background var(--dur-hover) ease,
-              padding-left var(--dur-hover) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out),
+              padding-left var(--duration-fast) var(--ease-out);
 }
 .work-row:hover { background: var(--surface); }
 @media (hover: hover) and (pointer: fine) {
@@ -522,7 +540,7 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-md);
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
-  transition: background var(--dur-hover) ease;
+  transition: background var(--duration-fast) var(--ease-out);
 }
 .course-row:last-child { border-bottom: 0; }
 .course-row:hover { background: var(--surface-2); }
@@ -541,7 +559,7 @@ img { max-width: 100%; display: block; }
   color: var(--text-muted);
   margin-left: var(--sp-2);
 }
-.course-row .arrow { color: var(--text-muted); transition: transform var(--dur-hover) var(--ease-out); }
+.course-row .arrow { color: var(--text-muted); transition: transform var(--duration-fast) var(--ease-out); }
 
 /* ── ABOUT ───────────────────────────────────────────────────────────────── */
 .about-grid {
@@ -617,10 +635,10 @@ img { max-width: 100%; display: block; }
   letter-spacing: -0.02em;
   color: var(--text-primary);
   display: inline-flex; align-items: center; gap: var(--sp-3);
-  transition: color var(--dur-hover) ease;
+  transition: color var(--duration-fast) var(--ease-out);
 }
 .contact-email:hover { color: var(--accent); }
-.contact-email .arrow { transition: transform var(--dur-hover) var(--ease-out); }
+.contact-email .arrow { transition: transform var(--duration-fast) var(--ease-out); }
 @media (hover: hover) and (pointer: fine) {
   .contact-email:hover .arrow { transform: translate(3px, -3px); }
 }
@@ -632,7 +650,7 @@ img { max-width: 100%; display: block; }
   display: inline-flex; align-items: center; gap: var(--sp-2);
   font-size: var(--fs-sm); font-weight: 500;
   color: var(--text-secondary);
-  transition: color var(--dur-hover) ease;
+  transition: color var(--duration-fast) var(--ease-out);
 }
 .contact-link:hover { color: var(--text-primary); }
 .contact-link svg { width: 18px; height: 18px; }
@@ -654,7 +672,7 @@ img { max-width: 100%; display: block; }
 @view-transition { navigation: auto; }
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: var(--dur-ui);
+  animation-duration: var(--duration-fast);
   animation-timing-function: var(--ease-out);
 }
 
@@ -676,10 +694,18 @@ img { max-width: 100%; display: block; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1; transform: none; }
+  .reveal, [data-reveal] { opacity: 1; transform: none; transition: none; }
   .rise { opacity: 1; animation: none; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }
+}
+
+/* ── TOUCH DEVICES: no hover lift on cards ───────────────────────────────── */
+@media (hover: none) {
+  .card, [data-card], .ds-card, .featured {
+    transform: none !important;
+    box-shadow: var(--shadow-base);
+  }
 }
 
 /* ============================================================================
@@ -710,8 +736,8 @@ nav.ds-nav {
   background: transparent;
   border: 1px solid var(--border);
   padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-md);
-  transition: color var(--dur-hover) ease, border-color var(--dur-hover) ease,
-              transform var(--dur-hover) var(--ease-out);
+  transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
 }
 .ds-nav-back:hover { color: var(--text-primary); border-color: var(--border-strong); transform: translateX(-2px); }
 .ds-nav-right { display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
@@ -719,7 +745,7 @@ nav.ds-nav {
   width: 38px; height: 38px; border-radius: var(--radius-md); border: 1px solid transparent;
   background: transparent; cursor: pointer; color: var(--text-secondary);
   display: flex; align-items: center; justify-content: center;
-  transition: color var(--dur-hover) ease, border-color var(--dur-hover) ease;
+  transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
 }
 .ds-theme-toggle:hover { color: var(--text-primary); border-color: var(--border); }
 .ds-theme-toggle svg { width: 18px; height: 18px; }
@@ -776,13 +802,13 @@ nav.ds-nav {
 .ds-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: var(--sp-6);
-  transition: transform var(--dur-hover) var(--ease-out),
-              border-color var(--dur-hover) ease, box-shadow var(--dur-hover) ease;
-  opacity: 0; transform: translateY(16px);
+  transition: transform var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+  opacity: 0; transform: translateY(20px);
 }
 .ds-card.visible { opacity: 1; transform: none; }
 @media (hover: hover) and (pointer: fine) {
-  .ds-card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: var(--shadow-hover); }
+  .ds-card:hover { transform: translateY(-3px); border-color: var(--border-strong); box-shadow: var(--shadow-hover); }
 }
 .ds-card.ds-card-featured { grid-column: 1 / -1; background: var(--surface); border-color: var(--border-strong); }
 .ds-card-icon {
@@ -814,7 +840,7 @@ nav.ds-nav {
 .ds-link {
   display: inline-flex; align-items: center; gap: var(--sp-1);
   font-size: var(--fs-sm); font-weight: 500; color: var(--accent);
-  transition: gap var(--dur-hover) var(--ease-out);
+  transition: gap var(--duration-fast) var(--ease-out);
 }
 .ds-link:hover { gap: var(--sp-2); }
 
@@ -824,7 +850,7 @@ nav.ds-nav {
   font-size: var(--fs-sm); font-weight: 500;
   padding: var(--sp-3) var(--sp-6); border-radius: var(--radius-md);
   border: 1px solid transparent; cursor: pointer;
-  transition: transform var(--dur-press) var(--ease-out), background var(--dur-hover) ease;
+  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
 }
 .ds-btn-primary:hover { background: var(--accent-hover); }
 .ds-btn-primary:active { transform: scale(0.97); }
@@ -834,7 +860,7 @@ nav.ds-nav {
   font-size: var(--fs-sm); font-weight: 500;
   padding: var(--sp-3) var(--sp-6); border-radius: var(--radius-md);
   border: 1px solid var(--border); cursor: pointer;
-  transition: transform var(--dur-press) var(--ease-out), border-color var(--dur-hover) ease, background var(--dur-hover) ease;
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
 }
 .ds-btn-ghost:hover { border-color: var(--border-strong); background: var(--surface); }
 .ds-btn-ghost:active { transform: scale(0.97); }
@@ -870,7 +896,7 @@ code { font-family: var(--font-mono); }
 .ds-body ul, .ds-body ol { margin: var(--sp-2) 0 var(--sp-4) var(--sp-6); color: var(--text-secondary); line-height: 1.8; }
 .ds-body li { margin-bottom: var(--sp-1); }
 
-.ds-fade-up { opacity: 0; transform: translateY(16px); animation: rise var(--dur-reveal) var(--ease-out) forwards; }
+.ds-fade-up { opacity: 0; transform: translateY(24px); animation: rise var(--duration-enter) var(--ease-out) forwards; }
 .ds-fade-up-1 { animation-delay: 0.05s; }
 .ds-fade-up-2 { animation-delay: 0.14s; }
 .ds-fade-up-3 { animation-delay: 0.23s; }

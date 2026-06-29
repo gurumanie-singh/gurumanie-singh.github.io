@@ -3,12 +3,11 @@
    Behaviour for the design system. Runs on DOMContentLoaded, exports nothing,
    loaded as <script type="module">. No third-party libraries.
    Responsibilities: theme toggle, nav scroll state, scroll-spy, scroll reveal,
-   mobile menu, magnetic CTA. Cross-document view transitions are handled in CSS.
+   mobile menu, hero particle field. Cross-document view transitions are CSS.
    ========================================================================== */
 
 const root = document.documentElement;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
 const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
 const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
@@ -79,26 +78,38 @@ function initScrollSpy() {
 }
 
 /* ── SCROLL REVEAL (once, staggered) ─────────────────────────────────────── */
+/* [data-reveal] is the canonical hook (initial state set in CSS). Legacy
+   .reveal / .ds-card selectors keep existing sub-pages working. */
 function initReveal() {
-  const els = document.querySelectorAll('.reveal, .ds-card');
+  const els = document.querySelectorAll('[data-reveal], .reveal, .ds-card');
   if (!els.length) return;
 
+  const show = (el) => el.classList.add('is-visible', 'visible');
+
   if (reduceMotion.matches) {
-    els.forEach((el) => el.classList.add('is-visible', 'visible'));
+    els.forEach(show);
     return;
   }
+
+  // Stagger siblings inside a [data-reveal-group]; otherwise fall back to the
+  // element's position among its parent's children (legacy behaviour).
+  const orderIndex = (el) => {
+    const group = el.closest('[data-reveal-group]');
+    const scope = group
+      ? Array.from(group.querySelectorAll('[data-reveal]'))
+      : (el.parentElement ? Array.from(el.parentElement.children) : []);
+    return Math.max(0, scope.indexOf(el));
+  };
 
   const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      const group = Array.from(el.parentElement ? el.parentElement.children : []);
-      const index = Math.max(0, group.indexOf(el));
-      const delay = Math.min(index, 6) * 60;
-      window.setTimeout(() => el.classList.add('is-visible', 'visible'), delay);
+      const delay = Math.min(orderIndex(el), 8) * 80;
+      window.setTimeout(() => show(el), delay);
       obs.unobserve(el);
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
   els.forEach((el) => observer.observe(el));
 }
@@ -131,43 +142,167 @@ function initMobileMenu() {
   });
 }
 
-/* ── MAGNETIC CTA (decorative, gated) ────────────────────────────────────── */
-function initMagnetic() {
-  if (reduceMotion.matches || !finePointer.matches) return;
+/* ── HERO PARTICLE FIELD (decorative, gated, perf-aware) ──────────────────── */
+function hexToRgb(hex) {
+  let h = String(hex).trim().replace('#', '');
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+  if (h.length !== 6) return null;
+  const n = parseInt(h, 16);
+  if (Number.isNaN(n)) return null;
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
 
-  document.querySelectorAll('.btn-magnetic').forEach((btn) => {
-    let raf = null;
-    let tx = 0, ty = 0, cx = 0, cy = 0, pressed = false;
-    const STRENGTH = 0.3;
-    const MAX = 6;
+function initHeroParticles() {
+  const hero = document.querySelector('.hero');
+  // No canvas under reduced motion — nothing to pause, it never starts.
+  if (!hero || reduceMotion.matches) return;
 
-    const frame = () => {
-      cx += (tx - cx) * 0.18;
-      cy += (ty - cy) * 0.18;
-      const scale = pressed ? 0.97 : 1;
-      btn.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px) scale(${scale})`;
-      const settled = Math.abs(tx - cx) < 0.1 && Math.abs(ty - cy) < 0.1;
-      if (!settled || pressed) {
-        raf = requestAnimationFrame(frame);
-      } else {
-        raf = null;
-        btn.style.transform = '';
+  const canvas = document.createElement('canvas');
+  canvas.className = 'hero-canvas';
+  canvas.setAttribute('aria-hidden', 'true');
+  hero.prepend(canvas);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) { canvas.remove(); return; }
+
+  const LINK_DIST = 110;     // px: connect particles closer than this
+  const LINK_MAX = 0.12;     // max line opacity (closer = more opaque)
+  const DOT_ALPHA = 0.35;    // particle opacity
+  const count = () => (window.innerWidth <= 768 ? 28 : 55);
+
+  let width = 0, height = 0;
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let particles = [];
+  let rgb = { r: 124, g: 156, b: 255 };
+  let rafId = null;
+  let inView = true;
+  let visible = !document.hidden;
+  let tick = 0;
+
+  const readAccent = () => {
+    const cs = getComputedStyle(document.documentElement);
+    const raw = cs.getPropertyValue('--color-accent').trim()
+      || cs.getPropertyValue('--accent').trim();
+    const parsed = hexToRgb(raw);
+    if (parsed) rgb = parsed;
+  };
+
+  const rand = (min, max) => Math.random() * (max - min) + min;
+  const velocity = () => {
+    const v = rand(0.15, 0.40);
+    return Math.random() < 0.5 ? -v : v;
+  };
+
+  const build = () => {
+    particles = [];
+    for (let i = 0, n = count(); i < n; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: velocity(),
+        vy: velocity(),
+        r: rand(1, 2),
+      });
+    }
+  };
+
+  const resize = () => {
+    const rect = hero.getBoundingClientRect();
+    width = rect.width;
+    height = rect.height;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    build();
+  };
+
+  const draw = () => {
+    rafId = null;
+    if (!inView || !visible) return;          // loop only runs in view + tab visible
+    if ((tick++ % 30) === 0) readAccent();    // pick up theme changes cheaply
+
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x <= 0 || p.x >= width) { p.vx *= -1; p.x = Math.max(0, Math.min(width, p.x)); }
+      if (p.y <= 0 || p.y >= height) { p.vy *= -1; p.y = Math.max(0, Math.min(height, p.y)); }
+    }
+
+    ctx.lineWidth = 1;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i], b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < LINK_DIST) {
+          const alpha = (1 - dist / LINK_DIST) * LINK_MAX;
+          ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
       }
-    };
-    const start = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    }
 
-    btn.addEventListener('pointermove', (e) => {
-      const r = btn.getBoundingClientRect();
-      const dx = e.clientX - (r.left + r.width / 2);
-      const dy = e.clientY - (r.top + r.height / 2);
-      tx = Math.max(-MAX, Math.min(MAX, dx * STRENGTH));
-      ty = Math.max(-MAX, Math.min(MAX, dy * STRENGTH));
+    ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${DOT_ALPHA})`;
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    rafId = requestAnimationFrame(draw);
+  };
+
+  const start = () => { if (rafId == null && inView && visible) rafId = requestAnimationFrame(draw); };
+  const stop = () => { if (rafId != null) { cancelAnimationFrame(rafId); rafId = null; } };
+
+  let resizeTimer = null;
+  const onResize = () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      resize();
       start();
-    });
-    btn.addEventListener('pointerleave', () => { tx = 0; ty = 0; start(); });
-    btn.addEventListener('pointerdown', () => { pressed = true; start(); });
-    window.addEventListener('pointerup', () => { pressed = false; start(); });
+    }, 150);
+  };
+  window.addEventListener('resize', onResize);
+
+  document.addEventListener('visibilitychange', () => {
+    visible = !document.hidden;
+    if (visible) start(); else stop();
   });
+
+  const io = new IntersectionObserver(([entry]) => {
+    inView = entry.isIntersecting;
+    if (inView) start(); else stop();
+  }, { threshold: 0 });
+  io.observe(canvas);
+
+  new MutationObserver(readAccent).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
+  // If the user switches on reduced motion, tear the canvas down entirely.
+  const onReduceChange = (e) => {
+    if (!e.matches) return;
+    stop();
+    io.disconnect();
+    window.removeEventListener('resize', onResize);
+    canvas.remove();
+  };
+  if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', onReduceChange);
+
+  readAccent();
+  resize();
+  start();
 }
 
 /* ── INIT ────────────────────────────────────────────────────────────────── */
@@ -177,7 +312,7 @@ function init() {
   initScrollSpy();
   initReveal();
   initMobileMenu();
-  initMagnetic();
+  initHeroParticles();
 }
 
 if (document.readyState === 'loading') {
