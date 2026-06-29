@@ -3,1191 +3,377 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gurumanie Singh Dhiman — Portfolio</title>
+  <title>Gurumanie Singh Dhiman — Cybersecurity & Network Engineer</title>
+  <meta name="description" content="Gurumanie Singh Dhiman is a Computer Engineering student at Iowa State University working in network security, wireless systems, and secure system design." />
   <link rel="icon" href="images/Favicon.png" type="image/png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:             #f7f7f5;
-      --bg2:            #f0f0ec;
-      --surface:        rgba(255,255,255,0.72);
-      --surface-border: rgba(0,0,0,0.07);
-      --text:           #111110;
-      --text2:          #5a5a56;
-      --text3:          #9a9a94;
-      --accent:         #7c3aed;
-      --accent-rgb:     124,58,237;
-      --accent-soft:    rgba(124,58,237,0.10);
-      --accent-softer:  rgba(124,58,237,0.05);
-      --radius:         20px;
-      --transition:     0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    [data-theme="dark"] {
-      --bg:             #0d0d0c;
-      --bg2:            #131312;
-      --surface:        rgba(255,255,255,0.04);
-      --surface-border: rgba(255,255,255,0.08);
-      --text:           #f0f0ec;
-      --text2:          #9a9a94;
-      --text3:          #5a5a56;
-      --accent:         #a78bfa;
-      --accent-rgb:     167,139,250;
-      --accent-soft:    rgba(167,139,250,0.12);
-      --accent-softer:  rgba(167,139,250,0.06);
-    }
-
-    html { scroll-behavior: smooth; }
-    html, body { scroll-snap-type: none; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      transition: background var(--transition), color var(--transition);
-      overflow-x: hidden;
-    }
-
-    #particle-canvas {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 0;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 clamp(20px, 4vw, 48px);
-      height: 64px;
-      background: rgba(247,247,245,0.82);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-bottom: 1px solid var(--surface-border);
-      transition: background var(--transition), border-color var(--transition);
-      gap: 16px;
-    }
-    [data-theme="dark"] nav { background: rgba(13,13,12,0.88); }
-
-    .nav-logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.1rem; color: var(--text);
-      text-decoration: none; letter-spacing: -0.02em;
-      white-space: nowrap; flex-shrink: 0;
-    }
-
-    .nav-tabs {
-      display: flex; align-items: center; gap: 4px;
-      overflow-x: auto; scrollbar-width: none; flex: 1; justify-content: center;
-    }
-    .nav-tabs::-webkit-scrollbar { display: none; }
-
-    .nav-tab {
-      font-size: 0.8125rem; font-weight: 500;
-      color: var(--text3); background: none; border: none;
-      padding: 7px 14px; border-radius: 100px; cursor: pointer;
-      white-space: nowrap; transition: all 0.2s ease;
-      letter-spacing: 0.01em;
-    }
-    .nav-tab:hover { color: var(--text); background: var(--accent-soft); }
-    .nav-tab.active {
-      color: var(--accent); background: var(--accent-soft);
-    }
-
-    .nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-
-    .nav-resume {
-      font-size: 0.8125rem; font-weight: 500;
-      color: #fff; background: var(--accent);
-      padding: 7px 16px; border-radius: 100px; border: none;
-      cursor: pointer; transition: all 0.25s ease;
-      white-space: nowrap; text-decoration: none;
-      box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.28);
-    }
-    .nav-resume:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(var(--accent-rgb),0.38); }
-
-    .theme-toggle {
-      width: 36px; height: 36px; border-radius: 50%; border: none;
-      background: transparent; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text2); transition: all 0.25s ease;
-    }
-    .theme-toggle:hover { color: var(--accent); }
-    .theme-toggle svg { width: 15px; height: 15px; stroke-width: 2; }
-
-    /* ── MAIN & TABS ── */
-    main { position: relative; z-index: 1; padding-top: 64px; }
-
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* ── SECTIONS ── */
-    .section-inner {
-      max-width: 900px; margin: 0 auto;
-      padding: 80px clamp(24px, 5vw, 48px);
-    }
-
-    .section-label {
-      font-size: 0.75rem; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 16px;
-    }
-
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      line-height: 1.0; letter-spacing: -0.03em;
-      color: var(--text); margin-bottom: 20px;
-    }
-    .section-title em { font-style: italic; color: var(--accent); }
-
-    .section-desc {
-      font-size: 1rem; font-weight: 300;
-      color: var(--text2); line-height: 1.75; max-width: 640px;
-    }
-
-    /* ── HERO ── */
-    .hero {
-      min-height: calc(100dvh - 64px);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 60px clamp(24px, 6vw, 80px);
-    }
-
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.75rem; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--accent); background: var(--accent-soft);
-      border: 1px solid rgba(var(--accent-rgb),0.2);
-      padding: 6px 14px; border-radius: 100px;
-      margin-bottom: 32px;
-      opacity: 0; transform: translateY(12px);
-      animation: fadeUp 0.7s 0.05s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-    .hero-eyebrow-dot {
-      width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    .hero-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2.8rem, 8vw, 6.5rem);
-      line-height: 0.95; letter-spacing: -0.03em;
-      color: var(--text); margin-bottom: 24px;
-      opacity: 0; transform: translateY(20px);
-      animation: fadeUp 0.9s 0.15s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-    .hero-title em { font-style: italic; color: var(--accent); }
-
-    .hero-typed {
-      font-family: 'DM Serif Display', serif;
-      font-style: italic; color: var(--accent);
-    }
-
-    .hero-sub {
-      font-size: clamp(1rem, 2vw, 1.1rem); font-weight: 300;
-      color: var(--text2); max-width: 560px; line-height: 1.7;
-      margin-bottom: 44px;
-      opacity: 0; transform: translateY(20px);
-      animation: fadeUp 0.9s 0.28s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-
-    .hero-actions {
-      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
-      opacity: 0; transform: translateY(20px);
-      animation: fadeUp 0.9s 0.42s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--accent); color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9375rem; font-weight: 500;
-      padding: 14px 28px; border-radius: 100px;
-      text-decoration: none; border: none; cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 32px rgba(var(--accent-rgb),0.28);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(var(--accent-rgb),0.38); }
-
-    .btn-ghost {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--surface); color: var(--text2);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9375rem; font-weight: 400;
-      padding: 14px 28px; border-radius: 100px;
-      text-decoration: none;
-      border: 1px solid var(--surface-border);
-      backdrop-filter: blur(12px);
-      transition: all 0.25s ease; cursor: pointer;
-    }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-
-    /* ── CARDS ── */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px; margin-top: 48px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius); padding: 28px;
-      backdrop-filter: blur(16px);
-      transition: all 0.35s ease;
-      opacity: 0; transform: translateY(20px);
-    }
-    .card.visible { opacity: 1; transform: translateY(0); }
-    .card:hover {
-      border-color: rgba(var(--accent-rgb),0.3);
-      box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.08), 0 20px 60px rgba(0,0,0,0.05);
-      transform: translateY(-4px);
-    }
-    [data-theme="dark"] .card:hover {
-      box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.15), 0 20px 60px rgba(0,0,0,0.3);
-    }
-
-    .card-featured {
-      grid-column: 1 / -1;
-      background: var(--accent-soft);
-      border-color: rgba(var(--accent-rgb),0.25);
-    }
-
-    .card-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: var(--accent-soft);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px; color: var(--accent);
-    }
-    .card-icon svg { width: 20px; height: 20px; stroke-width: 1.75; }
-
-    .card-title {
-      font-size: 1rem; font-weight: 500;
-      color: var(--text); margin-bottom: 8px; letter-spacing: -0.01em;
-    }
-    .card-title-lg {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem; letter-spacing: -0.02em;
-      color: var(--text); margin-bottom: 12px;
-    }
-
-    .card-desc {
-      font-size: 0.9rem; font-weight: 300;
-      color: var(--text2); line-height: 1.6; margin-bottom: 20px;
-    }
-
-    .card-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 0.8125rem; font-weight: 500;
-      color: var(--accent); text-decoration: none;
-      border-bottom: 1px solid rgba(var(--accent-rgb),0.3);
-      transition: border-color 0.2s;
-    }
-    .card-link:hover { border-color: var(--accent); }
-
-    /* ── BADGE ── */
-    .badge {
-      display: inline-flex; align-items: center;
-      font-size: 0.7rem; font-weight: 500;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 3px 10px; border-radius: 100px;
-      background: var(--accent-soft); color: var(--accent);
-      margin-bottom: 16px;
-    }
-
-    /* ── TIMELINE ── */
-    .timeline { margin-top: 48px; }
-
-    .timeline-item {
-      display: flex; gap: 24px; margin-bottom: 40px;
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .timeline-item.visible { opacity: 1; transform: translateY(0); }
-
-    .timeline-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-
-    .timeline-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--accent); flex-shrink: 0; margin-top: 6px;
-    }
-
-    .timeline-line {
-      width: 1px; background: var(--surface-border);
-      flex: 1; margin-top: 8px; min-height: 40px;
-    }
-
-    .timeline-date {
-      font-size: 0.75rem; font-weight: 500;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 10px;
-      white-space: nowrap;
-    }
-
-    .timeline-content {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius); padding: 24px 28px;
-      backdrop-filter: blur(16px); flex: 1;
-    }
-
-    .timeline-role {
-      font-size: 1rem; font-weight: 500;
-      color: var(--text); margin-bottom: 4px;
-    }
-
-    .timeline-body {
-      font-size: 0.875rem; font-weight: 300;
-      color: var(--text2); line-height: 1.7;
-    }
-
-    /* ── SKILLS ── */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px; margin-top: 48px;
-    }
-
-    .skill-group {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius); padding: 24px;
-      backdrop-filter: blur(16px);
-      opacity: 0; transform: translateY(16px);
-      transition: all 0.4s ease;
-    }
-    .skill-group.visible { opacity: 1; transform: translateY(0); }
-
-    .skill-group-title {
-      font-size: 0.875rem; font-weight: 500;
-      color: var(--text); margin-bottom: 20px;
-      letter-spacing: -0.01em;
-    }
-
-    .skill-item { margin-bottom: 16px; }
-    .skill-item:last-child { margin-bottom: 0; }
-
-    .skill-name {
-      font-size: 0.8125rem; font-weight: 400;
-      color: var(--text2); margin-bottom: 6px;
-      display: flex; justify-content: space-between;
-    }
-    .skill-level {
-      font-size: 0.7rem; color: var(--accent);
-      font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
-    }
-
-    .skill-track {
-      width: 100%; height: 3px; border-radius: 100px;
-      background: var(--accent-soft); overflow: hidden;
-    }
-    .skill-fill {
-      height: 100%; border-radius: 100px;
-      background: var(--accent); width: 0;
-      transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    /* ── STAT CARD ── */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px; margin-top: 48px;
-    }
-
-    .stat-card {
-      background: var(--surface); border: 1px solid var(--surface-border);
-      border-radius: var(--radius); padding: 28px 24px;
-      backdrop-filter: blur(16px); text-align: center;
-      opacity: 0; transform: translateY(16px); transition: all 0.4s ease;
-    }
-    .stat-card.visible { opacity: 1; transform: translateY(0); }
-    .stat-card:hover { border-color: rgba(var(--accent-rgb),0.3); transform: translateY(-3px); }
-
-    .stat-value {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.5rem; color: var(--accent); line-height: 1; margin-bottom: 8px;
-    }
-    .stat-label { font-size: 0.875rem; font-weight: 400; color: var(--text2); }
-
-    /* ── LOOKING FOR ── */
-    .looking-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;
-    }
-    @media (max-width: 540px) { .looking-grid { grid-template-columns: 1fr; } }
-
-    .looking-card {
-      background: var(--surface); border: 1px solid var(--surface-border);
-      border-radius: 16px; padding: 20px 24px; backdrop-filter: blur(16px);
-    }
-
-    .looking-card-title {
-      font-size: 0.8125rem; font-weight: 500;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 14px;
-    }
-
-    .looking-list {
-      display: flex; flex-direction: column; gap: 8px;
-    }
-
-    .looking-item {
-      display: flex; gap: 10px; align-items: flex-start;
-      font-size: 0.875rem; font-weight: 300; color: var(--text2); line-height: 1.5;
-    }
-    .looking-dot {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--accent); flex-shrink: 0; margin-top: 7px;
-    }
-
-    /* ── CONTACT ICONS ── */
-    .contact-row {
-      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-      margin-top: 40px;
-    }
-
-    .contact-link {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--surface); border: 1px solid var(--surface-border);
-      border-radius: 100px; padding: 12px 20px;
-      text-decoration: none; color: var(--text2);
-      font-size: 0.875rem; font-weight: 400;
-      backdrop-filter: blur(12px);
-      transition: all 0.25s ease;
-    }
-    .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-    .contact-link img { width: 18px; height: 18px; object-fit: contain; }
-
-    /* ── PILL ── */
-    .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
-    .pill {
-      font-size: 0.8rem; font-weight: 400;
-      padding: 6px 14px; border-radius: 100px;
-      border: 1px solid var(--surface-border);
-      background: var(--surface); color: var(--text2);
-      backdrop-filter: blur(10px);
-    }
-
-    /* ── HIGHLIGHT BLOCK ── */
-    .highlight-block {
-      background: var(--surface); border: 1px solid var(--surface-border);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 12px 12px 0;
-      padding: 16px 20px; margin: 24px 0;
-      font-size: 0.9rem; font-weight: 300;
-      color: var(--text2); line-height: 1.65;
-      backdrop-filter: blur(12px);
-    }
-
-    /* ── DIVIDER ── */
-    .divider { height: 1px; background: var(--surface-border); margin: 0; }
-
-    /* ── FOOTER ── */
-    footer {
-      position: relative; z-index: 1;
-      padding: 32px clamp(24px, 6vw, 64px);
-      border-top: 1px solid var(--surface-border);
-      display: flex; align-items: center;
-      justify-content: space-between; flex-wrap: wrap; gap: 16px;
-    }
-    .footer-logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1rem; color: var(--text);
-      letter-spacing: -0.02em; text-decoration: none;
-    }
-    .footer-text { font-size: 0.8125rem; color: var(--text3); }
-
-    /* ── PROFILE MODAL ── */
-    #profileModal {
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0);
-      display: none; transition: background 0.3s ease;
-    }
-    #profileModal.open { display: block; }
-    #modalImage {
-      position: fixed; border-radius: 50%;
-      transition: all 400ms cubic-bezier(0.4,0,0.2,1);
-      object-fit: cover;
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50% { opacity:0.4; transform:scale(0.7); }
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      .nav-tabs { display: none; }
-      .mobile-nav-toggle { display: flex; }
-      footer { justify-content: center; text-align: center; }
-      .card-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ── MOBILE MENU ── */
-    .mobile-nav-toggle {
-      display: none; align-items: center; justify-content: center;
-      width: 36px; height: 36px; border-radius: 50%; border: none;
-      background: var(--accent-soft); cursor: pointer; color: var(--accent);
-    }
-    @media (max-width: 640px) { .mobile-nav-toggle { display: flex; } }
-
-    .mobile-menu {
-      position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
-      background: rgba(247,247,245,0.96);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--surface-border);
-      padding: 16px 24px; display: none; flex-direction: column; gap: 4px;
-    }
-    [data-theme="dark"] .mobile-menu { background: rgba(13,13,12,0.96); }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu .nav-tab { text-align: left; border-radius: 12px; }
-
-    /* cursor on tabs */
-    .nav-tab { cursor: pointer; }
-  </style>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Gurumanie Singh Dhiman — Cybersecurity & Network Engineer" />
+  <meta property="og:description" content="Network security, wireless systems, and secure system design. Computer Engineering, Iowa State University, Class of 2026." />
+  <meta property="og:image" content="images/profile.jpg" />
+
+  <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+
+  <link rel="stylesheet" href="css/design-system.css" />
+
+  <!-- Theme bootstrap: applies the saved theme before paint to avoid a flash.
+       Not a styling dependency; the stylesheet handles all visual rules. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* storage unavailable */ }
+    })();
+  </script>
 </head>
 <body>
 
-  <canvas id="particle-canvas"></canvas>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <nav>
-    <a href="#" class="nav-logo">Gurumanie Singh</a>
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#main">Gurumanie Singh</a>
 
-    <div class="nav-tabs" id="navTabs">
-      <button class="nav-tab active" onclick="showTab('home')">Home</button>
-      <button class="nav-tab" onclick="showTab('experience')">Experience</button>
-      <button class="nav-tab" onclick="showTab('coursework')">Coursework</button>
-      <button class="nav-tab" onclick="showTab('seniordesign')">Senior Design</button>
-      <button class="nav-tab" onclick="showTab('projects')">Projects</button>
+      <nav aria-label="Primary">
+        <ul class="nav-links">
+          <li><a class="nav-link" data-spy href="#work">Work</a></li>
+          <li><a class="nav-link" data-spy href="#coursework">Coursework</a></li>
+          <li><a class="nav-link" data-spy href="#about">About</a></li>
+          <li><a class="nav-link" data-spy href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-tools">
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme"></button>
+        <button class="icon-btn nav-toggle" id="navToggle" type="button"
+                aria-label="Open menu" aria-controls="navPanel" aria-expanded="false">
+          <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+          <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+        </button>
+      </div>
     </div>
+  </header>
 
-    <div class="nav-right">
-      <button class="mobile-nav-toggle" id="mobileMenuToggle" aria-label="Menu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <button class="nav-resume" onclick="downloadResume()">Resume ↓</button>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
-      <img id="profilePicture" src="images/profile.jpg" alt="Gurumanie Singh"
-        style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(var(--accent-rgb),0.3);transition:transform 0.2s ease;"
-        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" />
-    </div>
+  <nav class="nav-panel" id="navPanel" aria-label="Mobile">
+    <a class="nav-link" href="#work">Work</a>
+    <a class="nav-link" href="#coursework">Coursework</a>
+    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link" href="#contact">Contact</a>
   </nav>
 
-  <div class="mobile-menu" id="mobileMenu">
-    <button class="nav-tab active" onclick="showTab('home');closeMobileMenu()">Home</button>
-    <button class="nav-tab" onclick="showTab('experience');closeMobileMenu()">Experience</button>
-    <button class="nav-tab" onclick="showTab('coursework');closeMobileMenu()">Coursework</button>
-    <button class="nav-tab" onclick="showTab('seniordesign');closeMobileMenu()">Senior Design</button>
-    <button class="nav-tab" onclick="showTab('projects');closeMobileMenu()">Projects</button>
-  </div>
+  <main id="main">
 
-  <div id="profileModal">
-    <img id="modalImage" src="images/profile.jpg" alt="Gurumanie Singh" />
-  </div>
+    <!-- HERO -->
+    <section class="hero container" aria-label="Introduction">
+      <p class="hero-avail rise d1">Available for full-time roles from May 2026</p>
+      <h1 class="hero-name rise d1">Gurumanie<br />Singh Dhiman</h1>
+      <p class="hero-role rise d2">Cybersecurity <span class="accent">&amp;</span> network engineering</p>
+      <p class="hero-desc rise d3">
+        Computer Engineering at Iowa State University, Class of 2026. I work on
+        network security, wireless systems, and secure system design, from
+        packet-level tooling to securing wireless avionics updates.
+      </p>
+      <div class="hero-actions rise d4">
+        <a class="btn btn-primary btn-magnetic" href="#work">
+          View work
+          <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        </a>
+        <a class="btn btn-secondary" href="resume/GurumanieSinghDhiman_Resume.pdf" download>
+          Resume
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><polyline points="7 10 12 15 17 10"/><path d="M5 19h14"/></svg>
+        </a>
+      </div>
+    </section>
 
-  <main>
+    <div class="container"><hr class="divider" /></div>
 
-    <!-- ── HOME ── -->
-    <div id="home-panel" class="tab-panel active">
+    <!-- WORK -->
+    <section class="section container" id="work" aria-labelledby="work-title">
+      <div class="section-head">
+        <h2 class="section-title reveal" id="work-title">Selected work</h2>
+        <p class="section-lead reveal">A shipped product, a senior design capstone, and the security tooling I build to learn.</p>
+      </div>
 
-      <section class="hero">
-        <div class="hero-eyebrow">
-          <span class="hero-eyebrow-dot"></span>
-          Open to full-time roles · May 2026
+      <a class="featured reveal" href="https://www.forfriendsake.com" target="_blank" rel="noopener">
+        <div class="featured-top">
+          <span class="featured-label">Shipped · iOS · live on the App Store</span>
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8 7 17 7 17 16"/></svg>
         </div>
-        <h1 class="hero-title">
-          Cybersecurity &amp;<br /><em>Network Engineer.</em>
-        </h1>
-        <p class="hero-sub">
-          B.S. Computer Engineering student at Iowa State University (Class of 2026), specialising in network security, wireless systems, and secure system design.
+        <h3 class="featured-title">ForFriendSake</h3>
+        <p class="featured-desc">
+          A social iOS app built with Swift, SwiftUI, and Firebase. Friends form
+          squads, plan real activities, check in with GPS verification, and climb
+          a global leaderboard. Designed to turn online friendships into real
+          plans.
         </p>
-        <div class="hero-actions">
-          <button class="btn-primary" onclick="showTab('projects')">View Projects</button>
-          <button class="btn-ghost" onclick="showTab('experience')">Experience &amp; Research</button>
-        </div>
-      </section>
-
-      <div class="divider"></div>
-
-      <!-- Stats -->
-      <div class="section-inner">
-        <p class="section-label">at a glance</p>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-value">3.85</div>
-            <div class="stat-label">Cumulative GPA</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">3+</div>
-            <div class="stat-label">Years Experience</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">7+</div>
-            <div class="stat-label">Major Projects</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">3rd</div>
-            <div class="stat-label">Cyber Defence Challenge</div>
+        <div class="featured-foot">
+          <div class="tags">
+            <span class="tag">swift</span>
+            <span class="tag">swiftui</span>
+            <span class="tag">firebase</span>
+            <span class="tag">mapkit</span>
           </div>
         </div>
+      </a>
+
+      <div class="work-list">
+        <a class="work-row reveal" href="SeniorDesign/index.html">
+          <span class="work-index">01</span>
+          <div class="work-main">
+            <h3 class="work-title">Secure Wireless Aircraft Data Load</h3>
+            <p class="work-desc">Senior design capstone: securely transmitting avionics software updates over wireless channels under DO-178C aviation constraints.</p>
+          </div>
+          <div class="work-aside">
+            <div class="tags">
+              <span class="tag">avionics</span>
+              <span class="tag">cryptography</span>
+            </div>
+            <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </div>
+        </a>
+
+        <a class="work-row reveal" href="py-network-experiments/index.html">
+          <span class="work-index">02</span>
+          <div class="work-main">
+            <h3 class="work-title">Python Networking Toolkit</h3>
+            <p class="work-desc">Port scanners, packet sniffers, a reverse shell, and a SQL injection scanner built from raw sockets and threading.</p>
+          </div>
+          <div class="work-aside">
+            <div class="tags">
+              <span class="tag">python</span>
+              <span class="tag">sockets</span>
+            </div>
+            <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </div>
+        </a>
+
+        <a class="work-row reveal" href="overthewire-solutions/docs/index.html">
+          <span class="work-index">03</span>
+          <div class="work-main">
+            <h3 class="work-title">OverTheWire Solutions Guide</h3>
+            <p class="work-desc">Detailed Bandit write-ups covering Linux command-line tradecraft, troubleshooting, and secure scripting.</p>
+          </div>
+          <div class="work-aside">
+            <div class="tags">
+              <span class="tag">linux</span>
+              <span class="tag">bash</span>
+            </div>
+            <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </div>
+        </a>
+
+        <a class="work-row reveal" href="nmap-notes/nmap_notes.pdf" target="_blank" rel="noopener">
+          <span class="work-index">04</span>
+          <div class="work-main">
+            <h3 class="work-title">Nmap Field Notes</h3>
+            <p class="work-desc">A condensed reference on scanning techniques, flags, and enumeration commands for penetration testing practice.</p>
+          </div>
+          <div class="work-aside">
+            <div class="tags">
+              <span class="tag">nmap</span>
+              <span class="tag">recon</span>
+            </div>
+            <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8 7 17 7 17 16"/></svg>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <div class="container"><hr class="divider" /></div>
+
+    <!-- COURSEWORK -->
+    <section class="section container" id="coursework" aria-labelledby="coursework-title">
+      <div class="section-head">
+        <h2 class="section-title reveal" id="coursework-title">Coursework</h2>
+        <p class="section-lead reveal">Computer engineering and computer science, with graduate work in security and forensics.</p>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Currently Seeking -->
-      <div class="section-inner" style="padding-bottom:40px;">
-        <p class="section-label">currently seeking</p>
-        <h2 class="section-title">What I'm<br /><em>looking for.</em></h2>
-        <div class="looking-grid">
-          <div class="looking-card">
-            <div class="looking-card-title">Target Roles</div>
-            <div class="looking-list">
-              <div class="looking-item"><div class="looking-dot"></div>Cybersecurity Engineer</div>
-              <div class="looking-item"><div class="looking-dot"></div>Network Security Analyst</div>
-              <div class="looking-item"><div class="looking-dot"></div>SOC Analyst</div>
-              <div class="looking-item"><div class="looking-dot"></div>Information Security Analyst</div>
-            </div>
-          </div>
-          <div class="looking-card">
-            <div class="looking-card-title">Preferences</div>
-            <div class="looking-list">
-              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Type:</strong> Full-time</span></div>
-              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Mode:</strong> On-site / Hybrid / Remote</span></div>
-              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Location:</strong> Open to relocation</span></div>
-              <div class="looking-item"><div class="looking-dot"></div><span><strong style="color:var(--text);font-weight:500;">Start:</strong> May 2026</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Achievements -->
-      <div class="section-inner" style="padding-bottom:40px;">
-        <p class="section-label">achievements</p>
-        <h2 class="section-title">Recognition &amp;<br /><em>milestones.</em></h2>
-        <div class="card-grid" style="margin-top:32px;">
-          <div class="card">
-            <div class="card-icon"><i data-lucide="trophy"></i></div>
-            <div class="card-title">3rd Place — Cyber Defence Challenge 2025</div>
-            <div class="card-desc">Placed 3rd in the Cybersecurity Defence Challenge hosted by Iowa State University.</div>
-          </div>
-          <div class="card">
-            <div class="card-icon"><i data-lucide="star"></i></div>
-            <div class="card-title">President's List</div>
-            <div class="card-desc">Awarded President's List for maintaining a 4.00 GPA for two consecutive semesters.</div>
-          </div>
-          <div class="card">
-            <div class="card-icon"><i data-lucide="bar-chart-2"></i></div>
-            <div class="card-title">3.89 Cumulative GPA</div>
-            <div class="card-desc">Consistent high academic performance across both undergraduate and graduate coursework.</div>
-          </div>
-          <div class="card">
-            <div class="card-icon"><i data-lucide="shield"></i></div>
-            <div class="card-title">Corporal — Singapore Armed Forces</div>
-            <div class="card-desc">Achieved Corporal rank with an excellent rating after completing National Service in the SAF.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Certifications -->
-      <div class="section-inner" style="padding-bottom:40px;">
-        <p class="section-label">certifications</p>
-        <h2 class="section-title">Credentials &amp;<br /><em>qualifications.</em></h2>
-        <div class="card-grid" style="margin-top:32px;">
-          <div class="card">
-            <div class="card-icon"><i data-lucide="badge-check"></i></div>
-            <div class="card-title">CompTIA Security+ (SY0-701)</div>
-            <div class="card-desc">Valid through August 2027. Industry-standard certification covering network security, cryptography, and threat management.</div>
-          </div>
-          <div class="card">
-            <div class="card-icon"><i data-lucide="network"></i></div>
-            <div class="card-title">CCNA — In Progress</div>
-            <div class="card-desc">Cisco Certified Network Associate. Covering routing, switching, and network security fundamentals.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Skills -->
-      <div class="section-inner" style="padding-bottom:40px;">
-        <p class="section-label">technical skills</p>
-        <h2 class="section-title">Tools &amp;<br /><em>technologies.</em></h2>
-        <div class="skills-grid">
-          <div class="skill-group">
-            <div class="skill-group-title">Programming Languages</div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Java</span><span class="skill-level">Proficient</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Python</span><span class="skill-level">Intermediate</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="50"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Bash / Shell</span><span class="skill-level">Familiar</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="30"></div></div>
-            </div>
-          </div>
-          <div class="skill-group">
-            <div class="skill-group-title">Security Tools</div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Wireshark</span><span class="skill-level">Proficient</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Nmap</span><span class="skill-level">Proficient</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Metasploit</span><span class="skill-level">Familiar</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="30"></div></div>
-            </div>
-          </div>
-          <div class="skill-group">
-            <div class="skill-group-title">OS & Virtualization</div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Linux</span><span class="skill-level">Expert</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>VirtualBox / VMware</span><span class="skill-level">Proficient</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="75"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Docker</span><span class="skill-level">Intermediate</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="50"></div></div>
-            </div>
-          </div>
-          <div class="skill-group">
-            <div class="skill-group-title">Methodologies</div>
-            <div class="skill-item">
-              <div class="skill-name"><span>GitLab / GitHub</span><span class="skill-level">Expert</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>CI/CD</span><span class="skill-level">Proficient</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="70"></div></div>
-            </div>
-            <div class="skill-item">
-              <div class="skill-name"><span>Agile / Scrum</span><span class="skill-level">Familiar</span></div>
-              <div class="skill-track"><div class="skill-fill" data-width="30"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Contact -->
-      <div class="section-inner">
-        <p class="section-label">contact</p>
-        <h2 class="section-title">Get in<br /><em>touch.</em></h2>
-        <p class="section-desc">Open to cybersecurity and network engineering roles starting May 2026. Feel free to reach out via email or connect on LinkedIn.</p>
-        <div class="contact-row">
-          <a href="mailto:dhiman@iastate.edu" class="contact-link">
-            <img src="images/email.png" alt="Email" /> dhiman@iastate.edu
+      <div class="course-groups">
+        <div class="reveal">
+          <p class="course-group-title">Computer Engineering</p>
+          <a class="course-row" href="CPRE532/index.html">
+            <span class="course-code">CPRE 532</span>
+            <span class="course-name">Information Warfare<span class="grad">grad</span></span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
           </a>
-          <a href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener" class="contact-link">
-            <img src="images/linkedin.png" alt="LinkedIn" /> LinkedIn
+          <a class="course-row" href="CPRE536/index.html">
+            <span class="course-code">CPRE 536</span>
+            <span class="course-name">Computer and Network Forensics<span class="grad">grad</span></span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
           </a>
-          <a href="https://github.com/gurumanie-singh" target="_blank" rel="noopener" class="contact-link">
-            <img src="images/github.png" alt="GitHub" /> GitHub
+          <a class="course-row" href="CPRE431/index.html">
+            <span class="course-code">CPRE 431</span>
+            <span class="course-name">Information System Security</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </a>
+          <a class="course-row" href="CPRE430/index.html">
+            <span class="course-code">CPRE 430</span>
+            <span class="course-name">Networking Protocols and Security</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </a>
+          <a class="course-row" href="CPRE381/index.html">
+            <span class="course-code">CPRE 381</span>
+            <span class="course-name">Computer Architecture</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </a>
+          <a class="course-row" href="CPRE308/index.html">
+            <span class="course-code">CPRE 308</span>
+            <span class="course-name">Operating Systems</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </a>
+        </div>
+
+        <div class="reveal">
+          <p class="course-group-title">Computer Science</p>
+          <a class="course-row" href="COMS311/index.html">
+            <span class="course-code">COMS 311</span>
+            <span class="course-name">Design and Analysis of Algorithms</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </a>
+          <a class="course-row" href="COMS309/index.html">
+            <span class="course-code">COMS 309</span>
+            <span class="course-name">Software Development Practices</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </a>
+          <a class="course-row" href="COMS415/index.html">
+            <span class="course-code">COMS 415</span>
+            <span class="course-name">Software System Safety</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
           </a>
         </div>
       </div>
+    </section>
 
-    </div>
+    <div class="container"><hr class="divider" /></div>
 
-    <!-- ── EXPERIENCE ── -->
-    <div id="experience-panel" class="tab-panel">
-      <div class="section-inner">
-        <p class="section-label">experience & research</p>
-        <h2 class="section-title">Where I've<br /><em>worked.</em></h2>
+    <!-- ABOUT -->
+    <section class="section container" id="about" aria-labelledby="about-title">
+      <div class="section-head">
+        <h2 class="section-title reveal" id="about-title">About</h2>
+      </div>
 
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-left">
-              <div class="timeline-dot"></div>
-              <div class="timeline-line"></div>
+      <div class="about-grid reveal">
+        <div class="about-prose">
+          <p>
+            I'm a final-year Computer Engineering student at Iowa State, focused
+            on keeping networks and the systems running on them secure. My work
+            ranges from administering a multi-node <strong>wireless research
+            network</strong> to writing packet-level tooling in Python and a
+            senior design project securing wireless avionics updates.
+          </p>
+          <p>
+            Outside coursework I shipped an iOS app to the App Store and led
+            data-structures review sessions for over a hundred students. I learn
+            by building the thing, then writing down how it works.
+          </p>
+
+          <div class="facts">
+            <div class="fact">
+              <span class="fact-value">Security+</span>
+              <span class="fact-label">CompTIA SY0-701</span>
             </div>
-            <div>
-              <div class="timeline-date">Jun 2025 – Dec 2025</div>
-              <div class="timeline-content">
-                <div class="timeline-role">Wireless Network Research Assistant</div>
-                <div class="timeline-body">Administered a multi-node wireless network across Ames, IA, ensuring stable connectivity for critical user equipment while troubleshooting system-level failures using <strong>journalctl</strong> and network diagnostic tools. Deployed configuration updates to base stations and user equipment through <strong>Docker containerization</strong>, <strong>Systemd service orchestration</strong>, and <strong>flco-cli automation</strong>, enhancing throughput, reliability, and interference mitigation. Authored comprehensive technical documentation with <strong>Sphinx</strong> and <strong>reStructuredText</strong>, streamlining deployment procedures and reducing onboarding time for new team members.</div>
-                <div class="pill-row" style="margin-top:16px;">
-                  <span class="pill">Docker</span>
-                  <span class="pill">Systemd</span>
-                  <span class="pill">Linux</span>
-                  <span class="pill">Sphinx</span>
-                  <span class="pill">Wireless Networks</span>
-                </div>
-              </div>
+            <div class="fact">
+              <span class="fact-value">3rd</span>
+              <span class="fact-label">ISU Cyber Defense Challenge</span>
+            </div>
+            <div class="fact">
+              <span class="fact-value">3.85</span>
+              <span class="fact-label">Cumulative GPA</span>
             </div>
           </div>
+        </div>
 
-          <div class="timeline-item">
-            <div class="timeline-left">
-              <div class="timeline-dot"></div>
-              <div class="timeline-line"></div>
-            </div>
-            <div>
-              <div class="timeline-date">Aug 2024 – Dec 2024</div>
-              <div class="timeline-content">
-                <div class="timeline-role">Supplemental Instruction Leader — Data Structures & Algorithms</div>
-                <div class="timeline-body">Hosted <strong>three after-class sessions weekly</strong> averaging 13 students per session to prepare them for tests and quizzes. Led <strong>2-hour review sessions</strong> before midterms and finals, attended by <strong>over 100 students</strong>. These efforts led to a <strong>30% average improvement</strong> in student scores compared to non-attendees.</div>
-                <div class="pill-row" style="margin-top:16px;">
-                  <span class="pill">Teaching</span>
-                  <span class="pill">Algorithms</span>
-                  <span class="pill">Mentorship</span>
-                </div>
-              </div>
-            </div>
+        <img class="about-photo" src="images/profile.jpg" alt="Gurumanie Singh Dhiman" width="132" height="132" loading="lazy" />
+      </div>
+
+      <div class="skills reveal">
+        <div class="skill-group">
+          <p class="skill-group-title">Languages</p>
+          <div class="tags">
+            <span class="tag">java</span>
+            <span class="tag">python</span>
+            <span class="tag">c</span>
+            <span class="tag">bash</span>
+            <span class="tag">swift</span>
           </div>
-
-          <div class="timeline-item">
-            <div class="timeline-left">
-              <div class="timeline-dot"></div>
-            </div>
-            <div>
-              <div class="timeline-date">Jun 2021 – May 2023</div>
-              <div class="timeline-content">
-                <div class="timeline-role">Corporal — Singapore Armed Forces (National Service)</div>
-                <div class="timeline-body">Securely managed <strong>500+ personnel files</strong>, including physical fitness scores and medical information. Meticulously tracked scores for annual inter-battalion competitions, demonstrating strong data integrity and organisational skills. Achieved Corporal rank with an excellent rating.</div>
-                <div class="pill-row" style="margin-top:16px;">
-                  <span class="pill">Data Management</span>
-                  <span class="pill">Leadership</span>
-                  <span class="pill">Security Clearance</span>
-                </div>
-              </div>
-            </div>
+        </div>
+        <div class="skill-group">
+          <p class="skill-group-title">Security tooling</p>
+          <div class="tags">
+            <span class="tag">wireshark</span>
+            <span class="tag">nmap</span>
+            <span class="tag">metasploit</span>
+            <span class="tag">tcpdump</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <p class="skill-group-title">Systems</p>
+          <div class="tags">
+            <span class="tag">linux</span>
+            <span class="tag">docker</span>
+            <span class="tag">systemd</span>
+            <span class="tag">vmware</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <p class="skill-group-title">Networking</p>
+          <div class="tags">
+            <span class="tag">tcp/ip</span>
+            <span class="tag">wireless</span>
+            <span class="tag">git</span>
+            <span class="tag">ci/cd</span>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- ── COURSEWORK ── -->
-    <div id="coursework-panel" class="tab-panel">
-      <div class="section-inner">
-        <p class="section-label">coursework</p>
-        <h2 class="section-title">Academic<br /><em>foundations.</em></h2>
+    <div class="container"><hr class="divider" /></div>
 
-        <p class="section-label" style="margin-top:48px;">Graduate</p>
-        <div class="card-grid">
-          <div class="card">
-            <div class="badge">CPRE532</div>
-            <div class="card-title">Information Warfare</div>
-            <div class="card-desc">Analysed offensive and defensive cyber operations, including threat intelligence, nation-state tactics, propaganda campaigns, and strategic approaches to protecting critical infrastructure.</div>
-            <a href="CPRE532/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">CPRE536</div>
-            <div class="card-title">Computer and Network Forensics</div>
-            <div class="card-desc">Investigated digital evidence collection, preservation, and analysis techniques for incident response, applying forensic tools to reconstruct attack timelines.</div>
-            <a href="CPRE536/index.html" class="card-link">View Summary →</a>
-          </div>
-        </div>
-
-        <p class="section-label" style="margin-top:48px;">Undergraduate</p>
-        <div class="card-grid">
-          <div class="card">
-            <div class="badge">CPRE308</div>
-            <div class="card-title">Operating Systems</div>
-            <div class="card-desc">Examined OS fundamentals including process management, memory allocation, file systems, and concurrency, with practical implementation of scheduling algorithms.</div>
-            <a href="CPRE308/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">COMS309</div>
-            <div class="card-title">Software Development Practices</div>
-            <div class="card-desc">Built a backend app for students' job search connecting peers in similar fields, with RESTful APIs, CI/CD pipelines, and structured MySQL databases.</div>
-            <a href="COMS309/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">COMS311</div>
-            <div class="card-title">Design and Analysis of Algorithms</div>
-            <div class="card-desc">Studied algorithm design paradigms including divide-and-conquer, dynamic programming, and greedy methods, along with complexity analysis techniques.</div>
-            <a href="COMS311/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">CPRE381</div>
-            <div class="card-title">Computer Architecture</div>
-            <div class="card-desc">Engineered pipelined CPU architectures and VHDL simulations to explore ISA design, hazard mitigation, and memory hierarchy performance.</div>
-            <a href="CPRE381/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">COMS415</div>
-            <div class="card-title">Software System Safety</div>
-            <div class="card-desc">Conducted systematic hazard and failure analyses (FTA, SFMECA) and employed formal verification to identify and mitigate risks in safety-critical software systems.</div>
-            <a href="COMS415/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">CPRE430</div>
-            <div class="card-title">Networking Protocols and Security</div>
-            <div class="card-desc">Simulated network topologies and packet-level interactions to explore TCP/IP protocol design, IP routing mechanisms, and network security vulnerabilities.</div>
-            <a href="CPRE430/index.html" class="card-link">View Summary →</a>
-          </div>
-          <div class="card">
-            <div class="badge">CPRE431</div>
-            <div class="card-title">Basics of Information System Security</div>
-            <div class="card-desc">Explored fundamental security principles including cryptography, authentication mechanisms, access control models, and defensive strategies against common attack vectors.</div>
-            <a href="CPRE431/index.html" class="card-link">View Summary →</a>
-          </div>
-        </div>
+    <!-- CONTACT -->
+    <section class="section container" id="contact" aria-labelledby="contact-title">
+      <div class="section-head">
+        <h2 class="section-title reveal" id="contact-title">Contact</h2>
       </div>
-    </div>
 
-    <!-- ── SENIOR DESIGN ── -->
-    <div id="seniordesign-panel" class="tab-panel">
-      <div class="section-inner">
-        <p class="section-label">senior design project</p>
-        <h2 class="section-title">Capstone<br /><em>work.</em></h2>
-        <div class="card-grid" style="margin-top:48px;">
-          <div class="card card-featured">
-            <div class="badge">Capstone · 2025–2026</div>
-            <div class="card-title-lg">Secure Wireless Aircraft Data Load</div>
-            <div class="card-desc">Developed a mock aircraft dataload system with wireless support, focusing on cybersecurity, network design, and aviation standards within real-world operational and certification constraints. The project addresses the challenge of securely transmitting avionics software updates over wireless channels while complying with DO-178C and related aviation security frameworks.</div>
-            <div class="pill-row" style="margin-bottom:24px;">
-              <span class="pill">Avionics Security</span>
-              <span class="pill">Wireless Networks</span>
-              <span class="pill">DO-178C</span>
-              <span class="pill">Cryptography</span>
-              <span class="pill">Embedded Systems</span>
-            </div>
-            <a href="SeniorDesign/index.html" class="card-link">View Full Project →</a>
-          </div>
-        </div>
+      <p class="contact-lead reveal">
+        I'm open to cybersecurity and network engineering roles starting May 2026.
+        The fastest way to reach me is email.
+      </p>
+
+      <a class="contact-email reveal" href="mailto:dhiman@iastate.edu">
+        dhiman@iastate.edu
+        <svg class="arrow" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8 7 17 7 17 16"/></svg>
+      </a>
+
+      <div class="contact-secondary reveal">
+        <a class="contact-link" href="https://github.com/gurumanie-singh" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.52.1.71-.23.71-.5v-1.75c-2.92.64-3.54-1.41-3.54-1.41-.48-1.21-1.17-1.53-1.17-1.53-.95-.65.07-.64.07-.64 1.06.07 1.61 1.09 1.61 1.09.94 1.6 2.46 1.14 3.06.87.1-.68.37-1.14.67-1.4-2.33-.27-4.78-1.17-4.78-5.18 0-1.15.41-2.08 1.08-2.82-.11-.27-.47-1.34.1-2.79 0 0 .88-.28 2.88 1.08a9.96 9.96 0 0 1 5.24 0c2-1.36 2.88-1.08 2.88-1.08.57 1.45.21 2.52.1 2.79.67.74 1.08 1.67 1.08 2.82 0 4.02-2.46 4.9-4.8 5.16.38.33.72.97.72 1.96v2.9c0 .28.19.61.72.5A10.5 10.5 0 0 0 12 1.5Z"/></svg>
+          GitHub
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm6 0h3.8v1.64h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H9V9Z"/></svg>
+          LinkedIn
+        </a>
       </div>
-    </div>
-
-    <!-- ── PROJECTS ── -->
-    <div id="projects-panel" class="tab-panel">
-      <div class="section-inner">
-        <p class="section-label">personal projects</p>
-        <h2 class="section-title">Things I've<br /><em>built.</em></h2>
-        <div class="card-grid" style="margin-top:48px;">
-
-          <div class="card card-featured">
-            <div class="badge">Featured · iOS App · Live on App Store</div>
-            <div class="card-title-lg">ForFriendSake</div>
-            <div class="card-desc">A social networking iOS application built with Swift, SwiftUI, and Firebase, enabling users to form squads, plan real-world activities, check in with GPS verification, and compete on global leaderboards. Designed to turn online friendships into real-world adventures.</div>
-            <div class="pill-row" style="margin-bottom:24px;">
-              <span class="pill">Swift</span>
-              <span class="pill">SwiftUI</span>
-              <span class="pill">Firebase</span>
-              <span class="pill">MapKit</span>
-              <span class="pill">GPS Check-ins</span>
-            </div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap;">
-              <a href="https://www.forfriendsake.com" target="_blank" rel="noopener" class="btn-primary" style="font-size:0.875rem;padding:10px 20px;">Visit Website →</a>
-              <a href="https://apps.apple.com/us/app/forfriendsake/id6757169962" target="_blank" rel="noopener" class="btn-ghost" style="font-size:0.875rem;padding:10px 20px;">App Store</a>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-icon"><i data-lucide="terminal"></i></div>
-            <div class="card-title">OverTheWire Solutions Guide</div>
-            <div class="card-desc">Sharpened Linux command-line skills by authoring detailed Bandit challenge write-ups, demonstrating troubleshooting and secure scripting techniques.</div>
-            <a href="overthewire-solutions/docs/index.html" class="card-link">View Solutions →</a>
-          </div>
-
-          <div class="card">
-            <div class="card-icon"><i data-lucide="code-2"></i></div>
-            <div class="card-title">Python Networking Toolkit</div>
-            <div class="card-desc">Crafted network tools such as port scanners, packet sniffers, and reverse shells using Python sockets and threading, showcasing protocol analysis and automation.</div>
-            <a href="py-network-experiments/index.html" class="card-link">View Experiments →</a>
-          </div>
-
-          <div class="card">
-            <div class="card-icon"><i data-lucide="file-text"></i></div>
-            <div class="card-title">NMAP Basics Guide</div>
-            <div class="card-desc">Consolidated core scanning techniques, flag explanations, and command usage into a refined PDF guide, useful for penetration testing and network enumeration practice.</div>
-            <a href="nmap-notes/nmap_notes.pdf" target="_blank" class="card-link">View PDF →</a>
-          </div>
-
-        </div>
-      </div>
-    </div>
+    </section>
 
   </main>
 
-  <footer>
-    <span class="footer-logo">Gurumanie Singh Dhiman</span>
-    <p class="footer-text">© 2026 · Ames, Iowa · B.S. Computer Engineering</p>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-name">Gurumanie Singh Dhiman</span>
+      <nav class="footer-links" aria-label="Footer">
+        <a class="contact-link" href="mailto:dhiman@iastate.edu">Email</a>
+        <a class="contact-link" href="https://github.com/gurumanie-singh" target="_blank" rel="noopener">GitHub</a>
+        <a class="contact-link" href="https://linkedin.com/in/gurumanie-singh" target="_blank" rel="noopener">LinkedIn</a>
+      </nav>
+      <span class="footer-meta">© 2026 Gurumanie Singh Dhiman</span>
+    </div>
   </footer>
 
-  <script>
-    if (history.scrollRestoration) history.scrollRestoration = 'manual';
-    window.scrollTo(0, 0);
-  </script>
-
-  <script>
-    // LUCIDE
-    function initLucide() { if (typeof lucide !== 'undefined') lucide.createIcons(); }
-    initLucide(); window.addEventListener('load', initLucide);
-
-    // THEME
-    const toggle  = document.getElementById('themeToggle');
-    const root    = document.documentElement;
-    const sunSVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`;
-    const moonSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
-
-    function applyTheme(t) {
-      root.setAttribute('data-theme', t);
-      toggle.innerHTML = t === 'dark' ? moonSVG : sunSVG;
-    }
-    applyTheme(localStorage.getItem('theme') || 'light');
-    toggle.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next); localStorage.setItem('theme', next);
-    });
-
-    // PARTICLES
-    const canvas = document.getElementById('particle-canvas');
-    const ctx    = canvas.getContext('2d');
-    let W, H;
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    resize(); window.addEventListener('resize', resize);
-
-    function getAccentRgb() {
-      return root.getAttribute('data-theme') === 'dark' ? '167,139,250' : '124,58,237';
-    }
-
-    class Particle {
-      constructor(s) { this.init(s); }
-      init(s) {
-        this.x = Math.random() * W; this.y = s ? Math.random() * H : -8;
-        this.r = Math.random() * 1.8 + 0.4;
-        this.vy = Math.random() * 0.55 + 0.18; this.vx = (Math.random() - 0.5) * 0.12;
-        this.alpha = Math.random() * 0.22 + 0.04;
-      }
-      update() {
-        this.y += this.vy; this.x += this.vx;
-        if (this.y > H + 10) this.init(false);
-        if (this.x < -5) this.x = W + 5;
-        if (this.x > W + 5) this.x = -5;
-      }
-      draw() {
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${getAccentRgb()},${this.alpha})`; ctx.fill();
-      }
-    }
-    const particles = [];
-    for (let i = 0; i < 80; i++) particles.push(new Particle(true));
-    (function loop() {
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach(p => { p.update(); p.draw(); });
-      requestAnimationFrame(loop);
-    })();
-
-    // TABS
-    function showTab(name) {
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-      const panel = document.getElementById(name + '-panel');
-      if (panel) panel.classList.add('active');
-      document.querySelectorAll('.nav-tab').forEach(b => {
-        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'"))
-          b.classList.add('active');
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(triggerReveal, 100);
-    }
-
-    // MOBILE MENU
-    const mobileMenu = document.getElementById('mobileMenu');
-    document.getElementById('mobileMenuToggle').addEventListener('click', () => {
-      mobileMenu.classList.toggle('open');
-    });
-    function closeMobileMenu() { mobileMenu.classList.remove('open'); }
-
-    // RESUME DOWNLOAD
-    function downloadResume() {
-      const link = document.createElement('a');
-      link.href = 'resume/GurumanieSinghDhiman_Resume.pdf';
-      link.download = 'GurumanieSinghDhiman_Resume.pdf';
-      document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    }
-
-    // SCROLL REVEAL
-    function triggerReveal() {
-      const els = document.querySelectorAll('.card, .timeline-item, .stat-card, .skill-group');
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            const idx = Array.from(e.target.parentElement?.children || []).indexOf(e.target);
-            setTimeout(() => e.target.classList.add('visible'), idx * 70);
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.08 });
-      els.forEach(el => { if (!el.classList.contains('visible')) io.observe(el); });
-    }
-    triggerReveal();
-
-    // SKILL BAR ANIMATION
-    function animateSkillBars() {
-      document.querySelectorAll('.skill-fill').forEach(bar => {
-        const target = bar.getAttribute('data-width');
-        const io = new IntersectionObserver((entries) => {
-          entries.forEach(e => {
-            if (e.isIntersecting) {
-              bar.style.width = target + '%';
-              io.unobserve(e.target);
-            }
-          });
-        }, { threshold: 0.3 });
-        io.observe(bar);
-      });
-    }
-    animateSkillBars();
-
-    // PROFILE MODAL
-    const pic = document.getElementById('profilePicture');
-    const modal = document.getElementById('profileModal');
-    const modalImg = document.getElementById('modalImage');
-
-    pic.addEventListener('click', () => {
-      const r = pic.getBoundingClientRect();
-      modal.style.display = 'block';
-      modal.style.backgroundColor = 'rgba(0,0,0,0)';
-      pic.style.visibility = 'hidden';
-      modalImg.style.cssText = `position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;border-radius:50%;transition:all 400ms cubic-bezier(0.4,0,0.2,1);object-fit:cover;`;
-      requestAnimationFrame(() => {
-        modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-        const s = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-        modalImg.style.top = `calc(50% - ${s/2}px)`;
-        modalImg.style.left = `calc(50% - ${s/2}px)`;
-        modalImg.style.width = `${s}px`;
-        modalImg.style.height = `${s}px`;
-      });
-    });
-
-    modal.addEventListener('click', () => {
-      const r = pic.getBoundingClientRect();
-      modal.style.backgroundColor = 'rgba(0,0,0,0)';
-      modalImg.style.top = `${r.top}px`;
-      modalImg.style.left = `${r.left}px`;
-      modalImg.style.width = `${r.width}px`;
-      modalImg.style.height = `${r.height}px`;
-      modalImg.addEventListener('transitionend', () => {
-        modal.style.display = 'none';
-        pic.style.visibility = 'visible';
-        modalImg.style.cssText = '';
-      }, { once: true });
-    });
-  </script>
+  <script type="module" src="js/design-system.js"></script>
 
 </body>
 </html>

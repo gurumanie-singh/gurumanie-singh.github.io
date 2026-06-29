@@ -147,9 +147,28 @@
      }
      </script>
      <title>SlowHTTPTest(tm) Connection Results</title>
-   </head>
+     <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../css/design-system.css" />
+  <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+  <script>
+    (function () { try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
+  </script>
+</head>
    <body>
+<nav class="ds-nav">
+  <a href="../../index.html" class="ds-nav-logo">Gurumanie Singh</a>
+  <a href="../index.html" class="ds-nav-back">← Back to CPRE 431</a>
+  <div class="ds-nav-right">
+    <button class="ds-theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+  </div>
+</nav>
+<div class="ds-main">
+
    <p><table class='slow_results' border='0'><tr><th>Test parameters</th></tr><tr><td><b>Test type</b></td><td>SLOW HEADERS</td></tr><tr><td><b>Number of connections</b></td><td>1500</td></tr><tr><td><b>Verb</b></td><td>GET</td></tr><tr><td><b>Content-Length header value</b></td><td>4096</td></tr><tr><td><b>Cookie</b></td><td></td></tr><tr><td><b>Extra data max length</b></td><td>52</td></tr><tr><td><b>Interval between follow up data</b></td><td>10 seconds</td></tr><tr><td><b>Connections per seconds</b></td><td>200</td></tr><tr><td><b>Timeout for probe connection</b></td><td>3</td></tr><tr><td><b>Target test duration</b></td><td>120 seconds</td></tr><tr><td><b>Using proxy</b></td><td>no proxy  </td></tr></table></p>
      <div id="chart_div"></div>
-   </body>
+   </div>
+<script src="../../js/design-system.js"></script>
+</body>
  </html>

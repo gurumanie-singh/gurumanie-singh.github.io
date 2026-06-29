@@ -1,2 +1,5 @@
-CPRE381/output/*.wlf
+node_modules/
+dist/
+.DS_Store
+
 CPRE381/output/*.wlf

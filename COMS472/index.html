@@ -6,10 +6,13 @@
   <title>COMS472 — Gurumanie Singh</title>
   <link rel="icon" href="../images/Favicon.png" type="image/png" />
   <link rel="stylesheet" href="../css/design-system.css" />
+  <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+  <script>
+    (function () { try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();
+  </script>
 </head>
 <body>
-
-  <canvas id="particle-canvas"></canvas>
 
   <nav class="ds-nav">
     <a href="../index.html" class="ds-nav-logo">Gurumanie Singh</a>

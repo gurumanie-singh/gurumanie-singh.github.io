@@ -1,0 +1,26 @@
+{
+  "name": "gurumanie-singh.github.io",
+  "version": "1.0.0",
+  "description": "Welcome to my consolidated GitHub Pages repository, showcasing my hands-on projects, coursework, and technical achievements. This site serves as a central hub for recruiters and collaborators to explore my work in cybersecurity, networking, operating systems, software development, and computer architecture.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gurumanie-singh@github.com/gurumanie-singh/gurumanie-singh.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gurumanie-singh/gurumanie-singh.github.io/issues"
+  },
+  "homepage": "https://github.com/gurumanie-singh/gurumanie-singh.github.io#readme",
+  "devDependencies": {
+    "vite": "^8.1.0"
+  }
+}
