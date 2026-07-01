@@ -1,20 +1,19 @@
 /* ============================================================================
-   knowledge-mindmap.css
-   Radial knowledge mindmap — cyan accent on dark canvas, 8px spacing scale.
-   Loaded only on knowledge pages; uses Geist from design-system.css.
+   knowledge-mindmap.css — Domain hub drill-down UI
    ========================================================================== */
 
 :root {
   --km-bg: #0a0a0f;
-  --km-surface: #12121a;
+  --km-surface: #111118;
   --km-surface-2: #1a1a24;
   --km-border: rgba(255, 255, 255, 0.08);
   --km-accent: #22d3ee;
-  --km-accent-dim: rgba(34, 211, 238, 0.15);
+  --km-accent-dim: rgba(34, 211, 238, 0.12);
   --km-accent-glow: rgba(34, 211, 238, 0.35);
   --km-text: #ececf1;
   --km-muted: #86868f;
   --km-radius: 10px;
+  --km-transition: 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .km-page {
@@ -23,26 +22,11 @@
   color: var(--km-text);
 }
 
-.km-shell {
-  display: grid;
-  grid-template-columns: 1fr min(420px, 42vw);
-  gap: 0;
-  min-height: calc(100vh - 64px);
-}
-
-@media (max-width: 960px) {
-  .km-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: min(55vh, 480px) auto;
-  }
-}
-
-/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+/* ── Toolbar + search ────────────────────────────────────────────────────── */
 .km-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   padding: var(--sp-2) var(--sp-4);
   border-bottom: 1px solid var(--km-border);
   background: var(--km-surface);
@@ -53,7 +37,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  min-width: 0;
+  flex-shrink: 0;
 }
 
 .km-category-label {
@@ -69,10 +53,83 @@
   color: var(--km-muted);
 }
 
+.km-search-wrap {
+  flex: 1;
+  min-width: 180px;
+  max-width: 420px;
+  position: relative;
+}
+
+.km-search {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--km-border);
+  background: var(--km-bg);
+  color: var(--km-text);
+  outline: none;
+  transition: border-color var(--km-transition);
+}
+
+.km-search:focus {
+  border-color: var(--km-accent);
+}
+
+.km-search-results {
+  position: absolute;
+  top: calc(100% + var(--sp-1));
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--km-surface);
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.km-search-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: none;
+  background: transparent;
+  color: var(--km-text);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  border-bottom: 1px solid var(--km-border);
+  transition: background var(--km-transition);
+}
+
+.km-search-item:last-child { border-bottom: none; }
+.km-search-item:hover { background: var(--km-accent-dim); }
+
+.km-search-badge {
+  font-size: var(--fs-xs);
+  color: var(--km-accent);
+}
+
+.km-search-title {
+  font-size: var(--fs-sm);
+}
+
+.km-search-empty {
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--km-muted);
+}
+
 .km-toolbar-actions {
   display: flex;
-  align-items: center;
   gap: var(--sp-2);
+  flex-shrink: 0;
 }
 
 .km-btn {
@@ -85,9 +142,7 @@
   background: var(--km-surface-2);
   color: var(--km-text);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out),
-              color var(--duration-fast) var(--ease-out);
+  transition: border-color var(--km-transition), color var(--km-transition);
 }
 
 .km-btn:hover {
@@ -95,109 +150,173 @@
   color: var(--km-accent);
 }
 
-.km-btn.is-active {
-  background: var(--km-accent-dim);
-  border-color: var(--km-accent);
-  color: var(--km-accent);
+/* ── Shell layout ────────────────────────────────────────────────────────── */
+.km-shell {
+  display: grid;
+  grid-template-columns: 1fr min(440px, 42vw);
+  min-height: calc(100vh - 52px);
 }
 
-/* ── Radial canvas ───────────────────────────────────────────────────────── */
-.km-canvas-wrap {
+@media (max-width: 768px) {
+  .km-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+}
+
+/* ── Domain hub ──────────────────────────────────────────────────────────── */
+.km-hub-wrap {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(34, 211, 238, 0.04), transparent),
+    radial-gradient(ellipse 70% 55% at 50% 45%, rgba(34, 211, 238, 0.05), transparent),
     var(--km-bg);
+  transition: opacity var(--km-transition), transform var(--km-transition);
+}
+
+.km-hub-wrap.is-dimmed {
+  opacity: 0.55;
+  transform: scale(0.98);
+}
+
+.km-hub-desktop {
+  display: block;
+  height: 100%;
+  min-height: 520px;
+}
+
+.km-hub-mobile {
+  display: none;
+  padding: var(--sp-4);
+  gap: var(--sp-2);
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .km-hub-desktop { display: none; }
+  .km-hub-mobile { display: flex; }
 }
 
 .km-canvas {
   width: 100%;
   height: 100%;
+  min-height: 520px;
   display: block;
-  cursor: grab;
-  touch-action: none;
-}
-
-.km-canvas.is-dragging { cursor: grabbing; }
-
-.km-node-class {
-  fill: var(--km-surface-2);
-  stroke: var(--km-border);
-  stroke-width: 1.5;
-  cursor: pointer;
-  transition: stroke var(--duration-fast) var(--ease-out);
-}
-
-.km-node-class:hover,
-.km-node-class.is-selected {
-  stroke: var(--km-accent);
-}
-
-.km-node-topic {
-  fill: var(--km-surface);
-  stroke: var(--km-border);
-  stroke-width: 1.5;
-  cursor: pointer;
-}
-
-.km-node-topic:hover,
-.km-node-topic.is-active {
-  stroke: var(--km-accent);
-  filter: drop-shadow(0 0 8px var(--km-accent-glow));
-}
-
-.km-node-topic.is-reviewed {
-  stroke: var(--km-accent);
-}
-
-.km-progress-arc {
-  fill: none;
-  stroke: var(--km-accent);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  pointer-events: none;
-  opacity: 0.9;
 }
 
 .km-edge {
   stroke: var(--km-border);
   stroke-width: 1;
   fill: none;
-  opacity: 0.6;
+}
+
+.km-node-center {
+  fill: var(--km-surface-2);
+  stroke: var(--km-accent);
+  stroke-width: 2;
+}
+
+.km-node-domain {
+  fill: var(--km-surface);
+  stroke: var(--km-border);
+  stroke-width: 2;
+  transition: stroke var(--km-transition), filter var(--km-transition);
+}
+
+.km-node-domain:hover,
+.km-node-domain.is-active {
+  stroke: var(--km-accent);
+  filter: drop-shadow(0 0 10px var(--km-accent-glow));
 }
 
 .km-label {
   font-family: var(--font-sans);
-  font-size: 11px;
   fill: var(--km-text);
-  pointer-events: none;
   text-anchor: middle;
   dominant-baseline: central;
+  pointer-events: none;
 }
 
-.km-label-class {
-  font-size: 12px;
+.km-label-center {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.km-label-center-sub {
+  font-size: 10px;
+  fill: var(--km-muted);
+}
+
+.km-domain-icon {
+  font-size: 18px;
+}
+
+.km-domain-count-label {
+  font-size: 11px;
   font-weight: 600;
   fill: var(--km-accent);
 }
 
-.km-label-center {
-  font-size: 14px;
-  font-weight: 700;
-  fill: var(--km-text);
+.km-domain-name {
+  font-size: 10px;
+  fill: var(--km-muted);
 }
 
-/* ── Detail panel ────────────────────────────────────────────────────────── */
+/* Mobile domain cards */
+.km-domain-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  background: var(--km-surface);
+  color: var(--km-text);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  transition: border-color var(--km-transition), transform var(--km-transition), opacity var(--km-transition);
+}
+
+.km-domain-card:hover,
+.km-domain-card.is-active {
+  border-color: var(--km-accent);
+  transform: scale(1.01);
+}
+
+.km-domain-card-icon { font-size: 1.5rem; }
+
+.km-domain-card-name {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.km-domain-card-count {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+}
+
+/* ── Right panel ─────────────────────────────────────────────────────────── */
 .km-panel {
   border-left: 1px solid var(--km-border);
   background: var(--km-surface);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity var(--km-transition), transform var(--km-transition);
 }
 
-@media (max-width: 960px) {
-  .km-panel { border-left: none; border-top: 1px solid var(--km-border); }
+@media (max-width: 768px) {
+  .km-panel {
+    border-left: none;
+    border-top: 1px solid var(--km-border);
+    min-height: 320px;
+  }
 }
 
 .km-panel-empty {
@@ -206,19 +325,129 @@
   align-items: center;
   justify-content: center;
   padding: var(--sp-8);
-  text-align: center;
   color: var(--km-muted);
   font-size: var(--fs-sm);
 }
 
+/* Breadcrumb */
+.km-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--km-border);
+  font-size: var(--fs-xs);
+}
+
+.km-bc-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--km-accent);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+}
+
+.km-bc-link:hover { text-decoration: underline; }
+
+.km-bc-sep { color: var(--km-muted); }
+
+.km-bc-current {
+  color: var(--km-muted);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Topic list (level 2) */
+.km-topic-list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--km-border);
+}
+
+.km-domain-icon-lg { font-size: 1.75rem; }
+
+.km-domain-heading {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.km-domain-count {
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+}
+
+.km-topic-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.km-topic-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--km-border);
+  border-radius: var(--radius-sm);
+  background: var(--km-bg);
+  color: var(--km-text);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  transition: border-color var(--km-transition), opacity var(--km-transition), transform var(--km-transition);
+}
+
+.km-topic-card:hover {
+  border-color: var(--km-accent);
+  transform: scale(1.005);
+}
+
+.km-topic-card.is-reviewed {
+  border-left: 3px solid var(--km-accent);
+}
+
+.km-topic-card-title {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.km-topic-card-tags {
+  display: flex;
+  gap: var(--sp-1);
+  flex-shrink: 0;
+}
+
+.km-tag-pill {
+  font-size: 10px;
+  color: var(--km-muted);
+  border: 1px solid var(--km-border);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+/* Detail panel (level 3) */
 .km-panel-content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--sp-6);
-}
-
-.km-panel-header {
-  margin-bottom: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
 }
 
 .km-topic-title {
@@ -226,16 +455,6 @@
   font-weight: 600;
   line-height: 1.3;
   margin-bottom: var(--sp-2);
-}
-
-.km-class-badge {
-  display: inline-block;
-  font-size: var(--fs-xs);
-  color: var(--km-accent);
-  background: var(--km-accent-dim);
-  padding: var(--sp-1) var(--sp-2);
-  border-radius: var(--radius-full);
-  margin-bottom: var(--sp-3);
 }
 
 .km-tags {
@@ -255,11 +474,10 @@
 
 .km-summary {
   font-size: var(--fs-base);
-  color: var(--km-text);
   line-height: 1.6;
   margin-bottom: var(--sp-4);
   padding: var(--sp-3);
-  background: var(--km-surface-2);
+  background: var(--km-bg);
   border-radius: var(--km-radius);
   border-left: 3px solid var(--km-accent);
 }
@@ -271,19 +489,16 @@
 }
 
 .km-detail p { margin-bottom: var(--sp-3); }
-.km-detail strong { color: var(--km-text); font-weight: 600; }
+.km-detail strong { color: var(--km-text); }
 .km-detail code {
   font-family: var(--font-mono);
   font-size: 0.9em;
-  background: var(--km-surface-2);
+  background: var(--km-bg);
   padding: 1px 6px;
   border-radius: 4px;
   color: var(--km-accent);
 }
-.km-detail ul, .km-detail ol {
-  margin: var(--sp-2) 0 var(--sp-3) var(--sp-4);
-}
-.km-detail li { margin-bottom: var(--sp-1); }
+.km-detail ul, .km-detail ol { margin: var(--sp-2) 0 var(--sp-3) var(--sp-4); }
 .km-detail h3, .km-detail h4 {
   color: var(--km-text);
   font-size: var(--fs-sm);
@@ -316,7 +531,6 @@
 .km-command-top {
   display: flex;
   align-items: stretch;
-  gap: 0;
 }
 
 .km-command pre {
@@ -326,14 +540,11 @@
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
-  line-height: 1.5;
   color: var(--km-accent);
   background: transparent;
 }
 
 .km-copy {
-  flex-shrink: 0;
-  align-self: stretch;
   padding: 0 var(--sp-3);
   border: none;
   border-left: 1px solid var(--km-border);
@@ -342,8 +553,6 @@
   font-family: var(--font-sans);
   font-size: var(--fs-xs);
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out);
 }
 
 .km-copy:hover { color: var(--km-accent); }
@@ -357,13 +566,11 @@
 }
 
 .km-panel-actions {
-  padding: var(--sp-3) var(--sp-6);
+  padding: var(--sp-3) var(--sp-4);
   border-top: 1px solid var(--km-border);
-  display: flex;
-  gap: var(--sp-2);
 }
 
-/* ── Flashcard overlay ───────────────────────────────────────────────────── */
+/* ── Flashcards ──────────────────────────────────────────────────────────── */
 .km-flash-overlay {
   position: fixed;
   inset: 0;
@@ -392,9 +599,7 @@
   transition: transform 0.5s var(--ease-out);
 }
 
-.km-flash-card.is-flipped .km-flash-inner {
-  transform: rotateY(180deg);
-}
+.km-flash-card.is-flipped .km-flash-inner { transform: rotateY(180deg); }
 
 .km-flash-face {
   position: absolute;

@@ -1,24 +1,21 @@
 /* ============================================================================
    knowledge-mindmap.js
-   Reusable radial knowledge mindmap. Loads data/[category].json at runtime.
-   No hardcoded content — works with cybersecurity, software, hardware, etc.
+   Two-level drill-down: Domain hub → Topic list → Detail panel.
+   Loads data/[category].json (domains or legacy classes schema).
    ========================================================================== */
 
 const KM_STORAGE_PREFIX = 'knowledge-progress-';
 
-/** Minimal markdown → HTML for detail panels (no external deps). */
 function renderMarkdown(md) {
   if (!md) return '';
   let html = md
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-
   html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
   html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-
   const blocks = html.split(/\n\n+/);
   return blocks.map((block) => {
     block = block.trim();
@@ -56,15 +53,26 @@ function polarToCartesian(cx, cy, r, angleDeg) {
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
 }
 
-function describeArc(cx, cy, r, progress) {
-  const start = polarToCartesian(cx, cy, r, 0);
-  const end = polarToCartesian(cx, cy, r, 360 * progress);
-  const large = progress > 0.5 ? 1 : 0;
-  if (progress <= 0) return '';
-  if (progress >= 1) {
-    return `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx - 0.01} ${cy - r}`;
+function normalizeData(raw) {
+  if (raw.domains) {
+    return {
+      category: raw.category,
+      domains: raw.domains.map((d) => ({
+        ...d,
+        topics: (d.topics || []).map((t) => ({ ...t, domainId: d.domainId, domainName: d.domainName, domainIcon: d.icon })),
+      })),
+    };
   }
-  return `M ${start.x} ${start.y} A ${r} ${r} 0 ${large} 1 ${end.x} ${end.y}`;
+  // Legacy classes → pseudo-domains for forward compat
+  return {
+    category: raw.category,
+    domains: (raw.classes || []).map((c) => ({
+      domainId: c.classId,
+      domainName: c.className || c.classCode,
+      icon: '📚',
+      topics: (c.topics || []).map((t) => ({ ...t, domainId: c.classId, domainName: c.className || c.classCode, domainIcon: '📚' })),
+    })),
+  };
 }
 
 export class KnowledgeMindmap {
@@ -73,26 +81,20 @@ export class KnowledgeMindmap {
     this.category = options.category || rootEl.dataset.category || 'cybersecurity';
     this.data = null;
     this.reviewed = loadProgress(this.category);
+    this.level = 1; // 1=domains, 2=topic list, 3=detail
+    this.selectedDomain = null;
     this.selectedTopic = null;
-    this.selectedClass = null;
+    this.searchQuery = '';
+    this.flatTopics = [];
     this.flashIndex = 0;
     this.flashFlipped = false;
-    this.pan = { x: 0, y: 0 };
-    this.dragging = false;
-    this.dragStart = null;
-    this.flatTopics = [];
   }
 
   async init() {
     const res = await fetch(`../data/${this.category}.json`);
     if (!res.ok) throw new Error(`Failed to load data/${this.category}.json`);
-    this.data = await res.json();
-    this.flatTopics = [];
-    (this.data.classes || []).forEach((cls) => {
-      (cls.topics || []).forEach((t) => {
-        this.flatTopics.push({ ...t, classId: cls.classId, classCode: cls.classCode });
-      });
-    });
+    this.data = normalizeData(await res.json());
+    this.flatTopics = this.data.domains.flatMap((d) => d.topics);
     this.render();
     this.bindEvents();
     this.updateProgressLabel();
@@ -100,7 +102,7 @@ export class KnowledgeMindmap {
 
   render() {
     this.root.innerHTML = '';
-    this.root.classList.add('km-page');
+    this.root.className = 'km-page';
 
     const toolbar = document.createElement('div');
     toolbar.className = 'km-toolbar';
@@ -109,304 +111,402 @@ export class KnowledgeMindmap {
         <span class="km-category-label">${this.data.category}</span>
         <span class="km-progress-text" id="kmProgressText">0 / 0 reviewed</span>
       </div>
+      <div class="km-search-wrap">
+        <input type="search" class="km-search" id="kmSearch" placeholder="Search topics…" autocomplete="off" />
+        <div class="km-search-results" id="kmSearchResults" hidden></div>
+      </div>
       <div class="km-toolbar-actions">
         <button type="button" class="km-btn" id="kmFlashBtn">Flashcards</button>
-        <button type="button" class="km-btn" id="kmResetView">Reset view</button>
       </div>
     `;
 
     const shell = document.createElement('div');
     shell.className = 'km-shell';
 
-    const canvasWrap = document.createElement('div');
-    canvasWrap.className = 'km-canvas-wrap';
-    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.svg.classList.add('km-canvas');
-    this.svg.setAttribute('viewBox', '0 0 800 800');
-    this.svg.setAttribute('aria-label', `${this.data.category} knowledge map`);
-    canvasWrap.appendChild(this.svg);
+    this.hubWrap = document.createElement('div');
+    this.hubWrap.className = 'km-hub-wrap';
+    this.hubWrap.innerHTML = `
+      <div class="km-hub-desktop" id="kmHubDesktop"></div>
+      <div class="km-hub-mobile" id="kmHubMobile"></div>
+    `;
 
     this.panel = document.createElement('aside');
-    this.panel.className = 'km-panel';
-    this.panel.innerHTML = `<div class="km-panel-empty">Select a topic node to view details</div>`;
+    this.panel.className = 'km-panel km-panel-transition';
+    this.renderPanel();
 
-    shell.append(canvasWrap, this.panel);
+    shell.append(this.hubWrap, this.panel);
     this.root.append(toolbar, shell);
 
-    this.flashOverlay = document.createElement('div');
-    this.flashOverlay.className = 'km-flash-overlay';
-    this.flashOverlay.innerHTML = `
-      <button type="button" class="km-btn km-flash-close" id="kmFlashClose">Close</button>
-      <div>
-        <div class="km-flash-card" id="kmFlashCard">
-          <div class="km-flash-inner" id="kmFlashInner"></div>
+    if (!this.flashOverlay) {
+      this.flashOverlay = document.createElement('div');
+      this.flashOverlay.className = 'km-flash-overlay';
+      this.flashOverlay.innerHTML = `
+        <button type="button" class="km-btn km-flash-close" id="kmFlashClose">Close</button>
+        <div>
+          <div class="km-flash-card" id="kmFlashCard"><div class="km-flash-inner" id="kmFlashInner"></div></div>
+          <div class="km-flash-controls">
+            <button type="button" class="km-btn" id="kmFlashPrev">← Prev</button>
+            <button type="button" class="km-btn" id="kmFlashFlip">Flip</button>
+            <button type="button" class="km-btn" id="kmFlashNext">Next →</button>
+          </div>
         </div>
-        <div class="km-flash-controls">
-          <button type="button" class="km-btn" id="kmFlashPrev">← Prev</button>
-          <button type="button" class="km-btn" id="kmFlashFlip">Flip</button>
-          <button type="button" class="km-btn" id="kmFlashNext">Next →</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(this.flashOverlay);
+      `;
+      document.body.appendChild(this.flashOverlay);
+    }
 
-    this.drawMap();
+    this.drawDomainHub();
+    this.updateHubHighlight();
   }
 
-  drawMap() {
-    const svg = this.svg;
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
+  renderPanel() {
+    this.panel.classList.toggle('is-level-2', this.level === 2);
+    this.panel.classList.toggle('is-level-3', this.level === 3);
+
+    if (this.level === 1) {
+      this.panel.innerHTML = `
+        <div class="km-panel-empty">
+          <p>Select a domain to browse topics</p>
+        </div>
+      `;
+      return;
+    }
+
+    const breadcrumb = this.renderBreadcrumb();
+
+    if (this.level === 2 && this.selectedDomain) {
+      const topics = this.selectedDomain.topics || [];
+      this.panel.innerHTML = `
+        ${breadcrumb}
+        <div class="km-topic-list-header">
+          <span class="km-domain-icon-lg">${this.selectedDomain.icon || '📁'}</span>
+          <div>
+            <h2 class="km-domain-heading">${this.selectedDomain.domainName}</h2>
+            <p class="km-domain-count">${topics.length} topics</p>
+          </div>
+        </div>
+        <div class="km-topic-list" role="list">
+          ${topics.map((t) => `
+            <button type="button" class="km-topic-card${this.reviewed.has(t.topicId) ? ' is-reviewed' : ''}" data-topic-id="${t.topicId}" role="listitem">
+              <span class="km-topic-card-title">${t.title}</span>
+              <span class="km-topic-card-tags">${(t.tags || []).slice(0, 3).map((tag) => `<span class="km-tag-pill">${tag}</span>`).join('')}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+      this.panel.querySelectorAll('.km-topic-card').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const topic = topics.find((t) => t.topicId === btn.dataset.topicId);
+          if (topic) this.openTopic(topic);
+        });
+      });
+      return;
+    }
+
+    if (this.level === 3 && this.selectedTopic) {
+      const t = this.selectedTopic;
+      const commandsHtml = (t.commands || []).length
+        ? `<div class="km-commands">
+            <div class="km-commands-label">Commands</div>
+            ${t.commands.map((c) => `
+              <div class="km-command">
+                <div class="km-command-top">
+                  <pre><code>${c.cmd.replace(/</g, '&lt;')}</code></pre>
+                  <button type="button" class="km-copy" data-cmd="${c.cmd.replace(/"/g, '&quot;')}">Copy</button>
+                </div>
+                ${c.explain ? `<div class="km-command-explain">${c.explain}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>`
+        : '';
+      const tagsHtml = (t.tags || []).length
+        ? `<div class="km-tags">${t.tags.map((tag) => `<span class="km-tag">${tag}</span>`).join('')}</div>`
+        : '';
+
+      this.panel.innerHTML = `
+        ${breadcrumb}
+        <div class="km-panel-content">
+          <div class="km-panel-header">
+            <h2 class="km-topic-title">${t.title}</h2>
+            ${tagsHtml}
+          </div>
+          <div class="km-summary">${t.summary}</div>
+          <div class="km-detail">${renderMarkdown(t.detail || '')}</div>
+          ${commandsHtml}
+        </div>
+        <div class="km-panel-actions">
+          <button type="button" class="km-btn" id="kmMarkReviewed">
+            ${this.reviewed.has(t.topicId) ? '✓ Reviewed' : 'Mark reviewed'}
+          </button>
+        </div>
+      `;
+
+      this.panel.querySelectorAll('.km-copy').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            await navigator.clipboard.writeText(btn.dataset.cmd);
+            btn.textContent = 'Copied';
+            btn.classList.add('is-copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('is-copied'); }, 1500);
+          } catch { /* blocked */ }
+        });
+      });
+
+      this.panel.querySelector('#kmMarkReviewed')?.addEventListener('click', () => {
+        if (this.reviewed.has(t.topicId)) this.reviewed.delete(t.topicId);
+        else this.reviewed.add(t.topicId);
+        saveProgress(this.category, this.reviewed);
+        this.updateProgressLabel();
+        this.openTopic(t);
+        this.updateHubHighlight();
+      });
+    }
+  }
+
+  renderBreadcrumb() {
+    const parts = [
+      { label: this.data.category, action: () => this.goLevel1() },
+    ];
+    if (this.selectedDomain) {
+      parts.push({ label: this.selectedDomain.domainName, action: () => this.openDomain(this.selectedDomain) });
+    }
+    if (this.selectedTopic && this.level === 3) {
+      parts.push({ label: this.selectedTopic.title, action: null });
+    }
+    return `<nav class="km-breadcrumb" aria-label="Breadcrumb">
+      ${parts.map((p, i) => {
+        const sep = i > 0 ? '<span class="km-bc-sep">→</span>' : '';
+        if (p.action) {
+          return `${sep}<button type="button" class="km-bc-link">${p.label}</button>`;
+        }
+        return `${sep}<span class="km-bc-current">${p.label}</span>`;
+      }).join('')}
+    </nav>`;
+  }
+
+  attachBreadcrumbHandlers() {
+    const links = this.panel.querySelectorAll('.km-bc-link');
+    const actions = [() => this.goLevel1()];
+    if (this.selectedDomain) actions.push(() => this.openDomain(this.selectedDomain));
+    links.forEach((link, i) => {
+      link.addEventListener('click', () => actions[i]?.());
+    });
+  }
+
+  drawDomainHub() {
+    const domains = this.data.domains.filter((d) => (d.topics || []).length > 0);
+    const desktop = document.getElementById('kmHubDesktop');
+    const mobile = document.getElementById('kmHubMobile');
+    if (!desktop || !mobile) return;
+
+    // Desktop radial SVG
+    const cx = 400, cy = 400, radius = 220;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 800 800');
+    svg.setAttribute('class', 'km-canvas');
+    svg.setAttribute('aria-label', 'Domain hub');
 
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('transform', `translate(${this.pan.x}, ${this.pan.y})`);
-    this.mapGroup = g;
 
-    const cx = 400;
-    const cy = 400;
-    const classes = this.data.classes || [];
-
-    // Center hub
+    // Center
     const centerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const centerR = 44;
-    const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    centerCircle.setAttribute('cx', cx);
-    centerCircle.setAttribute('cy', cy);
-    centerCircle.setAttribute('r', centerR);
-    centerCircle.setAttribute('fill', 'var(--km-surface-2)');
-    centerCircle.setAttribute('stroke', 'var(--km-accent)');
-    centerCircle.setAttribute('stroke-width', '2');
-    const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    centerText.setAttribute('x', cx);
-    centerText.setAttribute('y', cy);
-    centerText.setAttribute('class', 'km-label km-label-center');
-    centerText.textContent = this.data.category;
-    centerG.append(centerCircle, centerText);
+    centerG.setAttribute('class', 'km-center-node');
+    centerG.style.cursor = 'pointer';
+    const centerR = 52;
+    const cc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    cc.setAttribute('cx', cx); cc.setAttribute('cy', cy); cc.setAttribute('r', centerR);
+    cc.setAttribute('class', 'km-node-center');
+    const ct1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    ct1.setAttribute('x', cx); ct1.setAttribute('y', cy - 6);
+    ct1.setAttribute('class', 'km-label km-label-center');
+    ct1.textContent = this.data.category;
+    const ct2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    ct2.setAttribute('x', cx); ct2.setAttribute('y', cy + 14);
+    ct2.setAttribute('class', 'km-label km-label-center-sub');
+    ct2.textContent = `${domains.length} domains`;
+    centerG.append(cc, ct1, ct2);
+    centerG.addEventListener('click', () => this.goLevel1());
     g.appendChild(centerG);
 
-    const classCount = classes.length;
-    const classRadius = 140;
-    const topicRadius = 300;
+    domains.forEach((domain, i) => {
+      const angle = (360 / domains.length) * i;
+      const pos = polarToCartesian(cx, cy, radius, angle);
 
-    classes.forEach((cls, ci) => {
-      const classAngle = (360 / classCount) * ci;
-      const classPos = polarToCartesian(cx, cy, classRadius, classAngle);
-      const topics = cls.topics || [];
-      const topicSpan = Math.min(120, (360 / classCount) * 0.85);
-      const topicStart = classAngle - topicSpan / 2;
+      const edge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      edge.setAttribute('x1', cx); edge.setAttribute('y1', cy);
+      edge.setAttribute('x2', pos.x); edge.setAttribute('y2', pos.y);
+      edge.setAttribute('class', 'km-edge');
+      g.appendChild(edge);
 
-      // Edge center → class
-      const edgeC = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      edgeC.setAttribute('x1', cx);
-      edgeC.setAttribute('y1', cy);
-      edgeC.setAttribute('x2', classPos.x);
-      edgeC.setAttribute('y2', classPos.y);
-      edgeC.setAttribute('class', 'km-edge');
-      g.appendChild(edgeC);
+      const nodeG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      nodeG.dataset.domainId = domain.domainId;
+      nodeG.setAttribute('class', 'km-domain-node');
+      nodeG.style.cursor = 'pointer';
 
-      // Class node
-      const classG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      classG.dataset.classId = cls.classId;
-      const classNodeR = 36;
-      const classCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      classCircle.setAttribute('cx', classPos.x);
-      classCircle.setAttribute('cy', classPos.y);
-      classCircle.setAttribute('r', classNodeR);
-      classCircle.setAttribute('class', 'km-node-class');
-      if (this.selectedClass === cls.classId) classCircle.classList.add('is-selected');
+      const r = 42;
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', pos.x); circle.setAttribute('cy', pos.y); circle.setAttribute('r', r);
+      circle.setAttribute('class', 'km-node-domain');
 
-      const classLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      classLabel.setAttribute('x', classPos.x);
-      classLabel.setAttribute('y', classPos.y);
-      classLabel.setAttribute('class', 'km-label km-label-class');
-      const code = cls.classCode || cls.classId;
-      classLabel.textContent = code.length > 10 ? code.replace(' ', '\n') : code;
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', pos.x); icon.setAttribute('y', pos.y - 6);
+      icon.setAttribute('class', 'km-label km-domain-icon');
+      icon.textContent = domain.icon || '📁';
 
-      classG.append(classCircle, classLabel);
-      classG.addEventListener('click', (e) => {
+      const name = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      name.setAttribute('x', pos.x); name.setAttribute('y', pos.y + r + 16);
+      name.setAttribute('class', 'km-label km-domain-name');
+      const short = domain.domainName.length > 18 ? domain.domainName.slice(0, 16) + '…' : domain.domainName;
+      name.textContent = short;
+
+      const count = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      count.setAttribute('x', pos.x); count.setAttribute('y', pos.y + 12);
+      count.setAttribute('class', 'km-label km-domain-count-label');
+      count.textContent = `${(domain.topics || []).length}`;
+
+      nodeG.append(circle, icon, count, name);
+      nodeG.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.selectedClass = this.selectedClass === cls.classId ? null : cls.classId;
-        this.drawMap();
+        this.openDomain(domain);
       });
-      g.appendChild(classG);
-
-      // Class progress arc
-      const classReviewed = topics.filter((t) => this.reviewed.has(t.topicId)).length;
-      const classProgress = topics.length ? classReviewed / topics.length : 0;
-      if (classProgress > 0) {
-        const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        arc.setAttribute('d', describeArc(classPos.x, classPos.y, classNodeR + 6, classProgress));
-        arc.setAttribute('class', 'km-progress-arc');
-        g.appendChild(arc);
-      }
-
-      topics.forEach((topic, ti) => {
-        const tAngle = topics.length === 1
-          ? classAngle
-          : topicStart + (topicSpan / Math.max(1, topics.length - 1)) * ti;
-        const tPos = polarToCartesian(cx, cy, topicRadius, tAngle);
-
-        const edgeT = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        edgeT.setAttribute('x1', classPos.x);
-        edgeT.setAttribute('y1', classPos.y);
-        edgeT.setAttribute('x2', tPos.x);
-        edgeT.setAttribute('y2', tPos.y);
-        edgeT.setAttribute('class', 'km-edge');
-        if (this.selectedClass && this.selectedClass !== cls.classId) {
-          edgeT.style.opacity = '0.2';
-        }
-        g.appendChild(edgeT);
-
-        const topicG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        topicG.dataset.topicId = topic.topicId;
-        const topicR = 22;
-        const topicCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        topicCircle.setAttribute('cx', tPos.x);
-        topicCircle.setAttribute('cy', tPos.y);
-        topicCircle.setAttribute('r', topicR);
-        topicCircle.setAttribute('class', 'km-node-topic');
-        if (this.reviewed.has(topic.topicId)) topicCircle.classList.add('is-reviewed');
-        if (this.selectedTopic === topic.topicId) topicCircle.classList.add('is-active');
-        if (this.selectedClass && this.selectedClass !== cls.classId) {
-          topicCircle.style.opacity = '0.25';
-        }
-
-        const topicLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        topicLabel.setAttribute('x', tPos.x);
-        topicLabel.setAttribute('y', tPos.y + topicR + 14);
-        topicLabel.setAttribute('class', 'km-label');
-        const shortTitle = topic.title.length > 22 ? `${topic.title.slice(0, 20)}…` : topic.title;
-        topicLabel.textContent = shortTitle;
-
-        topicG.append(topicCircle, topicLabel);
-        topicG.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.selectTopic(topic, cls);
-        });
-        g.appendChild(topicG);
-      });
+      g.appendChild(nodeG);
     });
 
     svg.appendChild(g);
-  }
+    desktop.innerHTML = '';
+    desktop.appendChild(svg);
 
-  selectTopic(topic, cls) {
-    this.selectedTopic = topic.topicId;
-    this.drawMap();
-    this.showPanel(topic, cls);
-  }
+    // Mobile vertical cards
+    mobile.innerHTML = domains.map((d) => `
+      <button type="button" class="km-domain-card" data-domain-id="${d.domainId}">
+        <span class="km-domain-card-icon">${d.icon || '📁'}</span>
+        <span class="km-domain-card-body">
+          <span class="km-domain-card-name">${d.domainName}</span>
+          <span class="km-domain-card-count">${(d.topics || []).length} topics</span>
+        </span>
+      </button>
+    `).join('');
 
-  showPanel(topic, cls) {
-    const commandsHtml = (topic.commands || []).length
-      ? `<div class="km-commands">
-          <div class="km-commands-label">Commands</div>
-          ${topic.commands.map((c) => `
-            <div class="km-command">
-              <div class="km-command-top">
-                <pre><code>${c.cmd.replace(/</g, '&lt;')}</code></pre>
-                <button type="button" class="km-copy" data-cmd="${c.cmd.replace(/"/g, '&quot;')}">Copy</button>
-              </div>
-              <div class="km-command-explain">${c.explain}</div>
-            </div>
-          `).join('')}
-        </div>`
-      : '';
-
-    const tagsHtml = (topic.tags || []).length
-      ? `<div class="km-tags">${topic.tags.map((t) => `<span class="km-tag">${t}</span>`).join('')}</div>`
-      : '';
-
-    this.panel.innerHTML = `
-      <div class="km-panel-content">
-        <div class="km-panel-header">
-          <span class="km-class-badge">${cls.classCode}</span>
-          <h2 class="km-topic-title">${topic.title}</h2>
-          ${tagsHtml}
-        </div>
-        <div class="km-summary">${topic.summary}</div>
-        <div class="km-detail">${renderMarkdown(topic.detail || '')}</div>
-        ${commandsHtml}
-      </div>
-      <div class="km-panel-actions">
-        <button type="button" class="km-btn" id="kmMarkReviewed">
-          ${this.reviewed.has(topic.topicId) ? '✓ Reviewed' : 'Mark reviewed'}
-        </button>
-      </div>
-    `;
-
-    this.panel.querySelectorAll('.km-copy').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(btn.dataset.cmd);
-          btn.textContent = 'Copied';
-          btn.classList.add('is-copied');
-          setTimeout(() => {
-            btn.textContent = 'Copy';
-            btn.classList.remove('is-copied');
-          }, 1500);
-        } catch { /* clipboard blocked */ }
+    mobile.querySelectorAll('.km-domain-card').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const d = domains.find((x) => x.domainId === btn.dataset.domainId);
+        if (d) this.openDomain(d);
       });
     });
+  }
 
-    this.panel.querySelector('#kmMarkReviewed')?.addEventListener('click', () => {
-      if (this.reviewed.has(topic.topicId)) {
-        this.reviewed.delete(topic.topicId);
-      } else {
-        this.reviewed.add(topic.topicId);
-      }
-      saveProgress(this.category, this.reviewed);
-      this.updateProgressLabel();
-      this.showPanel(topic, cls);
-      this.drawMap();
+  updateHubHighlight() {
+    const activeId = this.selectedDomain?.domainId;
+    document.querySelectorAll('.km-domain-node').forEach((node) => {
+      const circle = node.querySelector('.km-node-domain');
+      circle?.classList.toggle('is-active', activeId === node.dataset.domainId && this.level >= 2);
+    });
+    document.querySelectorAll('.km-domain-card').forEach((card) => {
+      card.classList.toggle('is-active', activeId === card.dataset.domainId && this.level >= 2);
+    });
+  }
+
+  goLevel1() {
+    this.level = 1;
+    this.selectedDomain = null;
+    this.selectedTopic = null;
+    this.renderPanel();
+    this.updateHubHighlight();
+    this.hubWrap?.classList.remove('is-dimmed');
+  }
+
+  openDomain(domain) {
+    this.level = 2;
+    this.selectedDomain = domain;
+    this.selectedTopic = null;
+    this.renderPanel();
+    this.attachBreadcrumbHandlers();
+    this.updateHubHighlight();
+    this.hubWrap?.classList.add('is-dimmed');
+    this.panel.scrollTop = 0;
+  }
+
+  openTopic(topic) {
+    this.level = 3;
+    this.selectedTopic = topic;
+    this.renderPanel();
+    this.attachBreadcrumbHandlers();
+    this.panel.scrollTop = 0;
+  }
+
+  runSearch(query) {
+    const resultsEl = document.getElementById('kmSearchResults');
+    if (!resultsEl) return;
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      resultsEl.hidden = true;
+      resultsEl.innerHTML = '';
+      return;
+    }
+    const matches = this.flatTopics.filter((t) => {
+      const hay = `${t.title} ${t.summary} ${(t.tags || []).join(' ')}`.toLowerCase();
+      return hay.includes(q);
+    }).slice(0, 20);
+
+    if (!matches.length) {
+      resultsEl.hidden = false;
+      resultsEl.innerHTML = '<div class="km-search-empty">No matches</div>';
+      return;
+    }
+
+    resultsEl.hidden = false;
+    resultsEl.innerHTML = matches.map((t) => `
+      <button type="button" class="km-search-item" data-topic-id="${t.topicId}">
+        <span class="km-search-badge">${t.domainIcon || ''} ${t.domainName}</span>
+        <span class="km-search-title">${t.title}</span>
+      </button>
+    `).join('');
+
+    resultsEl.querySelectorAll('.km-search-item').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const topic = this.flatTopics.find((t) => t.topicId === btn.dataset.topicId);
+        if (!topic) return;
+        const domain = this.data.domains.find((d) => d.domainId === topic.domainId);
+        if (domain) {
+          this.selectedDomain = domain;
+          this.openTopic(topic);
+        }
+        resultsEl.hidden = true;
+        document.getElementById('kmSearch').value = '';
+      });
     });
   }
 
   updateProgressLabel() {
     const el = document.getElementById('kmProgressText');
-    if (el) {
-      el.textContent = `${this.reviewed.size} / ${this.flatTopics.length} reviewed`;
-    }
+    if (el) el.textContent = `${this.reviewed.size} / ${this.flatTopics.length} reviewed`;
   }
 
   bindEvents() {
+    document.getElementById('kmSearch')?.addEventListener('input', (e) => {
+      this.runSearch(e.target.value);
+    });
+    document.getElementById('kmSearch')?.addEventListener('focus', (e) => {
+      if (e.target.value) this.runSearch(e.target.value);
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.km-search-wrap')) {
+        const r = document.getElementById('kmSearchResults');
+        if (r) r.hidden = true;
+      }
+    });
     document.getElementById('kmFlashBtn')?.addEventListener('click', () => this.openFlashcards());
-    document.getElementById('kmResetView')?.addEventListener('click', () => {
-      this.pan = { x: 0, y: 0 };
-      this.selectedClass = null;
-      this.drawMap();
-    });
     document.getElementById('kmFlashClose')?.addEventListener('click', () => this.closeFlashcards());
-    document.getElementById('kmFlashPrev')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.flashPrev();
-    });
-    document.getElementById('kmFlashNext')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.flashNext();
-    });
-    document.getElementById('kmFlashFlip')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.flipFlash();
-    });
+    document.getElementById('kmFlashPrev')?.addEventListener('click', (e) => { e.stopPropagation(); this.flashPrev(); });
+    document.getElementById('kmFlashNext')?.addEventListener('click', (e) => { e.stopPropagation(); this.flashNext(); });
+    document.getElementById('kmFlashFlip')?.addEventListener('click', (e) => { e.stopPropagation(); this.flipFlash(); });
+    document.getElementById('kmFlashCard')?.addEventListener('click', () => this.flipFlash());
 
-    const card = document.getElementById('kmFlashCard');
-    card?.addEventListener('click', () => this.flipFlash());
-
-    // Pan drag
-    this.svg.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('[data-topic-id]') || e.target.closest('[data-class-id]')) return;
-      this.dragging = true;
-      this.dragStart = { x: e.clientX - this.pan.x, y: e.clientY - this.pan.y };
-      this.svg.classList.add('is-dragging');
-    });
-    window.addEventListener('pointermove', (e) => {
-      if (!this.dragging) return;
-      this.pan.x = e.clientX - this.dragStart.x;
-      this.pan.y = e.clientY - this.dragStart.y;
-      this.mapGroup?.setAttribute('transform', `translate(${this.pan.x}, ${this.pan.y})`);
-    });
-    window.addEventListener('pointerup', () => {
-      this.dragging = false;
-      this.svg?.classList.remove('is-dragging');
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (this.flashOverlay?.classList.contains('is-open')) this.closeFlashcards();
+        else if (this.level > 1) this.goLevel1();
+      }
     });
   }
 
@@ -419,7 +519,7 @@ export class KnowledgeMindmap {
   }
 
   closeFlashcards() {
-    this.flashOverlay.classList.remove('is-open');
+    this.flashOverlay?.classList.remove('is-open');
   }
 
   renderFlashcard() {
@@ -427,17 +527,16 @@ export class KnowledgeMindmap {
     const card = document.getElementById('kmFlashCard');
     const inner = document.getElementById('kmFlashInner');
     if (!topic || !inner) return;
-
     card.classList.toggle('is-flipped', this.flashFlipped);
     inner.innerHTML = `
       <div class="km-flash-face front">
         <div class="km-flash-title">${topic.title}</div>
         <p>${topic.summary}</p>
-        <span class="km-flash-hint">Click or press Flip to see detail · ${this.flashIndex + 1} / ${this.flatTopics.length}</span>
+        <span class="km-flash-hint">Click or Flip · ${this.flashIndex + 1} / ${this.flatTopics.length}</span>
       </div>
       <div class="km-flash-face back">
         <div class="km-detail">${renderMarkdown(topic.detail || topic.summary)}</div>
-        <span class="km-flash-hint">${topic.classCode}</span>
+        <span class="km-flash-hint">${topic.domainName}</span>
       </div>
     `;
   }
@@ -460,7 +559,6 @@ export class KnowledgeMindmap {
   }
 }
 
-/** Auto-init when a root element is present. */
 export function initKnowledgeMindmap(selector = '#knowledge-mindmap') {
   const el = document.querySelector(selector);
   if (!el) return null;
