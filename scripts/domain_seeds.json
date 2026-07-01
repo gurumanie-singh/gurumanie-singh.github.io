@@ -1,0 +1,352 @@
+{
+  "network-security": [
+    {
+      "topicId": "tcp-three-way-handshake",
+      "title": "TCP Three-Way Handshake",
+      "tags": ["tcp", "connection", "handshake"],
+      "summary": "SYN → SYN-ACK → ACK establishes a stateful TCP connection. RST terminates abruptly; FIN closes gracefully.",
+      "detail": "The handshake synchronizes initial sequence numbers and negotiates connection state in both directions. Half-open scans exploit stopping after SYN-ACK. Firewalls and IDS often key on SYN rate and incomplete handshakes.",
+      "commands": [{"cmd": "tcpdump -i eth0 'tcp[tcpflags] & tcp-syn != 0'", "explain": "Capture SYN packets only"}]
+    },
+    {
+      "topicId": "arp-spoofing-mitm",
+      "title": "ARP Spoofing — Layer 2 MITM",
+      "tags": ["arp", "mitm", "layer-2"],
+      "summary": "Forged ARP replies poison a victim's cache so traffic routes through the attacker on the local segment.",
+      "detail": "ARP has no authentication — any host can claim to own an IP. Attackers flood gratuitous ARP to maintain poisoned entries. Defense: dynamic ARP inspection on switches, static ARP for gateways, encryption above L2.",
+      "commands": [{"cmd": "arpspoof -i eth0 -t <victim_ip> <gateway_ip>", "explain": "Continuously poison victim ARP cache"}]
+    },
+    {
+      "topicId": "dns-zone-transfer",
+      "title": "DNS Zone Transfer (AXFR)",
+      "tags": ["dns", "recon", "enumeration"],
+      "summary": "AXFR dumps an entire DNS zone if misconfigured — exposes internal hostnames and network topology.",
+      "detail": "Legitimate between primary/secondary DNS. Attackers query `dig axfr` against authoritative servers. Restrict with `allow-transfer` ACLs in BIND.",
+      "commands": [{"cmd": "dig axfr @<dns_server> <domain>", "explain": "Attempt full zone transfer"}]
+    },
+    {
+      "topicId": "wireshark-display-filters",
+      "title": "Wireshark — Display Filters",
+      "tags": ["wireshark", "packet-analysis"],
+      "summary": "Display filters trim the packet list post-capture; syntax differs from capture filters (BPF/tcpdump).",
+      "detail": "Use `ip.addr`, `tcp.port`, `http.request`, `tls.handshake.type`. Combine with `&&` and `||`. Follow TCP stream to reconstruct sessions.",
+      "commands": [{"cmd": "tcp.flags.syn==1 && tcp.flags.ack==0", "explain": "Show outbound SYN packets"}]
+    },
+    {
+      "topicId": "vlan-hopping",
+      "title": "VLAN Hopping",
+      "tags": ["vlan", "switch", "network"],
+      "summary": "Double-tagging or switch spoofing tricks a switch into forwarding frames to another VLAN.",
+      "detail": "Mitigate with explicit trunk port config, disable DTP, native VLAN mismatch checks, and place management VLAN separately.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "iptables-stateful-filtering",
+      "title": "iptables — Stateful Filtering",
+      "tags": ["firewall", "iptables", "linux"],
+      "summary": "`-m state --state ESTABLISHED,RELATED` allows return traffic without opening inbound ports broadly.",
+      "detail": "Stateful firewalls track connection state in conntrack. Default-drop INPUT with explicit allow for needed services. Log dropped packets sparingly to avoid DoS via log flooding.",
+      "commands": [{"cmd": "sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT", "explain": "Allow return traffic for outbound connections"}]
+    }
+  ],
+  "web-security": [
+    {
+      "topicId": "sql-injection-union",
+      "title": "SQL Injection — UNION-Based",
+      "tags": ["sqli", "web", "owasp"],
+      "summary": "UNION SELECT appends attacker-controlled rows when input is concatenated into SQL without parameterization.",
+      "detail": "Find column count with `ORDER BY n` or `UNION SELECT null,...`. Extract schema from information_schema. Fix with prepared statements and ORM parameter binding.",
+      "commands": [{"cmd": "' UNION SELECT 1,username,password,4 FROM users--", "explain": "Classic union column exfiltration pattern"}]
+    },
+    {
+      "topicId": "xss-reflected-stored",
+      "title": "Cross-Site Scripting (XSS)",
+      "tags": ["xss", "web", "owasp"],
+      "summary": "Reflected XSS executes in victim browser from crafted URL; stored XSS persists in server-side data (comments, profiles).",
+      "detail": "Defense: context-aware output encoding, CSP, HttpOnly cookies for session tokens. DOM XSS bypasses server if JS writes untrusted input to DOM.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "csrf-token-defense",
+      "title": "CSRF — Token & SameSite Defenses",
+      "tags": ["csrf", "web", "cookies"],
+      "summary": "CSRF tricks a logged-in browser into submitting unwanted state-changing requests. Sync tokens + SameSite cookies mitigate.",
+      "detail": "Use unpredictable anti-CSRF tokens tied to session. SameSite=Lax/Strict reduces cross-origin cookie submission. Verify Origin/Referer on sensitive POSTs.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "owasp-top10-overview",
+      "title": "OWASP Top 10 — Priority Web Risks",
+      "tags": ["owasp", "web"],
+      "summary": "Broken access control and injection consistently rank highest — map findings to Top 10 for stakeholder communication.",
+      "detail": "Use Top 10 as a coverage checklist in assessments, not an exhaustive list. Pair with ASVS for depth.",
+      "sourceType": "added"
+    }
+  ],
+  "exploitation-vulnerability": [
+    {
+      "topicId": "buffer-overflow-stack-layout",
+      "title": "Buffer Overflow — Stack Layout",
+      "tags": ["buffer-overflow", "stack", "memory"],
+      "summary": "Overflowing a stack buffer can overwrite saved return address — classic path to arbitrary code execution before mitigations.",
+      "detail": "Layout: buffer → saved EBP → return address. Modern mitigations: ASLR, stack canaries, NX/DEP. Bypass techniques include ROP and info leaks.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "rop-chains-basics",
+      "title": "ROP — Return-Oriented Programming",
+      "tags": ["rop", "exploitation", "nx"],
+      "summary": "Chain existing code gadgets ending in `ret` to execute syscalls when NX blocks shellcode on stack.",
+      "detail": "Find gadgets in binary/libs. Build chain to call mprotect or execve. Defenses: CET, shadow stack, ASLR with high entropy.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "spectre-meltdown-primer",
+      "title": "Spectre & Meltdown — CPU Side Channels",
+      "tags": ["hardware", "side-channel", "cve"],
+      "summary": "Speculative execution leaks data across isolation boundaries via cache timing — patch OS/microcode, isolate VMs.",
+      "detail": "Meltdown: user read kernel memory. Spectre: trick victim into speculatively loading secret. Mitigations impact performance (KPTI, retpoline).",
+      "sourceType": "added"
+    }
+  ],
+  "reconnaissance-osint": [
+    {
+      "topicId": "nmap-stealth-syn-scan",
+      "title": "Nmap — Stealth SYN Scan",
+      "tags": ["nmap", "recon", "tcp"],
+      "summary": "-sS sends SYN without completing handshake. Faster than connect scan, historically quieter. Requires root.",
+      "detail": "Open: SYN-ACK then RST. Closed: RST. Filtered: no response. Combine with `-Pn` when ICMP blocked.",
+      "commands": [
+        {"cmd": "nmap -sS -p- <target>", "explain": "Full port SYN scan"},
+        {"cmd": "nmap -sS -T4 <target>", "explain": "Faster timing template"}
+      ]
+    },
+    {
+      "topicId": "shodan-asset-discovery",
+      "title": "Shodan — Internet Asset Discovery",
+      "tags": ["osint", "recon", "shodan"],
+      "summary": "Shodan indexes banners and service metadata — find exposed ICS, RDP, default creds interfaces.",
+      "detail": "Query by org, product, vuln tags. Pair with legal scope. Complement active nmap on in-scope CIDR.",
+      "commands": [{"cmd": "shodan search 'org:\"Target Corp\" port:443'", "explain": "Find HTTPS services for an organization"}]
+    },
+    {
+      "topicId": "google-dorking",
+      "title": "Google Dorking — Search Operator OSINT",
+      "tags": ["osint", "recon"],
+      "summary": "Advanced search operators surface indexed files, login pages, and error messages: `site:`, `filetype:`, `inurl:`.",
+      "detail": "Examples: `site:target.com filetype:pdf`, `inurl:admin login`. Cache and robots.txt reveal paths.",
+      "commands": [{"cmd": "site:example.com filetype:env OR filetype:sql", "explain": "Hunt leaked config/SQL dumps indexed by Google"}]
+    }
+  ],
+  "cryptography": [
+    {
+      "topicId": "tls-handshake-cert-validation",
+      "title": "TLS Handshake & Certificate Validation",
+      "tags": ["tls", "certificates", "pki"],
+      "summary": "Client verifies server cert chain to trusted CA, checks hostname (SAN), validity period, and revocation status.",
+      "detail": "Handshake negotiates cipher suite and establishes session keys. Pinning mitigates rogue CA risk. Monitor for weak protocols (TLS 1.0/1.1).",
+      "commands": [{"cmd": "openssl s_client -connect host:443 -servername host", "explain": "Inspect cert chain and negotiated cipher"}]
+    },
+    {
+      "topicId": "aes-modes-gcm-vs-cbc",
+      "title": "AES — GCM vs CBC Mode",
+      "tags": ["aes", "symmetric", "crypto"],
+      "summary": "GCM provides authenticated encryption (AEAD); CBC requires separate MAC and is vulnerable to padding oracle if misimplemented.",
+      "detail": "Prefer AES-GCM or ChaCha20-Poly1305. Never reuse nonce/IV with same key in GCM.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "kerberos-tgt-tgs-flow",
+      "title": "Kerberos — TGT & TGS Flow",
+      "tags": ["kerberos", "authentication", "active-directory"],
+      "summary": "AS-REQ/REP issues TGT; TGS-REQ/REP grants service tickets. Golden ticket forges TGT with krbtgt hash.",
+      "detail": "Watch for Kerberoasting (offline crack service tickets), AS-REP roasting (no preauth), and pass-the-ticket.",
+      "sourceType": "added"
+    }
+  ],
+  "linux-cli": [
+    {
+      "topicId": "find-permission-escalation",
+      "title": "find — SUID & Writable Path Discovery",
+      "tags": ["linux", "privesc", "find"],
+      "summary": "find locates SUID binaries and world-writable directories — common privesc enumeration step.",
+      "detail": "SUID binaries with shell escape = root. Writable `/etc/passwd` or cron paths enable persistence.",
+      "commands": [
+        {"cmd": "find / -perm -4000 -type f 2>/dev/null", "explain": "List SUID files"},
+        {"cmd": "find / -writable -type d 2>/dev/null | head", "explain": "Writable directories"}
+      ]
+    },
+    {
+      "topicId": "grep-recursive-content-search",
+      "title": "grep — Recursive Content Search",
+      "tags": ["linux", "grep", "cli"],
+      "summary": "`-r` searches directories; `-i` case insensitive; `-l` files-only. Essential for CTF and log triage.",
+      "detail": "Combine with `find ... -exec grep` for filtered paths. Use `--color` and `-n` line numbers.",
+      "commands": [{"cmd": "grep -rni 'password' /var/www 2>/dev/null", "explain": "Hunt credentials in web root"}]
+    },
+    {
+      "topicId": "ssh-key-auth-hardening",
+      "title": "SSH — Key-Based Authentication",
+      "tags": ["ssh", "linux", "authentication"],
+      "summary": "Public-key auth beats passwords; disable PasswordAuthentication after key deploy. Use `-i` for key path.",
+      "detail": "Permissions: `~/.ssh` 700, authorized_keys 600. Fail2ban for brute force. Jump hosts for bastion access.",
+      "commands": [{"cmd": "ssh -i ~/.ssh/id_ed25519 -p 2220 user@host", "explain": "Connect with specific key and port"}]
+    }
+  ],
+  "malware-threat": [
+    {
+      "topicId": "yara-rule-basics",
+      "title": "YARA — Pattern Matching for Malware",
+      "tags": ["yara", "malware", "ioc"],
+      "summary": "YARA rules match strings/hex/regex with conditions — scan files, memory, or traffic at scale.",
+      "detail": "Structure: meta, strings, condition. Use `pe` module for PE headers. Test false positive rate on clean corpus.",
+      "commands": [{"cmd": "yara -r rules/ /path/to/samples", "explain": "Recursively scan samples with rules"}]
+    },
+    {
+      "topicId": "static-vs-dynamic-malware-analysis",
+      "title": "Static vs Dynamic Malware Analysis",
+      "tags": ["malware", "analysis"],
+      "summary": "Static: strings, imports, disasm without execution. Dynamic: sandbox behavior, network IOCs, API calls.",
+      "detail": "Combine both. Packers/obfuscation defeat static — dynamic in isolated VM. Watch anti-VM checks.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "mitre-attck-mapping",
+      "title": "MITRE ATT&CK — Tactic Mapping",
+      "tags": ["mitre", "threat-intel"],
+      "summary": "Map observed behaviors to ATT&CK tactics/techniques for detection engineering and reporting consistency.",
+      "detail": "Use technique IDs in Sigma rules and detection gaps analysis. Navigator layers visualize coverage.",
+      "sourceType": "added"
+    }
+  ],
+  "digital-forensics": [
+    {
+      "topicId": "chain-of-custody",
+      "title": "Chain of Custody",
+      "tags": ["forensics", "evidence", "legal"],
+      "summary": "Document who handled evidence, when, and why — breaks in chain jeopardize admissibility.",
+      "detail": "Use write blockers for disks. Cryptographic hashes (SHA-256) on acquisition. Store master images read-only; work on copies.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "memory-forensics-volatility",
+      "title": "Memory Forensics — Volatility Basics",
+      "tags": ["memory", "forensics", "volatility"],
+      "summary": "RAM captures reveal running processes, network connections, keys, and malware not yet on disk.",
+      "detail": "Profile must match kernel. Hunt injected code, hollowed processes, and command lines in `_EPROCESS`.",
+      "commands": [{"cmd": "volatility -f mem.raw windows.pslist", "explain": "List processes from memory image"}]
+    },
+    {
+      "topicId": "disk-imaging-dd",
+      "title": "Disk Imaging with dd",
+      "tags": ["forensics", "imaging"],
+      "summary": "Bit-for-bit copy with `dd` or `dc3dd` (logging). Verify with hash before analysis.",
+      "detail": "Always use hardware write blocker. Record serial numbers and tool versions in case notes.",
+      "commands": [{"cmd": "sudo dd if=/dev/sdb of=evidence.img bs=4M status=progress", "explain": "Acquire disk image"}]
+    }
+  ],
+  "cloud-infrastructure": [
+    {
+      "topicId": "aws-iam-least-privilege",
+      "title": "AWS IAM — Least Privilege",
+      "tags": ["aws", "iam", "cloud"],
+      "summary": "Grant minimum actions/resources required. Avoid `*` in production policies; use roles not long-lived keys.",
+      "detail": "Enable MFA on root and admins. Use IAM Access Analyzer and policy simulator. Rotate access keys.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "s3-public-bucket-exposure",
+      "title": "S3 — Public Bucket Misconfiguration",
+      "tags": ["aws", "s3", "cloud"],
+      "summary": "Block Public Access at account level; audit ACLs and bucket policies for `Principal: *`.",
+      "detail": "Common breach vector. Use Macie and Config rules. Encrypt at rest with KMS.",
+      "commands": [{"cmd": "aws s3api get-bucket-acl --bucket <name>", "explain": "Inspect bucket ACL"}]
+    },
+    {
+      "topicId": "cloudtrail-logging",
+      "title": "CloudTrail — API Audit Logging",
+      "tags": ["aws", "cloudtrail", "monitoring"],
+      "summary": "CloudTrail records management events — enable organization trail, log file validation, S3 lifecycle protection.",
+      "detail": "Pair with CloudWatch alarms on root login, IAM changes, and security group opens.",
+      "sourceType": "added"
+    }
+  ],
+  "software-code-security": [
+    {
+      "topicId": "fault-tree-analysis",
+      "title": "Fault Tree Analysis (FTA)",
+      "tags": ["safety", "coms415", "hazard"],
+      "summary": "Top-down Boolean model from hazard to basic events — cut sets reveal minimal failure combinations.",
+      "detail": "Used in safety-critical systems (IEC 61508). AND/OR gates model component failures. Complements FMEA for systematic hazard analysis.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "input-validation-boundaries",
+      "title": "Secure Coding — Input Validation",
+      "tags": ["secure-coding", "validation"],
+      "summary": "Validate type, length, range, and encoding at trust boundaries — never trust client-side checks alone.",
+      "detail": "Allowlist over denylist. Canonicalize before validate. Separate data from commands (parameterized queries).",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "sast-dast-overview",
+      "title": "SAST vs DAST",
+      "tags": ["sast", "dast", "appsec"],
+      "summary": "SAST scans source/bytecode statically; DAST probes running app. Use both in CI/CD pipeline.",
+      "detail": "SAST finds early but false positives. DAST catches runtime/config issues. Track findings in defect lifecycle.",
+      "sourceType": "added"
+    }
+  ],
+  "intrusion-detection-monitoring": [
+    {
+      "topicId": "snort-signature-basics",
+      "title": "Snort — Signature-Based IDS",
+      "tags": ["snort", "ids", "signatures"],
+      "summary": "Snort matches packet payload and headers against rules — fast for known attacks, blind to novel behavior.",
+      "detail": "Rule format: action protocol src/dst -> options (content, sid, rev). Tune thresholds to reduce noise.",
+      "commands": [{"cmd": "snort -c /etc/snort/snort.conf -i eth0 -A console", "explain": "Run Snort with console alerts"}]
+    },
+    {
+      "topicId": "sigma-detection-rules",
+      "title": "Sigma — Portable Detection Rules",
+      "tags": ["sigma", "siem", "detection"],
+      "summary": "Sigma YAML converts to Splunk, Elastic, Sentinel queries — share detections across SIEMs.",
+      "detail": "Map to ATT&CK tags. Version rules with status field. Test against representative log samples.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "siem-correlation-use-cases",
+      "title": "SIEM — Correlation Use Cases",
+      "tags": ["siem", "monitoring"],
+      "summary": "Correlate auth failures + success from new geo, impossible travel, and privilege escalation sequences.",
+      "detail": "Normalize timestamps to UTC. Define use cases before data ingest. Measure MTTD/MTTR per rule.",
+      "sourceType": "added"
+    }
+  ],
+  "incident-response": [
+    {
+      "topicId": "ir-lifecycle-nist",
+      "title": "Incident Response Lifecycle (NIST)",
+      "tags": ["incident-response", "nist"],
+      "summary": "Prepare → Detect/Analyze → Contain → Eradicate → Recover → Lessons Learned. Document decisions in real time.",
+      "detail": "Containment may be network isolation, account disable, or WAF block. Preserve forensic images before eradication on critical incidents.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "containment-strategies",
+      "title": "IR — Containment Strategies",
+      "tags": ["incident-response", "containment"],
+      "summary": "Short-term: isolate host/VLAN. Long-term: patch, credential rotation, monitoring enhanced detection.",
+      "detail": "Balance business continuity vs spread. Legal/comms approval before external notification.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "post-incident-reporting",
+      "title": "Post-Incident Reporting",
+      "tags": ["incident-response", "reporting"],
+      "summary": "Timeline, root cause, impact, actions taken, and preventive recommendations — audience-tailored exec vs technical.",
+      "detail": "Include IOCs shared with ISACs. Track control improvements to closure.",
+      "sourceType": "added"
+    }
+  ]
+}

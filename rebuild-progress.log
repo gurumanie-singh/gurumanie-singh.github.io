@@ -1,0 +1,68 @@
+=== PHASE 1: Extract & Synthesize ===
+Tesseract: True
+COMS415: 12 topics synthesized, 27 sections filtered, 0 HW questions reframed, 1 files skipped.
+CPRE430: 9 topics synthesized, 27 sections filtered, 3 HW questions reframed, 1 files skipped.
+CPRE431: 69 topics synthesized, 475 sections filtered, 0 HW questions reframed, 3 files skipped.
+CPRE489: 259 topics synthesized, 459 sections filtered, 0 HW questions reframed, 33 files skipped.
+CPRE532: 190 topics synthesized, 432 sections filtered, 29 HW questions reframed, 8 files skipped.
+CPRE536: 44 topics synthesized, 73 sections filtered, 0 HW questions reframed, 3 files skipped.
+nmap-notes: 15 topics synthesized, 73 sections filtered, 0 HW questions reframed, 1 files skipped.
+overthewire-solutions: 15 topics synthesized, 114 sections filtered, 0 HW questions reframed, 2 files skipped.
+Phase 1 total after global dedup: 607 topics
+
+=== PHASE 3: Cluster into domains ===
+  Network Security: 394 topics
+  Web Security: 35 topics
+  Exploitation & Vulnerability Research: 36 topics
+  Reconnaissance & OSINT: 23 topics
+  Cryptography: 42 topics
+  Linux & CLI: 29 topics
+  Malware & Threat Analysis: 11 topics
+  Digital Forensics: 15 topics
+  Cloud & Infrastructure Security: 4 topics
+  Software & Code Security: 7 topics
+  Intrusion Detection & Monitoring: 10 topics
+  Incident Response: 1 topics
+
+=== PHASE 2: Claude API Augmentation ===
+Network Security: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccatdv59CN53NZpNZ25AW'} — falling back to offline for this domain
+Web Security: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CcatdxdvTvA3ALQndBfVt'} — falling back to offline for this domain
+Exploitation & Vulnerability Research: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccatdyuph3o3HpbwgfUoX'} — falling back to offline for this domain
+Reconnaissance & OSINT: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate1FBtEctV1mQ5bP9j'} — falling back to offline for this domain
+Cryptography: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate2gkmEGdL9rBY5KGJ'} — falling back to offline for this domain
+Linux & CLI: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate44buHM7K8pMW4y6o'} — falling back to offline for this domain
+Malware & Threat Analysis: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate5UC5RUVE26mNMF1d'} — falling back to offline for this domain
+Digital Forensics: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate6wk2tGkrinyHbBZu'} — falling back to offline for this domain
+Cloud & Infrastructure Security: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate8K672FcYDKPXtxCx'} — falling back to offline for this domain
+Software & Code Security: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ccate9ghDUFHCgbJj44hJ'} — falling back to offline for this domain
+Intrusion Detection & Monitoring: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CcateAyLMx9E2hwFPBRdy'} — falling back to offline for this domain
+Incident Response: API FAILED — Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011CcateCVN2JKYDY14i4zFy'} — falling back to offline for this domain
+
+=== PHASE 5: Write & Validate ===
+Wrote /Users/guru/Documents/Portfolio/gurumanie-singh.github.io/data/cybersecurity.json
+
+========== FINAL SUMMARY ==========
+Total topics: 641
+Source types: notes=237, enriched=365, added=39
+  Network Security: 400 (notes=165, enriched=229, added=6)
+  Web Security: 39 (notes=16, enriched=19, added=4)
+  Exploitation & Vulnerability Research: 39 (notes=13, enriched=23, added=3)
+  Reconnaissance & OSINT: 25 (notes=3, enriched=20, added=2)
+  Cryptography: 45 (notes=12, enriched=30, added=3)
+  Linux & CLI: 32 (notes=16, enriched=13, added=3)
+  Malware & Threat Analysis: 14 (notes=4, enriched=7, added=3)
+  Digital Forensics: 18 (notes=6, enriched=9, added=3)
+  Cloud & Infrastructure Security: 7 (notes=0, enriched=4, added=3)
+  Software & Code Security: 10 (notes=1, enriched=6, added=3)
+  Intrusion Detection & Monitoring: 13 (notes=6, enriched=4, added=3)
+  Incident Response: 4 (notes=0, enriched=1, added=3)
+Folder filter stats:
+  COMS415: {'synthesized': 12, 'filtered': 27, 'reframed': 0, 'skipped_files': 1}
+  CPRE430: {'synthesized': 9, 'filtered': 27, 'reframed': 3, 'skipped_files': 1}
+  CPRE431: {'synthesized': 69, 'filtered': 475, 'reframed': 0, 'skipped_files': 3}
+  CPRE489: {'synthesized': 259, 'filtered': 459, 'reframed': 0, 'skipped_files': 33}
+  CPRE532: {'synthesized': 190, 'filtered': 432, 'reframed': 29, 'skipped_files': 8}
+  CPRE536: {'synthesized': 44, 'filtered': 73, 'reframed': 0, 'skipped_files': 3}
+  nmap-notes: {'synthesized': 15, 'filtered': 73, 'reframed': 0, 'skipped_files': 1}
+  overthewire-solutions: {'synthesized': 15, 'filtered': 114, 'reframed': 0, 'skipped_files': 2}
+API failures (per-domain offline fallback): Network Security, Web Security, Exploitation & Vulnerability Research, Reconnaissance & OSINT, Cryptography, Linux & CLI, Malware & Threat Analysis, Digital Forensics, Cloud & Infrastructure Security, Software & Code Security, Intrusion Detection & Monitoring, Incident Response

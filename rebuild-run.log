@@ -1,0 +1,69 @@
+=== PHASE 1: Extract & Synthesize ===
+Tesseract: True
+COMS415: 12 topics synthesized, 27 sections filtered, 0 HW questions reframed, 1 files skipped.
+CPRE430: 9 topics synthesized, 27 sections filtered, 3 HW questions reframed, 1 files skipped.
+CPRE431: 69 topics synthesized, 475 sections filtered, 0 HW questions reframed, 3 files skipped.
+CPRE489: 259 topics synthesized, 459 sections filtered, 0 HW questions reframed, 33 files skipped.
+CPRE532: 190 topics synthesized, 432 sections filtered, 29 HW questions reframed, 8 files skipped.
+CPRE536: 44 topics synthesized, 73 sections filtered, 0 HW questions reframed, 3 files skipped.
+nmap-notes: 15 topics synthesized, 73 sections filtered, 0 HW questions reframed, 1 files skipped.
+overthewire-solutions: 15 topics synthesized, 114 sections filtered, 0 HW questions reframed, 2 files skipped.
+Phase 1 total after global dedup: 607 topics
+
+=== PHASE 3: Cluster into domains ===
+  Network Security: 394 topics
+  Web Security: 35 topics
+  Exploitation & Vulnerability Research: 36 topics
+  Reconnaissance & OSINT: 23 topics
+  Cryptography: 42 topics
+  Linux & CLI: 29 topics
+  Malware & Threat Analysis: 11 topics
+  Digital Forensics: 15 topics
+  Cloud & Infrastructure Security: 4 topics
+  Software & Code Security: 7 topics
+  Intrusion Detection & Monitoring: 10 topics
+  Incident Response: 1 topics
+
+=== PHASE 2: Claude API Augmentation ===
+ANTHROPIC_API_KEY not set — using offline augmentation (domain seeds + auto-enrich)
+Network Security: 235 enriched, 6 added offline (total: 400 topics)
+Web Security: 23 enriched, 4 added offline (total: 39 topics)
+Exploitation & Vulnerability Research: 26 enriched, 3 added offline (total: 39 topics)
+Reconnaissance & OSINT: 22 enriched, 2 added offline (total: 25 topics)
+Cryptography: 33 enriched, 3 added offline (total: 45 topics)
+Linux & CLI: 16 enriched, 3 added offline (total: 32 topics)
+Malware & Threat Analysis: 10 enriched, 3 added offline (total: 14 topics)
+Digital Forensics: 12 enriched, 3 added offline (total: 18 topics)
+Cloud & Infrastructure Security: 7 enriched, 3 added offline (total: 7 topics)
+Software & Code Security: 9 enriched, 3 added offline (total: 10 topics)
+Intrusion Detection & Monitoring: 7 enriched, 3 added offline (total: 13 topics)
+Incident Response: 3 enriched, 3 added offline (total: 4 topics)
+
+=== PHASE 5: Write & Validate ===
+Wrote /Users/guru/Documents/Portfolio/gurumanie-singh.github.io/data/cybersecurity.json
+
+========== FINAL SUMMARY ==========
+Total topics: 641
+Source types: notes=237, enriched=365, added=39
+  Network Security: 400 (notes=165, enriched=229, added=6)
+  Web Security: 39 (notes=16, enriched=19, added=4)
+  Exploitation & Vulnerability Research: 39 (notes=13, enriched=23, added=3)
+  Reconnaissance & OSINT: 25 (notes=3, enriched=20, added=2)
+  Cryptography: 45 (notes=12, enriched=30, added=3)
+  Linux & CLI: 32 (notes=16, enriched=13, added=3)
+  Malware & Threat Analysis: 14 (notes=4, enriched=7, added=3)
+  Digital Forensics: 18 (notes=6, enriched=9, added=3)
+  Cloud & Infrastructure Security: 7 (notes=0, enriched=4, added=3)
+  Software & Code Security: 10 (notes=1, enriched=6, added=3)
+  Intrusion Detection & Monitoring: 13 (notes=6, enriched=4, added=3)
+  Incident Response: 4 (notes=0, enriched=1, added=3)
+Folder filter stats:
+  COMS415: {'synthesized': 12, 'filtered': 27, 'reframed': 0, 'skipped_files': 1}
+  CPRE430: {'synthesized': 9, 'filtered': 27, 'reframed': 3, 'skipped_files': 1}
+  CPRE431: {'synthesized': 69, 'filtered': 475, 'reframed': 0, 'skipped_files': 3}
+  CPRE489: {'synthesized': 259, 'filtered': 459, 'reframed': 0, 'skipped_files': 33}
+  CPRE532: {'synthesized': 190, 'filtered': 432, 'reframed': 29, 'skipped_files': 8}
+  CPRE536: {'synthesized': 44, 'filtered': 73, 'reframed': 0, 'skipped_files': 3}
+  nmap-notes: {'synthesized': 15, 'filtered': 73, 'reframed': 0, 'skipped_files': 1}
+  overthewire-solutions: {'synthesized': 15, 'filtered': 114, 'reframed': 0, 'skipped_files': 2}
+All domain API calls succeeded.

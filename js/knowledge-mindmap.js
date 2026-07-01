@@ -6,6 +6,37 @@
 
 const KM_STORAGE_PREFIX = 'knowledge-progress-';
 
+/** Inline SVG icons per domainId — 24×24, stroke only, cyan accent */
+const DOMAIN_ICON_PATHS = {
+  'network-security': '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="8" y1="7.5" x2="10.5" y2="16"/><line x1="16" y1="7.5" x2="13.5" y2="16"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
+  'web-security': '<rect x="3" y="4" width="18" height="14" rx="2"/><line x1="3" y1="8" x2="21" y2="8"/><rect x="15" y="13" width="5" height="4" rx="1"/><path d="M16.5 13v-1a1.5 1.5 0 013 0v1"/>',
+  'exploitation-vulnerability': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/>',
+  'reconnaissance-osint': '<circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/><line x1="10" y1="7" x2="10" y2="13"/><line x1="7" y1="10" x2="13" y2="10"/>',
+  'cryptography': '<circle cx="8" cy="14" r="4"/><path d="M12 14h5a3 3 0 010 6h-1"/><line x1="12" y1="10" x2="12" y2="14"/>',
+  'linux-cli': '<rect x="3" y="4" width="18" height="14" rx="2"/><polyline points="7 9 9 11 7 13"/><line x1="11" y1="13" x2="15" y2="13"/><rect x="17" y="12" width="2" height="2" fill="#22d3ee" stroke="none"/>',
+  'malware-threat': '<ellipse cx="12" cy="14" rx="5" ry="6"/><circle cx="12" cy="8" r="3"/><line x1="9" y1="5" x2="8" y2="2"/><line x1="15" y1="5" x2="16" y2="2"/><line x1="7" y1="14" x2="4" y2="16"/><line x1="17" y1="14" x2="20" y2="16"/><line x1="8" y1="18" x2="6" y2="21"/><line x1="16" y1="18" x2="18" y2="21"/>',
+  'digital-forensics': '<path d="M6 4h10l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"/><circle cx="14" cy="14" r="4"/><line x1="16.5" y1="16.5" x2="19" y2="19"/>',
+  'cloud-infrastructure': '<path d="M7 18h10a4 4 0 000-8 5.5 5.5 0 00-10.5 2A3.5 3.5 0 007 18z"/><rect x="10" y="12" width="4" height="3" rx="0.5"/><path d="M11.5 12v-1a1 1 0 012 0v1"/>',
+  'software-code-security': '<polyline points="8 6 4 12 8 18"/><polyline points="16 6 20 12 16 18"/><line x1="13" y1="5" x2="11" y2="19"/><polyline points="11 16 13 19 15 16"/>',
+  'intrusion-detection-monitoring': '<polyline points="3 14 7 10 11 13 15 7 19 9 21 6"/><circle cx="15" cy="7" r="1.5" fill="#22d3ee" stroke="none"/>',
+  'incident-response': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="12" y1="9" x2="12" y2="13"/><polyline points="10 15 12 17 16 13"/>',
+};
+
+function domainIconSvg(domainId, size = 24) {
+  const paths = DOMAIN_ICON_PATHS[domainId] || DOMAIN_ICON_PATHS['network-security'];
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+function appendDomainIconSvg(parent, domainId, x, y, size = 22) {
+  const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+  fo.setAttribute('x', x - size / 2);
+  fo.setAttribute('y', y - size / 2 - 4);
+  fo.setAttribute('width', size);
+  fo.setAttribute('height', size);
+  fo.innerHTML = domainIconSvg(domainId, size);
+  parent.appendChild(fo);
+}
+
 function renderMarkdown(md) {
   if (!md) return '';
   let html = md
@@ -59,7 +90,11 @@ function normalizeData(raw) {
       category: raw.category,
       domains: raw.domains.map((d) => ({
         ...d,
-        topics: (d.topics || []).map((t) => ({ ...t, domainId: d.domainId, domainName: d.domainName, domainIcon: d.icon })),
+        topics: (d.topics || []).map((t) => ({
+          ...t,
+          domainId: d.domainId,
+          domainName: d.domainName,
+        })),
       })),
     };
   }
@@ -69,8 +104,7 @@ function normalizeData(raw) {
     domains: (raw.classes || []).map((c) => ({
       domainId: c.classId,
       domainName: c.className || c.classCode,
-      icon: '📚',
-      topics: (c.topics || []).map((t) => ({ ...t, domainId: c.classId, domainName: c.className || c.classCode, domainIcon: '📚' })),
+      topics: (c.topics || []).map((t) => ({ ...t, domainId: c.classId, domainName: c.className || c.classCode })),
     })),
   };
 }
@@ -178,7 +212,7 @@ export class KnowledgeMindmap {
       this.panel.innerHTML = `
         ${breadcrumb}
         <div class="km-topic-list-header">
-          <span class="km-domain-icon-lg">${this.selectedDomain.icon || '📁'}</span>
+          <span class="km-domain-icon-lg">${domainIconSvg(this.selectedDomain.domainId, 28)}</span>
           <div>
             <h2 class="km-domain-heading">${this.selectedDomain.domainName}</h2>
             <p class="km-domain-count">${topics.length} topics</p>
@@ -348,10 +382,8 @@ export class KnowledgeMindmap {
       circle.setAttribute('cx', pos.x); circle.setAttribute('cy', pos.y); circle.setAttribute('r', r);
       circle.setAttribute('class', 'km-node-domain');
 
-      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      icon.setAttribute('x', pos.x); icon.setAttribute('y', pos.y - 6);
-      icon.setAttribute('class', 'km-label km-domain-icon');
-      icon.textContent = domain.icon || '📁';
+      const iconG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      appendDomainIconSvg(iconG, domain.domainId, pos.x, pos.y, 22);
 
       const name = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       name.setAttribute('x', pos.x); name.setAttribute('y', pos.y + r + 16);
@@ -362,9 +394,9 @@ export class KnowledgeMindmap {
       const count = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       count.setAttribute('x', pos.x); count.setAttribute('y', pos.y + 12);
       count.setAttribute('class', 'km-label km-domain-count-label');
-      count.textContent = `${(domain.topics || []).length}`;
+      count.textContent = `${domain.topicCount ?? (domain.topics || []).length}`;
 
-      nodeG.append(circle, icon, count, name);
+      nodeG.append(circle, iconG, count, name);
       nodeG.addEventListener('click', (e) => {
         e.stopPropagation();
         this.openDomain(domain);
@@ -379,10 +411,10 @@ export class KnowledgeMindmap {
     // Mobile vertical cards
     mobile.innerHTML = domains.map((d) => `
       <button type="button" class="km-domain-card" data-domain-id="${d.domainId}">
-        <span class="km-domain-card-icon">${d.icon || '📁'}</span>
+        <span class="km-domain-card-icon">${domainIconSvg(d.domainId, 24)}</span>
         <span class="km-domain-card-body">
           <span class="km-domain-card-name">${d.domainName}</span>
-          <span class="km-domain-card-count">${(d.topics || []).length} topics</span>
+          <span class="km-domain-card-count">${d.topicCount ?? (d.topics || []).length} topics</span>
         </span>
       </button>
     `).join('');
@@ -457,7 +489,7 @@ export class KnowledgeMindmap {
     resultsEl.hidden = false;
     resultsEl.innerHTML = matches.map((t) => `
       <button type="button" class="km-search-item" data-topic-id="${t.topicId}">
-        <span class="km-search-badge">${t.domainIcon || ''} ${t.domainName}</span>
+        <span class="km-search-badge"><span class="km-search-icon">${domainIconSvg(t.domainId, 14)}</span> ${t.domainName}</span>
         <span class="km-search-title">${t.title}</span>
       </button>
     `).join('');
