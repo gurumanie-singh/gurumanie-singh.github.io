@@ -269,6 +269,102 @@
       "summary": "CloudTrail records management events — enable organization trail, log file validation, S3 lifecycle protection.",
       "detail": "Pair with CloudWatch alarms on root login, IAM changes, and security group opens.",
       "sourceType": "added"
+    },
+    {
+      "topicId": "aws-vpc-security-groups",
+      "title": "AWS VPC — Security Groups vs NACLs",
+      "tags": ["aws", "vpc", "cloud"],
+      "summary": "Security groups are stateful instance-level firewalls; NACLs are stateless subnet-level filters evaluated in order.",
+      "detail": "Default deny outbound is rare in SGs but possible in NACLs. Least-privilege inbound rules per tier. Log rejected flows with VPC Flow Logs.",
+      "commands": [{"cmd": "aws ec2 describe-security-groups --group-ids sg-xxx", "explain": "Audit security group rules"}]
+    },
+    {
+      "topicId": "ec2-instance-hardening",
+      "title": "EC2 — Instance Hardening Baseline",
+      "tags": ["aws", "ec2", "hardening"],
+      "summary": "Disable unnecessary services, patch AMIs, use IMDSv2, restrict SSH to bastion, and attach instance profiles instead of static keys.",
+      "detail": "Use Systems Manager Session Manager for shell access without open port 22. Enable EBS encryption by default. Tag instances for ownership and environment.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "aws-kms-key-management",
+      "title": "AWS KMS — Key Management",
+      "tags": ["aws", "kms", "encryption"],
+      "summary": "Customer-managed CMKs give rotation and policy control; envelope encryption wraps data keys for S3, EBS, and RDS.",
+      "detail": "Separate keys per environment. Monitor CloudTrail for DisableKey and ScheduleKeyDeletion. Use grants sparingly.",
+      "commands": [{"cmd": "aws kms list-keys", "explain": "Inventory KMS keys in account"}]
+    },
+    {
+      "topicId": "cloudwatch-security-alarms",
+      "title": "CloudWatch — Security Event Alarms",
+      "tags": ["aws", "cloudwatch", "monitoring"],
+      "summary": "Metric filters on CloudTrail log groups can alarm on root login, IAM policy changes, and failed console logins.",
+      "detail": "Route alarms to SNS → ticketing. Tune thresholds to avoid alert fatigue. Combine with GuardDuty findings for correlation.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "container-image-scanning",
+      "title": "Container Security — Image Scanning",
+      "tags": ["container", "docker", "cloud"],
+      "summary": "Scan images in CI and registry (ECR, Trivy) for CVEs before deploy; pin digests, not mutable tags.",
+      "detail": "Run as non-root, read-only root filesystem, drop capabilities. Use admission controllers in Kubernetes to block critical CVEs.",
+      "commands": [{"cmd": "trivy image myapp:latest", "explain": "Local vulnerability scan"}]
+    },
+    {
+      "topicId": "kubernetes-rbac-basics",
+      "title": "Kubernetes — RBAC Basics",
+      "tags": ["kubernetes", "rbac", "cloud"],
+      "summary": "Roles bind verbs to resources; RoleBindings attach subjects. ClusterRoles span namespaces — avoid cluster-admin for apps.",
+      "detail": "Audit with `kubectl auth can-i`. Use namespaces for tenancy. Service accounts should have minimal permissions.",
+      "commands": [{"cmd": "kubectl auth can-i create pods --as=system:serviceaccount:default:default", "explain": "Test SA permissions"}]
+    },
+    {
+      "topicId": "aws-guardduty-overview",
+      "title": "AWS GuardDuty — Threat Detection",
+      "tags": ["aws", "guardduty", "threat-detection"],
+      "summary": "GuardDuty analyzes CloudTrail, VPC Flow Logs, and DNS for malicious activity — no agents required.",
+      "detail": "Enable in all regions. Suppress known benign findings after review. Export to Security Hub for centralized posture.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "cloud-shared-responsibility",
+      "title": "Cloud Shared Responsibility Model",
+      "tags": ["cloud", "compliance"],
+      "summary": "Provider secures the cloud (hypervisor, physical); customer secures in the cloud (IAM, data, OS patching on IaaS).",
+      "detail": "SaaS shifts more to provider; IaaS leaves OS and app layers with you. Misconfigurations remain the top breach cause.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "cis-cloud-benchmarks",
+      "title": "Cloud Misconfiguration — CIS Benchmarks",
+      "tags": ["cloud", "cis", "compliance"],
+      "summary": "CIS AWS/Azure/GCP benchmarks define hardened baselines — automate checks with Prowler, ScoutSuite, or Security Hub.",
+      "detail": "Prioritize public S3, open SGs, missing MFA, and unused credentials. Track remediation SLAs per severity.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "secrets-manager-parameter-store",
+      "title": "Secrets Management — AWS Secrets Manager",
+      "tags": ["aws", "secrets", "cloud"],
+      "summary": "Never embed secrets in code or AMIs; use Secrets Manager or SSM Parameter Store with rotation and IAM-scoped access.",
+      "detail": "Audit GetSecretValue in CloudTrail. Prefer task roles over environment variables in ECS/Lambda where possible.",
+      "commands": [{"cmd": "aws secretsmanager get-secret-value --secret-id prod/db", "explain": "Retrieve secret (audit this call)"}]
+    },
+    {
+      "topicId": "aws-organizations-scp",
+      "title": "AWS Organizations — Service Control Policies",
+      "tags": ["aws", "organizations", "governance"],
+      "summary": "SCPs set guardrails across accounts — deny root actions, restrict regions, or block public S3 policies org-wide.",
+      "detail": "Combine with centralized logging account. Landing zone patterns use OU structure for prod vs sandbox isolation.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "lambda-security-execution-role",
+      "title": "AWS Lambda — Least-Privilege Execution Roles",
+      "tags": ["aws", "lambda", "serverless"],
+      "summary": "Each function needs its own IAM role with only required actions on specific resource ARNs — avoid wildcard policies.",
+      "detail": "Watch for overly broad `s3:*` or `dynamodb:*`. VPC-attached Lambdas need extra ENI permissions. Scan env vars for leaked keys.",
+      "sourceType": "added"
     }
   ],
   "software-code-security": [
@@ -294,6 +390,102 @@
       "tags": ["sast", "dast", "appsec"],
       "summary": "SAST scans source/bytecode statically; DAST probes running app. Use both in CI/CD pipeline.",
       "detail": "SAST finds early but false positives. DAST catches runtime/config issues. Track findings in defect lifecycle.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "fmea-failure-mode-analysis",
+      "title": "FMEA — Failure Mode and Effects Analysis",
+      "tags": ["safety", "fmea", "coms415"],
+      "summary": "Bottom-up analysis ranking failure modes by Severity × Occurrence × Detection to prioritize design mitigations.",
+      "detail": "Used alongside fault trees in safety-critical systems. Document RPN scores and corrective actions to closure.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "iec-61508-sil-levels",
+      "title": "IEC 61508 — Safety Integrity Levels",
+      "tags": ["safety", "iec-61508", "standards"],
+      "summary": "SIL 1–4 define required risk reduction for E/E/PE safety functions — higher SIL demands stricter V&V and architecture.",
+      "detail": "Derive SIL from hazard analysis. Hardware fault tolerance and diagnostic coverage increase with SIL. Trace requirements to tests.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "stpa-hazard-analysis",
+      "title": "STPA — Systems-Theoretic Hazard Analysis",
+      "tags": ["safety", "hazard", "stpa"],
+      "summary": "STPA models unsafe control actions in complex systems — complements FMEA/FTA for software-intensive designs.",
+      "detail": "Identify controllers, controlled processes, and feedback loops. Analyze scenarios where control is too early, late, or wrong.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "stride-threat-modeling",
+      "title": "Threat Modeling — STRIDE",
+      "tags": ["threat-modeling", "secure-sdlc"],
+      "summary": "STRIDE categorizes threats: Spoofing, Tampering, Repudiation, Info disclosure, DoS, Elevation of privilege.",
+      "detail": "Apply per data-flow diagram element. Pair with abuse cases and security requirements in design reviews.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "sca-dependency-scanning",
+      "title": "Software Composition Analysis (SCA)",
+      "tags": ["sca", "dependencies", "supply-chain"],
+      "summary": "SCA tools map third-party libraries to known CVEs — integrate in CI to block merges on critical vulns.",
+      "detail": "Pin versions, monitor advisories, and plan upgrades. SBOM export supports customer and regulatory requests.",
+      "commands": [{"cmd": "npm audit --audit-level=high", "explain": "Check Node dependencies for high+ CVEs"}]
+    },
+    {
+      "topicId": "security-code-review-checklist",
+      "title": "Security Code Review Checklist",
+      "tags": ["code-review", "secure-coding"],
+      "summary": "Review trust boundaries, authz checks, crypto usage, logging of secrets, and error handling that fails secure.",
+      "detail": "Focus diffs touching parsers, serializers, file paths, and SQL/command construction. Verify tests cover negative cases.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "memory-safety-buffer-overruns",
+      "title": "Memory Safety — Buffer Overruns in C/C++",
+      "tags": ["memory-safety", "c", "exploitation"],
+      "summary": "Unchecked bounds on stack/heap buffers enable corruption — use safe APIs, canaries, ASLR, and static analysis.",
+      "detail": "Prefer `snprintf` over `sprintf`, bounded copies, and languages with memory safety for new components.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "integer-overflow-wraparound",
+      "title": "Integer Overflow & Wraparound",
+      "tags": ["secure-coding", "memory-safety"],
+      "summary": "Arithmetic on fixed-width integers can wrap, undersizing allocations or bypassing length checks.",
+      "detail": "Use safe math libraries, validate before multiply/add for buffer sizing, and enable compiler sanitizers in CI.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "race-conditions-toctou",
+      "title": "Race Conditions & TOCTOU",
+      "tags": ["secure-coding", "concurrency"],
+      "summary": "Time-of-check vs time-of-use gaps let attackers swap files or paths between validation and use.",
+      "detail": "Use atomic operations, file descriptors instead of paths, and proper locking. Symlink attacks exploit TOCTOU on temp files.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "fail-secure-error-handling",
+      "title": "Secure Coding — Fail-Secure Error Handling",
+      "tags": ["secure-coding", "reliability"],
+      "summary": "On failure, default to deny — close connections, reject requests, and avoid leaking stack traces or internal paths.",
+      "detail": "Log errors server-side with correlation IDs. Generic user messages. Ensure finally blocks do not elevate privilege.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "sbom-supply-chain",
+      "title": "Software Supply Chain — SBOM",
+      "tags": ["sbom", "supply-chain", "compliance"],
+      "summary": "Software Bill of Materials lists components and versions — required for incident response and regulatory disclosure.",
+      "detail": "Generate in SPDX or CycloneDX from builds. Sign artifacts and verify provenance (SLSA levels).",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "safety-critical-v-and-v",
+      "title": "Safety-Critical Verification & Validation",
+      "tags": ["safety", "testing", "v-and-v"],
+      "summary": "V&V proves requirements are implemented correctly and the right requirements were chosen — independence increases with SIL.",
+      "detail": "Unit, integration, system, and acceptance tests with traceability matrices. Regression on any safety-related change.",
       "sourceType": "added"
     }
   ],
@@ -346,6 +538,102 @@
       "tags": ["incident-response", "reporting"],
       "summary": "Timeline, root cause, impact, actions taken, and preventive recommendations — audience-tailored exec vs technical.",
       "detail": "Include IOCs shared with ISACs. Track control improvements to closure.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-preparation-runbooks",
+      "title": "IR Preparation — Runbooks & Contact Lists",
+      "tags": ["incident-response", "preparation"],
+      "summary": "Maintain current runbooks, escalation trees, and vendor contacts before an incident — speed under pressure depends on prep.",
+      "detail": "Include forensic tooling access, legal counsel, and comms templates. Test runbooks in tabletops quarterly.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-detection-triage",
+      "title": "IR Detection & Alert Triage",
+      "tags": ["incident-response", "detection"],
+      "summary": "Prioritize alerts by asset criticality, confidence, and blast radius — not every SIEM rule equals an incident.",
+      "detail": "Define severity matrix (P1–P4). Enrich with threat intel and asset context. Document false-positive feedback to detection engineering.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-evidence-preservation",
+      "title": "IR Evidence Preservation — Chain of Custody",
+      "tags": ["incident-response", "forensics"],
+      "summary": "Image before reboot, hash artifacts, log who handled evidence, and store write-protected copies for legal admissibility.",
+      "detail": "Volatile data order: memory, network connections, then disk. Screenshot cloud consoles with timestamps.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-eradication",
+      "title": "IR Eradication — Malware Removal & Patch Validation",
+      "tags": ["incident-response", "eradication"],
+      "summary": "Remove persistence, rotate compromised credentials, and validate patches before reconnection — partial eradication guarantees recurrence.",
+      "detail": "Hunt for secondary backdoors. Rebuild gold images when rootkits suspected. Verify IOCs absent in follow-up scans.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-recovery-monitoring",
+      "title": "IR Recovery — Service Restoration & Enhanced Monitoring",
+      "tags": ["incident-response", "recovery"],
+      "summary": "Restore from clean backups, validate integrity, and increase logging on affected segments during the watch period.",
+      "detail": "Define success criteria with business owners. Gradual return beats big-bang if dependencies are uncertain.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-threat-hunting",
+      "title": "Threat Hunting During Active IR",
+      "tags": ["incident-response", "threat-hunting"],
+      "summary": "Hypothesis-driven searches across endpoints and logs to find related compromise beyond the initial alert.",
+      "detail": "Map to ATT&CK techniques observed. Use stacked aggregations in SIEM. Document negative findings too.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-stakeholder-comms",
+      "title": "IR Communication — Stakeholder Updates",
+      "tags": ["incident-response", "communications"],
+      "summary": "Scheduled updates to execs, legal, and customers with facts vs assumptions clearly separated — avoid speculation.",
+      "detail": "Single incident commander approves external statements. Preserve attorney-client privilege where applicable.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-regulatory-notification",
+      "title": "IR Legal & Regulatory Notification",
+      "tags": ["incident-response", "compliance"],
+      "summary": "Breach notification laws (GDPR 72h, state US laws) have clocks — involve legal early to assess reporting obligations.",
+      "detail": "Document decision rationale if not notifying. Contractual notification to partners may be shorter than statutes.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-ioc-sharing",
+      "title": "IOC Sharing — ISACs & Threat Intel",
+      "tags": ["incident-response", "threat-intel"],
+      "summary": "Share indicators with sector ISACs and vendors under NDA — consume peer reports to accelerate detection.",
+      "detail": "Normalize STIX/TAXII feeds. Tune detections on shared IOCs with expiration to avoid stale alerts.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-tabletop-exercises",
+      "title": "IR Tabletop Exercises",
+      "tags": ["incident-response", "preparation"],
+      "summary": "Facilitated walkthroughs of ransomware, data breach, or insider scenarios expose gaps in roles and runbooks.",
+      "detail": "Inject complications (legal hold, media inquiry). Capture action items with owners and due dates.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-root-cause-analysis",
+      "title": "IR Root Cause Analysis — 5 Whys",
+      "tags": ["incident-response", "lessons-learned"],
+      "summary": "Iterative why questioning finds systemic causes beyond the immediate vulnerability — fix processes, not just patches.",
+      "detail": "Fishbone diagrams help for multifactor failures. Track corrective actions in risk register to verified closure.",
+      "sourceType": "added"
+    },
+    {
+      "topicId": "ir-metrics-mttd-mttr",
+      "title": "IR Metrics — MTTD, MTTR, and Dwell Time",
+      "tags": ["incident-response", "metrics"],
+      "summary": "Mean time to detect/respond and attacker dwell time measure program maturity — trend quarterly, not vanity single incidents.",
+      "detail": "Segment by incident type. Pair with false-positive rate and tabletop participation for balanced scorecards.",
       "sourceType": "added"
     }
   ]

@@ -57,6 +57,54 @@ DOMAINS = [
     ("incident-response", "Incident Response"),
 ]
 
+NETWORK_SECURITY_CAP = 80
+DOMAIN_TOPIC_FLOOR = {
+    "incident-response": 15,
+    "cloud-infrastructure": 15,
+    "software-code-security": 15,
+}
+
+# Protocol families for merging related network subsections
+PROTOCOL_FAMILIES: dict[str, list[str]] = {
+    "tcp": ["tcp", "transmission control"],
+    "udp": ["udp", "user datagram"],
+    "ip": ["ipv4", "ipv6", "internet protocol", "ip header", "ip datagram"],
+    "dns": ["dns", "domain name system"],
+    "dhcp": ["dhcp", "dynamic host"],
+    "arp": ["arp", "address resolution"],
+    "icmp": ["icmp", "internet control message"],
+    "ethernet": ["ethernet", "mac address", "802.3"],
+    "vlan": ["vlan", "802.1q"],
+    "ospf": ["ospf"],
+    "bgp": ["bgp", "border gateway"],
+    "smtp": ["smtp"],
+    "ftp": ["ftp"],
+    "tls": ["tls record", "tls handshake"],
+    "wifi": ["802.11", "wifi", "wi-fi", "wireless lan"],
+    "osi": ["osi model", "osi layer"],
+    "routing": ["routing protocol", "routing table", "static route"],
+    "nat": ["network address translation", "nat ", " pat "],
+    "gbn": ["go-back-n", "go back n", "gbn"],
+    "sr": ["selective repeat"],
+}
+
+STANDALONE_NETWORK_TOPICS = (
+    "arp spoofing", "arp cache poison", "three-way handshake", "syn scan", "syn flood",
+    "dhcp starvation", "dns zone transfer", "vlan hopping", "wireshark", "iptables",
+    "firewall", "vpn", "mitm", "man-in-the-middle", "port scan", "traceroute",
+    "ping flood", "icmp redirect", "osi model", "go-back-n", "selective repeat",
+    "manchester encoding", "packet sniffing", "network segmentation", "subnetting",
+    "nat traversal", "syn-ack", "half-open",
+)
+
+MERGEABLE_ASPECTS = (
+    "header", "headers", "flags", "flag", "window", "windowing", "flow control",
+    "congestion", "checksum", "options", "fields", "format", "structure",
+    "segments", "segment", "acknowledgment", "sequence", "ports", "introduction",
+    "overview", "basics", "fundamentals", "mechanism", "mechanisms", "operation",
+    "reliability", "multiplexing", "demultiplexing", "framing", "addressing",
+)
+
 DOMAIN_KEYWORDS: dict[str, list[str]] = {
     "network-security": [
         "tcp", "udp", "ip", "dns", "dhcp", "arp", "routing", "vlan", "packet", "wireshark",
@@ -444,6 +492,8 @@ def topics_from_markdown(text: str, source: str, source_key: str) -> tuple[list[
                 st = concept_title_from_section(sh, sb)
                 if BAD_TITLE_RE.match(st) or st.lower() == title.lower():
                     continue
+                if not is_independently_searchable_topic(st):
+                    continue
                 sc = extract_commands_from_text(sb)
                 subtopic = {
                     "topicId": slugify(st),
@@ -534,6 +584,137 @@ def topics_from_generic(text: str, source: str, source_key: str) -> tuple[list[d
         if len(topics) >= 6:
             break
     return topics, filtered, reframed
+
+
+def is_independently_searchable_topic(title: str) -> bool:
+    """True when a concept deserves its own lookup node (granularity rule)."""
+    tl = title.lower().strip()
+    if any(p in tl for p in STANDALONE_NETWORK_TOPICS):
+        return True
+    for aspect in MERGEABLE_ASPECTS:
+        if aspect in tl and len(tl.split()) <= 5:
+            return False
+    if re.match(r"^(tcp|udp|ip|dns|arp|icmp|ethernet|vlan|osi|dhcp)\s*[—\-:]\s*\S+$", tl):
+        return False
+    if re.match(r"^(tcp|udp|ip|dns|arp|icmp)\s+(header|flags|window|checksum|options|fields)s?$", tl):
+        return False
+    return len(tl.split()) >= 4
+
+
+def get_protocol_family(title: str, tags: list[str] | None = None) -> str | None:
+    corpus = f"{title} {' '.join(tags or [])}".lower()
+    for family, keywords in PROTOCOL_FAMILIES.items():
+        if re.search(rf"\b{re.escape(family)}\b", corpus):
+            return family
+        if any(kw in corpus for kw in keywords):
+            return family
+    return None
+
+
+def merge_topic_group(group: list[dict], family: str) -> dict:
+    base = dict(group[0])
+    for t in group[1:]:
+        base = merge_topics(base, t)
+    aspects: list[str] = []
+    for t in group:
+        tl = t["title"]
+        aspect = re.sub(rf"^{re.escape(family)}\s*[—\-:]?\s*", "", tl, flags=re.I).strip()
+        if aspect and aspect.lower() != family and aspect.lower() != tl.lower():
+            aspects.append(aspect)
+        elif tl.lower() != family:
+            aspects.append(tl)
+    fam_label = family.upper() if len(family) <= 4 else family.title()
+    if aspects:
+        if len(aspects) == 1:
+            base["title"] = clean_title(f"{fam_label} — {aspects[0]}")
+        elif len(aspects) <= 3:
+            base["title"] = clean_title(f"{fam_label} — {', '.join(aspects)}")
+        else:
+            base["title"] = clean_title(
+                f"{fam_label} — {', '.join(aspects[:2])}, and {len(aspects) - 2} Related Topics"
+            )
+    detail_parts = [f"### {t['title']}\n\n{t.get('detail', '')}" for t in group]
+    base["detail"] = "\n\n".join(detail_parts)[:12000]
+    base["summary"] = first_sentence(base["detail"], 220)
+    base["topicId"] = slugify(base["title"])
+    return base
+
+
+def cap_network_security_topics(topics: list[dict], max_count: int = NETWORK_SECURITY_CAP) -> list[dict]:
+    if len(topics) <= max_count:
+        return topics
+
+    mergeable: dict[str, list[dict]] = defaultdict(list)
+    standalone: list[dict] = []
+
+    for t in topics:
+        fam = get_protocol_family(t["title"], t.get("tags"))
+        if fam and not is_independently_searchable_topic(t["title"]):
+            mergeable[fam].append(t)
+        else:
+            standalone.append(t)
+
+    merged: list[dict] = list(standalone)
+    for fam, group in mergeable.items():
+        if len(group) == 1:
+            merged.append(group[0])
+        else:
+            merged.append(merge_topic_group(group, fam))
+
+    def title_prefix(title: str) -> str:
+        m = re.match(r"^([A-Za-z0-9]+)", title.strip())
+        return (m.group(1) if m else "misc").lower()
+
+    # Greedy batch merge by shared title prefix (fast; avoids O(n²) similarity scans)
+    while len(merged) > max_count:
+        groups: dict[str, list[int]] = defaultdict(list)
+        for i, t in enumerate(merged):
+            groups[title_prefix(t["title"])].append(i)
+
+        mergeable_keys = [k for k, idxs in groups.items() if len(idxs) >= 2]
+        if mergeable_keys:
+            key = max(mergeable_keys, key=lambda k: len(groups[k]))
+            i, j = groups[key][0], groups[key][1]
+            a, b = merged[i], merged[j]
+            fam = get_protocol_family(a["title"], a.get("tags")) or key
+            combined = merge_topic_group([a, b], fam)
+            for idx in sorted([i, j], reverse=True):
+                del merged[idx]
+            merged.append(combined)
+            continue
+
+        # Last resort: merge the two shortest-detail topics
+        if len(merged) < 2:
+            break
+        ranked = sorted(range(len(merged)), key=lambda k: len((merged[k].get("detail") or "").split()))
+        i, j = ranked[0], ranked[1]
+        combined = merge_topic_group([merged[i], merged[j]], "network")
+        for idx in sorted([i, j], reverse=True):
+            del merged[idx]
+        merged.append(combined)
+
+    return merged
+
+
+def cap_network_security_in_phase1(all_topics: list[dict]) -> list[dict]:
+    ns_topics: list[dict] = []
+    other_topics: list[dict] = []
+    for t in all_topics:
+        src = (t.get("sources") or ["unknown"])[0].lower().replace(" ", "").replace("-solutions", "")
+        sk = next(
+            (k for k, v in SOURCE_CODE.items() if v.lower().replace("-solutions", "") == src.replace("-solutions", "")),
+            "",
+        )
+        primary, _ = assign_domain(t, sk)
+        if primary == "network-security":
+            ns_topics.append(t)
+        else:
+            other_topics.append(t)
+    before = len(ns_topics)
+    ns_topics = cap_network_security_topics(ns_topics, NETWORK_SECURITY_CAP)
+    if before != len(ns_topics):
+        log(f"Network Security cap: merged {before} → {len(ns_topics)} topics (max {NETWORK_SECURITY_CAP})")
+    return other_topics + ns_topics
 
 
 def merge_topics(a: dict, b: dict) -> dict:
@@ -691,7 +872,8 @@ def phase1_extract_synthesize() -> list[dict]:
         )
 
     all_topics = dedupe_topics(all_topics)
-    log(f"Phase 1 total after global dedup: {len(all_topics)} topics")
+    all_topics = cap_network_security_in_phase1(all_topics)
+    log(f"Phase 1 total after global dedup + NS cap: {len(all_topics)} topics")
     return all_topics
 
 
@@ -729,6 +911,123 @@ Schema per topic:
 
 Quality: cheat-sheet density, specific titles, accurate command syntax. No homework/admin content.
 '''
+
+
+def build_floor_prompt(domain_name: str, topics: list[dict], floor: int) -> str:
+    existing = [{"topicId": t["topicId"], "title": t["title"]} for t in topics]
+    need = max(floor - len(topics), 1)
+    return f'''Domain: {domain_name}
+
+Current topic count: {len(topics)}. Minimum required: {floor}.
+Add exactly {need} NEW topics not already covered.
+
+Already covered (do not duplicate or lightly rephrase):
+{json.dumps(existing, indent=2)}
+
+Return JSON only: {{"added": [...]}}
+
+Each added topic must follow this schema:
+{{"topicId": "kebab-case", "title": "Specific Concept Name", "tags": [...], "summary": "1-2 sentences, 15+ words", "detail": "Full markdown, 100+ words", "commands": [{{"cmd":"...","explain":"..."}}]}}
+
+Cover professional concepts a Security Engineer or SOC analyst must know in {domain_name}.
+Omit commands for concept-only topics. No homework/admin content.
+'''
+
+
+def apply_api_augment_data(topics: list[dict], data: dict) -> tuple[list[dict], int, int]:
+    enriched = {e["topicId"]: e for e in data.get("enriched", []) if e.get("topicId")}
+    n_enriched = n_added = 0
+    for t in topics:
+        if t["topicId"] in enriched:
+            e = enriched[t["topicId"]]
+            t["title"] = clean_title(e.get("title", t["title"]))
+            t["summary"] = e.get("summary", t["summary"])
+            t["detail"] = e.get("detail", t["detail"])
+            if e.get("tags"):
+                t["tags"] = e["tags"]
+            if e.get("commands"):
+                t["commands"] = e["commands"]
+            t["sourceType"] = "enriched"
+            n_enriched += 1
+        else:
+            t.setdefault("sourceType", "notes")
+    existing_ids = {t["topicId"] for t in topics}
+    for nt in data.get("added", []):
+        nt["topicId"] = slugify(nt.get("topicId") or nt.get("title", "topic"))
+        if nt["topicId"] in existing_ids:
+            continue
+        nt["title"] = clean_title(nt.get("title", "Untitled"))
+        nt.setdefault("tags", [])
+        nt["sourceType"] = "added"
+        nt.setdefault("sources", [])
+        nt.setdefault("sourceFiles", [])
+        topics.append(nt)
+        existing_ids.add(nt["topicId"])
+        n_added += 1
+    return topics, n_enriched, n_added
+
+
+def append_seed_topics(topics: list[dict], domain_id: str, seeds: dict) -> int:
+    existing_ids = {t["topicId"] for t in topics}
+    added = 0
+    for seed in seeds.get(domain_id, []):
+        sid = seed.get("topicId") or slugify(seed["title"])
+        if sid in existing_ids:
+            continue
+        nt = dict(seed)
+        nt["topicId"] = sid
+        nt["sourceType"] = seed.get("sourceType", "added")
+        nt.setdefault("sources", [])
+        nt.setdefault("sourceFiles", [])
+        topics.append(nt)
+        existing_ids.add(sid)
+        added += 1
+    return added
+
+
+def ensure_domain_floor_api(client, domain_id: str, domain_name: str, topics: list[dict]) -> list[dict]:
+    floor = DOMAIN_TOPIC_FLOOR.get(domain_id, 0)
+    if not floor or len(topics) >= floor:
+        return topics
+    max_followups = 4
+    for attempt in range(1, max_followups + 1):
+        if len(topics) >= floor:
+            break
+        prompt = build_floor_prompt(domain_name, topics, floor)
+        try:
+            resp = client.messages.create(
+                model=MODEL,
+                max_tokens=12000,
+                system="You are building a cybersecurity professional knowledge base. Output only valid JSON. No markdown fences, no preamble, no explanation.",
+                messages=[{"role": "user", "content": prompt}],
+            )
+            data = parse_claude_json(resp.content[0].text)
+            before = len(topics)
+            topics, _, n_added = apply_api_augment_data(topics, {"enriched": [], "added": data.get("added", [])})
+            log(f"{domain_name}: floor follow-up {attempt} — added {n_added} topics ({before} → {len(topics)}, floor {floor})")
+            if n_added == 0:
+                break
+        except Exception as e:
+            log(f"{domain_name}: floor follow-up {attempt} FAILED — {e}")
+            break
+    if len(topics) < floor:
+        seeds = json.loads(SEEDS_PATH.read_text(encoding="utf-8")) if SEEDS_PATH.exists() else {}
+        n = append_seed_topics(topics, domain_id, seeds)
+        if n:
+            log(f"{domain_name}: floor offline seed fallback — added {n} topics ({len(topics)} total, floor {floor})")
+    return topics
+
+
+def ensure_domain_floor_offline(domain_id: str, domain_name: str, topics: list[dict], seeds: dict) -> list[dict]:
+    floor = DOMAIN_TOPIC_FLOOR.get(domain_id, 0)
+    if not floor:
+        return topics
+    added = append_seed_topics(topics, domain_id, seeds)
+    if added:
+        log(f"{domain_name}: floor seeds — added {added} topics (total {len(topics)}, floor {floor})")
+    if len(topics) < floor:
+        log(f"{domain_name}: WARNING — {len(topics)}/{floor} topics after offline floor (expand domain_seeds.json)")
+    return topics
 
 
 def parse_claude_json(text: str) -> dict:
@@ -780,26 +1079,14 @@ def augment_offline(domain_buckets: dict[str, list[dict]]) -> dict[str, int]:
 
     for domain_id, domain_name in DOMAINS:
         topics = domain_buckets.get(domain_id, [])
-        existing_ids = {t["topicId"] for t in topics}
-        added_this = 0
-        for seed in seeds.get(domain_id, []):
-            sid = seed.get("topicId") or slugify(seed["title"])
-            if sid in existing_ids:
-                continue
-            nt = dict(seed)
-            nt["topicId"] = sid
-            nt["sourceType"] = seed.get("sourceType", "added")
-            nt.setdefault("sources", [])
-            nt.setdefault("sourceFiles", [])
-            topics.append(nt)
-            existing_ids.add(sid)
-            added_this += 1
-            stats["added"] += 1
+        added_this = append_seed_topics(topics, domain_id, seeds)
+        stats["added"] += added_this
         n_enriched = 0
         for t in topics:
             if auto_enrich_topic(t):
                 n_enriched += 1
         stats["enriched"] += n_enriched
+        topics = ensure_domain_floor_offline(domain_id, domain_name, topics, seeds)
         domain_buckets[domain_id] = topics
         log(f"{domain_name}: {n_enriched} enriched, {added_this} added offline (total: {len(topics)} topics)")
     return stats
@@ -830,6 +1117,14 @@ def phase2_augment(domain_buckets: dict[str, list[dict]]) -> dict[str, list[dict
         if not topics:
             log(f"{domain_name}: 0 topics — skip API")
             continue
+        if augment_mode == "mixed":
+            seeds = json.loads(SEEDS_PATH.read_text(encoding="utf-8")) if SEEDS_PATH.exists() else {}
+            append_seed_topics(topics, domain_id, seeds)
+            for t in topics:
+                auto_enrich_topic(t)
+            topics = ensure_domain_floor_offline(domain_id, domain_name, topics, seeds)
+            domain_buckets[domain_id] = topics
+            continue
         prompt = build_augment_prompt(domain_name, topics)
         try:
             resp = client.messages.create(
@@ -840,51 +1135,22 @@ def phase2_augment(domain_buckets: dict[str, list[dict]]) -> dict[str, list[dict
             )
             raw = resp.content[0].text
             data = parse_claude_json(raw)
-            enriched = {e["topicId"]: e for e in data.get("enriched", []) if e.get("topicId")}
-            n_enriched = n_added = 0
-            for i, t in enumerate(topics):
-                if t["topicId"] in enriched:
-                    e = enriched[t["topicId"]]
-                    t["title"] = clean_title(e.get("title", t["title"]))
-                    t["summary"] = e.get("summary", t["summary"])
-                    t["detail"] = e.get("detail", t["detail"])
-                    if e.get("tags"):
-                        t["tags"] = e["tags"]
-                    if e.get("commands"):
-                        t["commands"] = e["commands"]
-                    t["sourceType"] = "enriched"
-                    n_enriched += 1
-                else:
-                    t.setdefault("sourceType", "notes")
-            for nt in data.get("added", []):
-                nt["topicId"] = slugify(nt.get("topicId") or nt.get("title", "topic"))
-                nt["title"] = clean_title(nt.get("title", "Untitled"))
-                nt.setdefault("tags", [])
-                nt["sourceType"] = "added"
-                nt.setdefault("sources", [])
-                nt.setdefault("sourceFiles", [])
-                topics.append(nt)
-                n_added += 1
+            topics, n_enriched, n_added = apply_api_augment_data(topics, data)
+            topics = ensure_domain_floor_api(client, domain_id, domain_name, topics)
             domain_buckets[domain_id] = topics
             log(f"{domain_name}: {n_enriched} enriched, {n_added} added (total: {len(topics)} topics)")
         except Exception as e:
+            err = str(e).lower()
             log(f"{domain_name}: API FAILED — {e} — falling back to offline for this domain")
             api_failures.append(domain_name)
             augment_mode = "mixed"
-            # offline enrich + seeds for failed domain only
+            if "credit balance" in err or "authentication" in err or "invalid api key" in err:
+                log("API unavailable for billing/auth — offline augmentation for all remaining domains")
             seeds = json.loads(SEEDS_PATH.read_text(encoding="utf-8")) if SEEDS_PATH.exists() else {}
-            existing_ids = {t["topicId"] for t in topics}
-            for seed in seeds.get(domain_id, []):
-                sid = seed.get("topicId") or slugify(seed["title"])
-                if sid not in existing_ids:
-                    nt = dict(seed)
-                    nt["topicId"] = sid
-                    nt["sourceType"] = "added"
-                    nt.setdefault("sources", [])
-                    nt.setdefault("sourceFiles", [])
-                    topics.append(nt)
+            append_seed_topics(topics, domain_id, seeds)
             for t in topics:
                 auto_enrich_topic(t)
+            topics = ensure_domain_floor_offline(domain_id, domain_name, topics, seeds)
             domain_buckets[domain_id] = topics
 
     return domain_buckets
