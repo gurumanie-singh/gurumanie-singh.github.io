@@ -1,0 +1,144 @@
+0] Povt
+
+Scan Type Scan Timing S
+b always needed , vest will be defavit if pot Specified
+
+bviput tyres |
+
+) can also be subnet or CIDR
+
+HK st Discovery if you Know host is up &
+
+AS AS want to Skip hust ditcovery :
+Root user * Local vser ! nmap —Pn 192.168.-1,1
+
+SendS © ICMP Echo Req « SIN ~G42
+aN 6 TCR SYN ~ 443 * ACK - 80
+
+2 TCP Ac - ©
+
+“ICMP T.S ROD
+A Yow scanning works
+
+ee S3N rb OPEN
+
+A( } 2 SSN ACK - {je me
+x vce >
+TCP
+SIN
+
+Pork CLOSED
+
+A <
+| —__RST TACK
+
+& Target nmap \
+\. Single IPS nmap 1.2.3.4
+72.Subvet * mmap 1.2.3.4/8
+vange Will vse 1000 mort Common port
+3. \P range > nmap 1.2.3.4-8 since not Specified
+
+4, Speafic :
+@s
+
+S. Text file = nmap
+
+nmap 1.2.3.% §.6.7-8
+
+-iL host.txt
+
+6. Domain 2 nmap <canme.nmae.ovg
+& PovtS* nmap 1.2.3.4 Port (s)
+
+\. Single Povl = nmap 1.1.3.4 —p &0
+
+2. Seq Pov > nmap 1.1.3,% —p 10-30
+
+3, Pistvibvted = nmap 1.1-3,% -p 80,272,111
+only
+
+4. Service Nmap 1.1.3.4 -p wire
+Specific cP
+
+S,. Protocol - nmap 1.17.3,% -p 1:22,U:53
+Spectre e P 2 eo oP
+
+G. AM Por ys > Nmap 1.1.3.0 -p -
+
+Extva> nmap 1.2.3.4 —— top-povES 100
+
+* Scan Techniques
+
+° TCP Connect Scan -ST
+o TCP SAN Scan AY
+eo FIN Scan -SF
+» XMAS Scan -sX
+© Null Scan -~sN
+« Ping Scan —sP
+° UDP Scan -V
+e ACK Scan -sA
+A Scan Status
+SyN
+— Open A i S SYN-+TACK 0) 8
+SYN
+a
+- A ——ac_ 8 irewa\l
+Closed a) RGN * —— fi
+- Filtered A Ge LF y G8
+SYN
+~Unfilteved a GQ <—cemp —*& 8
+SYN 4—_ ~— 0 SYN packety attowed +
+Open Filtered A i) ——— FLG& onl we aa device) nat ace
+
+_GOdLe SCAND
+
+“Closed Filtered AG) chy  ®
+
+Example rule fov firewall CLinvux ) :
+
+svdo iptables —~L INPUT —p tcp —--dport=22 ~j DROP
+
+* Scan timings :
+
+To
+
+Paranoid
+UV Ff J
+
+Polite | Novmal
+
+Aggressive | Insane
+SN
+
+3
+
+vsed in cases When Fast Even Faster, but Accwacy V
+tneve (SS an IS
+
+nmap '.2.3-4 —-Tl
+Wort Timeout nmap —— host-timeout Soums 1.2.3.4
+
+Scan Delay nmae —— Scon- delay 2S 1.2.3.4
+
+K Ovtput Types :
+
+1. Normal Tex} Output -oN
+2. XML format -oX
+3. Grepable Format -0oG <—Not¥ used anymore
+A. Script Kidde Format -o§S
+
+* NMAP Scvipt Engine CNSED
+- Firewall Bypass
+— FTP Envm
+— DNS Envm
+— whrre Envm
+SeriptS Saved in? ed /ust Jshare /nmaP /scripts
+
+To vse Scripts = nmap scanme.nmae.og --scriot http-heaeders
+
+* Extvas
+© Service VeySiv = nmap -sV 1.2.3-4
+© OS Detechon nmap -QO 1.2.2.4
+° Veviosity nmap -V 1-2.3-4
+
+« Sevvice Vevsion + OS Detechon + Scanning + Tracerovte nmap —A 1.2.3.4

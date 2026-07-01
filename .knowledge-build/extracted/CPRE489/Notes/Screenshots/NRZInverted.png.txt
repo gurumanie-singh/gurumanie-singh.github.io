@@ -1,0 +1,43 @@
+NRZ-Inverted Coding
+
+1:0: 1
+NRZ-inverted oe ee
+
+(Differential |
+Encoding)
+
+1
+
+!
+1 ' ! 1
+' 1 ' 1 ' ! 1
+'
+'
+'
+
+1: O
+
+1
+Ww
+
+1
+'
+1
+'
+' 1 ' '
+
+Two signal formats: {-A/2, +A/2} ¥
+L maps to transition in signal format at beginning of the bit interval
+
+“O” maps to no transition
+VN wn
+
+¢ ¢ ¢ +
+
+yeyevente signal rat
+
+Differential fine coding { ration between adjeceadstynal formats
+oT ation “rn
+
+Errors occur in pairs
+Long string of “O”s causes receiver to lose synch

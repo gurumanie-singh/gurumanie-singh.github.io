@@ -1,0 +1,123 @@
+NMAP Basics — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Project · NMAP Basics Guide
+
+ 
+ NMAP —
+scanning essentials.
+ 
+
+ 
+ A consolidated reference guide covering core Nmap scanning techniques, flag explanations, and command usage for penetration testing and network enumeration practice.
+ 
+
+ 
+
+ 
+
+ 
+ overview
+
+ What's
+inside.
+
+ 
+ This guide distils the most frequently used Nmap commands and techniques into a concise, printable PDF reference. It covers host discovery, port scanning, service and version detection, OS fingerprinting, and scripting engine basics — everything needed for practical network reconnaissance.
+ 
+
+ 
+
+ 
+
+ 
+ topics
+
+ Key
+areas.
+
+ 
+ 
+ Host Discovery
+
+ Ping sweeps, ARP discovery, and techniques for identifying live hosts on a network before scanning.
+
+ 
+
+ 
+ Port Scanning
+
+ TCP connect, SYN stealth, UDP, and other scan types with their trade-offs between speed, stealth, and accuracy.
+
+ 
+
+ 
+ Service & Version Detection
+
+ Banner grabbing and version probes to identify running services and their software versions on open ports.
+
+ 
+
+ 
+ Nmap Scripting Engine
+
+ Using NSE scripts for vulnerability scanning, brute-force testing, and advanced network enumeration tasks.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ resource
+
+ Download
+the guide.
+
+ 
+ The full guide is available as a downloadable PDF — useful as a quick reference during penetration testing engagements or CTF competitions.
+ 
+
+ 
+ Nmap
+ Port Scanning
+ Network Enumeration
+ NSE Scripts
+ Penetration Testing
+ 
+
+ 
+ 
+ View PDF Guide →
+ 
+ 
+ View on GitHub
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

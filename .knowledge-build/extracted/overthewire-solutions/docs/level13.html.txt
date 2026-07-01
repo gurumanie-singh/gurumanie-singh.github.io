@@ -1,0 +1,120 @@
+Level 13: SSH with Key — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 13
+ Use the Provided SSH Key
+
+ Log in using an RSA private key to access the next level's password file.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for bandit14 is stored in /etc/bandit_pass/bandit14 and only readable by user bandit14. You are given an RSA private key (sshkey.private) that grants SSH access to bandit14.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 12 and SSH into Level 13
+
+ 
+ After retrieving the Level 13 password from the previous step, exit your current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit13 using the password obtained:
+ 
+
+ ssh bandit13@bandit.labs.overthewire.org -p 2220
+
+ 2. List and Inspect sshkey.private
+
+ 
+ Once logged in as bandit13, run:
+ 
+
+ ls
+
+ 
+ You will see sshkey.private listed. To view its contents:
+ 
+
+ cat sshkey.private
+
+ 3. Use the Private Key to SSH into bandit14
+
+ 
+ The instructions state that you must log in as bandit14 using the provided RSA private key. Run:
+ 
+
+ ssh bandit.labs.overthewire.org -l bandit14 -p 2220 -i sshkey.private
+
+ 
+ This will authenticate using sshkey.private and log you into the bandit14 account, where you can read /etc/bandit_pass/bandit14 to obtain the password.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 12.
+
+ ssh bandit13@bandit.labs.overthewire.org -p 2220 — connect as bandit13.
+
+ ls — list files; shows sshkey.private.
+
+ cat sshkey.private — view the RSA private key.
+
+ ssh bandit.labs.overthewire.org -l bandit14 -p 2220 -i sshkey.private — authenticate as bandit14 using the provided key and access /etc/bandit_pass/bandit14.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit13@bandit.labs.overthewire.org -p 2220
+ls
+cat sshkey.private
+ssh bandit.labs.overthewire.org -l bandit14 -p 2220 -i sshkey.private

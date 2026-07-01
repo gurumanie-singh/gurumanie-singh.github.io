@@ -1,0 +1,220 @@
+\ntrodvction +o Wfovmation Security
+
+Key Security Objectives ( CVA ‘Triad )
+
+L Confidenhanrty (data Confidenhalit Y, Privacy )
+
+| Integvity (Data Inteqnity, System Integrity a)
+
+L. Ayaitability
+
+Extended CIA Triad
+
+L Avthenhaty Cdata Authentication , Source Avthenhcahon )
+
+L Accountability (Achons of an enht4y can be traced wniquely >
+
+Levels of (Impact
+
+L low
+
+Chimuted effect )
+
+modevafe ( sevious odvevse effect )
+
+L high
+
+Computev Secrity Concept$
+
+( catastvophic effect )
+
+L Assets (Ahings we wont fo protect )
+
+L
+
+L Software (web server )
+
+Hard wave Ccomput ev )
+
+L Data (files, databases , passwords )
+
+L Communicaton links Cinks betweea computers )
+
+Computer and Network Assets, with Examples of Threats
+
+Hardware
+
+Software
+
+Communication
+Lines and
+Networks
+
+"Availability
+Equipment is stolen or
+disabled, thus denying
+service.
+
+Programs are deleted,
+
+denying access to users.
+
+Files are deleted,
+
+denying access to users.
+
+Messages are destroyed
+or deleted.
+Communication lines
+or networks are
+rendered unavailable.
+
+Confidentiality
+
+An unencrypted CD-
+
+ROM or DVD is stolen.
+
+An unauthorized copy
+of software is made.
+
+An unauthorized read
+of data is performed.
+An analysis of
+statistical data reveals
+underlying data.
+
+Messages are read. The
+traffic pattern of
+messages is observed.
+
+Integrity
+
+A working program is
+modified, either to
+cause it to fail during
+execution or to cause it
+to do some unintended
+task.
+
+Existing files are
+modified or new files
+are fabricated.
+
+Messages are modified,
+delayed, reordered, or
+duplicated. False
+messages are
+fabricated.
+
+VulneabilitesS, threaty & Attacks
+L Vulnevability
+L Corrupted Clots of integrity — agsed does not de ity fonchon >
+L Leaky (loss of wnfidenkality — leaks mformaton )
+| Unavailable /Very slow Coss of availability —usev cant access
+the asset )
+Security Policy = Set of yules & vequlahons fuak specifier how a
+[_ compary /organiiahon provides Secovity to profect assets
+“Thveats
+| Potenhal cecuvity hovm to an asset
+Attack
+L A threat iS carried gul } leads 40 violation of cecwnity policy
+L Passive — attempt fo make use /learn mfp from system that does
+
+not wopacf system yesourcet
+
+L Achve — alfempt to alley system resources /affeck operahon
+L (nsider
+
+L outsidev
+
+Countermeasures
+
+L Prevent
+
+L Detect
+L
+
+L Recovev
+
+Respond
+
+Wreat Action . an ottack
+Wreat Agent > entity that attacks
+
+Thveal Conseqvence * secuvity viclafion resulting fvom thveal achon
+
+Passive & Achve Attacks
+
+* Attempts to learn or make use of
+information from the system but does
+not affect system resources
+
+* Attempts to alter system resources or
+affect their operation
+
+* Involve some modification of the data
+stream or the creation of a false
+stream
+
+* Eavesdropping on, or monitoring of,
+transmissions
+
+* Goal of attacker is to obtain information
+that is being transmitted
+
+* Four categories:
+* Two types: * Replay
+* Release of message contents . i
+* Traffic analysis ¢ Denial of service
+
+Modification Attack
+
+Computev Secuvity Stvafegy & Principles
+L Policy
+| L What is ihe secuvity scheme supposed tv do?
+Imptementatiow!
+Low does if do it? Prevenhow , Detection, Response, Recovery
+Assvvance — deqree of confidence Mak secuvity measures wok af intended
+
+L
+
+Does H veally wovk?
+
+Aspects of securttd
+L Security Attack
+L Security Mechanism
+
+L_ Encyphon /v ecvyphon , Digital Siqnatuve , Access Control)
+Data wiegrity , Authentication exchange Wwaffic Padding
+
+Security Service
+
+L.
+
+L Access Covtlvo| — Prevent unavthovired vse of yerource
+
+Avtherticatron — aggure communicating enfty is who he says he if
+
+L Nata Confidentiaht4 — protect data from unavibovired disdosuve
+L Data Wheqvily — asseve data is received exactly as sent by entity
+L Non vepudiahon — protect against denial of one entity being molved
+
+L
+
+Avawlability — system is accessible & usable
+
+MMacke Surface Categones
+L Network — netwoyk protocol vuinevabilitics
+_ Software — web sevvev software
+
+L tluman — social engineering
+
+GVandaved §
+
+L NIST CNathonal Institute of Standards and Technology )
+L (SOC (intevnet Society)
+
+L ITU-T (C\ntevnahonal Telecommunication Union )
+
+L ISO) C(wievnational Organratioh of Standardiation )

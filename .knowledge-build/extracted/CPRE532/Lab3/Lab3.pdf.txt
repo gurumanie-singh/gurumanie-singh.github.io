@@ -1,0 +1,81 @@
+Lab Assignment #3 
+Used commands: 
+john --wordlist=/usr/share/wordlists/rockyou.txt --rules passwd1 && john --
+incremental passwd1 
+john --wordlist=/usr/share/wordlists/rockyou.txt --rules passwd2 && john --
+incremental passwd2 
+ophcrack 
+ 
+Passwords found (from passwd1): 
+Username 
+Password 
+setup 
+NO PASSWORD 
+comments 
+guest 
+dmd 
+dmd5620 
+cacavas 
+jeanne1 
+murni 
+murni1 
+venkat 
+sairam. 
+georgiou 
+5465 
+carr 
+invalid 
+coldiron 
+tuxboy 
+iqbal 
+rashid 
+aqeel 
+sarwar 
+demkowsk 
+mike1 
+mina 
+mani 
+cpre489 
+489 
+ 
+ 
+Total 14 passwords cracked out of 19.
+
+Passwords found (from passwd2): 
+In the below screenshots, username is the before the ﬁrst semicolon, i.e. First username 
+and password is fanp and password is DDD. Username:Password 
+ 
+The above were not put in a table since there were so many. Total 69 passwords cracked.
+
+Windows XP Passwords found (using ophcrack): 
+Username 
+Password 
+Administrator 
+00Smurfz 
+student 
+mmll573 
+William Adama 
+laura 
+Laura Roslin 
+xab3347lm 
+Kara Thrace 
+frakthls 
+Lee Adama 
+starbuck 
+Gaius Baltar 
+six 
+sharon 
+almzmxx44 
+Saul Tigh 
+447759abc 
+Galen Tyrol 
+frakcylons 
+Ellen Tigh 
+imacylon 
+Felix Gaeta 
+x1y2z3 
+*disabled* Guest 
+empty 
+ 
+ 
+Total 13 passwords cracked out of 16.

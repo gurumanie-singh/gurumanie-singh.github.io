@@ -1,0 +1,45 @@
+TCP Congestion Window & Slow-Start Threshold per Flow
+
+src port 37998
+
+cwnd
+
+ssthresh
+
+src port 37970
+
+cwnd
+
+ssthresh
+
+src port 37986
+
+cwnd
+--- ssthresh
+
+50
+
+40 4
+
+(SSW U!) GNMO
+
+10 4
+
+50
+
+40 4
+
+(SSW U!) GNMO
+
+10 4
+
+50
+404
+0
+0
+
+(SSW U!) GNMO
+
+10 4
+
+Time (s)

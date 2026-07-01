@@ -1,0 +1,124 @@
+Level 2: Spaces in Filename — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 2
+ Spaces in Filename
+
+ Handle filenames containing spaces to reveal the password for the next level.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is stored in a file called spaces in this filename located in your home directory.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 1 and SSH into Level 2
+
+ 
+ After retrieving the Level 2 password from -, exit the current SSH session (Level 1):
+ 
+
+ exit
+
+ 
+ Then, connect to Level 2 using the password for bandit2:
+ 
+
+ ssh bandit2@bandit.labs.overthewire.org -p 2220
+
+ 2. List Files in the Bandit2 Directory
+
+ 
+ Once logged in as bandit2, list the files:
+ 
+
+ ls
+
+ 
+ You will see a file named spaces in this filename.
+ 
+
+ 3. Read the File with Spaces
+
+ 
+ Since the filename contains spaces, either escape each space or quote the filename. For example:
+ 
+
+ cat spaces\ in\ this\ filename
+
+ 
+ Alternatively, use quotes:
+ 
+
+ cat "spaces in this filename"
+
+ 
+ This command will display the password for Level 3.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from the Level 1 SSH session.
+
+ ssh bandit2@bandit.labs.overthewire.org -p 2220 — connect as bandit2 on port 2220.
+
+ ls — list files; shows spaces in this filename.
+
+ cat spaces\ in\ this\ filename — display contents of the file with spaces.
+
+ cat "spaces in this filename" — alternative method to display file contents.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit2@bandit.labs.overthewire.org -p 2220
+ls
+cat spaces\ in\ this\ filename
+cat "spaces in this filename"

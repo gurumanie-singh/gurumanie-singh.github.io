@@ -1,0 +1,76 @@
+# Course Overview & Intro to Computer Networking
+
+- Lecture Notes critical for exams.
+- Lab Attendance is mandatory.
+- Exams are open book/notes/assignments.
+  - Midterm only on lecture content.
+  - Final Exam is comprehensive.
+
+## Layered Networking Architecture
+
+- Communication Network
+  - A set of equipment and facilities that enable the transfer of information between users at different locations.
+- Network Architecture
+  - Specifies how the network is built and operated.
+  - Specifies how information is transferred (transfer mode).
+- Three Network Architectures and Transfer Modes
+  - Telephone network - circuit switching **(reserve and use)**
+    - Automated switches set up a physical circuit between two ends
+    - All messages follow the same path (via the established circuit)
+  - Telegraph network - message switching **(store and forward)**
+    - Store-and-Forward Operation
+    - Addressing, Routing, Forwarding
+  - Computer network - packet switching **(break and route)**
+    - Chat apps / File Transfer apps
+    - Store-and-Forward Operation
+
+## Features of the Internet
+
+- It is a digital transmission system
+- It is a global network of networks
+  - WAN / LAN
+- It is a packet-switching network
+- It has a layered network architecture
+  - OSI vs TCP IP
+
+## ARPANET (Advanced Research Project Agency Network)
+
+- Developed to provide a test bed for researching packet-swiching networks
+- Packet = Header + Data
+
+## TCP/IP
+
+- 4 Layers
+  - Application Layer (Includes Presentation and Session Layers)
+    - FTP, Telnet, HTTP, HTTPS
+  - Transport Layer
+    - TCP/UDP
+  - Internet Layer
+    - Internet Protocol (IP)
+  - Network Interface Layer (Includes Physical Layer)
+    - Ethernet, Packet Radio
+
+## OSI (Open Systems Interconnect)
+
+- 7 Layers
+  - Application Layer (closest to end user)
+    - Provides services that are required by applications
+  - Presentation Layer
+  - Session Layer
+  - Transport Layer
+    - Transfers segments
+    - Reliable stream transfer (TCP)
+      - Connection Setup, Maintenance and Release **SYN SYN/ACK ACK**
+      - Congestion Control & Flow Control
+    - Quick and simple single-block transfer (UDP)
+    - End-to-end transfer
+  - Network Layer
+    - Transfers packets
+  - Data Link Layer
+    - Transfers frames
+    - Frame: group of bits
+    - Error Detection: CRC check bits appended
+    - Flow Control **(no congestion control; only for end-to-end layers)**
+    - Medium Access Control (MAC) for LANs
+  - Physical Layer
+    - Transfers bits

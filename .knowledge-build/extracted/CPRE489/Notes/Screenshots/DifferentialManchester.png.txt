@@ -1,0 +1,22 @@
+Differential Manchester Coding
+
+Differential
+Manchester
+Encoding
+
+* Systematic error in polarity (i.e., + become — and vice versa) is possible
+™® Manchester Coding can not handle this type of error
+
+* Differential Manchester Coding provides robustness to this type of error
+» “lL maps to transition in signal format at beginning of the bit interval
+
+#
+
+“QO” maps to no transition
+we ww
+
+Another type of differential line coding
+
+» i A a
+
+Errors occur in pairs

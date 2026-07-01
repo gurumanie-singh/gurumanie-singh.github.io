@@ -1,0 +1,376 @@
+MaliciovS Seftwore & Denial of service attack
+Intvoduchon te Malicious Software
+What is Malware ?
+
+Program inserfed yato a system — ysvally covertly , with the
+a oF compromiting CIA «of vichkms data
+
+unwanted software that does something bad
+
+Attack Sources
+
+L politically mohvaied attacker!
+
+L criminals
+
+L
+L
+
+Organized Crime
+
+Hoahonal government agended
+
+Attack kits
+L
+
+L
+
+often Known os “crimewaore™
+
+Kits used to create ye malware
+
+Classficahon of malware
+
+L
+
+Awo brood cat eqv rics
+
+\_
+
+how wv Sp read J (virvs, worms | Social engineering ‘)
+
+L achoas /payloads CO performs ( system covruphod , zombies, bots,
+
+info theft , clealthing )
+also clatstfied by
+
+L Those who need a hott program (viruses ?
+L_ indegendent, sel€- contained program ( worms , ojan, bots )
+
+L
+
+malware that dees not ryeplicate (tvojan, spam email )
+
+L malware fhat replicates ( Nerus , Worms )
+™
+Countermeasures Spreads Via Seif veplicah%9 | can
+{__ Woe t CONnNSUMA syitem/nefwor Kk
+anhvirvs Ieff{ware bond wid th
+
+Malwave Symptoms
+
+L
+
+Unexpected behavior confaclhs vective emails you didnt send
+
+Le ew cwnanges LL stow boots & wqin
+
+brouser goes +o Wrong page
+
+Niveses
+
+What is a virvs >
+Le piece Ff software thot infects progvams
+
+L- when a\tached fo exe program , virvs can do anything progam is
+
+Specific do OS & Hardware
+
+Nature of viruses
+
+L_- infecks” programs { copiey viself te oher programs
+
+L phases
+L aormant> virys ua te ,will be activated by agent (ees)
+L
+
+Propogation © copies Wself
+
+L Ayiggering « views achvarted
+
+L
+
+executhiem > funchon performed | either harmless ov malicious
+
+Compression vivud CCV)
+
+L_
+
+Simple virus can be detected cavse it changes Gre lengib
+L_ this detection is avoided wth Ais virus
+
+for eath uvintected FIO PZ, virva compresses P% to produce Pz
+L_ Vivus CV pre-pended to PP
+
+L_ PI is them uncomprened
+
+Nivvs Classificahons
+L by aaract
+L_ hoof sector jnfechor™ L File wfectov
+L macro virvd L mv ihiparyie viv
+bu concealment Strafkegy
+_
+
+encrypted virus LL heatth vir
+
+L PO\“mor phic vwus L_ ne tamorphic Nievs
+
+Macro-virus
+
+L
+
+ottoches tv documents ke uses macyo programming capabilities af the
+[ document Dpplicahov ft execuEe & eroprugale ( Melissa a)
+
+— plot form independent
+L_. Spveads easvly
+
+L
+
+much ganer fo wate
+
+Worms % Social Engineering
+
+What ave worms ?
+
+L Seeks more machintS te infeck LL. cpreacts throvgh shared mecha
+Lore; Lecco —
+exploit svftw art Spread 1) macyo /scrip® vodes
+L Car v3Se nelwork Ww spread L Usually comey Payload
+Exam ples
+
+L Microsoft &
+code Red targeted web Server) savred in RAM, consumed aetwor Kk
+Cpol attack)
+L code Red Wo simintar t above, instaned trojan hoS@ | delete Jmostify
+Eile on server
+L (yuxnet texgets PLC /SCADA , aameged Iran nuclear program
+
+Worm Varqet Discover ¥
+
+L
+
+Scanning searches for sgstem3 to infiech
+L random proba yondo™ addresses
+
+L hit - Vist attacker compiles = potentha’ vulnerable machjaer
+
+L
+
+fopolegical infected machine finds more hostS
+
+L local subnel fooks Rr more fargetsy in [xcal aetwork
+
+Social engineenng
+
+L.
+
+Master of aski4g non-invasive info +t goathyr infh over hane
+
+L gain Aus yedvce defenses
+
+L phifhing | speav phishing , whaling
+
+L attack LL sergeted L forget high profile peopte
+Via email,  oltadk from
+
+Website, call Arusted gwrce 4 wave PeNoralived
+for gach penson
+
+Case Sywdy
+
+L fake Jeff Beror profile asked fv send biicoin & ne wall covble
+
+Dther malwares A Countermearvren
+
+Othey yypeA of Malwar &
+
+L_
+
+YouSommare = encrypts SyStem Gied then ask£ money Coryptn )
+
+LL rootkit jafeds Bios _ nord to dered
+
+exten cA
+
+L botnet of zombies “betned * vodot netug l& “zombie ” computer vader conker I
+
+L_ DDU4 spamming, sniff MHC. Keyleqging
+
+\nfovmotion ett
+LL Keyloggers mainly fogs login, password Keywords
+L Spyware vedireds fake websites mori browsing
+
+2
+
+System Cor vptions
+L achon token by malware on syvtem
+
+L data destrvdnen = delele dala , encrypt data then os¥ payment
+L damage corrupt Blo | combed SCADA
+
+L. logic bomb — activate when condition is met
+
+Counter measure’
+
+L_
+
+prevention js ideal, often impssibie access cowbvl, ensure vp ts date
+LL detection, wenhficotion, removal — anhivirvy
+
+Introduction +o Denial-of - Service CDoS )
+
+What «cs OvS attacic?
+L achon that prevents avthorized use of networks) systems | appliance,
+by exhausting resovrcees Sveh at CPU, memory bandwidth X& ds Space
+categones thal covld be attacked
+
+L network bandwiath L_ APpplicafien rvesovvces
+
+L_
+
+system cesovrces
+
+Flooding Attacks
+L— Classifiea baSed on nw protocol used
+L \eme Flood Ping Froud
+L UOP Flood UDP packetJ
+
+L TCP ISYN Fleod (CP pactteT I
+
+Classic DoS CTCP SYN Flood)
+
+L_ _ Client Server
+lvansmicsion Contvol Protveol e f=
+a ra
+
+L works wrth interne? Protocol Send SYN -
+
+(seq =x) ~2
+Receive SYN
+
+L 3 way hand shake — > sumac
+
+aw (seq = y, ack = x*1)
+Receive SYN-ACK
+
+(seq = y, ack = x+1)
+
+Atlackev sends SYN but no Ack sence |
+2 ed i
+
+L_ Countermeasure
+L_ difficutl | filter packets af youters
+
+L SYN cookies
+
+ICMP DoS Attack
+Ping Test
+L
+
+MoSt compvters respond
+
+L error-yeperting /check dey
+
+Simple Ping Flovding Attack
+L_
+
+altadceyv hat high capacity finle aSSumpbon3
+
+L tavget) connechon to mternef is tower capacity
+L flood the Server
+
+L covntermeasuce
+L ISPs block ping (ICMP) packet
+L target idenbfieS sowce, inform (SP, take legal acho
+
+L ICMP yespwse sent back to oftacke’, affect their performance
+
+Source Addvesl Spoofing
+
+L_ atradeer sends packets with fae (spoofed ) sovrce WP
+L targeD qves not Cimmedi ately ) know who it is
+L vesponses nut sent to attacker
+
+L source may be acttval hos or non- exictent
+
+can use Network Address Transinhon CNA)D +b Spoof IP
+
+Distributed DoS
+
+What is DDoS?
+
+L uSe of mvulbple systemt
+
+| use fjaw in OS oy comman applicahoy to gain access & install
+| program on tt (zombie)
+
+lut of zombies create boinel
+
+Refiector Attack
+
+LL pounce msgs off normal hosts
+
+L a husfs respond ty farget becavse attacker vied spoofed source IP
+= Yorgel ond sends ty ofher comevttrs
+
+response loyger than request
+
+Amplification AHadt using Broad cart
+
+L packels sent 4p directed pyoadcasl JP addresie. — delivered + all
+{ “ss on svbneft by rovter
+
+alt hosts recpord +h target
+\_ Covater measu’e
+
+L_ rovters block. Jirected broadcast form outside
+
+USing Compromis ed hosts
+L
+
+attacdfey uses zombie device»
+
+L countevmeasv’eé
+
+L
+
+ontivirus | patch update systems
+
+Countermeaturees & famous DDoS Attacks
+DDoS Prevenhon, Detection & Response
+L_ Prevenbon
+aMocafe backup vesources & modify protools
+L aim Ao shill be oble to provide service when under DDoS
+delechon
+L aim to avickly detec’ & respond
+L Jook fev sua pattern of traffic
+
+response
+
+\_ aim to idenbhfy attadeer s0 (an apply technical /leqal measvie
+
+L cannof prevent cent DDos, bivT may prevent Ptvre
+
+Defending DDoS
+
+L firewall , Switches routers
+
+s
+
+Jj L_ aa
+
+rate limrbhng cvles
+
+Famovs DDot Attacks
+L Trin 00
+| L VU of Mumeteta, went down % day 5
+Github 1.35 Thps
+L Occup4 Centyval, Hongkong 9v0Gbps
+L cloudtiare 400 Gbp!
+
+L Spamhavs 300 Gbps
+
+Digital Attack Map
+
+LL live map which shows attacks vight now

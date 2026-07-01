@@ -1,0 +1,20 @@
+2B1Q Coding’ & mBnL Coding
+
+2B1Q Encoding
+
+Previous level: Previous level:
+positive negative
+Next bits Next level
+“O01” +3A/2 -3A/2
+“10” -A/2 +A/2
+“yd” -3A/2 +3A/2
+
+mBnL
+
++
+
+Maps block of m information bits
+into n pulses
+
+There is a total of L different levels
+of pulses

@@ -1,0 +1,84 @@
+CWND (in MSS)
+
+CWND (in MSS)
+
+CWND (in MSS)
+
+TCP Congestion Window & Slow-Start Threshold per Flow (Annotated)
+src port 37998
+
+50
+
+407
+
+w
+o
+
+N
+So
+
+104
+
+— cwnd
+
+—-> ssthresh
+SI Congestion Avoidance | Slow Start
+
+Congestion Avoidance
+— 3 Dup ACKs J
+
+src port 37970
+
+50
+
+40 4
+
+w
+o
+
+N
+So
+
+104
+
+1
+
+! cwnd
+
+i ==» ssthresh
+Slow Congestion Avoidance 5 Slow Start
+
+Congestion Avoidance
+— 3 Dup ACKs J
+
+50
+
+src port 37986
+
+40 4
+
+w
+o
+
+N
+So
+
+104
+
+T
+
+i — ound
+
+1 —-> ssthresh
+" Congestion Avoidance 55 Slow Start
+
+Timeout
+(cwnd-1)
+
+Congestion Avoidance
+— 3 Dup ACKs J
+
+10 20 30 40 50
+Time (s)
+
+60

@@ -1,0 +1,73 @@
+CPRE 431 
+Module 2 Lab 
+ 
+Assignments will be submitted in PDF format via Canvas.  
+Please submit your homework online through Canvas. Late homework will not be accepted.  
+Important: Your submission must be in .pdf format ONLY! 
+ 
+ 
+1. You are the security administrator in the XYZ company, and you noticed some strange traffic on 
+the network of one of the employees sending an encrypted file to someone outside of the 
+company. You want to check if the content doesn’t have any confidential data. The encrypted file 
+is attached with the homework (dont_smoke_hash_it_can_md5_you.zip). From the file name, 
+you guessed that the password could be the md5 hash of the file name with the extension.  
+ 
+a. Explain with screenshots how to use OpenSSL tool to determine the md5 hash, then use any file 
+decompression tool (WinRAR, Winzip, etc.) to decrypt contents of the attached file. Hint: write the 
+file name in a text file then get the hash for this text file. Note that hash is space sensitive. 
+ 
+First, we create the txt file for the hashing process. The file is named md5Hash.txt has a single line 
+with the contents as dont_smoke_hash_it_can_md5_you.zip.  
+ 
+Then we find the file in our directory and cd into where we have the txt file saved. Once we are 
+there, we run the command mentioned: openssl dgst -md5 md5hash.txt 
+After the command runs, we get the hash of the file which is supposed to be the password. We 
+use that password to extract the files from the zip file.
+
+b. After decryption, you noticed that the content of the attached file was an excel sheet 
+“my_funny_expenses.csv”, an image “funny_image.png” and a text file “funny_jokes.txt”. This 
+could look normal, however there is a lot of secrets and hidden messages in the content. 
+Depending on your cryptanalysis skills, you started with the text file and you noticed that it only 
+contained random characters but it started with the word “Salted__”. From your experience with 
+OpenSSL tool, this means that this text file is encrypted using Symmetric Cipher (des, des3, aes128, 
+aes192, aes256, etc.). Also, you noticed that all the three files have the word “funny” in their name, 
+maybe this could be the encryption key. Explain with screenshots how to use OpenSSL tool to 
+decrypt the original message in the text file. 
+ 
+Initially I had some trouble figuring out which exact openssl command to use to decrypt the 
+funny_jokes.txt file. But after some trial I noticed that the above command works perfectly and is 
+able to show the entire true contents of the file. 
+Given below are the true contents from the funny_jokes.txt file after decrypting using the above 
+command. 
+ 
+c. 
+The decrypted message of part (a) will contain the instructions for this question. Explain with 
+screenshots how did you solve this secret and get the new key. 
+ 
+After the previous step we go to www.spammimic.com and decode the excel sheet details. The 
+below screenshot shows the result from decrypting the excel contents. 
+ 
+ 
+ 
+After putting the contents of the excel sheet into the decode spreadsheet function on 
+www.spammimic.com we end up with the following message: Bank account: 112233445500. Use 
+"https://www.mobilefish.com/services/steganography/steganography.php" to extract the design 
+scheme from the attached image. Hint: use the bank account number as the password.
+
+d. The decrypted message of part (b) will contain the instructions for this question. Explain with 
+screenshots how did you solve this secret and get the final leaked confidential information. Use 
+the file on Canvas instead of the website given from the previous step to complete the final 
+deliverable of the lab. 
+After part (c) gave us the Bank Account number and the website to extract the design from the 
+png file, we go to that website and enter the password as the bank account number and upload 
+the funny_image.png. 
+ 
+ 
+After using the above website to extract the design, we then download the extracted design 
+through the website to get the following image:
+
+Per the instructions, if we want to use the file attached in canvas instead, we can download that 
+to our computer and simply input the password given from part (c): 
+ 
+ 
+This will give us a new extracted folder which contains the secret confidential image:

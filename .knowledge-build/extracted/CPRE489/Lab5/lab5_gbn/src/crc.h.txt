@@ -1,0 +1,4 @@
+Calculates CRC remainder for given data of given length.
+ * Returns the CRC remainder.
+CRC-16/AUTOSAR, CRC-16/CCITT-FALSE:
+https://reveng.sourceforge.io/crc-catalogue/16.htm#crc.cat.crc-16-ccitt-false

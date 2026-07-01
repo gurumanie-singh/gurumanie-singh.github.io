@@ -1,0 +1,20 @@
+CPR E 4890: Computer Networking and Data Communications
+Lab Experiment #4 – Introduction to CloudLab
+Summary:
+This lab was mainly about CloudLab which is a cloud specific research platform that you can use to create and experiment with virtual network nodes. The main exercises in this lab make us create an experiment with a server and a client node, log into them via SSH (using our own keys), and then running network performance tests using a tool called iperf. The main experiment is to test how bandwidth is impacted when running multiple TCP connections in parallel between a client and server node.
+The lab showed me that as you increase the number of parallel TCP connections (from 2 to 10 to 20), the total bandwidth stays roughly constant at around 96 Mbits/sec, but each individual connection gets a smaller part of that cut. With just 2 connections, each gets around 40-50 Mbits/sec, but with 20 connections, each connection drops to about 4 Mbits/sec. The lab also explores network interfaces, which taught me about nodes within CloudLab and how they can communicate with each other, but external machines on the internet cannot directly access CloudLab nodes using their IP addresses.
+Exercise 1: Create a Experiment
+Exercise 2: Logging into your nodes
+Exercise 3: Interact with your nodes
+1)
+2 and 3) After running iperf -s on the server and iperf -c server –P 2 on the client, we get the output below for both server and client:
+ 
+4) After changing the number in the command from 2 TCP connections to 10, we get the following output:
+Also, trying with 20 TCP connections in parallel instead of 10, we get the following output:
+This tells us that after testing with multiple different # of parallel TCP connections, the average time increases while the total bandwidth stays the same (SUM = 96.0 Mbits/sec), each individual connection is impacted. When we only had 2 parallel connections our bandwidth was around 43.5 Mbits/sec for one connection and 52.2 Mbits/sec for the other. However, when we went up to 20 parallel connections our bandwidth took a much more significant hit and went down to nearly 4 Mbits/sec for nearly all connections that were running in parallel.
+5) For each of the three interfaces for the server machine:
+i) Identify if this interface can be accessed by the client
+As for if the client can access the server, yes. It is able to ping the server. Both IP addresses that are allocated to the Server 172.17.17.2 and 10.10.1.2 are successfully returning our ping requests meaning that the client is able to access our cloudlab server. This is possible because both our cloudlab (client and server) nodes are on the same internal network.
+ii) Identify if this interface can be accessed by a machine over the internet
+However, a machine on the internet, such as my own personal computer (as shown above), is unable to access the client machine created in cloudlab using its IP Addresses. This is also due to the fact that cloudlab nodes are on their own internal IP addresses which are not accessable using the public internet. They belong to cloudlab’s internal network.
+Exercise 4: Clean up your work

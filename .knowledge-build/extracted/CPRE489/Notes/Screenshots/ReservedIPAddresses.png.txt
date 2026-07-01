@@ -1,0 +1,12 @@
+all Os This host!
+
+all Os host Host on this net’
+
+all is Limited broadcast (local net) 2
+net all 1s Directed broadcast for net?
+127 anything (often 1) Loopback *
+
+Notes: 1 Allowed only at system startup and is
+never a valid destination address.
+2 Never a valid source address.
+3 Should never appear on a network.

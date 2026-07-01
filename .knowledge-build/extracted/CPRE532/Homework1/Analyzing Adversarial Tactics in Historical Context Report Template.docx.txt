@@ -1,0 +1,36 @@
+Analyzing Adversarial Tactics in Historical Context
+Use this report template to create a report that is not longer than three pages and that you will submit as a PDF.
+Formatting Guidelines:
+Font: Times New Roman, 12pt
+Spacing: Double-spaced
+Margins: 1 inch on all sides
+Page Limit: 2-3 pages
+Citation Style: [Choose an appropriate style, e.g., APA, MLA]
+[Title of the Report]
+Example: "The Evolution of Cyber Espionage: From the Cold War to the Digital Age"
+[Introduction]
+Briefly introduce the selected event(s) from the newsreel.
+State why these events were chosen.
+Example: "This report focuses on the evolution of cyber espionage, highlighting its transformation from the strategic intelligence gathering of the Cold War era to the complex digital espionage tactics of the 21st century."
+[Event Description and Historical Context] 
+Provide a detailed description of the selected event(s).
+Discuss the historical context, including technological and societal aspects of the time.
+Example: "The Cold War marked the beginning of high-stakes espionage between superpowers, with a focus on intelligence gathering..."
+[Analysis of Adversarial Tactics] 
+Analyze the adversarial tactics used in the event(s).
+Discuss how these tactics were influenced by the technology and societal norms of the era.
+Example: "During the Cold War, espionage tactics heavily relied on human intelligence and covert operations..."
+[Identification of Motivations and Goals] 
+Identify and discuss the possible motivations and goals of the adversaries in the event(s).
+Example: "The primary motivation behind Cold War espionage was political, aiming to gain strategic advantages over rival nations..."
+[Analysis of Evolutionary Trends and Current Impact] 
+Analyze the evolutionary trends observed in the adversarial tactics from the selected historical event(s) to the present day.
+Discuss how these historical events have influenced or shaped current adversarial strategies and thinking.
+Example: "Examining the trajectory of cyber espionage from the Cold War to the digital age reveals a significant shift from human intelligence operations to sophisticated digital attacks. This evolution has shaped current cybersecurity strategies, emphasizing the need for advanced digital defenses and proactive cyber intelligence."
+[Conclusion] 
+Summarize key findings and insights gained from the analysis.
+Reflect on how understanding these historical adversarial tactics can inform modern strategic thinking.
+Example: "This analysis underscores the adaptive nature of adversarial tactics, evolving in response to technological advancements and changing geopolitical landscapes..."
+[References]
+List the sources and references used for the report.
+Example: "1. 'The Code Book: The Science of Secrecy from Ancient Egypt to Quantum Cryptography' by Simon Singh..."

@@ -1,0 +1,38 @@
+Slide 1:
+Validation and Reliability Assessment of Autopsy Forensic Suite
+Ensuring Data Integrity in Open-Source Digital Forensics
+Gurumanie singh dhiman
+
+Slide 2:
+The Problem & Motivation
+
+Slide 3:
+Methodology
+
+Slide 4:
+Results - Pros
+Allocated (Active) Files: 98.2% Accuracy.
+Directory Structure: Reconstructed Perfectly.
+Visual Evidence: Autopsy correctly identified the folder tree, including folders such as Secrets even after files were deleted.
+
+Slide 5:
+Results - Cons
+
+Slide 6:
+Timestamp Issues
+Issue: Discrepancy between the File System Time and Local Time.
+Example:
+EXIF Data: 2:00 PM (Actual).
+Autopsy Display: 8:00 AM (Adjusted for examiner's time zone).
+Risk: Establishing a false timeline/alibi in court.
+
+Slide 7:
+Proposed Solution
+
+Slide 8:
+Conclusion
+Summary:
+Autopsy is reliable for active files (100% accuracy).
+"Shift + Delete" creates "Ghost Entries” where the metadata exists, but the data is gone.
+Key Takeaway: Trust the tool but verify the data.
+Future Work: Testing SSDs (TRIM command) and Encryption (BitLocker).

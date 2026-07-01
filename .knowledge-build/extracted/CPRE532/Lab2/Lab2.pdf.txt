@@ -1,0 +1,178 @@
+Lab Assignment #2 
+27.67.83.0/24 Subnet 
+1. Started by trying to ping some of the IP’s such as: 
+ping 27.67.83.1 
+ping 27.67.83.2 
+Not sure why I tried starting with the above. 
+2. Then I started properly scanning by using nmap command: 
+nmap -sn 27.67.83.0/24 
+Found 12 hosts up: 
+27.67.83.7 
+27.67.83.10 
+27.67.83.20 
+27.67.83.21 
+27.67.83.54 
+27.67.83.83 
+27.67.83.90 
+27.67.83.92 
+27.67.83.97 
+27.67.83.101 
+27.67.83.127 
+27.67.83.204 
+3. Next, to find out the services running and OS for the machine I ran the nmap command: 
+nmap -sV -sC -O 27.67.83.0/24 -oN lab2_servicesAndOS.txt 
+(The above command needs sudo to run) 
+After the above command was done running it ended up finding 13 hosts instead. The extra host was 
+just 27.67.83.254 and it is also included in the table. Using the output file generated I was able to 
+consolidate all the details from it based on IP addresses one at a time into the table given below. 
+IP Address 
+Port 
+Service / Version 
+OS 
+27.67.83.7 
+80/tcp 
+HTTP — Apache httpd 2.4.7 (Ubuntu) 
+Linux 3.2 – 4.9 
+27.67.83.10 
+— 
+None detected — All 1000 ports closed 
+Unknown 
+27.67.83.20 
+7/tcp 
+Echo 
+FreeBSD 6.2–6.4-STABLE 
+13/tcp 
+Daytime 
+19/tcp 
+Chargen 
+21/tcp 
+FTP — FreeBSD ftpd 6.00LS 
+22/tcp 
+SSH — OpenSSH 4.5p1 FreeBSD 
+23/tcp 
+Telnet — BSD-derived telnetd 
+37/tcp 
+Time — RFC868 (32-bit) 
+27.67.83.21 
+21/tcp 
+FTP 
+FreeBSD 7.0 – 10.0 
+22/tcp 
+SSH — OpenSSH 5.1p1 FreeBSD 
+23/tcp 
+Telnet 
+79/tcp 
+Finger — FreeBSD fingerd 
+111/tcp 
+RPCbind — v2-4 
+139/tcp 
+NetBIOS/SMB — Samba smbd 3.0.32 
+445/tcp 
+SMB — Samba 3.0.32 
+2049/tcp 
+NFS — v2-3 (RPC #100003)
+
+27.67.83.54 
+22/tcp 
+SSH — OpenSSH 3.4p1 
+Linux 2.4.18 
+111/tcp 
+RPCbind — v2 
+6000/tcp 
+X11 
+32768/tcp 
+Status — RPC #100024 
+27.67.83.83 
+21/tcp 
+FTP — Microsoft ftpd 3.0 
+Windows NT 4.0 SP5–SP6a 
+70/tcp 
+Gopher — Windows gopherd 
+80/tcp 
+HTTP — Microsoft IIS 3.0 
+135/tcp 
+MSRPC — Microsoft RPC 
+139/tcp 
+NetBIOS/SMB — Windows NT 4.0 netbios-
+ssn 
+1027/tcp 
+MSRPC — Microsoft Windows RPC 
+27.67.83.90 
+— 
+None detected — All 1000 ports closed 
+Unknown 
+27.67.83.92 
+22/tcp 
+SSH — OpenSSH 3.5p1 
+Linux 2.4.18 – 2.4.35 
+111/tcp 
+RPCbind — v2 
+6000/tcp 
+X11 
+32768/tcp 
+Status — RPC #100024 
+27.67.83.97 
+7/tcp 
+Echo 
+Windows 2000 SP0/SP2/SP4 
+9/tcp 
+Discard 
+13/tcp 
+Daytime — Microsoft Windows USA daytime 
+17/tcp 
+QOTD — Windows qotd (English) 
+19/tcp 
+Chargen 
+21/tcp 
+FTP — Microsoft ftpd 5.0 
+25/tcp 
+SMTP — Microsoft ESMTP 5.0.2195.6713 
+42/tcp 
+WINS — Microsoft Windows Wins 
+53/tcp 
+DNS 
+80/tcp 
+HTTP — Microsoft IIS 5.0 
+119/tcp 
+NNTP — Microsoft NNTP 5.00.0984 
+135/tcp 
+MSRPC — Microsoft Windows RPC 
+139/tcp 
+NetBIOS — Microsoft Windows netbios-ssn 
+443/tcp 
+HTTPS 
+445/tcp 
+SMB — Windows 2000 microsoft-ds 
+563/tcp 
+SNEWS 
+1025–
+1036/tcp 
+MSRPC — Microsoft Windows RPC 
+3372/tcp 
+MSDTC — Microsoft DTC 
+27.67.83.101 
+22/tcp 
+SSH — OpenSSH 4.3 
+Linux 2.6.9 – 2.6.30 
+111/tcp 
+RPCbind — v2 
+27.67.83.127 
+— 
+None detected — All 1000 ports closed 
+Unknown 
+27.67.83.204 
+135/tcp 
+MSRPC — Microsoft Windows RPC 
+Windows XP SP2/SP3 or Server 
+2003 
+139/tcp 
+NetBIOS/SMB — Microsoft Windows 
+netbios-ssn 
+445/tcp 
+SMB — Windows XP microsoft-ds 
+3389/tcp 
+RDP — Microsoft Terminal Services 
+27.67.83.254 
+— 
+None detected — All 1000 ports filtered 
+Unknown

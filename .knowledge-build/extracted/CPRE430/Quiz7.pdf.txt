@@ -1,0 +1,232 @@
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 1 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+ Module 07: Quiz 
+Due Apr 4 at 11:59pm
+Points 20
+Questions 1
+Time Limit 15 Minutes
+Instructions
+DO NOT HIT THE BUTTON UNTIL YOU'RE READY TO TAKE THE QUIZ.
+Purpose
+This quiz is over the materials for Module 07. This quiz focuses on understanding how to decode and
+read network packets from Chapter 7 in your textbook. 
+Task
+You may only take this quiz once.
+Make sure you will not be interrupted so you can focus on completing the quiz.
+Make sure you have a reliable internet connection.
+You have 15 minutes to complete this quiz. Once you start the quiz, you cannot stop the timer.
+Pay attention to the time. The time remaining is located on a timer on the right sidebar.
+The quiz will automatically submit after your time is up or if it hits the due date (whichever
+comes first).
+If you accidentally navigate away from the quiz but have time remaining, you should be able to
+pick up where you left off.
+For multiple select questions (e.g., the 'select all that apply' questions with checkboxes), Canvas
+auto-grading will reduce the overall score for incorrectly selected options. Unselected options will
+not alter the score (you won't gain or lose points for not selecting a statement or option, regardless
+of whether it is correct or incorrect). Be mindful when selecting options for this style of question.
+
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 2 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+Attempt History
+Attempt
+Time
+Score
+KEPT
+Attempt 2
+14 minutes
+19 out of 20
+LATEST
+Attempt 2
+14 minutes
+19 out of 20
+Attempt 1
+2 minutes
+0 out of 20
+ Correct answers are hidden.
+Score for this quiz: 19 out of 20
+Submitted Apr 4 at 4:41pm
+This attempt took 14 minutes.
+
+Open book/open notes/open internet - but answers must be your own. Do not copy and do not
+plagiarize.
+Don't hit the button until you're ready to take the quiz!
+Grading Criteria
+To complete this assignment, you will answer all of the questions for this assignment.  Canvas will
+show your scores upon submission. If you have questions about what you missed, please contact
+your TA.
+Solutions
+You will be able to see your quiz responses after submitting the quiz. Canvas will show answers with
+feedback. Please note this feedback and any corrections; you will only see this screen once.
+Answer Formatting - the same guidelines as previous assignments:
+Use the number keys; do not spell out numbers (e.g., use '1', not 'one').
+Binary and hexadecimal answers should not use the 0b and 0x prefixes on this assignment.
+Answers may be written using uppercase or lowercase letters, but be consistent throughout the
+submission.
+Use the standard formatting conventions for Ethernet and IP addresses used in class.
+Leading zeros:
+
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 3 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+
+PartialQuestion 1
+19 / 20 pts
+Include where necessary and customary (e.g., addresses, payload/padding).
+Avoid with decimal values (e.g., use '1', not '01').
+Otherwise, they can be omitted as long as it doesn't alter the value's interpretation (e.g., '00'
+and '0x0' can be simplified to '0'). Ensure consistency in omission (e.g., don't represent '0011'
+as '011').
+Copy/Paste in Canvas: Canvas may mark an answer as incorrect if it includes unintended
+characters like extra spaces or carriage returns at the end of your answer so be careful entering
+your responses. If you think Canvas counted something as incorrect due to unintended
+characters, contact your TA(s).
+You may want to use RapidTables
+ (https://www.rapidtables.com/convert/number/hex-to-
+decimal.html) , open in a different tab, to help you quickly convert bases.
+Given the raw hexadecimal data of a TCP segment shown in Figure 1, determine the values for each
+field in the TCP header and the payload, and enter the information into Table 1. If you encounter a
+field that does not contain any data, such as the absence of options or payload, indicate this by
+writing 'N/A' in the answer blank.
+9fee 0050 7478 d7da be64 a762 8009
+07ff 9172 0000 0101 080a f336 840f
+ab4e 01fd 1703 0300 0663 7ad9 8d69
+48                                
+Figure 1: Raw hexadecimal representation of a TCP Segment.
+Table 1: TCP Segment
+Field
+Information
+1. Source Port (decimal)
+40942
+
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 4 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+2. Destination Port (decimal)
+80
+3. Sequence Number (hex)
+7478 d7da
+4. Acknowledgement Number (hex)
+be64 a762
+5. Header Length (decimal, in bytes)
+32
+6. Flags (binary, no spaces)
+001001
+7. Window Size (decimal)
+2047
+8. Checksum (hex)
+9172
+9. Urgent Pointer (decimal)
+0
+10. Number of bytes of TCP options (decimal)
+12
+11. Options, if any (hex or N/A)
+0101 080a f336 840
+12. Number of bytes of TCP payload (decimal)
+11
+13. Data/Full Payload, if any (hex or N/A)
+1703 0300 0663 7a
+Determine whether any of the TCP header flags bits are set. Enter '0' for not set and '1' for set into
+Table 2. Please note these flags are in alphabetical order, not the order they appear in a TCP
+segment.
+Table 2: TCP Header Flags
+Flag
+State
+
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 5 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+Answer 1:
+40942
+Correct
+Answer 2:
+80
+Correct
+Answer 3:
+7478 d7da
+Correct
+Answer 4:
+be64 a762
+14. Acknowledgement (ACK)
+0
+15. Finish (FIN)
+1
+16. Push (PSH)
+1
+17. Reset (RST)
+0
+18. Synchronization (SYN)
+0
+19. Urgent (URG)
+0
+Determine whether the packet above is a DNS packet. Enter 'Y' for yes and 'N' for no into Table 3.
+Table 3: DNS
+Field
+Information
+20. Is this a DNS packet?
+N
+
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 6 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+Correct
+Answer 5:
+32
+Correct
+Answer 6:
+001001
+Correct
+Answer 7:
+2047
+Correct
+Answer 8:
+9172
+Correct
+Answer 9:
+0
+Correct
+Answer 10:
+12
+Correct
+Answer 11:
+0101 080a f336 840f ab4e 01fd
+Answer 12:
+11
+Correct
+Answer 13:
+1703 0300 0663 7ad9 8d69 48
+Correct
+Answer 14:
+0
+Correct
+Answer 15:
+1
+Correct
+Answer 16:
+1
+
+4/4/25, 4:44 PM
+ Module 07: Quiz: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 7 of 7
+https://canvas.iastate.edu/courses/116478/quizzes/569243
+Correct
+Answer 17:
+0
+Correct
+Answer 18:
+0
+Correct
+Answer 19:
+0
+Correct
+Answer 20:
+N
+Correct
+Quiz Score: 19 out of 20

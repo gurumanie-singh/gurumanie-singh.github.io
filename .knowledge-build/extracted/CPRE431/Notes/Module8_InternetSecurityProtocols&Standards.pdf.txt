@@ -1,0 +1,384 @@
+Internet Secuvit4 Protocols & SVandard s
+
+\nivoduction to Web Applications
+
+What ave Web Applicatons ?
+
+= & Computer program \hal vhines web browsers & web
+technology to perform tasks over the mternek
+
+Vow does a web app work 7
+1. User triggers a request to the web server over the Internet, either through a web browser
+
+or the application’s user interface
+2. Web server forwards this request to the appropriate web application server
+
+3. Web application server performs the requested task — such as querying the database or
+
+processing the data — then generates the results of the requested data
+
+4. Web application server sends results to the web server with the requested information or
+
+processed data
+
+5. Web server responds back to the client with the requested information that then appears
+
+on the user’s display
+
+Web Browsing CHP)
+L. a HTTP Request
+
+web server
+
+Application Web Browsing web browser
+
+HTTP Response
+
+web server
+
+Apache, IIS.
+nginx, lighttdp
+
+web browser TCP Server Port
+
+Browser Port TCP
+
+Software
+
+Firefox, Chrome.
+E. Safari
+
+Browser IP Server IP
+
+Protocol
+NIC NIC
+
+| client | \sevver| rt inom |
+
+HTTP i a veqvest /response pvotvcol
+
+L
+
+L usev Agent Cclient ) sends veqvest } server responds with yerponst
+
+Stateles! ) no dependence between & reqvest and previvus yeqvest
+
+L defavit port 2 XO
+
+HTTP Messages
+
+L_ veqvest messaqes L response messages
+> Start line: Method URL Version > Start line: Version StatusCode StatusReason
+> Methods: » Status Codes and Reasons:
+> GET: retrieve the resource at the specific URL > 100: Continue (the client should continue with its
+» HEAD: same as GET, except do not return message request)
+body (only header) > 200: OK (the request succeeded)
+> OPTIONS: retrieve options available for resource or » 301: Moved Permanently (the requested resource has a
+server new URL)
+
+v
+
+POST: asks server to accept and process the attached
+
+> 304: Not Modified (resource hasnt changed since last
+data at the resource
+
+request, client should use cached copy)
+a . > 401: Unauthorized (request must include user
+> Version: version of HTTP, e.g. HTTP/1.0, HTTP/1.1 authentication)
+> 403: Forbidden (request was understood, but server
+{ refuses to process it)
+HIP " ead evs > 404: Not Found (server cannot find resource at
+requested URL)
+
+>
+
+> 503: Service Unavailable (server currently unable to
+
+Date L_ AviAho voahon handle request, e.g. server is too busy)
+L Host L User Agent
+
+L Accept - Chaveel , Accept-Encoding, Accept - Langvage
+
+HTTP Applications
+L
+
+can be stahc oy dynamic
+
+L
+
+many applicahons ysre dynamic content
+
+HTTP Request
+
+web server |" ={ @ |
+
+TCP Server Port
+
+web browser
+HTTP Response
+
+Browser Port TCP
+
+Browser IP Server IP
+
+NIC | NIC
+WATTP vs WTPS
+low does HTTP work 7
+L browser —— malicious usev server
+
+uses wiveshark
+or {tcpdump
+
+evevy thing sent in cleaviext CGE, POST) * can be read
+
+WTP Security issues
+L_ No data confidentiality LL no mvival av then\icahon
+
+L No data uvsev confidenhagl'ity
+
+Using HTTPS
+encvyphon with HTTPS
+bvowsev sure it is Communicating with jntended server
+
+LL
+
+vies digital cevhficates
+
+(—_- PT
+
+a Sevvev sure it is communicating with intended user CHTTP also has
+l_ thit featuve)
+password authentication , session management
+
+achon of usev Corowser) ave Kept private
+
+LL
+
+anunymity sevvices
+
+Tf
+
+HTTPS ~ ATTP oev SSL Cov TLS)
+
+L web sevvey \istens on port 443
+
+L
+
+Sevvey authenticated using certificate Cvsing SSL) ravival
+‘e client authenticated vsing password Cusing HTTP )
+
+Intvoducing SSL/TLS
+L_ seewe Sockets Layer oviginated in Netscape Web bvowser
+LL Tvanspovt Layev Security standardised by (ETE
+L SsLv3 & VLS almort the some
+How doet SSL/TLS wovk?
+
+client server
+
+usev A user B
+PRa , PU, , PUp PRe, PUB, PUA
+
+K
+
+K= Desa (PR_z CF} = Ersa (PVe, K)
+cvedit card
+
+C=Enes (K cco) We SSS ope OK DY
+
+Man -in- the-Niddle CMIDM) Attack
+SSL/TLS Vulnerability
+Browsev Server
+
+PRe , PVg PRs , PUs
+
+PU, <
+
+Kgs SS Kes
+
+Lo
+
+NATM Attack
+
+Browsev Attackev Server
+PReg . PVg PRA, PVA PRs , PVs
+sends his own intevcept of
+PUa PUa wistead PVs
+
+E CPUs ,k
+Kes = ECPUA, Kag) —>_ Kan "OPUS Kas
+
+Kaa
+Countevmeasvve C Cevtficates )
+
+_ use digita\ certificates Yo ensuve it is Sevvey we ave taliting fo
+
+Digital Certificate
+Web Browsing Avthenthcation & Encryption
+Luce public Key cvyptography to exchange Secvek key
+| L_esayosA — L pitfie-Hellman — L_etiptic cave
+ovce Secvet key is exchanged ,ure Symmetric Key encryption
+L AES , RC4_ 30ES...
+ex: if servev Sevds bvowler cts RSA public K2¥, how can browser
+be svve Mis iw the servevs key?
+
+L_
+
+get tyusted third party to confirm
+
+Digital Certificates
+
+| __ Step 1: Server Obtains Digital Certificate Step 2: Server Sends Digitial Certificate to
+
+Browser
+> Server (owner) creates key pair: (PU;, PR;) ee
+
+> Server confirms identity, /D., with trusted third party >» When browser initiates communications with server,
+
+called Certificate Authority server responds with C,
+> CA issues server with a digital certificate by signing > Browser verifies signature using PUc,
+relevant info: » Assumes browser already knows and trusts PUca
+
+> PUcz is stored in self-signed certificate:
+Cs = IDs||PUs|| T, E(PRca, H(/Ds||PUs|| T))
+Coa = IDcea\|PUcal|T, E(PRca, H(!Dca}|PUcal|T))
+> A timestamp, T, can be used to determine how long
+
+the certificate is valid > Once verified, browser can choose secret value and send
+> X.509 specifies standard format of certificates it encrypted using PU, to server
+Certhficates nm Practice Security [ssves with Digital Cerhficates
+How does a server obtain a certificate? > Identity verification of server (owners)
+> Prove identity to CA by: > Security of CA private key
+
+>» Domain validation
+
+>» Pre-loaded certificates by browser publisher
+>» Extended validation y P
+
+>» Free and commercial services Response when invalid certificate received
+
+> Algorithms used in certificates should be strong
+How does browser obtain CA certificate?
+
+>» Pre-loaded into browsers
+> Hierarchy of certificates is supported
+
+What if CA certificate is not in browser?
+
+> Browsers commonly present warning to user
+
+X.50% Cevhficates
+
+> X.509 certificate format includes:
+> Version of X.509 certificate
+Serial number unique to the issuer (CA)
+Signature algorithm
+Issuer's name and unique identifier
+Period of validity (start time, end time)
+Subject’s name and unique identifier
+Subject’s public key information: algorithm, parameters,
+key
+> Signature
+
+vvvrvyvyy
+
+> Certificates may be revoked before expiry
+
+> CA signs a Certificate Revocation List (CRL), which is
+publicly available
+
+Internet Security
+\nivedvchon to Wtevnet Security
+L
+
+securing Cyommunicatonys across the Internel can be performed
+
+ot different layevs
+
+each layer adds their own header
+
+Host A Access Point Router X Router Y Host B
+
+Wireless LAN Ethemet
+
+Application Level Security
+
+Application (protocol) implements its own security
+mechanisms
+
+Host A Access Point Router X Router Y Host B
+
+Examples
+
+> SSH, Email (OpenPGP, S/MIME), DNSSEC, ...
+whatsape tS another example
+
+Advantages
+
+> Host-to-host encryption
+> Independent of operating system security features Wireless LAN Ethemet Intemet Ethernet
+
+Disadvantages
+
+> Each application must implement common security
+mechanisms
+
+Tvanspov¥ Level Cecuority
+Application uses OS provided library for security Host A Access Point Router X Router Y Host B
+
+Examples
+
+>» TLS/SSL for TCP-based applications, e.g. HTTPS,
+IMAPS, FTPS, SMTPS
+
+> DTLS, SRTP for other transport protocols
+
+Advantages
+
+> Host-to-host encryption
+
+> Simpler applications; no need to implement complex Wireless LAN Ethernet Intemet Ethernet
+security mechanisms
+
+Disadvantages
+
+> Only applies for specific transport protocols
+> Applications must be implemented to use OS API
+
+Netwovk Level Security
+
+Computer configured to apply security mechanisms to IP __HostA Access Point Router X Router Y Host B
+packets
+
+Examples
+
+> IPsec
+
+Advantages
+
+> Supports all applications and transport protocols
+
+> Can be host-to-host encryption
+
+Wireless LAN Ethernet Internet Ethernet
+
+Disadvantages
+
+> Requires support and configuration in OS
+Commonly used in tunnelling mode
+Link Level Secvrity
+Exam pl es Host A Access Point Router X Router Y Host B
+
+a
+>» WEP/WPA in wireless LANs, Bluetooth, ZigBee ores not encrygle
+: wv
+encryption, GSM A3/A5/A8, ... owt ean
+
+Advantages
+> Applies to all data sent across link, independent of
+
+application, transport, network protocols
+
+Disadvantages
+
+= Ponw.natnn anki. 2 ecnene she End

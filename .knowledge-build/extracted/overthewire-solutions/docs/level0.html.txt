@@ -1,0 +1,148 @@
+Level 0: SSH Login — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 0
+ SSH Login
+
+ Log into the Bandit wargame via SSH and retrieve the next-level password from the readme file.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level 0 Goal
+
+ 
+ The goal of this level is to log into the Bandit wargame via SSH. Use the following connection details:
+ 
+
+ 
+ Host: bandit.labs.overthewire.org
+
+ Port: 2220
+
+ Username: bandit0
+
+ Password: bandit0
+
+ 
+ 
+ Once logged in, open the readme file to find the password for Level 1.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Check the SSH manual
+
+ 
+ Use the man command to see how to specify port and username:
+ 
+
+ man ssh
+
+ 
+ In the manual, you'll see:
+ 
+
+ 
+ -p <port> to set a custom port
+
+ -l <user> to specify the login name
+
+ 
+
+ 2. Connect via SSH
+
+ 
+ Run one of the following commands (they are equivalent). This logs you in as bandit0 on port 2220:
+ 
+
+ # Option A:
+ssh -p 2220 -l bandit0 bandit.labs.overthewire.org
+
+# Option B:
+ssh bandit0@bandit.labs.overthewire.org -p 2220
+
+ 
+ When prompted, enter the password: bandit0.
+ 
+
+ 3. View the readme file
+
+ 
+ After logging in, list the files in your home directory:
+ 
+
+ ls
+
+ 
+ You should see a file named readme. To read its contents:
+ 
+
+ cat readme
+
+ 
+ The output shows the password for Level 1.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ man ssh — read SSH manual to learn flags like -p and -l.
+
+ ssh bandit0@bandit.labs.overthewire.org -p 2220 — connect via SSH.
+
+ ls — list files.
+
+ cat readme — display contents of readme.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+man ssh
+# Option A:
+ssh -p 2220 -l bandit0 bandit.labs.overthewire.org
+
+# Option B:
+ssh bandit0@bandit.labs.overthewire.org -p 2220
+ls
+cat readme

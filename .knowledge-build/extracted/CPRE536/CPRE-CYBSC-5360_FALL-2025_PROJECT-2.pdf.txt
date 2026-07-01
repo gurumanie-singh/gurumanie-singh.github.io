@@ -1,0 +1,32 @@
+CPRE/CYBSC-5360_FALL-2025 
+PROJECT-2 
+ 
+Please follow the instructions to search for the target item with FTK. 
+Note: The procedure and the file path are required when giving the answer. Zero points 
+for the answer without the required description and screenshot. 
+Username: cpre5360    Password: cpre5360-2025 
+ 
+Questions 
+Disk images are located at C:\CPRE5360 Projects. 
+    
+  (Please use 24Fall_Project2.img) 
+A. (5 points) The suspect kept 5 figures which are the envelope labels that contain the 
+contact information. Please find as many figures as you can. 
+ 
+B. (1 point) The suspect was found to use Firefox browser before. Please find the browsing 
+history and list the record which website the suspect visited before. 
+ 
+C. (1 point) Please list the browser cookie. 
+ 
+D. (1 point) The suspect built a public website and there is a pair of user and password which 
+the suspect used on website. Please find it out. 
+ 
+E. (2 point) The suspect used a fake first name for the illegal activities, please find her real 
+first name. 
+ 
+ 
+ 
+Hints 
+ To find a figure, file size is one of the important clues. 
+ A figure like example can be more than 20 KB. 
+ Sample envelope figure:

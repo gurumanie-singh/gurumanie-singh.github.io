@@ -1,0 +1,19 @@
+Summary
+
+Channel Bandwidth
+Pulse Shape
+SNR
+
+f bits pulses
+
+bps pulse Sec
+Bit Rate = Coding Rate x Baud Rate
+v Vv
+v Vv v
+v v
+max bit vate 1S!
+= Shannon channel capacity Aistortion
+(for AWGN Channel )
+My suist Rete
+
+(max Baad réte )

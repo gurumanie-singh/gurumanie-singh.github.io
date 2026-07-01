@@ -1,0 +1,194 @@
+Level 5: File of Specific Size — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 5
+ File of Specific Size
+
+ Identify files by size and type within the inhere directory to find the password.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is hidden inside a non-executable, human-readable file of exactly 1033 bytes, located within one of the directories maybehere00 through maybehere17 under inhere.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 4 and SSH into Level 5
+
+ 
+ After retrieving the Level 5 password from -file07, exit the current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit5 (using the password from Level 4):
+ 
+
+ ssh bandit5@bandit.labs.overthewire.org -p 2220
+
+ 2. List the Home Directory Contents
+
+ 
+ Once logged in as bandit5, list files:
+ 
+
+ ls
+
+ 
+ You will see a directory named inhere.
+ 
+
+ 3. Change into inhere
+
+ 
+ Enter the inhere directory:
+ 
+
+ cd inhere
+
+ 4. Observe Directories maybehere00 to maybehere17
+
+ 
+ Running ls shows multiple subdirectories named maybehere00 through maybehere17:
+ 
+
+ ls
+
+ 
+ Each directory may contain files; the target file has specific properties.
+ 
+
+ 5. Determine Selection Criteria
+
+ 
+ According to the level instructions, the password is inside a file that is:
+ 
+
+ 
+ Human-readable (i.e., plain text)
+
+ Exactly 1033 bytes in size
+
+ Non-executable
+
+ 
+
+ 6. Find the File by Size Using du
+
+ 
+ To search recursively for a file of a precise byte-size, we use du with two flags:
+ 
+
+ 
+ -b — report sizes in bytes instead of the default block size.
+
+ -a — include all files (not just directories) in the listing.
+
+ 
+ 
+ Combining these flags with grep lets us locate the exact file:
+ 
+
+ du -b -a | grep 1033
+
+ 
+ This command outputs lines matching "1033", indicating the path to the 1033-byte file.
+ 
+
+ 7. Identify the Password File
+
+ 
+ The output shows:
+ 
+
+ 1033 ./maybehere07/.file2
+
+ 
+ Thus, ./maybehere07/.file2 is the human-readable, non-executable file of 1033 bytes containing the password.
+ 
+
+ 8. Read .file2 to Obtain the Password
+
+ 
+ Display its contents:
+ 
+
+ cat maybehere07/.file2
+
+ 
+ The output is the password for bandit6.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 4.
+
+ ssh bandit5@bandit.labs.overthewire.org -p 2220 — connect as bandit5.
+
+ ls — list inhere.
+
+ cd inhere — change into inhere directory.
+
+ ls — list maybehere00 through maybehere17 directories.
+
+ du -b -a | grep 1033 — find the file exactly 1033 bytes in size (./maybehere07/.file2).
+
+ cat maybehere07/.file2 — display the file; retrieve the Level 6 password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit5@bandit.labs.overthewire.org -p 2220
+ls
+cd inhere
+ls
+du -b -a | grep 1033
+1033	./maybehere07/.file2
+cat maybehere07/.file2

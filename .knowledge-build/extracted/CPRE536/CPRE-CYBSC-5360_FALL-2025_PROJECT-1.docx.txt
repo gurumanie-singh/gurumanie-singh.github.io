@@ -1,0 +1,26 @@
+CPRE/CYBSC-5360_FALL-2025 
+PROJECT-1 
+Please follow the instructions to search for the target item with Encase. 
+Note: The procedure with screenshots and the file paths of the evidence are required when answering the questions. Zero points for the answer without the required description. 
+Disk images are located at: https://iastate.box.com/s/pr0mnxa6qls3zcxh9mwyhfyl0rmmdvwt 
+Project 1 (Please use 25Fall_Project1B.img) 
+(1 point) Who is James Cooper's supplier of marijuana? 
+After trying with pass, password, code, pin and many other keywords, I finally used secret and was able to identify the file which contained the secret (Constants.java) password. I also found an abnormal locked file by the name of Manual.doc which when I tried opening using Microsoft Word Online, it prompted me for a password. Using the password found in Constants.java I was able to unlock and view the contents inside of the Manual.doc
+From this we can see, that James Cooper’s supplier of marijuana is Emma White.
+(2 points) What is the address of the supplier? 
+Also using the previous found file (Manual.doc), we can see that the address of the supplier is 2918 W Capitol St, Jackson, MS 39209.
+(1 point) When was the email sent to the supplier? 
+When trying to find the email sent to the supplier, I came across a zipped file called hello_world.zip. Once I saved and unzipped this file, inside it I found an xls file and a Microsoft Email Message file. When I opened the email message file I found that the email was sent to the supplier on Fri, 6 Sep 2013 14:28:25 -0500.
+(2 points) What is the full list of High Schools that James Cooper sells at? 
+After looking for the keyword “pass”, I came across as .exe file which contained a password. Trying this password on the excel file which I initially found in the same folder as hello_world, led me to view the list for the high schools that James Cooper sells at.
+(1 point) Can you find the cover of High Times magazine? 
+I was able to find the cover of High Times magazine within a ReadMe.txt file. I noticed that in the hex code it had jpg image file information (FF D8). This made me export the image and change the extension to jpg which got me the image for the magazine.
+(1 point) Can you find the supplier's photo? 
+The supplier’s photo, as indicated by the file Manual.doc in line 2 of the first paragraph, is within the high times magazine cover. Zooming into the High Times magazine, we can see that Emma is on the bottom right corner.
+(2 point) Can you find out and show James Cooper's photo?
+JamesCooper.jpg contains the image of the supplier for marijuana. I was able to get to this by first noticing that Koala.jpg had the name JamesCooper.jpg in its text section. Since this was odd, I looked into it further and realized that there were a total of 4 FF D8 hex codes which indicate the start of a JPEG file and only 2 FF D9 hex codes which meant that I needed to save the given Koala.jpg differently based on the start and end hex codes. After trying a few different combinations such as using the first FF D8 with the first FF D9 and the second FF D8 with the first FF D9, I was able to get a few different files but did not get anything meaningful. Then I noticed that the JamesCooper.jpg was actually after the last FF D9 in the Koala.jpg file. Looking at the hex code after FF D9 I noticed it was actually a RAR file hex. Knowing this, I tried extracting the file differently and saved it as a RAR instead of a jpg. This lead me to finally getting the image of Scarface/Tony Montana which was in the JamesCooper.jpg file.
+Hint: 
+Find the password to unlock the suspicious file 
+Try to think of any words that can be a “password”, e.g. key, secret... 
+Pictures can be stored in any types of files or embedded in other files 
+Use the file signature to search might make your search more efficient

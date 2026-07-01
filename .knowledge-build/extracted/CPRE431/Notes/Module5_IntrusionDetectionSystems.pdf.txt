@@ -1,0 +1,220 @@
+Intrusion Detection System
+
+Intvoduchon to Intrusion Detection System
+What is IDS?
+L_
+
+Soffware / hardwave systems that aviomate the process of morttoring
+
+the events on a comprter system /nefworK , analyzing for secucit 4
+
+Types of Intrudevs
+L_
+
+Masqverader “outsidev ”
+
+L
+
+not avihorined to ose the system & penetvafes accets contvols +»
+
+exploiF legit user's account
+
+Misfeasov “insidev’
+
+L
+
+legit usev accessing vesourees he is nef authorised to , ov misuse
+
+privileges
+
+oS
+
+Clandeshne vSev msidev vv ovtsider”
+
+LL dakes admin control of system & uses it to avoid detection
+
+Intvuder SKill levels
+
+L
+
+Apprentice Script Kiddies”
+
+L
+L_
+
+minimal tech ski who use exighng atiall€ touls
+comprise the largest tof attackers
+L_ easiest to defend against
+
+Journeyman
+
+L
+L
+
+Sufficent tech svills 10 modify/extend existing twolkitS
+may be able +o locate new vlucrabilirhe 5
+Mastev
+
+high skills ,cav wife new Avolkuts
+
+_ hard to defend against , employed by governments / org qurahons
+
+Examples of Intrusion
+L remote youot/admin accesf
+LL am iS to compromise dhe service
+defaang web server
+= put something on website, make ovgannation Wek bad
+qvess/oblain password §
+LL copy dalabases containing private info
+
+' L credit card SSN
+
+View censifve data
+L medical info, financial nfo
+capture nefworkd packets
+
+L
+
+obtain ysernames/ password §
+
+Wivudey behavior
+L crackey /hackev
+L mofivated by thnill of acceS) and/ov statvs
+Criminal enterprise
+L mokvated by § gnd/ov political /religwovs , avoid publiaty
+L Corporations government fonded
+infevnal Ahveal
+L mobvated by revenge /entitlement
+
+L Vifficut to detec
+
+Intvusion techniques
+(_ expolit flavus in Software
+
+L acavire profected mfv
+
+IDS reqvicements
+
+L_ vua with nimimal hvman supervision L recover from system restarts /
+Crashes
+
+L monthy ifself &deted atiadcs on Wself LL ninivect overhead on S45tem
+
+L
+
+configurable according ty system Secunty pohces Scale + monrhr targe thos NW
+
+L cei Cearhally) worke if Some components go aown
+
+Host-based (DS
+|
+
+monitor Single computer
+
+Distributed Host-based IDS
+L monitor Set of computers with central modvlt detecting intrusions
+
+L
+
+uses ovganizahon LAN or jaternetworl¢
+
+host agent] collects & analyze avdit records
+L [An monitor agent janalypes LAN tvaffic
+
+L host & LAN agents send aievts to centval manager
+
+l fentval manager| combines data to acteck intwsion
+
+issues
+
+L deal with different avdit record formals
+L dato over network by agents mvot be Secuved
+
+with centval ovchifecture, Single point of failvre
+
+L with distribvted avchitectuve , complex coordination invoWwed
+
+Host agont module
+
+Network-pased IDS
+
+L monitor netwovkk traffic to Wenhfy svt achvihes
+
+L
+
+L_ analyre traffic te detect intrusion detechon
+
+Monitoy tvatfic of selected point on network vSing censore
+
+Inline sensor “online mode ”
+
+LL inserted Into network | onalyre tafe patsing Throvgh sensor
+
+L
+L
+
+runs as software on existing switch, router or {~
+can prevent attack as son as detected
+
+Passive sensor “offline mode”
+
+L monitors copy of traffic
+
+L extra device that gels copy of traffic eg, switch port mirroring
+
+L minimal impact on performance of Aroffic
+
+SNoeRTt
+L -
+free +o use host-based IDS |
+L veal time fraffic analysis can be configured aS qnif fer,
+L packet logging padcer Ikgg9er and NID
+
+Honey pots
+What are honeypots 7
+L_ ;
+System [eft intenticoally vulnerable
+L_ default sethngs, missing patches cecurity misconf9)
+lL fake data placed on the Honegprt
+intended to mimic likely Jargelt of cyberattack5
+
+L.
+
+Lean be used to detect attacks ov deflect ther from legit target
+
+used to gain info on how attackers operate
+
+\_ designed tv:
+L_
+
+LL
+
+turn attackev qway from crrbcol systems
+encovvage attacker to stay on honeypot lung enough for
+
+admin WO 1reSpond
+
+Honeypot deploymenh
+L one ovtside Fw
+Lone after {w
+
+L one affev gw/rovter
+
+HoneyNets
+
+L {wo ov more honey pots
+L qroup dissimilat honeypots Together Cliaux, windows servers )
+
+L IDS honeyaet conffg sends nohficwhon to Security admin
+
+Honey Duve
+
+_ it iS @ linvx distvo iets yov recovd intvuder achvilies
+
+Huney files
+
+L
+
+LL nainty tries to catch internal inivuders
+
+ack Jike (legit document « with realishe ,enkhung names

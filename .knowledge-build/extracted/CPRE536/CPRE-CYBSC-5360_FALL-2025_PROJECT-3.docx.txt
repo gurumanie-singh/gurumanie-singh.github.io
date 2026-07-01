@@ -1,0 +1,49 @@
+CPRE/CYBSC-5360_FALL-2025 PROJECT-3 
+Questions 
+(1 point) Please find all the apps installed and recently used on Betty’s phone.             
+When opening up the USERDATA for BettyNote2Black in Encase, I was able to find the folders app-lib and app. When I looked into these I found all the apps on Betty’s phone. 
+There are 34 apps in the app-list folder:
+And there are 36 apps in the app folder:
+(1 point) Please find the browsing history of websites and videos.
+Based on Q1, Betty’s phone mainly used the Chrome browser. After searching for the keyword “History” in filenames, I was able to locate the file. When opening this file up in DB Browser for SQLite, I got the following websites from the “urls” table:
+To find the video history, I looked inside the chrome data and found a log file in the NTPSnippets. This shows some amount of logs for youtube search history:
+000003.log
+(2 points) Please find the chat history and emails. 	 
+After looking inside the chrome folder, I found a file named mailstore.bettyhallym@gmail.com.db. After opening it, I found the below email conversations and messages:
+I know that the app used for chats was google hangouts but was unable to find any files relating to it.
+(1 point) Please find the history of usage between smartphone and wearable device. 
+After filtering for Xiaomi apps by using the keyword “mi”, I was able to come across a few different db files, I looked through mistat.db and found the below:
+The above shows the events between betty’s smartphone and the wearable device since the file was found on betty’s phone.
+I went into device details for the wearable logs and found the following:
+(1 point) Please find the timestamp when Amazon Echo is called by voice command “Wake up”. 
+After unzipping the 005-Amazon-Echo-Alexa-Web-Scrape file, I was able to go inside and look at all the files one at a time. Towards the end of the folder I found a file called “history second page.png” which contained the following details:
+As we can see from the above entries, the Amazon Echo is called by voice command “Wake up” at exactly 2:45 PM.
+(1 point) Please find the IP address from Google OnHub diagnostic-report. 
+After cleaning up the above onhubdump report, I got the following details:
+Another screenshot with cleaned up IP Addresses:
+
+(1 point) Please build up Betty’s activity from these devices.   
+In the Amazon-Echo-Alexa-Web-Scrape, I was able to find the following as traces of Betty’s Activity:
+From the above we can trace that she was home around 2:31PM (UTC+9).
+After filtering for Xiaomi apps by using the keyword “mi”, I was able to come across a few different db files, I looked through mistat.db and found the below:
+The above shows the events between betty’s smartphone and the wearable device since the file was found on betty’s phone.
+Based on the above evidence and also filtering the files by “last written”, I am able to tell that both Simon and Betty got home at 2 PM and then Betty was in the hall for the rest of the time interacting with Alexa.
+For one of the timestamps, after converting to the unix epoch we get:
+(For the timezone difference we add 9 hours to the GMT. The bottom is 15:07:29. 20 minutes before the crime is reported.)
+(2 points) Simon claimed he arrived home at around 3 pm on 7th July 2017 and used a Bluetooth headset to watch TV, after which he found her on the ground when he entered the living room. Please verify his statement. Did he lie or not? 
+After searching using the keyword “Youtube”, I was able to find multiple folders on the Raspberry Pi. Within them, I went into plugin.video.youtube and then into the folder kodion where I found a file named “cache.sqlite”. Opening up this file I found the following details:
+
+The above file shows the cache history for youtube. 
+After searching for the date 2017-07-17, I found a lot of files, I was specifically looking for files at time 01:00 AM CDT on 2017-07-17 to 02:00 AM CDT on 2017-07-17. This is because the ftk tool is showing me files in CDT and since the murder happened at 2017-07-17 15:31 (UTC+9), that would be around 01:00AM to 02:00AM CDT. Looking into the database folder with the time 01:20 AM CDT, I found the below file inside:
+The above MyVideos108.db file proves that Simon was in fact watching videos in his room because there is a record of youtube playing at 2:07 PM (UTC+9) time and also another at 2:19 PM (UTC+9) time. 
+We can also tell from the files I found after filtering using date and time that the activities stopped from around 1:20 AM to 1:35 AM, which is probably the time that Simon decided to go out of his room and found his wife dead. Additionally these files are sorted using last written time so that the logs are accurate (when it shows 1:19 AM, it means that there was still some activity on Simon’s devices at that time):
+Based on all the above proof, I can conclude that Simon did not kill his wife because there is proof of him being in his room and watching youtube.
+Clean Interface IP Addresses | Clean Active Device IPs
+127.0.0.1 | 192.168.86.21
+192.168.86.1 | 192.168.86.22
+192.168.87.1 | 192.168.86.24
+192.168.165.9 | 192.168.86.25
+192.168.86.26
+192.168.86.27
+192.168.86.28
+192.168.86.29

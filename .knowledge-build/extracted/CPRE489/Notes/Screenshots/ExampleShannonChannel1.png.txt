@@ -1,0 +1,18 @@
+Example
+
++ Find the Shannon channel capacity for a telephone channel with
+W = 3.4 KHz and SNR (dB) = 40 dB
+
+te
+4edR = lo ley, swe
+lt
+4
+SwuR = lo = [voce
+
+a
+
+> W leq C14 swR)
+
+34 kHe - loy ¢ |4 [eev0 )
+
+= 42k bps

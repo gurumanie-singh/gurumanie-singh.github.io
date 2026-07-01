@@ -1,0 +1,7 @@
+CPR E 4890: Computer Networking and Data Communication
+Lab Experiment #2 – TCP Socket Programming
+Summary:
+In this lab, I was able to gain some real world experience with TCP socket programming in C by implementing a client and server application that is similar to the ruptime command on UNIX systems. I was also able to learn some TCP fundamentals, such as its reliable, connection based nature and the three-way handshake. The key server steps involved creating the socket, then binding it to an address/port, listening, and accepting clients. Whereas the clients simply connect and exchange data.
+I was able to understand core socket API functions like socket(), bind(), listen(), accept(), connect(), send()/recv(), and close(), along with struct sockaddr_in for address setup using htons(). The server is based on an iterative design pattern, where it loops to handle sequential clients. I also handled error handling with perror() checks and integrated system commands like uptime using popen() to bridge process execution with the network.
+Two Approaches to capturing uptime output:
+My implementation of the server uses popen("uptime", "r") to capture the output of the uptime command. This is one of the two approaches, where the other common approach is to use system() and then direct the output to a temp file and then reading that saved file.

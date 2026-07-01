@@ -1,0 +1,48 @@
+Match the following vocabulary words to the phrase that best describes them in
+regards to network architecture.
+
+This function allows packets from
+
+Multiplexing 7
+multiple upper layers to share a
+lower layer.
+A technique for ensuring a Flow Control 4
+receiving layer is not
+overwhelmed by a transmitting
+later.
+Interlayer communication is Protocol a
+calleda_
+Packet is when
+
+>
+
+Sie Encapsulation
+additional control information is
+
+added to the packet in the form
+of a header.
+
+A network is divided into
+different functional components
+called
+
+<>
+
+Layers
+
+Used to show the interaction
+between entities using a
+protocol.
+
+<>
+
+Protocol Diagram
+
+The three phases of connection
+control are the request/connect
+phase,the
+and the termination phase.
+
+>
+
+Data Transfer

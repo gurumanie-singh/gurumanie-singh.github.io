@@ -1,0 +1,19 @@
+CPR E 4890: Computer Networking and Data Communication
+Lab Experiment #6 – CloudLab Experiment: IPv4 Routing Basics
+Summary
+In this lab I was able to gain some experience with static IPv4 routing using CloudLab. The lab involved working with a three-node network topology where each node was connected to two of three subnets, meaning no single node could initially reach all the addresses in the network. By using the route -n command, I was able to find each node's routing table and noted that only directly connected subnets were known to each node by default. This made it pretty clear as to why certain ping and traceroute attempts were failing before any manual configuration (for example, Node A).
+In Exercise 2, I was able to review (again) how to manually add static routes using the route add command (already learned in CPRE431 too). We needed to specify a destination subnet, netmask, gateway IP, and outgoing interface. By updating the routing tables on all three nodes, I was able to gain connectivity across the entire network. The traceroute outputs were fun to watch and quite useful in being able to see the path packets took through the intermediate nodes.
+Exercise 1: Examine the Network Topology
+2)
+3)
+Ping Node A to B on both IP Addresses (10.10.1.2 and 10.10.2.1):
+Ping Node A to C on both IP Addresses (10.10.2.2 and 10.10.3.1):
+4)
+My best guess is that the routing table for Node A only knows the subnets which are currently connected to its own interface that are the 10.10.1.0/24 (via eth1) subnet and 10.10.3.0/24 (via eth2) subnet. The address 10.10.2.2 belongs to the 10.10.2.0/24 subnet and this is why it isnt working. Node A right now has no routing entry telling it how to reach that subnet, which means it ends up dropping the packet entirely.
+Exercise 2: Setting up Static Routes
+1)
+2)
+3)
+Node B:
+Node C:
+4)

@@ -1,0 +1,127 @@
+CPRE532 — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ CPRE532 · Information Warfare
+
+ 
+ Information
+Warfare.
+ 
+
+ 
+ Analysed offensive and defensive cyber operations — threat intelligence, nation-state tactics, adversarial thinking, reconnaissance techniques, and strategic approaches to protecting critical infrastructure.
+ 
+
+ 
+
+ 
+
+ 
+ overview
+
+ What I
+learned.
+
+ 
+ CPRE532 examines the landscape of information warfare from both offensive and defensive perspectives. The course covers adversarial thinking, the tactics and motivations of cyber-enabled adversaries (nation-states, hacktivists, criminal organisations), and the ethical frameworks that govern cyber operations.
+ 
+
+ 
+ Hands-on modules explored reconnaissance techniques, authentication attack surfaces, and web application security. Labs provided practical experience with the tools and methodologies used in real-world offensive security assessments, while homework assignments deepened understanding of strategic and tactical cyber operations.
+ 
+
+ 
+
+ 
+
+ 
+ highlights
+
+ Key
+modules.
+
+ 
+ 
+ Adversarial Thinking
+
+ Studied attacker motivations, kill-chain models, and threat actor profiles to anticipate and counter offensive cyber operations.
+
+ 
+
+ 
+ Cyber-Enabled Adversary
+
+ Analysed nation-state cyber capabilities, APT group tactics, and the role of cyber operations in modern geopolitical conflict.
+
+ 
+
+ 
+ Reconnaissance
+
+ Practised passive and active reconnaissance techniques — OSINT gathering, DNS enumeration, port scanning, and service fingerprinting.
+
+ 
+
+ 
+ Authentication & Web Security
+
+ Explored authentication attack surfaces, credential-based attacks, and common web application vulnerabilities from an offensive perspective.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ technology
+
+ Tools &
+methods.
+
+ 
+ A graduate-level course combining strategic cyber operations theory with practical offensive security labs and ethical analysis.
+ 
+
+ 
+ Threat Intelligence
+ OSINT
+ Reconnaissance
+ Web Security
+ Authentication
+ Kill Chain
+ Nmap
+ Ethics
+ 
+
+ 
+ 
+ View on GitHub →
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

@@ -1,0 +1,130 @@
+Level 10: Decode Base64 Data — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 10
+ Decode Base64 Data
+
+ Decode a Base64-encoded file to retrieve the password for the next level.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is stored in data.txt, which contains Base64-encoded data. You must decode it to retrieve the password.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 9 and SSH into Level 10
+
+ 
+ After obtaining the Level 10 password from data.txt in Level 9, exit the current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit10 using the password acquired:
+ 
+
+ ssh bandit10@bandit.labs.overthewire.org -p 2220
+
+ 2. List the Home Directory
+
+ 
+ Once logged in as bandit10, run:
+ 
+
+ ls
+
+ 
+ You will see data.txt listed.
+ 
+
+ 3. Inspect data.txt
+
+ 
+ To view its contents:
+ 
+
+ cat data.txt
+
+ 
+ The file contains Base64-encoded text. The instructions indicate you must decode it to retrieve the password.
+ 
+
+ 4. Decode the Base64 Data
+
+ 
+ To decode the Base64-encoded data and display the password:
+ 
+
+ base64 -d data.txt
+
+ 
+ Since data.txt is encoded in Base64, running base64 -d data.txt decodes its content and reveals the password.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 9.
+
+ ssh bandit10@bandit.labs.overthewire.org -p 2220 — connect as bandit10.
+
+ ls — list files; shows data.txt.
+
+ cat data.txt — view the Base64-encoded contents.
+
+ base64 -d data.txt — decode the file and display the password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit10@bandit.labs.overthewire.org -p 2220
+ls
+cat data.txt
+base64 -d data.txt

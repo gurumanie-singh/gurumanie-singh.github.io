@@ -68,6 +68,7 @@ export default defineConfig({
         pysp: resolve(__dirname, 'py-network-experiments/SocketProgramming/index.html'),
         pysql: resolve(__dirname, 'py-network-experiments/SQLInjectionScanner/index.html'),
         pytcp: resolve(__dirname, 'py-network-experiments/TCPChatRoom/index.html'),
+        knowledge: resolve(__dirname, 'knowledge/index.html'),
       },
     },
   },

@@ -1,0 +1,292 @@
+= —_ §2025-CPRE-4300-1 > Quizzes » HM Module 10: Quiz
+
+Spring 2025
+Home
+Announcements
+
+Grades
+
+Course Reserves
+
+Smart Search
+
+ISU Syllabus
+Statements
+
+@ Module 10: Quiz ~*
+
+Due Apr 25 at 11:59pm Points 10 Questions 4 Time Limit 10 Minutes
+
+Instructions
+
+Purpose
+
+This quiz covers Chapter 10: Web Security materials from the textbook and lectures. Materials emphasized include web
+proxies and the HTTP command-and-response protocol; you should understand HTTPS, certificates, and encryption's
+effect on web traffic. As with previous chapters, make sure you know about the various vulnerabilities and potential
+mitigation techniques discussed throughout the chapter.
+
+Please note: Although the Module 10 assignment emphasized email headers, an extension from the Module 9 materials,
+this quiz does not include questions regarding email headers.
+
+Task
+
+DO NOT HIT THE BUTTON UNTIL YOU'RE READY TO TAKE THE QUIZ.
+
+Take the Quiz
+
+/
+
+e You may not work in groups or with another person.
+
+e You may only take this quiz once.
+
+e Make sure you will not be interrupted so you can focus on completing the quiz.
+
+e Make sure you have a reliable internet connection.
+
+e You have 10 minutes to complete this quiz. Once you start the quiz, you cannot stop the timer.
+
+© Pay attention to the time. The time remaining is located on a timer on the right sidebar.
+
+°o The quiz will automatically submit after your time is up or if it hits the due date (whichever comes first).
+
+© If you accidentally navigate away from the quiz but have time remaining, you should be able to pick up where you
+left off.
+
+e For multiple select questions (e.g., the ‘select all that apply’ questions with checkboxes), Canvas auto-grading will
+reduce the overall score for incorrectly selected options. Unselected options will not alter the score (you won't gain or
+lose points for not selecting a statement or option, regardless of whether it is correct or incorrect). Be mindful when
+selecting options for this style of question.
+
+¢ Open book/open notes/open internet - but answers must be your own. Do not copy and do not plagiarize. The time
+will go quickly, so do not rely on being able to look up answers.
+
+e Don't hit the button until you're ready to take the quiz!
+
+Grading Criteria
+
+To complete this assignment, you will answer all of the questions for this assignment. Canvas will show your scores upon
+submission. If you have questions about what you missed, please contact your TA(s).
+
+Solutions
+
+You will be able to see your quiz responses after submitting the quiz. Canvas will show answers with feedback. Please note
+this feedback and any corrections, as you will only see this screen once.
+
+Attempt History
+
+Attempt Time Score
+
+LATEST Attempt 1 10 minutes 9 out of 10
+
+Score for this quiz: 9 out of 10
+Submitted Apr 25 at 4:43pm
+This attempt took 10 minutes.
+
+Question 1 3/3 pts
+
+While on a break at her off-campus part-time job, Alice browses the Internet. She begins
+to navigate to ISU's website without connecting to the ISU VPN. Alice's employer has a
+web proxy server on the network that handles web requests.
+
+Internet
+Wireless Employer Isu
+
+Access Point ==")) Router _ _ Router
+(com) a
+=—-@—p)-e-@—-—-@®—-@—.
+
+i
+es
+Alice Proxy ISU Server
+t _ t t ¢
+
+Figure 1: Diagram showing Alice's data path from her computer via
+employer's AP, proxy, and router to the ISU server.
+
+Determine the GET request packet's IP addresses, denoted by the tuple <Source IP,
+Destination IP>, if the packet is intercepted at the positions marked in the network
+diagram.
+
+1. Position A: <Alice’s Computer IP, Proxy IP>
+
+2. Position B: <Proxy IP, ISU Server IP>
+
+3. Position C: <Proxy IP, ISU Server IP>
+
+Now assume no proxy exists on the employer's network. Determine the packet's IP
+addresses if it was intercepted somewhere on the Internet.
+
+4. Position D: <Alice's Computer IP, ISU Server IP>
+
+Answer 1:
+
+Correct! <Alice’s Computer IP, Proxy IP>
+
+Correct. Alice must send her request through the web proxy. The AP acts as a relay
+and does not alter the traffic.
+
+Answer 2:
+
+Correct! <Proxy IP, ISU Server IP>
+
+Correct. Once the request has passed through the proxy, the request will be sourced
+from the proxy with a destination of the ISU server.
+
+Answer 3:
+
+Correct! <Proxy IP, ISU Server IP>
+
+Correct. Once the request has passed through the proxy, the request will be sourced
+from the proxy with a destination of the ISU server.
+
+Answer 4:
+
+Correct! <Alice's Computer IP, ISU Server IP>
+
+Correct. Without a proxy involved, Alice's request is sent directly to the destination,
+the ISU server.
+
+Question 2 1/2 pts
+
+Since most web applications only need to respond to a few HTTP command message
+request types, other methods are rarely used or are disabled on the public-facing
+Internet for security reasons.
+
+Which of the request types below are implemented by most modern web servers?
+Select all that apply.
+
+Note: Canvas auto-grading will reduce the overall score for this problem for incorrectly selected options.
+Unselected options will not alter the score (you won't gain or lose points for options not selected,
+
+regardless of whether it is correct or incorrect).
+
+COPY
+
+DELETE
+
+Correct! GET
+
+Correct.
+
+You Answered HEAD
+
+Incorrect
+
+LINK
+
+MOVE
+
+PATCH
+
+Correct! POST
+
+Correct
+
+PUT
+
+UNLINK
+
+Question 3 2/2 pts
+
+Select all of the true statements regarding HTTPS.
+
+Note: Canvas auto-grading will reduce the overall score for this problem for incorrectly selected
+options. Unselected options will not alter the score (you won't gain or lose points for options not
+
+selected, regardless of whether it is correct or incorrect).
+
+If a web server has its private key leaked, another web server could spoof a secure website,
+as certificates are public information.
+
+Correct. The private key and certificate combination are the verification method for
+HTTPS, and losing just the private key means anyone can set up a server using the
+certificate / key combination.
+
+HTTP is an encrypted protocol and not vulnerable to sniffing attacks.
+
+Browsers initially contain multiple authority certificates, and cannot add any more
+certificates. Any verifiers which do not have a saved certificate are immediately rejected by
+the browser.
+
+To support HTTPS, browsers maintain a cache of private key "certificates" associated with
+website domains.
+
+Encrypting web traffic still exposes the IP addresses of the web servers being accessed,
+allowing a sniffer to determine the websites someone was browsing.
+
+Correct. HTTPS encryption is capable of protecting the web traffic and pages itself,
+but it does not cover the IP addresses, which are required to be visible for routing.
+This can cause a privacy violation, even with HTTPS.
+
+Question 4 3/3 pts
+
+Many web-based vulnerabilities are discussed throughout Chapter 10, and domain
+administrators (the people responsible for managing the physical web server) have
+various techniques available to mitigate many of these vulnerabilities. Assume you are a
+domain administrator for Riverside Enterprise, an aerial rideshare company.
+
+For each vulnerability described below, select the best technique from the available
+choices for a domain administrator to use or apply to mitigate the vulnerability.
+
+Correct! An attacker sniffs credit card
+
+Enforce HTTPS
+
+>
+
+information when a user on
+Riverside Enterprise’s website hits
+a submit button, which sends the
+information to the server via clear
+text parameters in a URL.
+
+Correct! Riverside Enterprise's website
+passes login authentication
+information to the server as a
+parameter in a URL, allowing an
+attacker to perform an automated
+credential stuffing attack using
+usernames and passwords from a
+recent data breach.
+
+- wos
+An attacker sends out phishing Educate Users
+
+emails that include hyperlinks with
+misleading hypertext claiming to
+go to Riverside Enterprise's
+website; instead, the link takes
+
+Enhance Application-Level Sec ¥
+
+<>
+
+users to a malicious website that
+only looks like the official Riverside
+Enterprise website.
+
+- :
+An attacker discovers a password Update Server Configuration 4%
+
+file on (the website) by including
+the file name in the URL:
+www .kirk.riverside.com/login/../aut
+
+Other Incorrect Match Options:
+e Apply HTML Tags
+e Force FTP
+
+Correct
+
+Quiz Score: 9 out of 10
+
+< Previous Next >
+
+Submission Details:
+
+Time: 10 minutes
+Current Score: 9 out of 10
+
+Kept Score: 9 out of 10

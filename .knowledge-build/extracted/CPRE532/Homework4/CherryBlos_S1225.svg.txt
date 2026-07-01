@@ -1,0 +1,315 @@
+about
+domain
+platforms
+legend
+0.0
+0.33
+0.67
+1.0
+used by CherryBlos
+CherryBlos (S1225)
+Mobile
+techniques used by CherryBlos,
+ATT&amp;CK software S1225 (v1.0)
+Mobile ATT&amp;CK v18
+Android, iOS
+Application
+Versioning
+Drive-By
+Compromise
+Exploitation for
+Initial Access
+Lockscreen
+Bypass
+Phishing
+Replication Through
+Removable Media
+SIM Card Swap
+Supply Chain
+Compromise
+Compromise
+Hardware
+Supply Chain
+Compromise Software
+Dependencies and
+Development Tools
+Compromise
+Software
+Supply Chain
+Initial
+Access
+Command
+and Scripting
+Interpreter
+Exploitation for
+Client Execution
+Native API
+Scheduled
+Task/Job
+Unix Shell
+Execution
+Boot or
+Logon Initialization
+Scripts
+Compromise
+Application
+Executable
+Compromise Client
+Software Binary
+Event Triggered
+Execution
+Foreground
+Persistence
+Hijack
+Execution Flow
+Linked
+Devices
+Scheduled
+Task/Job
+Broadcast
+Receivers
+System Runtime
+API Hijacking
+Persistence
+Abuse Elevation
+Control Mechanism
+Exploitation for
+Privilege Escalation
+Process
+Injection
+Device
+Administrator
+Permissions
+Ptrace
+System Calls
+Privilege
+Escalation
+Application
+Versioning
+Download New
+Code at Runtime
+Execution
+Guardrails
+Foreground
+Persistence
+Hide
+Artifacts
+Hooking
+Impair
+Defenses
+Indicator
+Removal on Host
+Input
+Injection
+Masquerading
+Native API
+Obfuscated Files
+or Information
+Process
+Injection
+Proxy Through
+Victim
+Subvert Trust
+Controls
+Virtualization
+Solution
+Virtualization/Sandbox
+Evasion
+Geofencing
+Conceal
+Multimedia Files
+Suppress
+Application Icon
+User
+Evasion
+Device
+Lockout
+Disable or
+Modify Tools
+Prevent
+Application
+Removal
+Disguise
+Root/Jailbreak
+Indicators
+File
+Deletion
+Uninstall
+Malicious
+Application
+Match Legitimate
+Name or Location
+Software
+Packing
+Steganography
+Ptrace
+System Calls
+Code
+Signing Policy
+Modification
+System
+Checks
+Defense
+Evasion
+Abuse Accessibility
+Features
+Access
+Notifications
+Clipboard
+Data
+Credentials from
+Password Store
+Input Capture
+Steal Application
+Access Token
+Keychain
+GUI Input
+Capture
+Keylogging
+URI
+Hijacking
+Credential
+Access
+File and Directory
+Discovery
+Location
+Tracking
+Network Service
+Scanning
+Process
+Discovery
+Software
+Discovery
+System Information
+Discovery
+System Network
+Configuration
+Discovery
+System
+Network Connections
+Discovery
+Impersonate
+SS7 Nodes
+Remote Device
+Management
+Services
+Security
+Software
+Discovery
+Internet
+Connection
+Discovery
+Wi-Fi
+Discovery
+Discovery
+Exploitation of
+Remote Services
+Replication Through
+Removable Media
+Lateral
+Movement
+Abuse Accessibility
+Features
+Access
+Notifications
+Adversary-in-the-Middle
+Archive
+Collected Data
+Audio Capture
+Call Control
+Clipboard
+Data
+Data from
+Local System
+Input Capture
+Linked
+Devices
+Location
+Tracking
+Protected
+User Data
+Screen
+Capture
+Stored
+Application Data
+Video Capture
+GUI Input
+Capture
+Keylogging
+Impersonate
+SS7 Nodes
+Remote Device
+Management
+Services
+Accounts
+Calendar
+Entries
+Call Log
+Contact
+List
+SMS
+Messages
+Collection
+Application
+Layer Protocol
+Call Control
+Dynamic
+Resolution
+Encrypted
+Channel
+Ingress
+Tool Transfer
+Non-Standard
+Port
+Out
+of Band Data
+Remote Access
+Software
+Web Service
+Web
+Protocols
+Domain
+Generation
+Algorithms
+Asymmetric
+Cryptography
+SSL Pinning
+Symmetric
+Cryptography
+Bidirectional
+Communication
+Dead Drop
+Resolver
+One-Way
+Communication
+Command
+and Control
+Exfiltration Over
+Alternative Protocol
+Exfiltration
+Over C2 Channel
+Exfiltration
+Over Unencrypted
+Non-C2 Protocol
+Exfiltration
+Account
+Access Removal
+Call Control
+Data
+Destruction
+Data Encrypted
+for Impact
+Data
+Manipulation
+Endpoint Denial
+of Service
+Generate Traffic
+from Victim
+Input
+Injection
+Network Denial
+of Service
+SMS Control
+Transmitted Data
+Manipulation
+Impact

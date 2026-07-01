@@ -1,0 +1,248 @@
+Comprehensive Analysis of Software-Based Fault 
+Tolerance with Arithmetic Coding for Performant 
+Encoding of Integer Calculations
+COMS 415 Presentation
+Group 17: Ben Smith, Gurumanie Singh Dhiman, Jaret Van Zee, Jonathan Tan
+04/15/2025
+
+Department of Computer Science
+2
+Problem Statement
+•
+Hardware unreliability is an increasing problem
+o
+Transient Faults 
+: Faults that occur for a short time
+o
+Permanent Faults 
+: Faults that continuously aﬀect the system
+o
+Intermittent Faults 
+: Faults that occur for a short time but periodically
+•
+Traditionally, fault tolerance is handled by specialized hardware.
+•
+Fault tolerance is required by standards like IEC-61508.
+•
+This paper analyzed different methods for Arithmetic Coding for running fault 
+tolerance on commercial off-the-shelf (COTS) hardware.
+o
+Performance (detection capability)
+o
+Overhead
+
+Department of Computer Science
+3
+Approaches to Redundancy
+•
+Redundancy Types:
+o
+Hardware 
+: Extra physical components (expensive & inflexible)
+o
+Software 
+: Duplicate code versions (costly to develop)
+o
+Time 
+: Repeating operations (misses permanent faults)
+o
+Information : Arithmetic coding (potentially costly computations) 
+•
+Why Information Redundancy?
+o
+More dynamic
+o
+Adds error detection to the data itself (through encoding)
+
+Department of Computer Science
+4
+What is Arithmetic Coding? A simple example
+•
+Let there be a coding constant 𝐴= 3
+•
+Let there be two values 𝑣= 5 and 𝑢= 7
+•
+Arithmetic Coding encodes them like so: 
+𝑣𝑐= 𝐴𝑣= 3 × 5 = 15
+𝑢𝑐= 𝐴𝑢= 3 × 7 = 21
+•
+If we want to calculate the addition of 𝑣 and 𝑢, we will take 
+ 
+ 
+𝑣𝑐+ 𝑢𝑐= 15 + 21 = 36
+       which is divisible by 𝐴, hence no error
+•
+If there was an error (like a bit flip) that caused 𝑣′ to be 14, 
+ 
+ 
+𝑣𝑐+ 𝑢𝑐= 35
+       which is not divisible by 𝐴, hence an error has occurred
+•
+This is also how AN encoding works
+
+Department of Computer Science
+5
+Different Types of Arithmetic Coding
+•
+AN 
+: Multiply integer values by a constant 𝐴, i.e., vc = 𝐴𝑣0
+•
+Residue 
+: Forms a residuum of a value, i.e., vc = 𝐴−(𝑣 % 𝐴)
+•
+Complement 
+: Use the signed representation, e.g., 1’s and 2’s complement
+
+Department of Computer Science
+6
+Different Types of Arithmetic Coding’s Capability
+
+Department of Computer Science
+7
+Problems with Existing methods
+•
+AN codes are widely used but inefficient for 64-bit operations
+o
+They double bit-width (64 → 128 bits)
+o
+Less optimized for 64-bit processors
+•
+Residue codes can’t uniquely decode values.
+•
+Complement-based codes (like one’s complement) are overlooked in literature but 
+are promising.
+•
+This paper proposes:
+o
+A comprehensive strategy to evaluate arithmetic codes
+o
+Identify the best performer for 64-bit datatype (Ones’ complement)
+
+Department of Computer Science
+8
+Fault Detection Capability of Different Arithmetic Coding
+•
+Best constant (𝐴)
+•
+Distance for separate codes (𝐶𝑑)
+•
+Average Hamming distance (𝐻𝑑)
+•
+Normalized Hamming distance (
+𝐻𝑑
+max(𝐻𝑑))
+(Higher the better)
+(Higher the better)
+(Closer to 1 the better)
+
+Department of Computer Science
+9
+Overhead of Different 
+Arithmetic Coding
+•
+Y-axis: Slowdown=
+𝑡𝑒𝑛𝑐𝑜𝑑𝑒𝑑
+𝑡𝑛𝑎𝑡𝑖𝑣𝑒
+32-bit encoding:
+
+Department of Computer Science
+10
+Overhead of Different 
+Arithmetic Coding
+64-bit encoding:
+•
+Y-axis: Slowdown=
+𝑡𝑒𝑛𝑐𝑜𝑑𝑒𝑑
+𝑡𝑛𝑎𝑡𝑖𝑣𝑒
+•
+64-bit AN incurs higher 
+overhead due to the 
+doubling of bit width
+
+Department of Computer Science
+11
+Overhead of Different 
+Arithmetic Coding
+•
+Analysis:
+•
+Res-coding in general 
+incurs high overhead
+•
+1’s and 2’s are similar 
+in general
+•
+For some operations, 
+1’s incurs less 
+overhead than 2’s
+
+Department of Computer Science
+12
+•
+The best option
+•
+Detects 100% of injected faults when tested
+•
+Outperforms AN and Residue codes in detecting permanent and transient faults
+•
+Achieved using COTS hardware
+•
+Only a 2.2x (for 32-bit) and a 2.3x (for 64 bit) mean slowdown
+One’s Complement
+
+Department of Computer Science
+13
+Choosing the Right Arithmetic Encoding
+•
+The 7 Steps:
+1.
+Do you need arithmetic coding? (Only if math operations are involved)
+2.
+Identify fault types. (Permanent, transient, intermittent)
+3.
+Model software-level errors. (Exchanged operands, lost updates, etc.)
+4.
+Measure detection strength. (Use code distance, fault injection)
+5.
+Decide where to apply coding. (Prefer compile-time, program-level)
+6.
+Build a check mechanism. (Accumulators, output validation)
+7.
+Evaluate performance. (Real algorithms, not just isolated ops)
+
+Department of Computer Science
+14
+•
+This paper analyzes different arithmetic coding schemes for fault-tolerance
+•
+Analyzed AN, Residue, and Complement coding schemes
+•
+Identified that ones’ complement is superior due to:
+•
+Fault detection capabilities
+•
+Low overhead
+•
+Strengths:
+•
+The paper applies to big industries -> Small changes in hardware/software 
+helps with reducing the big issues?
+•
+Weaknesses:
+•
+Hard to integrate into already up and running systems
+Conclusion
+
+Department of Computer Science
+15
+•
+Fischer, Marc, et al. “Comprehensive Analysis of Software-Based Fault Tolerance 
+With Arithmetic Coding for Performant Encoding of Integer Calculations.” Lecture 
+notes in computer science, 2022, pp. 144–57. https://doi.org/10.1007/978-3-031-
+14835-4_10.
+References
+
+Department of Computer Science
+16
+Thank you for your attention!
+Questions?

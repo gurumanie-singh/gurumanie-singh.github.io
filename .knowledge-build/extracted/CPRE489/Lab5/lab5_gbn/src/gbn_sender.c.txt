@@ -1,0 +1,29 @@
+Sends the 26 bytes of the alphabet over the socket described by sockfd to
+ * dest. Also, introduces bit error at the rate of ber.
+char data[] = {0x12, 0x34};
+    packet_t packet;
+    pkt_build(&packet, PKT_TYPE_DATA, data, 0);
+    printf("Built packet: ");
+    pkt_print(&packet);
+introduce_bit_error((char *)packet.bytes, PKT_SIZE, ber);
+    printf("Introduced error, now packet is: ");
+    pkt_print(&packet);
+sendto(sockfd, packet.bytes, PKT_SIZE, 0, (struct sockaddr *)&dest, sizeof(dest));
+    printf("Sent packet\n");
+packet_t response;
+    recvfrom(sockfd, response.bytes, PKT_SIZE, 0, NULL, NULL);
+    printf("Received response: ");
+    pkt_print(&response);
+Build all 13 packets (26 alphabets, 2 per packet)
+Oldest unacknowledged packet
+Next packet to send
+Send all the new packets that are within the window size (N = 3)
+Window Size = 3 && < 13 packets
+Wait for a response
+If we receive ACK
+cumulative ACK: receiver expects seq = oldestPacket
+If we receive NAK, retransmit all packets in the current window
+We'll start off with an example of building and sending a single packet of data 0x1234
+Now, let's introduce some bit error into the packet
+And send it
+And finally, see what the response is from the server/receiver

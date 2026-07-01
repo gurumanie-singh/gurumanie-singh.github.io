@@ -1,0 +1,155 @@
+1 
+ 
+CPR E 4890: Computer Networking and Data Communication 
+Lab Experiment #1 – Networking Utility Programs 
+(Total Points: 100) 
+Pre-lab Recommendations 
+Labs in this course will typically be conducted using the 489labuser account. This means you will not 
+have access to your personal drive, and any files left on the lab computer will be visible to others. The TA 
+recommends bringing a flash drive to easily bring home screenshots or files collected during the lab. Or, 
+you are welcome to use any file transfer method you prefer, such as https://www.file.io. 
+Objective 
+To demonstrate how to use network diagnostic and probing tools such as ping, nslookup, ifconfig, 
+iperf, traceroute, tcptraceroute, Nmap, tcpdump, tcptrace, and  Wireshark. 
+Lab Expectations 
+Work through the lab individually and let the TA know if you have any questions. After the lab, write up a 
+lab report and be sure to: 
+a) Attend the lab. (5 points) 
+b) Summarize what you learned in a few paragraphs. (10 points) 
+c) Answer any questions asked in the exercises throughout the experiment. (85 points in total, 
+with 5 points for each of the 17 questions) 
+ 
+Answers to questions shall contain: 
+• 
+A screenshot including the command/action and its output 
+• 
+A written comment or annotation of the screenshot (as appropriate) 
+Problem Description 
+In this lab experiment, you will learn about several network utility programs. Please use the “Networking 
+Commands Reference” document provided alongside this lab description. For each set of exercises, 
+read through the reference for the command and use manual pages if necessary. 
+ 
+Note: Network probing tools, such as tcpdump and Wireshark, are useful for analyzing network 
+traffic and troubleshooting network problems.  A number of privacy and security concerns are 
+raised with the use of these tools – please use them in an ethical manner. 
+ 
+Warning: During this lab, do not log into any websites or remote applications.  The tools we will be 
+using allow anyone to see the content of packets on the wire.  Hence, your username and/or 
+password may be easy to discover. 
+Login Information 
+Make sure that you are logged in to your lab computer using the following credentials (otherwise, some 
+commands that require “sudo” won’t work): 
+Username: 489labuser 
+Password: 489labuser
+
+2 
+ 
+EXERCISES 
+ip a & ifconfig 
+1. What devices (interfaces) are available on your machine? What are the IP 
+addresses assigned to them? 
+(5   points) 
+2. What is the device (interface) named `lo` used for? Use manual 
+pages or search online. What address is assigned to the device? 
+(5 points) 
+ping 
+3. Ping the following destinations and report the average round-trip-time (the 
+latency) to each one: 
+  www.google.com 
+  www.iastate.edu 
+  vm.iastate.edu 
+  127.0.0.1 
+  www.cam.ac.uk 
+ 
+(5 points) 
+4. Rank the latency from least to greatest. Why do you suppose this is the 
+case? Why are pings to 127.0.0.1 so much faster than pings to other 
+destinations? Use the internet, manual pages, or ask your TA if stuck. 
+(5 points) 
+5. Using the manual pages for ping (man ping), determine which flag/option 
+can be used to specify the interface pings will be sent out of? Which option 
+can be used to specify packet size? 
+(5 points) 
+traceroute & tcptraceroute 
+6. Perform a traceroute to google.com. How many hops does it take for your 
+packets to reach google.com? What is the latency? About how many hops 
+are within the ISU network (example internal address: vm.iastate.edu)? 
+ 
+(5 points) 
+7. Perform another traceroute to google.com using TCP packets instead of 
+ICMP. Are there any differences in the output? (Hint: sudo is required for 
+tcptraceroute)  
+(5 points) 
+nslookup 
+8. Perform nslookup of www.iastate.edu. What is the IP address of this 
+server? 
+(5 points) 
+9. What is the mail exchanger for ece.iastate.edu?  
+(5 points) 
+10. Which of the following are aliases? If it’s an alias, record its canonical name. 
+  www.apple.com 
+  apple.com 
+  www.google.com 
+(5 points) 
+iperf 
+11. Your TA is running the iperf server program on the machine 192.168.254.1. 
+Run the iperf client program against the TA’s iperf server and report the 
+bandwidth of the connection in Gigabits per second (Gbps), Gigabytes per 
+second (GBps), Megabits per second (Mbps), and Megabytes per second 
+(MBps). 
+ (5   points)
+
+3 
+ 
+nmap 
+12. Run a port map against your own machine. Is port 22 open? Which service runs 
+on this port? 
+ (5   points) 
+tcpdump 
+13. For this exercise, work with a partner and alternate roles. Your machine is 
+currently undergoing a ping flood attack! On partner #1’s computer, execute ping 
+[address] where “address” is partner #2’s IP address. On partner #2’s computer, 
+use tcpdump and filter for ICMP packets to determine the IP address of the 
+machine that is sending the packets. Include the IP addresses of your machine 
+and your partner’s machine in your report. (Note: use IP address 192.168.254.x 
+where x can be found using earlier command; also, for a more accurate flood 
+attack, –f can be used but requires sudo). 
+ (5   points) 
+Wireshark 
+Note: For each part of this exercise, make sure that previous attack simulations and other activities, such 
+as browsing, are completed. This will provide a smoother experience and help you avoid dealing with too 
+many unrelated packets during analysis. 
+ 
+To generate HTTP connections, open a web browser such as Firefox on the command line with, for 
+instance, “firefox www.google.com”. Let’s analyze the TCP connections between your computer and 
+www.iastate.edu.  
+ 
+Start a new capture and then connect to www.iastate.edu. Let it run for about 10 seconds. Use 
+Statistics-> Conversations -> TCP to see all the TCP connections between your computer and various 
+IP addresses. For this exercise, we are concerned with connections to the IP address corresponding to 
+www.iastate.edu. (Hint: what command resolves a hostname to an IP address?). Sort the connections by 
+Address B and take a screenshot of only the conversations between your IP address and the IP 
+address of “www.iastate.edu”. Then answer the following questions: 
+ 
+14. For each connection, indicate the duration and the number of packets sent from 
+your computer during that connection. 
+ (5   points) 
+15. What were the destination ports used and what protocols do they correspond to? 
+ (5   points) 
+ 
+ 
+Continuing the tcpdump example, your computer is still under a ping flood (ICMP request and reply 
+packets).  Work with a partner and perform alternate roles. Start a new capture, and let it run for about 10 
+seconds. 
+ 
+16. Determine how much data (in bytes) each ICMP packet contains. (Hint: the 
+conversations panel does not support ICMP explicitly; you can capture the traffic 
+between your two nodes to make sure the result is valid)  
+ (5   points) 
+ 
+Start a new capture, and let it run while you complete a traceroute and tcptraceroute to 
+www.ebay.com.  
+ 
+17. What types of packets are sent with traceroute? What types of packets are 
+sent with tcptraceroute? 
+ (5   points)

@@ -1,0 +1,126 @@
+CPRE489 — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ CPRE489 · Computer Networks
+
+ 
+ Computer Networks —
+from bits to apps.
+ 
+
+ 
+ Studied networking fundamentals across all layers of the protocol stack — physical, data-link, network, and transport — with hands-on labs implementing protocols like Go-Back-N.
+ 
+
+ 
+
+ 
+
+ 
+ overview
+
+ What I
+learned.
+
+ 
+ CPRE489 provides a comprehensive bottom-up exploration of computer networks, beginning with the physical layer and working upward through data-link, network, and transport layers. The course covers medium sharing techniques (ALOHA, CSMA/CD), error detection and recovery mechanisms, IP addressing and routing via ARP and DHCP, and reliable transport protocols.
+ 
+
+ 
+ Lab assignments provided hands-on experience implementing networking protocols. A capstone lab involved building a Go-Back-N (GBN) reliable transfer protocol, reinforcing understanding of sliding windows, acknowledgements, timeouts, and retransmission strategies.
+ 
+
+ 
+
+ 
+
+ 
+ highlights
+
+ Key
+topics.
+
+ 
+ 
+ Physical Layer
+
+ Studied signal encoding, modulation, multiplexing, and the physical characteristics of transmission media that underpin all network communication.
+
+ 
+
+ 
+ Data-Link Layer
+
+ Explored medium access control (ALOHA, CSMA/CD, Token Ring), framing, and error detection techniques including CRC and checksums.
+
+ 
+
+ 
+ Network Layer
+
+ Covered IP addressing, ARP, DHCP, subnetting, and routing algorithms that enable end-to-end packet delivery across interconnected networks.
+
+ 
+
+ 
+ Transport Layer
+
+ Studied TCP and UDP, reliable data transfer mechanisms, flow control, congestion control, and implemented Go-Back-N for sliding-window reliability.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ labs
+
+ Hands-on
+work.
+
+ 
+ Five lab assignments built progressively from basic socket programming to full protocol implementation. The final lab required implementing a Go-Back-N reliable transfer protocol with sliding window management, cumulative acknowledgements, timeout-based retransmission, and in-order delivery guarantees.
+ 
+
+ 
+ TCP/IP
+ CSMA/CD
+ ARP
+ DHCP
+ Go-Back-N
+ Error Detection
+ Socket Programming
+ 
+
+ 
+ 
+ View Code on GitHub →
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

@@ -1,0 +1,5 @@
+network short byte ordering
+parse arguments into args struct
+set up server address
+create socket
+parse command line arguments into args struct

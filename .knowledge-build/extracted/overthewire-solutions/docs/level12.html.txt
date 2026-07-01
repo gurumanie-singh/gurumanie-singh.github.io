@@ -1,0 +1,342 @@
+Level 12: Hexdump & Compression — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 12
+ Unpack Repeatedly Compressed Hexdump
+
+ Revert a hexdump to binary and decompress through multiple layers of gzip, bzip2, and tar archives.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is hidden in data.txt, which is a hexdump of a file that has been repeatedly compressed. You must revert the hexdump to binary, then decompress through each layer until you obtain an ASCII text file containing the password.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 11 and SSH into Level 12
+
+ 
+ After obtaining the Level 12 password from the ROT13 decoding in Level 11, exit the current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit12 using the password acquired:
+ 
+
+ ssh bandit12@bandit.labs.overthewire.org -p 2220
+
+ 2. List and Inspect data.txt
+
+ 
+ Once logged in as bandit12, run:
+ 
+
+ ls
+
+ 
+ You will see data.txt listed. To view its contents (a hexdump), use:
+ 
+
+ cat data.txt
+
+ 3. Create a Temporary Working Directory
+
+ 
+ Since you cannot modify files in the home directory, create a temporary directory under /tmp using a hard-to-guess name. The command mktemp -d automatically generates a unique directory:
+ 
+
+ mkdir /tmp/tmp.lJMBrRKLqx
+
+ 4. Copy and Revert the Hexdump to Binary
+
+ 
+ Copy data.txt into your temporary directory and revert the hexdump to binary. First, copy and rename the file:
+ 
+
+ cp data.txt /tmp/tmp.lJMBrRKLqx/data.txt
+
+ 
+ Then, convert the hexdump back to binary and save it as hexToBin.txt:
+ 
+
+ xxd -r data.txt > /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 5. Identify Compression Format and Convert to .gz
+
+ 
+ Check the binary file's type:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+ The output indicates "gzip compressed data." Rename the file extension to .gz:
+ 
+
+ mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+
+ 6. Decompress the Gzip File
+
+ 
+ Decompress the gzip archive:
+ 
+
+ gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+
+ 
+ Now check the type of the resulting file:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+ The output indicates "bzip2 compressed data."
+ 
+
+ 7. Convert to .bz2 and Decompress
+
+ 
+ Rename the file extension to .bz2:
+ 
+
+ mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+
+ 
+ Then decompress the bzip2 archive:
+ 
+
+ bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+
+ 
+ Check the type of the resulting file:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+ The output indicates "POSIX tar archive."
+ 
+
+ 8. Extract the First Tar Archive
+
+ 
+ Rename the file extension to .tar:
+ 
+
+ mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar
+
+ 
+ Extract the tar archive:
+ 
+
+ tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx
+
+ 
+ This produces data5.bin inside the temporary directory. Check its type:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/data5.bin
+
+ 
+ The output indicates another "POSIX tar archive."
+ 
+
+ 9. Extract the Second Tar Archive
+
+ 
+ Extract data5.bin (the second tar):
+ 
+
+ tar -xf /tmp/tmp.lJMBrRKLqx/data5.bin -C /tmp/tmp.lJMBrRKLqx
+
+ 
+ This produces data6.bin. Check its type:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/data6.bin
+
+ 
+ The output indicates "bzip2 compressed data."
+ 
+
+ 10. Convert data6.bin to .bz2 and Decompress
+
+ 
+ Rename data6.bin to hexToBin.bz2:
+ 
+
+ mv /tmp/tmp.lJMBrRKLqx/data6.bin /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+
+ 
+ Then decompress the bzip2 archive:
+ 
+
+ bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+
+ 
+ Check the type of the resulting file:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+ The output indicates "POSIX tar archive."
+ 
+
+ 11. Extract the Third Tar Archive
+
+ 
+ Rename the file extension to .tar:
+ 
+
+ mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar
+
+ 
+ Extract the tar archive:
+ 
+
+ tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx
+
+ 
+ Now check the type of the new file:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+ The output indicates "gzip compressed data."
+ 
+
+ 12. Convert to .gz and Decompress
+
+ 
+ Rename the file extension to .gz:
+ 
+
+ mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+
+ 
+ Then decompress the gzip archive:
+ 
+
+ gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+
+ 
+ Check the type of the resulting file:
+ 
+
+ file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+ The output indicates "ASCII text," which is the password. Finally, display the password:
+ 
+
+ cat /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 11.
+
+ ssh bandit12@bandit.labs.overthewire.org -p 2220 — connect as bandit12.
+
+ ls — list files; shows data.txt.
+
+ cat data.txt — inspect the hexdump contents.
+
+ mkdir /tmp/tmp.lJMBrRKLqx — create a temporary working directory.
+
+ cp data.txt /tmp/tmp.lJMBrRKLqx/data.txt — copy the hexdump into the temp directory.
+
+ xxd -r data.txt > /tmp/tmp.lJMBrRKLqx/hexToBin.txt — revert the hexdump to binary.
+
+ file — identify compression format at each step (gzip, bzip2, tar).
+
+ mv — rename file extensions to match the compression format.
+
+ gzip -d — decompress gzip archives.
+
+ bzip2 -d — decompress bzip2 archives.
+
+ tar -xf — extract tar archives.
+
+ cat /tmp/tmp.lJMBrRKLqx/hexToBin.txt — display the final ASCII text password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit12@bandit.labs.overthewire.org -p 2220
+ls
+cat data.txt
+mkdir /tmp/tmp.lJMBrRKLqx
+cp data.txt /tmp/tmp.lJMBrRKLqx/data.txt
+xxd -r data.txt &gt; /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar
+tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx
+file /tmp/tmp.lJMBrRKLqx/data5.bin
+tar -xf /tmp/tmp.lJMBrRKLqx/data5.bin -C /tmp/tmp.lJMBrRKLqx
+file /tmp/tmp.lJMBrRKLqx/data6.bin
+mv /tmp/tmp.lJMBrRKLqx/data6.bin /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+bzip2 -d /tmp/tmp.lJMBrRKLqx/hexToBin.bz2
+file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.tar
+tar -xf /tmp/tmp.lJMBrRKLqx/hexToBin.tar -C /tmp/tmp.lJMBrRKLqx
+file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+mv /tmp/tmp.lJMBrRKLqx/hexToBin.txt /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+gzip -d /tmp/tmp.lJMBrRKLqx/hexToBin.gz
+file /tmp/tmp.lJMBrRKLqx/hexToBin.txt
+cat /tmp/tmp.lJMBrRKLqx/hexToBin.txt

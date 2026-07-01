@@ -1,0 +1,11 @@
+MITRE ATT&CK
+In this homework, I will be going over:
+A group and all their techniques
+Whitefly, Group G0107
+A software package and how it is used
+Daserf, Software S0187
+A campaign and how it is used
+Operation Honeybee, Campaign C0006
+Whitefly: This is a cyber espionage group that has been operating since at least 2017. This group has targeted organizations based mostly in Singapore across multiple sectors and has a primary motive to steal large amounts of sensitive info. This group was mainly linked to the attack against SingHealth which is the largest public health organization in Singapore.
+Daserf: This is a backdoor that has been used to spy on and steal info from Japanese, South Korean, Russian, Singaporean and Chinese victims. It is written in Visual C and Delphi.
+Operation Honeybee: This was a campaign that targeted humanitarian aid and inter-Korean affair organizations from at least late 2017 to early 2018 (quite a small timeframe). It initially only targeted South Korea but expanded to eventually include Vietnam, Singapore, Japan, Indonesia, Argentina, and Canada. The security researchers that looked into this campaign found that the threat actors were likely Korean speakers based on the metadata in the documents and executable files. They also named this campaign Honeybee after seeing the author name in multiple malicious word documents.

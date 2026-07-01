@@ -1,0 +1,70 @@
+udp_forwarder.c
+ *
+ * Author: Gurumanie Singh Dhiman
+ * Description: Forwards UDP packets from a source to a destination with packet loss simulation.
+ *
+ * Usage:
+ *   Compile the program:
+ *     make
+ *   Run it:
+ *     ./udp_forwarder <SERVER_IP> <SERVER_PORT> <DESTINATION_IP> <DESTINATION_PORT> <LOSS_RATE>
+ *
+ *   Loss rate is the number of packets out of 1000 that are dropped.
+ *   Example: ./udp_forwarder 127.0.0.1 5000 127.0.0.1 5001 50
+ *            This drops 50/1000 packets (5% loss rate)
+ *
+ * Tips:
+ *   - Check the man pages for any functions you're unsure of. Parameters,
+ *     return values, and sometimes even examples are listed!
+ *     Example: man socket, man bind, man recvfrom, man sendto
+ *
+ *   - Check for errors on ALL system calls (socket, bind, recvfrom, sendto)
+ *
+ *   - Abstract logically separate blocks into separate functions!
+ *
+ *   - Use rand() % 1000 to generate random numbers between 0-999 for loss simulation
+main
+ * The main entry point of your program
+ *
+ * Expected command line arguments:
+ *   argv[1] - SERVER_IP: IP address to bind/listen on
+ *   argv[2] - SERVER_PORT: Port to bind/listen on
+ *   argv[3] - DESTINATION_IP: IP address to forward packets to
+ *   argv[4] - DESTINATION_PORT: Port to forward packets to
+ *   argv[5] - LOSS_RATE: Number of packets out of 1000 to drop
+For printf, fprintf, perror
+For atoi, rand, srand, exit, EXIT_FAILURE
+For memset, strcmp
+For time (seeding random number generator)
+For socket, bind, sendto, recvfrom
+For inet_addr, htons, sockaddr_in
+For close
+For BUFFER initialization
+Check if correct number of arguments provided (argc should be 6)
+Parse command line arguments
+Hint: Use atoi() to convert string to integer for ports and loss rate
+Seed random number generator
+Hint: srand(time(NULL));
+Create UDP socket
+Hint: socket(AF_INET, SOCK_DGRAM, 0)
+Set up server address structure to bind to
+Hint: Use struct sockaddr_in, inet_addr(), htons()
+Bind socket to server IP and port
+Hint: bind(sock_fd, ...)
+Set up destination address structure for forwarding
+Hint: Use struct sockaddr_in, inet_addr(), htons()
+Main packet forwarding loop
+Loop forever:
+1. Receive packet using recvfrom()
+2. Generate random number (0-999)
+3. If random number < loss_rate: drop packet (do nothing)
+4. Else: forward packet using sendto() to destination
+Buffer for received packets
+Receive packet from source
+Simulate packet loss: generate random number 0-999
+Drop packet if random number is less than loss rate
+Packet is dropped so we do nothing
+Forward packet to the destination
+Clean up
+Hint: close(sock_fd)
+Good luck! Let your TA know if you have any questions.

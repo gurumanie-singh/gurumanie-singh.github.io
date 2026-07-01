@@ -1,0 +1,67 @@
+CPRE 4310 
+Homework #5 
+ 
+Assignments will be submitted in PDF format via Canvas.  
+Please submit your homework online through Canvas. Late homework will not be accepted.  
+Important: Your submission must be in .pdf format ONLY! 
+You are not allowed to use AI tools to answer any of the HW questions 
+ 
+1. Describe the differences between a host-based IDS and a network-based IDS. How can 
+their advantages be combined into a single system? 
+ 
+- 
+Host-based IDS 
+o A host-based IDS is an agent or software that is installed on a single host. 
+▪ Analyses system logs  
+▪ Checks for any unauthorized changes 
+▪ Monitors system calls  
+- 
+Network-based IDS 
+o A network-based IDS monitors the traffic on the network and identifies 
+suspicious activity occuring. 
+o Can be implemented Inline or Passively 
+Their advantages can be combined into a single system by taking both the alerts generated 
+by Host-based IDS and Network-based IDS, then feeding them into a Security Information 
+and Event Mangement (SIEM) based system. Using this the security admins or the people 
+analyzing the logs will be able to get a much more accurate view of the security of the 
+system as a whole. 
+ 
+2. What are three benefits that can be provided by an IDS? 
+ 
+- 
+Detects malicious activity early 
+o Does this by monitoring host or network traffic to identify intrusions or 
+attacks 
+- 
+Collects logs and other forensics data 
+o Captures packet data which can help with forensics later on to dive deeper 
+into identifying the attack vector 
+- 
+Real-time alerting and allowing quicker response from security administrators 
+o Provides alerts the moment any suspicious activity is detected
+
+3. What is the difference between a false positive and a false negative in the context of 
+an IDS? 
+ 
+False Positive is when an alert is created even though the activity is from a genuine user. 
+False Negative is when an alert is not created even though the activity is from an 
+attacker. In other terms, false positive (false alarm) occurs when our IDS wrongly flags 
+legit activity of a user and a false negative occurs when our IDS fails to detect a threat.  
+ 
+4. What is the difference between anomaly detection and signature intrusion detection? 
+ 
+- 
+Anomaly detection 
+o This method of detection identifies threats by comparing them against the 
+actions of a normal user. 
+o It basically establishes a baseline of what normal user and network behavior 
+looks like, then monitors the activity to see if anything deviates from the 
+standard baseline. 
+- 
+Signature intrusion detection 
+o This method of detection identifies threats by comparing them against a 
+database of known attack “signatures”. 
+o The “signatures” used are simply unique patterns or blueprints of malicious 
+code and network traffic stored in a database, which is then used and 
+compared against to see if any of the incoming data matches contents from 
+the database.

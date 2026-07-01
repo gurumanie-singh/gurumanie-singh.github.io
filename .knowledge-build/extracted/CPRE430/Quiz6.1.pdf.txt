@@ -1,0 +1,322 @@
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 1 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+ Module 06: Quiz 3 
+Due Mar 28 at 11:59pm
+Points 10
+Questions 2
+Time Limit 15 Minutes
+Instructions
+Purpose
+This quiz is over the materials for Module 06. This quiz focuses on decoding and reading network
+packets presented as hexadecimal values (i.e., how to parse and translate the raw data from a
+packet). You may want to use RapidTables
+ (https://www.rapidtables.com/convert/number/hex-to-
+decimal.html) , open in a different tab, to help you quickly convert hexadecimal to decimal where
+needed. Be comfortable decoding packets before beginning this quiz, as time will pass quickly.
+Having a pencil and scratch paper may be helpful for this quiz.
+Task
+DO NOT HIT THE BUTTON UNTIL YOU'RE READY TO TAKE THE QUIZ.
+You may only take this quiz once.
+Make sure you will not be interrupted to focus on completing the quiz.
+Make sure you have a reliable internet connection.
+You have 15 minutes to complete this quiz. Once you start the quiz, you cannot stop the timer.
+Pay attention to the time. The time remaining is located on a timer on the right sidebar.
+The quiz will automatically submit after your time is up or if it hits the due date (whichever
+comes first).
+If you accidentally navigate away from the quiz but have time remaining, you should be able to
+pick up where you left off.
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 2 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+Attempt History
+Attempt
+Time
+Score
+LATEST
+Attempt 1
+5 minutes
+9.5 out of 10
+ Correct answers are hidden.
+Score for this quiz: 9.5 out of 10
+Submitted Mar 28 at 4:50pm
+This attempt took 5 minutes.
+
+For multiple select questions (e.g., the 'select all that apply' questions with checkboxes), Canvas
+auto-grading will reduce the overall score for incorrectly selected options. Unselected options will
+not alter the score (you won't gain or lose points for not selecting a statement or option, regardless
+of whether it is correct or incorrect). Be mindful when selecting options for this style of question.
+Open book/open notes/open internet - but answers must be your own. Do not copy, plagiarize, or
+obtain solutions from other sources or people.
+Don't hit the button until you're ready to take the quiz!
+Grading Criteria
+Reminder: Pay attention to the field formatting instructions so you can format your answers in each
+blank to receive credit. Answer formatting on this quiz resembles the formatting requirements from
+other Module 06 assignments.
+To complete this assignment, you will answer all of the questions. Canvas will show your scores upon
+submission. If you have questions about what you missed, please contact your TA.
+Solutions
+You will be able to see your quiz responses after submitting the quiz. Canvas will show answers with
+feedback. Please note this feedback and any corrections; you will only see this screen once.
+Answer Formatting - the same guidelines as on previous assignments
+Use the number keys; do not spell out numbers (e.g., use '1', not 'one').
+Binary and hexadecimal answers should not use the 0b and 0x prefixes on this assignment.
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 3 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+
+PartialQuestion 1
+8.5 / 9 pts
+Answers may be written using uppercase or lowercase letters, but be consistent throughout the
+submission.
+Use the standard formatting conventions for Ethernet and IP addresses used in class.
+Leading zeros:
+Include where necessary and customary (e.g., addresses, payload/padding).
+Avoid with decimal values (e.g., use '1', not '01').
+Otherwise, they can be omitted as long as it doesn't alter the value's interpretation (e.g.,
+'00' and '0x0' can be simplified to '0'). Ensure consistency in omission (e.g., don't represent
+'0011' as '011').
+Copy/Paste in Canvas: Canvas may mark an answer as incorrect if it includes unintended
+characters like extra spaces or carriage returns at the end of your answer so be careful entering
+your responses. If you think Canvas counted something as incorrect due to unintended
+characters, contact your TA(s).
+Given the network packet in Figure 1, identify the appropriate values for the fields listed in Table 1.
+0004 7696 7bda 0015 3321 2715 0800 4500
+0049 1111 4000 4011 8201 e79c 7671 e79c
+7677 0850 0035 0035 e0bf 319a 0100 0001
+0000 0000 0000 0331 3438 0331 3237 0331
+3834 0238 3107 696e 2d61 6464 7204 6172
+7061 0000 0c00 01                      
+Figure 1: Hexadecimal representation of a packet extracted from the network.
+Table 1: Ethernet Frame - Hexadecimal Packet Breakdown
+Layer/Protocol
+Field
+Answer
+Destination Address
+  00:04:76:96:7b:da
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 4 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+Ethernet
+Source Address
+  00:15:33:21:27:15
+Type or Length (hex)
+0x 0800
+  IP
+Version (hex)
+0x 4
+Header Length (decimal, in bytes)   20
+Type of Service (hex)
+0x 00
+Total Length (decimal)
+  73
+ID (hex)
+0x 1111
+Flags: bit 1
+0b 0
+bit 2
+0b 1
+bit 3
+0b 0
+Offset
+  0
+TTL (decimal)
+  64
+Protocol (decimal)
+  17
+Checksum (hex)
+0x 8201
+Source IP Address
+  231.156.118.113
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 5 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+Answer 1:
+00:04:76:96:7b:da
+Correct
+Answer 2:
+00:15:33:21:27:15
+Correct
+Answer 3:
+0800
+Correct
+Answer 4:
+4
+Correct
+Answer 5:
+20
+Correct
+Answer 6:
+00
+Correct
+Answer 7:
+73
+Correct
+Answer 8:
+1111
+Correct
+Answer 9:
+0
+Correct
+Answer 10:
+1
+Correct
+Destination IP Address
+  231.156.118.119
+  Data
+Full Payload (hex)
+0x 0x0850 0035 0035
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 6 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+Answer 11:
+0
+Correct
+Answer 12:
+0
+Correct
+Answer 13:
+64
+Correct
+Answer 14:
+17
+Correct
+Answer 15:
+8201
+Correct
+Answer 16:
+231.156.118.113
+Correct
+Answer 17:
+231.156.118.119
+Correct
+Answer 18:
+0x0850 0035 0035 e0bf 319a 0100 0001 0000 0000 0000 0331 3438 0331 3237 0331 3834 0238
+3107 696e 2d61 6464 7204 6172 7061 0000 0c00 01
+Solution
+Layer/Protocol
+Field
+Hex from
+Packet
+Answer
+Ethernet
+Destination Address
+0004 7696
+7bda
+00:04:76:96:7b:da
+*remember
+proper Ethernet
+address
+formatting
+Source Address
+0015 3321
+2715
+00:15:33:21:27:15
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 7 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+Type or Length (hex) 0800
+0x0800 or 0x800
+IP
+Version (hex)
+4
+0x[4]
+Header Length
+(decimal, in bytes)
+5
+20
+If you put 5:
+Remember, the
+field is in four-
+byte words
+(4*5=20 bytes in
+length)
+Type of Service (hex) 00
+0x0 or 0x00
+Total Length
+(decimal)
+0049
+73
+ID (hex)
+1111
+0x1111
+Flags: bit 1
+translate 0x4
+into binary to
+find the three
+bits needed:
+0x4 = 0b0100;
+flag values are
+010
+0b0
+bit 2
+0b1
+bit 3
+0b0
+Offset
+Rest of 4000
+not used by
+flags
+0
+TTL (decimal)
+0x40
+64
+Protocol (decimal)
+0x11
+17 (UDP)
+Checksum (hex)
+0x8201
+0x8201
+Source IP Address
+e79c 7671
+231.156.118.113
+*remember
+
+28/3/25, 4:56 PM
+ Module 06: Quiz 3: CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 8 of 8
+https://canvas.iastate.edu/courses/116478/quizzes/569246
+proper IP address
+formatting
+Destination IP
+Address
+e79c 7677
+231.156.118.119
+Data
+Payload (hex)
+What is left in
+the packet
+0x0850 0035
+0035 e0bf 319a
+0100 0001 0000
+0000 0000 0331
+3438 0331 3237
+0331 3834 0238
+3107 696e 2d61
+6464 7204 6172
+7061 0000 0c00
+01
+As always, if you notice you missed points because you accidentally transposed two numbers (e.g.,
+typed 129.168 instead of 129.186), please let a TA know.
+
+Question 2
+1 / 1 pts
+UDP
+Correct
+Quiz Score: 9.5 out of 10
+Determine the next layer's protocol type, which is currently encapsulated in the data, by referring to
+the 'Protocol (decimal)' information in Table 1.
+What is the abbreviation for the protocol type at the next layer?

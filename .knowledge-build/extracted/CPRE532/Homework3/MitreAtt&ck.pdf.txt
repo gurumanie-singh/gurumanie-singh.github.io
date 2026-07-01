@@ -1,0 +1,92 @@
+MITRE ATT&CK 
+In this homework, I will be going over: 
+- 
+A group and all their techniques 
+o Whitefly, Group G0107 
+- 
+A software package and how it is used 
+o Daserf, Software S0187 
+- 
+A campaign and how it is used 
+o Operation Honeybee, Campaign C0006 
+ 
+Whitefly: This is a cyber espionage group that has been operating since at least 2017. This group has targeted organizations 
+based mostly in Singapore across multiple sectors and has a primary motive to steal large amounts of sensitive info. This 
+group was mainly linked to the attack against SingHealth which is the largest public health organization in Singapore. 
+Daserf: This is a backdoor that has been used to spy on and steal info from Japanese, South Korean, Russian, Singaporean and 
+Chinese victims. It is written in Visual C and Delphi. 
+Operation Honeybee: This was a campaign that targeted humanitarian aid and inter-Korean affair organizations from at least 
+late 2017 to early 2018 (quite a small timeframe). It initially only targeted South Korea but expanded to eventually include 
+Vietnam, Singapore, Japan, Indonesia, Argentina, and Canada. The security researchers that looked into this campaign found 
+that the threat actors were likely Korean speakers based on the metadata in the documents and executable files. They also 
+named this campaign Honeybee after seeing the author name in multiple malicious word documents.
+
+During the attack on SingHealth, the Whitefly threat group basically 
+executed a multiple stage breach that combined social engineering 
+with some technical evasion. This operation was most likely initiated 
+by first delivering malicious executables and DLLs which were 
+disguised as harmless documents or images to deceive employees 
+and gain initial access. Once these files were inside, the attackers 
+utilized DLL search order hijacking to execute the “Vcrodat” loader, 
+which put a remote shell in the systems and communicated with 
+their Command and Control (C2) server using encrypted payloads. 
+To maintain persistence and avoid being detected by SingHealth’s 
+defenses, the attackers masqueraded their malicious files by using 
+names that were the same as the legit security vendor software that 
+SingHealth was using. Then, attackers escalated their access by 
+exploiting a known Windows privilege escalation vulnerability (CVE-
+2016-0051) on unpatched systems and deployed credential 
+harvesting tools like Mimikatz. These set of tools allowed them to 
+move laterally through the infra, downloading more malicious 
+utilities from their C2 server as needed and then identifying and 
+exfiltrating the sensitive medical records of 1.5 million patients.
+
+Daserf is a sophisticated espionage tool designed 
+for stealthy data extraction and maintaining 
+persistent network access. To evade initial 
+detection, this malware employs Masquerading, 
+which uses legitimate folder names like “Intel” or 
+“Adobe.” It can be validated through Code Signing 
+with stolen digital certificates or concealed using 
+the MPRESS software packer. Once it is inside a 
+system, it secures its Command and Control (C2) 
+communication by utilizing Web Protocols (using 
+HTTP) obfuscated with RC4 symmetric encryption 
+and custom Base64 encoding. 
+This malware displays significant flexibility through Ingress Tool 
+Transfers, which allow it to download additional payloads or 
+execute instructions using the Windows Command Shell. In the 
+reconnaissance phase, Daserf conducts data harvesting, such 
+as Input Capture through keylogging, Screen Captures, and OS 
+Credential Dumping using utilities like Mimikatz to scrape 
+secrets from the LSASS memory. To further hide its activities, it 
+sometimes uses Steganography to hide incoming malicious 
+code in harmless looking files. Finally, the stolen intelligence is 
+secured using Archive Collected Data techniques, which are 
+specifically password-protected .rar files that ensure that 
+exfiltrated sensitive information remains hidden from network 
+security monitors when it is on the way to the adversary.
+
+Operation Honeybee was a coordinated cyber campaign that 
+used a mix of social engineering and system manipulation. 
+The whole point of the attack chain mainly began with User 
+Execution, where the victims were enticed to enable macros 
+in a malicious Word document, which then triggered a Visual 
+Basic script to download an implant. To bypass security 
+alerts, the MaoCheng dropper used Masquerading which 
+showed up as a standard document icon and then Subverted 
+Trust Controls by using a stolen Adobe digital signature. 
+Once the initial access was established, the threat actors used 
+Abuse of Elevation Control Mechanisms and Service Hijacking to 
+bypass User Account Control (UAC) and install persistent 
+backdoors as “Windows services.” Throughout this compromise, 
+the actors performed extensive Discovery, using the Windows 
+Command Shell (cmd) to catalog system info, active processes, and 
+specific keywords within local files. To facilitate data theft, they 
+used Local Data Staging, in which sensitive information was moved 
+into text files, Archived via zip utilities, and then Obfuscated using 
+custom Base64 encoding before being sent by Exfiltration over C2 
+channels like FTP. To maintain a low profile, the operation frequently 
+used Indicator Removal, which employed batch files to delete 
+malicious artifacts and revert registry modifications, basically 
+minimizing their forensic footprint on the compromised host.

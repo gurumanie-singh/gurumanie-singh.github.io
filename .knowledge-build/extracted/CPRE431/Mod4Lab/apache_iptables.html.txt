@@ -1,0 +1,17 @@
+SlowHTTPTest(tm) Connection Results
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ Gurumanie Singh
+ ← Back to CPRE 431
+ 
+ 
+ 
+
+ Test parametersTest typeSLOW HEADERSNumber of connections1500VerbGETContent-Length header value4096CookieExtra data max length52Interval between follow up data10 secondsConnections per seconds200Timeout for probe connection3Target test duration120 secondsUsing proxyno proxy

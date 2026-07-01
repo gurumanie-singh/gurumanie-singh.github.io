@@ -1,0 +1,38 @@
+Lab assignment #3
+
+CprE 5320
+
+Assignment is due March 15. 
+
+
+Using your Kali machine:
+
+Get the password files from bones using firefox (with proxy).  The URL is 
+
+bones-pub.ece.iastate.edu/passwords.tar.
+
+Store the file on the disk (it will be put in the Downloads directory)
+Move the file into your home directory
+Untar the file  (tar –xvf passwords.tar ) 
+You should end up with two Unix password files (passwd1, passwd2) and one encrypted SAM (config directory).
+PART 1 (Crack UNIX passwords)
+
+Use john or any other Unix password cracking software to find the passwords in the two password files: passwd1, passwd2
+
+
+PART 2 (crack Windows XP passwords)
+
+.  
+
+You need to download a table to use ophcrack.  From the web browser on your kali box go to:
+
+bones-pub.ece.iastate.edu/tables.zip
+
+Create a directory and put the zip file into the directory
+Uncompress the zip file and then delete the .zip file
+Run ophcrack (you will need to load the table the first time you run it)  Note: you select the directory the table was stored and click install.
+Load the encrypted SAM file from the directory “config”.
+
+
+
+For both part 1 and part 2, turn in a list of the passwords you found and what they are.

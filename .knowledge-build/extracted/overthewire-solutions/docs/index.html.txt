@@ -1,0 +1,287 @@
+OverTheWire Solutions — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ OverTheWire · Bandit Wargame
+ Linux Command-Line
+mastery.
+
+ Step-by-step walkthroughs for each Bandit level. Select a level below to reveal its solution.
+
+ 
+
+ 
+
+ 
+ Walkthroughs
+ Available Level Solutions
+
+ 
+ 
+ Level 0: SSH Login
+
+ Log in via SSH and retrieve the next-level password.
+
+ View Solution →
+ 
+
+ 
+ Level 1: Read File Named "–"
+
+ Read a file named "-" in your home directory.
+
+ View Solution →
+ 
+
+ 
+ Level 2: Spaces in Filename
+
+ Handle filenames containing spaces to reveal the password.
+
+ View Solution →
+ 
+
+ 
+ Level 3: Hidden Files
+
+ Locate a hidden file in the inhere directory.
+
+ View Solution →
+ 
+
+ 
+ Level 4: File Types (Human-Readable)
+
+ Find the only human-readable file in inhere.
+
+ View Solution →
+ 
+
+ 
+ Level 5: File of Specific Size
+
+ Identify files by size and type in inhere.
+
+ View Solution →
+ 
+
+ 
+ Level 6: Locate Password by File Attributes
+
+ Find the file with specific user/group ownership.
+
+ View Solution →
+ 
+
+ 
+ Level 7: grep & Piping
+
+ Use grep and pipes to filter content.
+
+ View Solution →
+ 
+
+ 
+ Level 8: Find the Unique Line
+
+ Find lines appearing only once using uniq and sort.
+
+ View Solution →
+ 
+
+ 
+ Level 9: Extract Human-Readable Password
+
+ Extract the password from human-readable strings in a file.
+
+ View Solution →
+ 
+
+ 
+ Level 10: Decode Base64 Data
+
+ Decode a Base64-encoded file.
+
+ View Solution →
+ 
+
+ 
+ Level 11: Rot13 Cipher
+
+ Use tr to apply Rot13 to a file.
+
+ View Solution →
+ 
+
+ 
+ Level 12: Hexdump & Compression
+
+ Examine file signatures and decompress data.
+
+ View Solution →
+ 
+
+ 
+ Level 13: SSH with Key
+
+ Log in using an SSH key and transfer a file from a remote host.
+
+ View Solution →
+ 
+
+ 
+ Level 14: Netcat Basics
+
+ Use Netcat for simple network communication. Coming soon.
+
+ 
+
+ 
+ Level 15: OpenSSL Communication
+
+ Establish a secure connection with OpenSSL. Coming soon.
+
+ 
+
+ 
+ Level 16: Nmap & SSL
+
+ Scan ports and analyze SSL using Nmap. Coming soon.
+
+ 
+
+ 
+ Level 17: diff Command
+
+ Find differences between files using diff. Coming soon.
+
+ 
+
+ 
+ Level 18: Find Password File
+
+ Locate and read the password file in /etc/bandit_pass. Coming soon.
+
+ 
+
+ 
+ Level 19: SUID Binary Exploitation
+
+ Exploit a SUID binary to retrieve the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 20: Cron Job Exploitation
+
+ Leverage a cron job to discover the password for the next level. Coming soon.
+
+ 
+
+ 
+ Level 21: SSH Port Forwarding
+
+ Use SSH port forwarding to access a remote service and obtain the password. Coming soon.
+
+ 
+
+ 
+ Level 22: XOR Decryption
+
+ Decrypt a file with XOR to reveal the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 23: SSL Certificate Extraction
+
+ Extract the next-level password from an SSL certificate. Coming soon.
+
+ 
+
+ 
+ Level 24: Data Serialization
+
+ Decode a serialized file to retrieve the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 25: Linux Signals
+
+ Use Linux signals to capture the password from a process. Coming soon.
+
+ 
+
+ 
+ Level 26: Password Cracking
+
+ Crack a hashed password to gain access to the next level. Coming soon.
+
+ 
+
+ 
+ Level 27: Socket Programming
+
+ Connect to a socket server to receive the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 28: Database Query
+
+ Query a MySQL database to find the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 29: HTTP Request
+
+ Make a crafted HTTP request to obtain the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 30: Buffer Overflow
+
+ Exploit a buffer overflow vulnerability to retrieve the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 31: Real Machine Access
+
+ Access a real machine to capture the next-level password. Coming soon.
+
+ 
+
+ 
+ Level 32: One-Time Pad
+
+ Use a one-time pad cipher to decrypt the final password. Coming soon.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

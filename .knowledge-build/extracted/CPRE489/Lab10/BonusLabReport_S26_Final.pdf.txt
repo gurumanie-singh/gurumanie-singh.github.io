@@ -1,0 +1,241 @@
+1
+CPR E 4890 Final Lab Experiment (Optional) 
+Lab Report (Total Points: 100) 
+Your Name: Gurumanie Singh Dhiman 
+ 
+1) Lease details screenshots (5 points) 
+a. eNBLease:  
+ 
+b. UELease:  
+ 
+2) Container overview screenshots (5 points) 
+a. eNBContainer:  
+b. UEContainer:  
+Question: How do the specifications (e.g., CPU, memory) of the eNB and UE containers influence network 
+performance? What security considerations should be kept in mind when configuring these resources? 
+Higher CPU allocation (6 cores) allows the containers to process radio signals and protocol stacks faster, which then 
+reduces latency. More memory (8192 MB) supports larger data buffers which prevents packet drops under heavy 
+load. Security considerations would include things like using strong passwords for root access, not exposing 
+container ports to the public internet, or possibly avoiding default credentials since these containers run real radio 
+software that could be exploited if left open. 
+ 
+3) Starting the EPC and eNB - Analysis Questions (10 points)
+
+2
+
+3
+ 
+After starting srsepc and srsenb, answer: 
+a. What three main components are initialized? 
+HSS (Home Subscriber Server), MME (Mobility Management Entity), and SPGW (Serving and PDN Gateway) 
+b. What MCC and MNC values do you see? 
+MCC: 001, MNC: 01 (seen in the EPC terminal as “S1 Setup Request - MCC:001, MNC:01”) 
+c. What does “SPGW” stand for and what is its role? 
+SPGW stands for Serving and PDN Gateway. It handles data routing between the UE and external networks, 
+allocates IP addresses to connected devices, and manages data tunnels between the radio network and the core. 
+d. What did you observe when srsenb connected to the EPC? 
+When srsenb started, it detected the USRP B210 SDR hardware and initialized the radio at DL=2680.0 MHz and 
+UL=2560.0 MHz. It then sent an S1 Setup Request to the EPC. The EPC responded with an S1 Setup Response, 
+confirming the connection. Once the UE attached, RACH messages appeared (preamble attempts at tti=6901), and 
+“User 0x46 connected” confirmed a successful UE attachment.
+
+4
+ 
+4) Starting the UE - Connection Process (10 points) 
+After starting srsue, record: 
+a. Cell found - What's the PCI and PRB count? 
+PCI = 1, PRB = 50 
+b. PLMN found - Does it match the network configured in EPC? 
+Yes. The UE found PLMN Id=00101 (MCC=001, MNC=01), which matches the MCC:001, MNC:01 configured in the 
+EPC. 
+c. What's your C-RNTI? 
+0x46 
+d. What IP address was assigned? 
+172.16.0.2 
+From the EPC terminal, record: 
+• 
+IMSI number: 001010123456789 
+• 
+Allocated IP: 172.16.0.2 
+• 
+Bearer QCI: 7 
+Screenshot of ping 172.16.0.1 results:
+
+5
+ 
+Question: Why is it crucial to start the EPC before the eNB? How does the interaction between these components 
+affect the overall network functionality? 
+The EPC needs to start first so that the eNB can register with the EPC using the S1 interface before it can serve any 
+of the UEs. If the eNB starts without a running EPC, it basically has nowhere to send the S1 Setup Request and will 
+fail. The EPC handles auth, IP allocation, and session management and without it the eNB can’t authenticate users 
+or route the data. 
+ 
+5) Console trace screenshots (10 points) 
+a. eNBContainer:
+
+6
+b. UEContainer:  
+Analysis: Analyze and discuss what you see in the console trace for the 2 containers. 
+The eNB console trace shows rnti=46, cqi=9 for the connected UE. The DL brate and UL brate both read 0.0 Mbps 
+because no iperf traffic is flowing yet in this snapshot. The trace confirms the UE is attached and the eNB is actively 
+tracking it. 
+The UE console trace shows cc=0, pci=1, rsrp=−79 dBm, path loss=79 dB, cfo=−350 Hz, and SNR=19–20 dB. These 
+values indicate a stable connection with good signal quality. The brate is 0.0 here as well since iperf had not 
+started. The ta_us value of 0.52 shows a small timing advance, meaning the UE is close to the eNB with low 
+propagation delay. 
+ 
+6) Define the options used by the UEContainer iperf command (5 points)
+
+7
+For the command: iperf -c 172.16.0.1 -u -i 1 -b 25M -t 10 
+• 
+-c: This flag runs iperf in client mode and connects to the server at IP 172.16.0.1 
+• 
+-u: This flag forces the use of UDP instead of TCP 
+• 
+-i: This flag sets the reporting interval to 1 second 
+• 
+-b: This flag sets the target sending bandwidth to 25 Mbits/sec 
+• 
+-t: This flag sets the test duration to 10 seconds 
+ 
+7) Define the brate metric seen on the console trace (5 points) 
+Definition of brate: brate (bit rate) is the actual throughput measured in Mbps and it indicates how many bits per 
+second were successfully transmitted and received during the test interval. 
+ 
+8) Variable bandwidth testing (10 points) 
+Test at least 3 different -b values and record: 
+• 
+Test 1 - b value: 20M Achieved throughput: 16.2 Mbits/Sec  
+ 
+• 
+Test 2 - b value: 25M Achieved throughput: 15.7 Mbits/Sec  
+ 
+• 
+Test 3 - b value: 20M Achieved throughput: 15.9 Mbits/Sec
+
+8
+ 
+Analysis: 
+• 
+At what point does the requested bandwidth exceed the achievable throughput? 
+The network starts saturating at 25M. At 20M the packet loss is 22%, but once the target is raised to 25M, the 
+loss jumps to 39% while throughput actually drops slightly to 15.7 Mbps. This shows the link maximum is 
+around 16 Mbps. 
+• 
+What indicates saturation? 
+Saturation is indicated by the packet loss steadily increasing (22% to 39% to 48%) while the server-side 
+throughput stays flat around 15.7–16.2 Mbps regardless of how high the target bandwidth is set. 
+• 
+How does adjusting the bandwidth allocation affect throughput and latency? 
+Below the saturation point (roughly 20M), throughput scales with the requested bandwidth. Above it, the 
+throughput stops improving but packet loss increases and the jitter gets worse, which increases the effective 
+latency. The network cannot deliver more than approximately 16 Mbps on this link. 
+ 
+9) TCP Performance Testing (10 points) 
+TCP Throughput Results: 16.9 Mbps 
+ 
+ 
+Comparison:
+
+9
+• 
+Document the TCP throughput and compare with your UDP results. Why might they differ? 
+TCP achieved about 16.9 Mbps, which is very similar to UDP. However, TCP handles errors through 
+retransmissions rather than just dropping packets. This means TCP throughput is more consistent but can vary 
+more over time as it adjusts its congestion window. UDP at 25M showed 39% packet loss, while TCP 
+automatically slows down before that happens. The slightly lower TCP throughput compared to UDP's client-
+side rate is expected because TCP has additional overhead from acknowledgment packets and connection 
+management. 
+ 
+10) Bidirectional Testing (10 points) 
+ 
+ 
+Uplink throughput: 15.7 Mbps 
+Downlink throughput: 18.8 Mbps 
+Total combined: 34.5 Mbps 
+Analysis: 
+• 
+How does simultaneous traffic affect performance?
+
+10
+Running both directions at the same time reduces the available resources for each individual direction. The 
+uplink dropped to 15.7 Mbps (with 24% packet loss) compared to around 16 Mbps unidirectional, and the 
+downlink was 18.8 Mbps. Each direction had more packet loss than in the unidirectional tests. 
+• 
+Is the total bidirectional throughput equal to the sum of unidirectional tests? Explain. 
+No, not exactly. The unidirectional UDP test at 20M target gave about 16.2 Mbps in one direction. If the link 
+were perfectly symmetrical and fully separated, bidirectional would be 2 × 16.2 = 32.4 Mbps. The actual total 
+was roughly 34.5 Mbps, which is slightly higher because LTE uses FDD (Frequency Division Duplex) where the 
+uplink and downlink operate on separate frequencies simultaneously. However, both directions still share the 
+same hardware and processing resources, so there is some interference and each direction performs slightly 
+worse than in isolation. 
+ 
+11) Distance Impact on Throughput (10 points) 
+Original location: 
+• 
+Host number: 009 
+• 
+Throughput: 15.7 Mbps 
+• 
+Signal metrics: RSRP: -79 dBm SNR: 19-20 dB CFO: -350 Hz 
+New location (farther): 
+• 
+Host number: 020 
+• 
+Throughput: 20.4 Mbps 
+• 
+Signal metrics: RSRP: _____ SNR: _____ CFO: _____ (DID NOT RUN)
+
+11
+Analysis: 
+• 
+Discuss the effect distance has on throughput in a 4G network. 
+In a 4G network, as the UE moves farther from the eNB, the received signal power (RSRP) decreases and the 
+signal-to-noise ratio (SNR) worsens. This causes the eNB to assign lower-order modulation schemes (lower 
+MCS values), which reduces the data rate. Path loss increases with distance, meaning more signal energy is lost 
+before reaching the receiver. 
+• 
+Describe the changes you observed based on change in throughput. 
+Host 009 was at a moderate distance and showed stable performance around 15.7 Mbps with RSRP=−79 dBm 
+and SNR=19–20 dB. For host 020, the iperf client-side showed roughly 20.4 Mbps but a datagram 
+acknowledgment warning appeared, suggesting some link instability. Without a full console trace for host 020, 
+exact signal metrics could not be compared directly. 
+• 
+Comment on the link quality based on metrics such as RSRP, RSRQ, SNR, CFO if visible. 
+For host 009, RSRP of −79 dBm is a moderate signal level (acceptable for LTE; strong is above −80 dBm). SNR of 
+19–20 dB is a healthy value supporting higher-order modulation. CFO of −350 Hz is a small carrier frequency 
+offset that the system corrects automatically. If a farther host showed lower RSRP and SNR, you would expect 
+higher BLER (block error rate) and lower brate in the console trace. 
+ 
+12) Empty lease page screenshot (5 points)
+
+12
+ 
+13) Summary and Conclusions (5 points) 
+Provide your summary addressing: 
+• 
+What was the maximum throughput achieved? 
+• 
+What factors limited the performance? 
+• 
+Key findings from your experiments 
+• 
+Challenges encountered during the lab 
+• 
+Real-world applications of your findings 
+• 
+Suggested improvements for the network 
+The maximum throughput achieved was approximately 16.2 Mbps (UDP, unidirectional, at 20M target). The main 
+factors limiting performance were the physical link quality (RSRP=−79 dBm, SNR=19–20 dB) and the LTE radio 
+channel capacity, which saturated around 16 Mbps regardless of the requested bandwidth. 
+Key findings: the network handled UDP and TCP at similar throughput levels (roughly 16 Mbps). Increasing the UDP 
+target bandwidth beyond saturation only increased packet loss — it did not improve throughput. Bidirectional 
+testing showed LTE's FDD capability but each direction experienced slightly worse performance than unidirectional. 
+Challenges included finding host pairs with reliable RF coverage, managing multiple terminals simultaneously, and 
+ensuring the EPC was fully initialized before starting the eNB and UE. 
+Real-world applications include understanding LTE capacity planning where the operators must size their networks 
+to avoid saturation, especially for video streaming or file transfers. The findings also highlight how distance and 
+signal quality directly affect user experience in cellular networks. 
+Suggested improvements: using hosts with stronger RF connectivity, increasing container CPU allocation for better 
+real-time signal processing, and running longer iperf tests for more stable throughput averages.

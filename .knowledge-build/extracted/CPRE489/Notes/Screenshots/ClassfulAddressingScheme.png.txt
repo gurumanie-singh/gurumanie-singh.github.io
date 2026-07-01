@@ -1,0 +1,9 @@
+01234 8 16 24 31
+
+Class A
+
+ClassB [io] ——netid, =| ostids
+ClassC [ijijo] inetd S| hosticd
+
+ClassD [ijijijo] ss muliticastaaddress
+ClassE [4/1/41] reserved for future use

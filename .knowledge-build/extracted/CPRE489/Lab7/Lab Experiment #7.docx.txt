@@ -1,0 +1,19 @@
+CPR E 4890: Computer Networking and Data Communication
+Lab Experiment #7 – Using Cisco IOS XE to Configure Cisco Switches
+Name: Gurumanie Singh, Partner: Luke Stewart
+Task 1 (1)
+Task 1 (2)
+Task 2 (1)
+Task 2 (2)
+Task 3 (1) - Luke
+Our ping was successful with a 0% packet loss for 5 packets. The TTL was 254 instead of 255 (for Cisco Switches) because there was one hop through the SVI to get to the even PC. This is why it ended up being 254 instead of 255. The round trip time was also consistently around 0.6 ms for the most part since it is a direct link.
+Task 3 (2)
+The same is true here where our ping was successful with a 0% packet loss for 5 packets. 
+Task 4 PING FROM ODD TO EVEN:
+The pings keep swapping between reply and request where the source and destination IPs keep rotating. The main thing we observed is that the TTL is 64 in the replies whereas in the other direction it is 254. This is mainly because the default TTL on Linux PCs is 64.
+Task 5
+Task 6
+The IP address only showed Ipv6 but in task 7 we can see that it was assigned 10.0.50.4 from 10.0.50.1 and since we excluded IP addresses 10.0.50.1 – 10.0.50.3 in task 5, the next IP that would be assigned is 10.0.50.4 to 10.0.50.1
+Task 7
+The capture shows the entire DORA process where D – Discover, O – Offer, R – Request, and A – Acknowledge. The DHCP Discover packet is used when we need to get a new IP address for our even PC and the packet is broadcasted to the entire network. The DHCP Offer packet is is sent back to the even PC assigning it the IP address of 10.0.50.4 as that was the first available address. Then the DHCP Request packet is sent from the even PC as a way to formally accept the offered IP address. Lastly, a DHCP Acknowledge packet is sent back to the even PC letting it know that 10.0.50.4 belongs to it.
+Task 8:

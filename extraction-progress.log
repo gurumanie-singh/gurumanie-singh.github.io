@@ -1,0 +1,304 @@
+=== Knowledge extraction run ===
+Tesseract available: True
+
+--- Processing COMS415 ---
+  SKIP .DS_Store: macOS metadata
+  EXTRACT COMS415_Group_17_Presentation.pdf: PyMuPDF text layer (5254 chars)
+  EXTRACT README.md: direct read (1591 chars)
+  EXTRACT SE_415_Assignment_1.pdf: PyMuPDF text layer (8024 chars)
+  EXTRACT SE_415_Assignment_2.pdf: PyMuPDF text layer (17170 chars)
+  EXTRACT SE_415_Assignment_3.pdf: PyMuPDF text layer (8581 chars)
+  EXTRACT index.html: HTML tag strip (2334 chars)
+COMS415: 16 topics from 6 files. Skipped: .DS_Store.
+
+--- Processing CPRE430 ---
+  SKIP .DS_Store: macOS metadata
+  EXTRACT HexPacket.txt: direct read (815 chars)
+  EXTRACT Quiz1.png: pytesseract (759 chars)
+  EXTRACT Quiz10.png: pytesseract (8343 chars)
+  EXTRACT Quiz2.pdf: PyMuPDF text layer (7465 chars)
+  EXTRACT Quiz4.pdf: PyMuPDF text layer (6868 chars)
+  EXTRACT Quiz5.pdf: PyMuPDF text layer (8162 chars)
+  EXTRACT Quiz6.1.pdf: PyMuPDF text layer (8013 chars)
+  EXTRACT Quiz6.2.pdf: PyMuPDF text layer (1539 chars)
+  EXTRACT Quiz7.pdf: PyMuPDF text layer (6529 chars)
+  EXTRACT Quiz9.png: pytesseract (8648 chars)
+  EXTRACT README.md: direct read (1447 chars)
+  EXTRACT index.html: HTML tag strip (2321 chars)
+CPRE430: 38 topics from 12 files. Skipped: .DS_Store.
+
+--- Processing CPRE431 ---
+  SKIP .DS_Store: macOS metadata
+  EXTRACT M01 HW.pdf: PyMuPDF text layer (4533 chars)
+  EXTRACT M02 HW.pdf: PyMuPDF text layer (5238 chars)
+  EXTRACT M03 HW.pdf: PyMuPDF text layer (12196 chars)
+  EXTRACT M04 HW.pdf: PyMuPDF text layer (8979 chars)
+  EXTRACT M05 HW.pdf: PyMuPDF text layer (2914 chars)
+  EXTRACT M06 HW.docx: python-docx (6735 chars)
+  EXTRACT M06 HW.pdf: PyMuPDF text layer (6727 chars)
+  EXTRACT M07 HW.docx: python-docx (2236 chars)
+  EXTRACT M07 HW.pdf: PyMuPDF text layer (2297 chars)
+  EXTRACT M08 HW.docx: python-docx (2983 chars)
+  EXTRACT M08 HW.pdf: PyMuPDF text layer (3059 chars)
+  EXTRACT Mod2Lab/MO2 Lab.pdf: PyMuPDF text layer (4280 chars)
+  EXTRACT Mod3Lab/M03 Lab HW.pdf: PyMuPDF text layer (6038 chars)
+  EXTRACT Mod4Lab/Lab 4 CPRE431.docx: python-docx (2837 chars)
+  EXTRACT Mod4Lab/Module_4_Lab_HW.pdf: PyMuPDF text layer (2892 chars)
+  EXTRACT Mod4Lab/apache_iptables.html: HTML tag strip (371 chars)
+  EXTRACT Mod4Lab/apache_lowrate_client.html: HTML tag strip (371 chars)
+  EXTRACT Mod4Lab/apache_no_mitigation.html: HTML tag strip (371 chars)
+  EXTRACT Mod4Lab/nginx_no_mitigation.html: HTML tag strip (371 chars)
+  SKIP Mod6Lab/.DS_Store: macOS metadata
+  SKIP Mod6Lab/CPRE 431 Lab 6 BWG.pdf: PDF has no extractable text layer
+  EXTRACT Mod6Lab/M06 - answers template.txt: direct read (580 chars)
+  EXTRACT Mod6Lab/M06 - answers.txt: direct read (485 chars)
+  EXTRACT Mod6Lab/M06 Lab HW.docx: python-docx (9398 chars)
+  EXTRACT Mod6Lab/M06 Lab HW.pdf: PyMuPDF text layer (9770 chars)
+  EXTRACT Mod6Lab/M06 rspec - rspec.xml: xml read (3936 chars)
+  EXTRACT Notes/Module1_Intro_to_Information_Security.pdf: PyMuPDF+pytesseract OCR (4143 chars)
+  EXTRACT Notes/Module2_Intro_to_Cryptography_Tools.pdf: PyMuPDF+pytesseract OCR (3964 chars)
+  EXTRACT Notes/Module3_User_Authentication_AccessControl_and_OperatingSystems.pdf: PyMuPDF+pytesseract OCR (7244 chars)
+  EXTRACT Notes/Module4_MaliciousSoftware_&_DenialOf Service_attack.pdf: PyMuPDF+pytesseract OCR (7013 chars)
+  EXTRACT Notes/Module5_IntrusionDetectionSystems.pdf: PyMuPDF+pytesseract OCR (4158 chars)
+  EXTRACT Notes/Module6_Firewall_&_IntrusionPreventionSystem.pdf: PyMuPDF+pytesseract OCR (7602 chars)
+  SKIP Notes/Module7_Wireless_lot_and_CloudSecurity.pdf: PDF parse failed: (1, 'Image too large: (2363, 44292) Error during processing.')
+  EXTRACT Notes/Module8_InternetSecurityProtocols&Standards.pdf: PyMuPDF+pytesseract OCR (8426 chars)
+  EXTRACT README.md: direct read (2242 chars)
+  EXTRACT TeamEvaluation-formDownload.docx: python-docx (3217 chars)
+  EXTRACT TeamEvaluation-formDownload.pdf: PyMuPDF text layer (3441 chars)
+  EXTRACT index.html: HTML tag strip (2240 chars)
+  SKIP ~$M07 HW.docx: Office temp/lock file
+CPRE431: 114 topics from 35 files. Skipped: .DS_Store, Mod6Lab/.DS_Store, Mod6Lab/CPRE 431 Lab 6 BWG.pdf, Notes/Module7_Wireless_lot_and_CloudSecurity.pdf, ~$M07 HW.docx.
+
+--- Processing CPRE489 ---
+  SKIP .DS_Store: macOS metadata
+  SKIP Lab1/.DS_Store: macOS metadata
+  EXTRACT Lab1/Lab Experiment #1 – Networking Utility Programs.docx: python-docx (8756 chars)
+  EXTRACT Lab1/Lab Experiment #1 – Networking Utility Programs.pdf: PyMuPDF text layer (8955 chars)
+  EXTRACT Lab1/Lab1_S26_Final.pdf: PyMuPDF text layer (7061 chars)
+  EXTRACT Lab1/NetworkingCommandsReference.pdf: PyMuPDF text layer (25592 chars)
+  EXTRACT Lab10/BonusLabReport_S26_Final.docx: python-docx (10840 chars)
+  EXTRACT Lab10/BonusLabReport_S26_Final.pdf: PyMuPDF text layer (11169 chars)
+  EXTRACT Lab10/BonusLab_S26_Final.pdf: PyMuPDF text layer (15150 chars)
+  SKIP Lab2/.DS_Store: macOS metadata
+  EXTRACT Lab2/Lab2.docx: python-docx (1355 chars)
+  EXTRACT Lab2/Lab2_S26_Final.pdf: PyMuPDF text layer (6624 chars)
+  EXTRACT Lab2/Socket Programming.pdf: PyMuPDF text layer (11507 chars)
+  SKIP Lab2/ruptimeClient: binary executable (no extension)
+  EXTRACT Lab2/ruptimeClient.c: C inline comments only (218 chars)
+  SKIP Lab2/ruptimeServer: binary executable (no extension)
+  EXTRACT Lab2/ruptimeServer.c: C inline comments only (352 chars)
+  SKIP Lab3/.DS_Store: macOS metadata
+  EXTRACT Lab3/Lab3_S26_Final.pdf: PyMuPDF text layer (7438 chars)
+  SKIP Lab3/Lab3_skeleton/.DS_Store: macOS metadata
+  SKIP Lab3/Lab3_skeleton/Lab3_skeleton/.DS_Store: macOS metadata
+  EXTRACT Lab3/Lab3_skeleton/Lab3_skeleton/Lab3.docx: python-docx (3594 chars)
+  SKIP Lab3/Lab3_skeleton/Lab3_skeleton/Lab3.zip: zip archive
+  EXTRACT Lab3/Lab3_skeleton/Lab3_skeleton/README.md: direct read (2539 chars)
+  SKIP Lab3/Lab3_skeleton/Lab3_skeleton/makefile: unrecognized format (no ext)
+  SKIP Lab3/Lab3_skeleton/Lab3_skeleton/udp_forwarder: binary file (no extension)
+  EXTRACT Lab3/Lab3_skeleton/Lab3_skeleton/udp_forwarder.c: C inline comments only (2632 chars)
+  SKIP Lab3/Lab3_skeleton/test.mp4: mp4 video
+  SKIP Lab3/Lab3_skeleton.zip: zip archive
+  SKIP Lab3/test.mp4.zip: zip archive
+  SKIP Lab4/.DS_Store: macOS metadata
+  EXTRACT Lab4/Lab4.docx: python-docx (3140 chars)
+  SKIP Lab5/.DS_Store: macOS metadata
+  EXTRACT Lab5/Lab5_S26_Final.pdf: PyMuPDF text layer (8033 chars)
+  SKIP Lab5/lab5_gbn/.DS_Store: macOS metadata
+  EXTRACT Lab5/lab5_gbn/Lab5.docx: python-docx (1803 chars)
+  EXTRACT Lab5/lab5_gbn/Lab5.pdf: PyMuPDF text layer (1829 chars)
+  EXTRACT Lab5/lab5_gbn/README.md: direct read (2054 chars)
+  SKIP Lab5/lab5_gbn/bin/crc.o: compiled object
+  SKIP Lab5/lab5_gbn/bin/gbn_receiver.o: compiled object
+  SKIP Lab5/lab5_gbn/bin/gbn_sender.o: compiled object
+  SKIP Lab5/lab5_gbn/bin/pkt_utils.o: compiled object
+  SKIP Lab5/lab5_gbn/bin/receiver: binary file (no extension)
+  SKIP Lab5/lab5_gbn/bin/sender: binary file (no extension)
+  SKIP Lab5/lab5_gbn/bin/udp_receiver.o: compiled object
+  SKIP Lab5/lab5_gbn/bin/udp_sender.o: compiled object
+  SKIP Lab5/lab5_gbn/makefile: unrecognized format (no ext)
+  EXTRACT Lab5/lab5_gbn/plot.py: python read (750 chars)
+  EXTRACT Lab5/lab5_gbn/src/crc.c: C inline comments only (281 chars)
+  EXTRACT Lab5/lab5_gbn/src/crc.h: C inline comments only (200 chars)
+  EXTRACT Lab5/lab5_gbn/src/gbn_receiver.c: C inline comments only (267 chars)
+  EXTRACT Lab5/lab5_gbn/src/gbn_receiver.h: C inline comments only (129 chars)
+  EXTRACT Lab5/lab5_gbn/src/gbn_sender.c: C inline comments only (1230 chars)
+  EXTRACT Lab5/lab5_gbn/src/gbn_sender.h: C inline comments only (129 chars)
+  EXTRACT Lab5/lab5_gbn/src/pkt_utils.c: C inline comments only (121 chars)
+  EXTRACT Lab5/lab5_gbn/src/pkt_utils.h: C inline comments only (1878 chars)
+  EXTRACT Lab5/lab5_gbn/src/udp_receiver.c: C inline comments only (154 chars)
+  EXTRACT Lab5/lab5_gbn/src/udp_sender.c: C inline comments only (142 chars)
+  SKIP Lab5/lab5_gbn.zip: zip archive
+  SKIP Lab6/.DS_Store: macOS metadata
+  EXTRACT Lab6/Lab6.docx: python-docx (1844 chars)
+  EXTRACT Lab6/Lab6_S26_final.pdf: PyMuPDF text layer (6159 chars)
+  SKIP Lab7/.DS_Store: macOS metadata
+  EXTRACT Lab7/Lab Experiment #7.docx: python-docx (1811 chars)
+  SKIP Lab9/.DS_Store: macOS metadata
+  EXTRACT Lab9/Lab Experiment #9.docx: python-docx (2677 chars)
+  EXTRACT Lab9/Lab9_S26_Final - v1.1.pdf: PyMuPDF text layer (6366 chars)
+  EXTRACT Lab9/tcp_cwnd_annotated.png: pytesseract (583 chars)
+  EXTRACT Lab9/tcp_cwnd_plot.png: pytesseract (257 chars)
+  EXTRACT Lab9/tcp_plot.py: python read (1896 chars)
+  SKIP Lab9/tcpprobe.dat: dat data file
+  SKIP Notes/.DS_Store: macOS metadata
+  EXTRACT Notes/DataLink.md: direct read (6710 chars)
+  EXTRACT Notes/ErrorDetectionAndRecovery.md: direct read (3307 chars)
+  EXTRACT Notes/Intro.md: direct read (2495 chars)
+  EXTRACT Notes/NetworkLayer.md: direct read (29475 chars)
+  EXTRACT Notes/PhysicalLayer.md: direct read (4920 chars)
+  SKIP Notes/Screenshots/.DS_Store: macOS metadata
+  EXTRACT Notes/Screenshots/2B1Q.png: pytesseract (270 chars)
+  EXTRACT Notes/Screenshots/2sComplement.png: pytesseract (223 chars)
+  EXTRACT Notes/Screenshots/ARP.png: pytesseract (113 chars)
+  EXTRACT Notes/Screenshots/B6ZS&B3ZS.png: pytesseract (125 chars)
+  SKIP Notes/Screenshots/BipolarCoding.png: OCR produced insufficient text
+  EXTRACT Notes/Screenshots/BipolarViolation.png: pytesseract (143 chars)
+  EXTRACT Notes/Screenshots/CRC.png: pytesseract (213 chars)
+  EXTRACT Notes/Screenshots/CRCErrorBurst.png: pytesseract (216 chars)
+  EXTRACT Notes/Screenshots/CRCExampleForL.png: pytesseract (452 chars)
+  EXTRACT Notes/Screenshots/CRCPattern.png: pytesseract (189 chars)
+  EXTRACT Notes/Screenshots/CRCShortLongSpecial.png: pytesseract (316 chars)
+  EXTRACT Notes/Screenshots/CRCStep1.png: pytesseract (175 chars)
+  EXTRACT Notes/Screenshots/CRCStep2.png: pytesseract (186 chars)
+  EXTRACT Notes/Screenshots/CRCStep3456.png: pytesseract (274 chars)
+  EXTRACT Notes/Screenshots/CRCSummary.png: pytesseract (285 chars)
+  EXTRACT Notes/Screenshots/ClassfulAddressingScheme.png: pytesseract (169 chars)
+  EXTRACT Notes/Screenshots/DifferentialManchester.png: pytesseract (459 chars)
+  EXTRACT Notes/Screenshots/DividerDivisor.png: pytesseract (242 chars)
+  EXTRACT Notes/Screenshots/DividerDivisor1.png: pytesseract (329 chars)
+  SKIP Notes/Screenshots/ErrorBurst.png: OCR produced insufficient text
+  EXTRACT Notes/Screenshots/ErrorDetection.png: pytesseract (246 chars)
+  EXTRACT Notes/Screenshots/Example6Step.png: pytesseract (301 chars)
+  EXTRACT Notes/Screenshots/ExampleErrorBurst.png: pytesseract (249 chars)
+  EXTRACT Notes/Screenshots/ExampleErrorVector.png: pytesseract (349 chars)
+  EXTRACT Notes/Screenshots/ExampleFUE.png: pytesseract (113 chars)
+  EXTRACT Notes/Screenshots/ExampleShannonChannel1.png: pytesseract (211 chars)
+  EXTRACT Notes/Screenshots/ExampleShannonChannel2.png: pytesseract (299 chars)
+  EXTRACT Notes/Screenshots/FUE(L).png: pytesseract (471 chars)
+  EXTRACT Notes/Screenshots/FUE(L)Formula.png: pytesseract (84 chars)
+  EXTRACT Notes/Screenshots/FUEErrorBurst.png: pytesseract (280 chars)
+  EXTRACT Notes/Screenshots/LongErrorBurst.png: pytesseract (545 chars)
+  EXTRACT Notes/Screenshots/ManchesterCoding.png: pytesseract (47 chars)
+  SKIP Notes/Screenshots/ManchesterCodingExample.png: OCR produced insufficient text
+  EXTRACT Notes/Screenshots/NRZInverted.png: pytesseract (459 chars)
+  SKIP Notes/Screenshots/NyquistRate.png: OCR produced insufficient text
+  EXTRACT Notes/Screenshots/PolarNRZ.png: pytesseract (42 chars)
+  EXTRACT Notes/Screenshots/ReservedIPAddresses.png: pytesseract (312 chars)
+  EXTRACT Notes/Screenshots/ShiftRegExample.png: pytesseract (138 chars)
+  EXTRACT Notes/Screenshots/ShiftRegisterCircuit.png: pytesseract (371 chars)
+  EXTRACT Notes/Screenshots/Signal&Noise.png: pytesseract (114 chars)
+  EXTRACT Notes/Screenshots/Summary.png: pytesseract (230 chars)
+  EXTRACT Notes/Screenshots/TransmissionChannel&ChannelBandwidth.png: pytesseract (158 chars)
+  EXTRACT Notes/Screenshots/UnipolarNRZ.png: pytesseract (99 chars)
+  EXTRACT Notes/Screenshots/mBnBCoding.png: pytesseract (257 chars)
+  EXTRACT Notes/Screenshots/mBnL.png: pytesseract (147 chars)
+  EXTRACT Notes/TableOfContents.md: direct read (23027 chars)
+  EXTRACT Notes/TransportLayer.md: direct read (26909 chars)
+  EXTRACT README.md: direct read (1862 chars)
+  EXTRACT index.html: HTML tag strip (2261 chars)
+CPRE489: 221 topics from 90 files. Skipped: .DS_Store, Lab1/.DS_Store, Lab2/.DS_Store, Lab2/ruptimeClient, Lab2/ruptimeServer, Lab3/.DS_Store, +31 more.
+
+--- Processing CPRE532 ---
+  SKIP .DS_Store: macOS metadata
+  SKIP Break-In Lab/.DS_Store: macOS metadata
+  EXTRACT Break-In Lab/532_corp_usernames.txt: direct read (64 chars)
+  EXTRACT Break-In Lab/Break-InLab.docx: python-docx (16291 chars)
+  EXTRACT Break-In Lab/Break-InLab.pdf: PyMuPDF text layer (16583 chars)
+  EXTRACT Break-In Lab/Break-in Lab 2026.docx: python-docx (7787 chars)
+  EXTRACT Homework1/Analyzing Adversarial Tactics in Historical Context Report Template.docx: python-docx (2829 chars)
+  EXTRACT Homework1/Analyzing Adversarial Tactics in Historical Context.docx: python-docx (5450 chars)
+  EXTRACT Homework1/Analyzing Adversarial Tactics in Historical Context.pdf: PyMuPDF text layer (5522 chars)
+  EXTRACT Homework1/Timeline of Historical Adversarial Tactics.docx: python-docx (6079 chars)
+  EXTRACT Homework3/Daserf_S0187.svg: SVG text elements (7987 chars)
+  EXTRACT Homework3/MitreAtt&ck.docx: python-docx (1368 chars)
+  EXTRACT Homework3/MitreAtt&ck.pdf: PyMuPDF text layer (5484 chars)
+  EXTRACT Homework3/Operation_Honeybee_C0006.svg: SVG text elements (9741 chars)
+  EXTRACT Homework3/Whitefly_G0107.svg: SVG text elements (8454 chars)
+  EXTRACT Homework4/CherryBlos_S1225.svg: SVG text elements (3599 chars)
+  EXTRACT Homework4/HW4.docx: python-docx (7272 chars)
+  EXTRACT Homework4/HW4.pdf: PyMuPDF text layer (7393 chars)
+  SKIP Homework4/~$HW4.docx: Office temp/lock file
+  SKIP Lab1/.DS_Store: macOS metadata
+  EXTRACT Lab1/CPRE532-LabAssignment#1.docx: python-docx (12895 chars)
+  EXTRACT Lab1/CPRE532-LabAssignment#1.pdf: PyMuPDF text layer (13106 chars)
+  SKIP Lab2/.DS_Store: macOS metadata
+  EXTRACT Lab2/Lab2.docx: python-docx (5019 chars)
+  EXTRACT Lab2/Lab2.pdf: PyMuPDF text layer (3262 chars)
+  SKIP Lab2/~$b2_results.docx: Office temp/lock file
+  EXTRACT Lab3/Lab3.docx: python-docx (1207 chars)
+  EXTRACT Lab3/Lab3.pdf: PyMuPDF text layer (1229 chars)
+  EXTRACT Lab3/lab3-Kali-23.doc: macOS textutil (1198 chars)
+  SKIP Notes/.DS_Store: macOS metadata
+  EXTRACT Notes/Module02-IntroToAdversarialThinking.md: direct read (2171 chars)
+  EXTRACT Notes/Module03-CyberEnabledAdversary.md: direct read (7489 chars)
+  EXTRACT Notes/Module04-EthicsAndNetworkIntro.md: direct read (4522 chars)
+  EXTRACT Notes/Module05-Reconnaissance.md: direct read (8059 chars)
+  EXTRACT Notes/Module06-Authentication.md: direct read (13180 chars)
+  EXTRACT Notes/Module08-Web.md: direct read (16318 chars)
+  EXTRACT Notes/Module09-Email.md: direct read (9749 chars)
+  EXTRACT Notes/Module10-Firewalls.md: direct read (4828 chars)
+  EXTRACT Notes/Module11-IDS.md: direct read (20003 chars)
+  SKIP Notes/Screenshots/.DS_Store: macOS metadata
+  EXTRACT Notes/Screenshots/ClientServer.png: pytesseract (132 chars)
+  SKIP Notes/Screenshots/Ethernet.png: OCR produced insufficient text
+  EXTRACT Notes/Screenshots/Examples(Target).png: pytesseract (35 chars)
+  EXTRACT Notes/Screenshots/ExecutingTheAttack.png: pytesseract (31 chars)
+  EXTRACT Notes/Screenshots/GoalsMotivationObjectives.png: pytesseract (62 chars)
+  SKIP Notes/Screenshots/KDC.png: OCR produced insufficient text
+  EXTRACT Notes/Screenshots/KerberosOverview.png: pytesseract (62 chars)
+  EXTRACT Notes/Screenshots/Steps.png: pytesseract (437 chars)
+  EXTRACT Notes/Screenshots/TheAdversarialProcess.png: pytesseract (187 chars)
+  EXTRACT Notes/Screenshots/WhatTheyTarget.png: pytesseract (64 chars)
+  EXTRACT README.md: direct read (1988 chars)
+  EXTRACT TEST2 2026.docx: python-docx (3298 chars)
+  EXTRACT TEST2 2026.pdf: PyMuPDF text layer (3768 chars)
+  EXTRACT index.html: HTML tag strip (2136 chars)
+CPRE532: 133 topics from 44 files. Skipped: .DS_Store, Break-In Lab/.DS_Store, Homework4/~$HW4.docx, Lab1/.DS_Store, Lab2/.DS_Store, Lab2/~$b2_results.docx, +4 more.
+
+--- Processing CPRE536 ---
+  SKIP .DS_Store: macOS metadata
+  EXTRACT CPRE-CYBSC-5360_FALL-2025_PROJECT-1.docx: python-docx (3851 chars)
+  EXTRACT CPRE-CYBSC-5360_FALL-2025_PROJECT-1.pdf: PyMuPDF text layer (1131 chars)
+  EXTRACT CPRE-CYBSC-5360_FALL-2025_PROJECT-2.docx: python-docx (3648 chars)
+  EXTRACT CPRE-CYBSC-5360_FALL-2025_PROJECT-2.pdf: PyMuPDF text layer (1190 chars)
+  EXTRACT CPRE-CYBSC-5360_FALL-2025_PROJECT-3.docx: python-docx (5196 chars)
+  EXTRACT CPRE-CYBSC-5360_FALL-2025_PROJECT-3.pdf: PyMuPDF text layer (5383 chars)
+  EXTRACT FinalPaperPresentation.pptx: python-pptx (1039 chars)
+  EXTRACT README.md: direct read (1984 chars)
+  SKIP TermPaper.docx: docx parse failed: "no relationship of type 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument' in collection"
+  EXTRACT TermPaper.pdf: PyMuPDF text layer (25458 chars)
+  EXTRACT TermPaperProposal.pdf: PyMuPDF text layer (3625 chars)
+  EXTRACT index.html: HTML tag strip (1999 chars)
+  SKIP ~$rE536_Project3_Jacob_Boicken.odt: Office temp/lock file
+  SKIP ~$rmPaper.docx: Office temp/lock file
+CPRE536: 30 topics from 11 files. Skipped: .DS_Store, TermPaper.docx, ~$rE536_Project3_Jacob_Boicken.odt, ~$rmPaper.docx.
+
+--- Processing nmap-notes ---
+  SKIP .DS_Store: macOS metadata
+  EXTRACT README.md: direct read (984 chars)
+  EXTRACT index.html: HTML tag strip (1635 chars)
+  EXTRACT nmap_notes.pdf: PyMuPDF+pytesseract OCR (2357 chars)
+nmap-notes: 7 topics from 3 files. Skipped: .DS_Store.
+
+--- Processing overthewire-solutions ---
+  SKIP .DS_Store: macOS metadata
+  EXTRACT README.md: direct read (1639 chars)
+  SKIP docs/.DS_Store: macOS metadata
+  EXTRACT docs/index.html: HTML tag strip (3871 chars)
+  EXTRACT docs/level0.html: HTML tag strip (1777 chars)
+  EXTRACT docs/level1.html: HTML tag strip (1532 chars)
+  EXTRACT docs/level10.html: HTML tag strip (1707 chars)
+  EXTRACT docs/level11.html: HTML tag strip (2569 chars)
+  EXTRACT docs/level12.html: HTML tag strip (6604 chars)
+  EXTRACT docs/level13.html: HTML tag strip (1940 chars)
+  EXTRACT docs/level2.html: HTML tag strip (1716 chars)
+  EXTRACT docs/level3.html: HTML tag strip (1943 chars)
+  EXTRACT docs/level4.html: HTML tag strip (2059 chars)
+  EXTRACT docs/level5.html: HTML tag strip (2841 chars)
+  EXTRACT docs/level6.html: HTML tag strip (2354 chars)
+  EXTRACT docs/level7.html: HTML tag strip (1749 chars)
+  EXTRACT docs/level8.html: HTML tag strip (1747 chars)
+  EXTRACT docs/level9.html: HTML tag strip (2311 chars)
+overthewire-solutions: 18 topics from 16 files. Skipped: .DS_Store, docs/.DS_Store.

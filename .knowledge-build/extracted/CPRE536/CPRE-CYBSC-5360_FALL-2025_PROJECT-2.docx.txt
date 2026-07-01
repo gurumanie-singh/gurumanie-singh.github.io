@@ -1,0 +1,32 @@
+CPRE/CYBSC-5360_FALL-2025 
+PROJECT-2  
+Please follow the instructions to search for the target item with FTK. 
+Note: The procedure and the file path are required when giving the answer. Zero points for the answer without the required description and screenshot. Username: cpre5360    Password: cpre5360-2025 
+Questions 
+Disk images are located at C:\CPRE5360 Projects. 
+  (Please use 24Fall_Project2.img) 
+(5 points) The suspect kept 5 figures which are the envelope labels that contain the contact information. Please find as many figures as you can. 
+I was able to find four of the images by going to the Overview tab → File Category → Graphics. Once in the Graphics Tab, I sorted the files by size and started looking from where the file size was equal to or above 20 KB. Below are the four files I found using the Graphics Tab, and after that the last file was found using the live search and looking for pdf file signatures. There was only one file which was found using the pdf signature, the rest of the files were all from the Graphics Tab.
+gzip:
+hello.png:
+ps_done.jpeg:
+puppy0.jpeg:
+template.pdf:
+(1 point) The suspect was found to use Firefox browser before. Please find the browsing history and list the record which website the suspect visited before. 
+I was able to find 4 main files in the Internet Tab. Namely, Firefox Browser Files in which there was Firefox Cookies Database (cookies.sqlite), Firefox Form History Database (formhistory.sqlite), Firefox Permission Database (permissions.sqlite), Firefox Places Database (places.sqlite). And out of all these, the history and records are all stored in the places.sqlite file.
+When I opened the places.sqlite file, inside I found all the websites of all the suspects. 
+(1 point) Please list the browser cookie. 
+The browser cookie file was found in the same location as the previous part, the Internet Tab. The browser cookie file is called cookies.sqlite (after searching online) and it was one of the files found when looking in the Internet tab. 
+Below are the contents that were opened up using DB Browser:
+(1 point) The suspect built a public website and there is a pair of user and password which the suspect used on website. Please find it out. 
+I used index search for this with keywords as “username” and “password” to be present in the files being searched. Once this was used, it gave me a lot of files but I was specifically watching out for .html files because the question specifies that the suspect built a public website. Looking through the files one by one such as Documentation.html, DocSetupResource.html and Task-Repositories.html. 
+After looking at the above files, I did not find anything until I came across the index.html file below which contained both the username and the password:
+The username is “lorien” and the password is “cpre536at17F”.
+(2 point) The suspect used a fake first name for the illegal activities, please find her real first name. 
+For this part, I first tried looking at different login sites and also searching google to see what type of file formats store login details. As mentioned in lecture, sometimes when logging into their computer they might have used their real name or when signing into a website. I did not get far with this and then I tried looking into emails. I am not sure if this is the right file but I came across a movie.eml file after looking in the Email tab. 
+This file contained the following message:
+From the above email we can tell that the email is being sent by Wendy.
+Hints 
+To find a figure, file size is one of the important clues. 
+A figure like example can be more than 20 KB. 
+Sample envelope figure:

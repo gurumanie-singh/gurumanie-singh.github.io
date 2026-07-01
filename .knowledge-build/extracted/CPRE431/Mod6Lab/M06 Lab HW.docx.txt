@@ -1,0 +1,106 @@
+CPRE 431
+M06 Lab HW
+Assignments will be submitted in PDF format via Canvas. 
+Please submit your homework online through Canvas. Late homework will not be accepted. 
+Important: Your submission must be in .pdf format ONLY!
+Please ensure that you support all your answers with the correct screenshots showing your solutions.
+Notes:
+The goal of this lab is to use iptables to create simple firewall rules.
+Use the “Introduction to iptables” page on canvas to help you in the needed commands for this homework.
+This homework consists of 5 tasks. The answer for each task requires you to record a command/result and write an explanation and support this with screenshots.
+Use the template "M06 - Answers.txt" file (attached with the homework) as a guideline of how the answer should look like. Your answer submission must be in .pdf format ONLY!
+This virtual network consists of two zones, internal (Clients) and external (Servers). The internal zone consists of two clients (Client1 and 2) connected through a LAN switch to a Firewall that connects them to the external zone. The Firewall has two interfaces “Firewall/1” connected to the internal network, and “Firewall/2” connected to the external zone. The external zone has many servers connected through a LAN switch to the Firewall. However, we will only focus on two servers (Webserver1 and 2). The below figure has the network diagram and the needed details for the zones, clients, servers, and firewall:
+In all your answers, try to write rules as general as possible. For example, although we are only focusing on two servers in the external zone, try to write rules such that the policy is achieved even if there were more than two servers.
+Always remember to flush all iptables rules between tasks (for example: after completing task 1, make sure there are no rules before you start task 2).
+Before Starting:
+Login to CloudLab and start a new experiment.
+When choosing profile, select the firewallLab profile as seen below
+The rest of the instructions should be fairly similar to Lab 4 for intialization. 
+Once your nodes are ready, use the same key pair to ssh into the nodes and complete the lab
+The expected topology will look very similar to the topology seen below
+Task 1: (Aim: understand the difference between INPUT, FORWARD, and OUTPUT chains):
+Add Rule1 to the firewall filter table that blocks ping (icmp) packets being forwarded between the two subnets.
+The below rule is general because it was not specified which subnet to use, so it will simply block all ping packets going through the router:
+sudo iptables -A FORWARD -p icmp -j DROP
+Delete Rule1, and then add Rule2 that blocks ping packets coming into the firewall.
+The below rule ensures that ping packet traffic coming into the firewall is blocked:
+sudo iptables -A INPUT -p icmp -j DROP
+Delete Rule2, and then add Rule3 that blocks ping packets coming out of the firewall.
+This rule ensures that ping packets going out of the firewall are blocked:
+sudo iptables -A OUTPUT -p icmp -j DROP
+To test each of the above rules, try to ping between the following pairs of nodes, and observe whether it is successful or not:
+Client1 to Webserver1
+Webserver2 to Client2
+Client1 to Firewall
+Firewall to Webserver1
+Client1 to Client2
+Record your rules’ results (allowed or blocked) and an explanation of the difference between the three chains in your answer (take screenshots of webserver/client/firewall terminals to show your syntax and results of pings).
+Rule 1:
+Client1 to Webserver1 (Blocked)
+The above did not work because Rule 1 blocks ping packets being forwarded between the two subnets.
+The above screenshot shows on the router the number of packets that were dropped by the FORWARD chain.
+Webserver2 to Client2 (Blocked)
+The above shows Webserver2 was not able to ping because again Rule 1 blocks ping packets from being transmitted between the two subnets.
+The above screenshot shows on the router the number of packets that were dropped by the FORWARD chain.
+Client1 to Firewall (Allowed)
+The above shows that Client1 is able to ping the Firewall. This is because Rule 1 only blocks packets being forwarded. If we were using Rule 2 for INPUT then it would not have worked.
+Firewall to Webserver1 (Allowed)
+Again, we are able to ping from Firewall to Webserver1 because our Rule 1 is for forwarded traffic not outgoing traffic.
+Client1 to Client2 (Allowed)
+We are able to ping from Client1 to Client2 because we are not going through the router and are pinging from one device to another.
+Rule 2:
+Client1 to Webserver1 (Allowed)
+This is allowed since the ping packets are not being sent to the router/firewall but instead are being forwarded from Client1 to Webserver1.
+Webserver2 to Client2 (Allowed)
+The above is also allowed since the ping packets are destined for Client2 and not the router/firewall.
+Client1 to Firewall (Blocked)
+The above is blocked because the ping packets are being sent directly to the firewall which is caught by Rule 2 and dropped.
+Firewall to Webserver1 (Blocked)
+The above is also blocked because we are allowed to send the ping to the Webserver1 but when it replies, that reply comes into the Firewalls INPUT chain and gets dropped. This is why it looks as though we are unable to ping Webserver1, in reality we may/may not be pinging the device, we just are not receiving any replies because they are being dropped.
+Client1 to Client2 (Allowed)
+We can ping from Client1 to Client2 because again Rule2 does not block forwarded packets and only cares about packets coming into the Firewall that are ping which it drops.
+Rule 3:
+Client1 to Webserver1 (Allowed)
+We are able to ping from Client1 to Webserver1 because the packet is being forwarded and Rule3 only cares about the OUTPUTs being sent from the router/firewall.
+Webserver2 to Client2 (Allowed)
+We are able to ping from Webserver2 to Client2 for the same reason as the above. The packets are being forwarded so the OUTPUT chain on the router/firewall is not involved.
+Client1 to Firewall (Blocked)
+In this case our Rule3 kicks in because now the ping packets are being sent to the firewall, so they are received, but then on the response from the firewall to Client1 they are blocked because Rule3 drops all OUTPUT packets from the Firewall.
+Firewall to Webserver1 (Blocked)
+In this case our Rule3 is still involved because the Firewall is trying to send ping packets to Webserver1 so the OUTPUT chain kicks in. They are not being forwarded but instead they originate from the Firewall so they are blocked by Rule3.
+Client1 to Client2 (Allowed)
+Since we are forwarding the packet from Client1 to Client2 is it not blocked by Rule3.
+In all the above cases I did not really show the clients because if packets are blocked then the client wont get them anyway and I wasn’t sure what to show. In the case where the client is receiving the packets then you can see that from the senders side which I have provided.
+Task 2: (Aim: filter based on ports and IPs):
+Before Rule4:
+Below is how I set Rule4 to block Client1 from SSHing to any outside nodes but also be able to SSH to the firewall itself. I had to ping Router from client1 to find out its IP addr, then I set the rules below:
+sudo iptables -A OUTPUT -p tcp -d 10.10.2.1 --dport 22 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport  22 -j DROP
+As we can see from the above, we are able to ssh into Router but nothing else.
+Task 3: (Aim: filter based on ports, understand HTTP request/response format):
+Client1 connected to Webserver1 with group number and member names:
+Client2 connected to Webserver2 with group number and member names:
+The rule I added was to simply stop all forwarded traffic using tcp protocol on port 80, while specifying the destination as 10.10.1.3 which is Webserver1. If I did not specify the destination then both internal devices would be unable to access both Webservers.
+Now both clients 1 and 2 show the below when trying to connect to Webserver1 but are both able to access Webserver2.
+Task 4: (Aim: change default policy):
+Looking into the man page for iptables, it says we need to use -P flag to specify policy for a specific chain, after this I ran the following command:
+sudo iptables -P FORWARD DROP 
+Verification of parts 1 to 3 after default policy of DROP is applied for forwarding:
+Client1:
+Webserver1:
+Client2:
+Webserver2:
+Router:
+Task 5: (Aim: Use Stateful Packet Inspection):
+Enabling Stateful Packet Inspection:
+For rule 6 I used -i flag for eth1 and -o flag for eth0. Apart from that the rest we have done in the previous parts as well where we set destination port to 80 and specify the jump to be ACCEPT. 
+sudo iptables -A FORWARD -i eth1 -o eth0 -p tcp –dport 80 -j ACCEPT
+With rule 6 we are able to test it to see that Client2 is unable to connect to Webserver1:
+For rule 7, I just specified the input interface as eth0 and the output as eth1, then the rest is the usual where we specify the protocol as tcp (since ssh uses tcp) and the destination to be the IP addr for the Client1, and the jump is to ACCEPT:
+sudo iptables -A FORWARD -p tcp --dport 22 -d 10.10.2.2 -j ACCEPT
+With rule 7 we are able to ssh into client1 from Webserver1.
+To test all other connections to ensure that they are blocked
+Unable to ping client1 from webserver1 but we were able to ssh:
+Able to ssh from webserver2 into client1:
+Unable to ping client1 from webserver2:
+Able to ssh from router to client1:

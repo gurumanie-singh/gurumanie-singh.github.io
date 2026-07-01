@@ -1,0 +1,6 @@
+Client >» Server
+
+Src IP Dst IP These four numbers uniquely identify a
+
+conversation between a client and a
+Src Port Dst Port server

@@ -1,0 +1,145 @@
+Level 9: Extract Human-Readable Password — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 9
+ Extract Human-Readable Password
+
+ Extract the password from human-readable strings in a binary file using strings and grep.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is one of the few human-readable strings in data.txt, preceded by several "=" characters.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 8 and SSH into Level 9
+
+ 
+ After obtaining the Level 9 password from data.txt in Level 8, exit the current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit9 using the password acquired:
+ 
+
+ ssh bandit9@bandit.labs.overthewire.org -p 2220
+
+ 2. List the Home Directory
+
+ 
+ Once logged in as bandit9, run:
+ 
+
+ ls
+
+ 
+ You will see data.txt listed.
+ 
+
+ 3. Inspect data.txt
+
+ 
+ To view its contents:
+ 
+
+ cat data.txt
+
+ 
+ The file is large and contains mostly non-printable characters. The password is one of the readable strings beginning with multiple "=" characters.
+ 
+
+ 4. Extract Human-Readable Strings
+
+ 
+ To list all printable strings in the file:
+ 
+
+ strings data.txt
+
+ 
+ This command outputs every sequence of printable characters. Among them, look for the string preceded by multiple "=" characters. You may be able to spot the password. If it is still difficult to see, follow the next step.
+ 
+
+ 5. Filter for the Password Using grep
+
+ 
+ To directly find the line containing several "=" characters:
+ 
+
+ strings data.txt | grep "==="
+
+ 
+ This command displays the human-readable string that begins with multiple "=" characters. That string is the password for bandit10.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 8.
+
+ ssh bandit9@bandit.labs.overthewire.org -p 2220 — connect as bandit9.
+
+ ls — list files; shows data.txt.
+
+ cat data.txt — view file contents (mostly non-printable characters).
+
+ strings data.txt — extract all printable strings from the file.
+
+ strings data.txt | grep "===" — filter for the line starting with multiple "=" characters; this line is the password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit9@bandit.labs.overthewire.org -p 2220
+ls
+cat data.txt
+strings data.txt
+strings data.txt | grep "==="

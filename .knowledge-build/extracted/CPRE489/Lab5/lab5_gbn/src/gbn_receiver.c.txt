@@ -1,0 +1,4 @@
+wrapping common, correlated variables in a struct can help
+ * tidy our function signatures and make things concise
+Small, verbosely-named functions can help the main structure of our code
+ * read cleanly. It's must easier to read gbn_receive with aptly-named helpers.

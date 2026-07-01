@@ -1,0 +1,126 @@
+Level 1: Read File Named "–" — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 1
+ Read File Named "–"
+
+ The password for the next level is stored in a file called - located in your home directory.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is stored in a file called - located in your home directory.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 0 and SSH into Level 1
+
+ 
+ After retrieving the Level 1 password from readme, exit the current SSH session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit1:
+ 
+
+ ssh bandit1@bandit.labs.overthewire.org -p 2220
+
+ 
+ Enter the Level 1 password when prompted.
+ 
+
+ 2. Change Directory and List Files
+
+ 
+ Once logged in as bandit1, list files:
+ 
+
+ ls
+
+ 
+ You will see a file named -. Because - is interpreted as an option, the command cat - fails:
+ 
+
+ cat -
+
+ 
+ That returns you to the shell prompt, because - is treated as stdin, not a filename.
+ 
+
+ 3. Read the File Named "–"
+
+ 
+ To force cat to treat - as a filename, prefix it with ./:
+ 
+
+ cat ./-
+
+ 
+ This displays the Level 2 password.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — leave the SSH session (Level 0).
+
+ ssh bandit1@bandit.labs.overthewire.org -p 2220 — connect to Level 1.
+
+ ls — list files; you'll see -.
+
+ cat ./- — read the contents of the file named "–" to get the Level 2 password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit1@bandit.labs.overthewire.org -p 2220
+ls
+cat -
+cat ./-

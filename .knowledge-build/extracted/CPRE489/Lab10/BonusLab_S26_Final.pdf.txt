@@ -1,0 +1,378 @@
+CPR E 4890 Final Lab Experiment (Optional) 
+Cellular Network Emulation and Throughput Testing in ARA Wireless Living Lab 
+(Total Points: 100) 
+ 
+Introduction 
+ 
+• 
+This lab is optional, and you will earn bonus points upon completion. 
+• 
+You may complete this lab at any time before the due date at your convenience. There is no need to come 
+to Room 2061 Coover to work on the lab, and attendance will not be taken. 
+• 
+After completing the lab, fill out the enclosed lab report by answering all questions and submit it on Canvas. 
+ 
+Before starting the lab, familiarize yourself with the basics of 4G/5G network infrastructure by visiting A Beginners 
+Guide to Mobil Communication Infrastructure and reading the sections regarding 4G/5G networks. To understand 
+the platform that you will be using read about the ARA sandbox ARA Sandbox Service. The primary hardware used 
+for this lab will be USRP B210 Software Defined Radios (SDRs). For those new to SDRs, additional resources on SDR 
+fundamentals can be found at Fundamentals of SDRs. 
+ 
+ 
+ 
+In this lab we will use container images that contains srsRAN, an open-source software suite for 4G LTE mobile 
+communication. srsRAN provides a complete 4G LTE software radio stack, including the Evolved Packet Core (EPC), 
+eNodeB (eNB), and User Equipment (UE) components, allowing for the simulation and testing of 4G LTE networks. 
+srsRAN is widely used in both academic and industry research for developing and experimenting with 4G and 5G 
+technologies. More information about srsRAN can be found at srsRAN Documentation. 
+ 
+Lab Expectations: 
+1) Get familiar with the ARA Wireless Living Lab. 
+2) Successfully set up an emulated 4G network and simulate wireless data traffic between the UE and eNB.  
+3) Conduct a throughput test on the emulated network and analyze performance. 
+ 
+Learning Objectives: 
+1) Gain an understanding of the key components of a 4G network and their responsibilities. 
+2) Gain an understanding of communication mechanisms in cellular networks between User Equipment (UE) 
+and Base Station (eNB), to then further explore potential security vulnerabilities. 
+3) Define metrics that can affect the throughput of a network. 
+ 
+Estimated Time to Complete the Lab: 1-1.5 hours
+
+2 
+ 
+Procedure 
+ 
+0. Lab Preparation 
+ 
+This lab must be completed in a single sitting because the containers don’t save data once deleted. ARA provisions 
+resources using Docker containers. Containers are ephemeral, meaning that once deleted, all data inside them is 
+permanently lost unless copied externally. The lease by default is reserved for 2 hours but can be manually 
+increased to a maximum of 5 hours.  
+ 
+0.1. Using your school credentials, log in at ARA log-in portal. 
+ 
+0.2. Search for “Iowa State University” in the search bar and press continue to be redirected to SSO.
+
+3 
+ 
+0.3. After you have successfully logged in, you will be navigated to the CPRE4890_S26 project page on the 
+ARA wireless portal. 
+ 
+0.4. To sign up for ARA’s jumpbox to SSH into the VMs, click on your username (ISU email address) at the 
+right of the project page, and select Upload Public Key. Follow the instructions on the screen, after which 
+you can follow the instructions in the lab manual below to SSH into the VM. Please do this as soon as 
+possible as it may take the ARA team some time to process this. For more information on ARA’s Jumpbox 
+service you can visit ARA Jumpbox Service. 
+ 
+ 
+ 
+0.5. Make sure to set your time-zone settings correctly. This can significantly impact your experience with the 
+reservation system and help you avoid issues caused by differences between the ARA Platform time 
+settings and your system time.
+
+4 
+ 
+1. Reserve two sandbox hosts. 
+ 
+Go to ARA Sandbox Service and pick two machines. Figure 1 shows the relative positions of the machines. Choose 
+two machines that are in general proximity to one another, since nearby hosts are more likely to have reliable RF 
+connectivity. 
+ 
+Make sure to check the ARA Sandbox Service page for which Sandbox-Host pairs have connectivity. Not all host 
+pairs have reliable RF coverage due to physical layout and interference. If srsue remains at "Attaching UE..." for 
+more than ~30 seconds, the hosts are likely out of range; terminate the lease and try a different pair. 
+ 
+ 
+Figure 1 Sandbox-host physical locations.
+
+5 
+ 
+Figure 2 is the snapshot from a single sweep test run with the eNB on Sandbox-Host-005: UE hosts 003, 014, 015, 
+017, 022, and 025 attached and passed iperf, while UE hosts 007, 016, 018, 019, 021, 026, and 027 did not see the 
+cell at all.  RF coverage shifts over time as hardware may be moved, antennas may be adjusted, and interference 
+may change; therefore, your own pairing may differ. You may need to try a few different host pairs before finding 
+one that works.  
+ 
+Figure 2 Snapshot from a single test run with the eNB on Sandbox-Host-005 (Completed on 04/21/2026). 
+Figure 3 shows the throughput measurements between different eNB-UE pairs in a recent test run. It may serve as 
+a guideline to help you choose the right eNB-UE pair for your test. You may want to avoid the pairs with no Link 
+Quality value, meaning that the link was empirically infeasible. Each column represents a Host chosen as eNB node 
+starting from 003 all the way up to 025; each row represents those same hosts as UE node, and the values 
+represent the Link Quality value. For example, if you choose Host 017 as eNB node, your best shot for UE would be 
+Host 018, and your worst shot would be Host 025.  
+ 
+Figure 3 Illustrative LTE throughput per UE host and eNB (Measured on 04/23/2026).
+
+6 
+ 
+1.1. On the ARA portal, navigate to Reservations → Leases → Host Calendar  
+(Or simply visit: https://portal.arawireless.org/project/leases/calendar/host/) 
+ 
+ 
+ 
+ 
+1.2. Ensure the hosts you choose are free to reserve. The image below shows Sandbox-Host-006 and 009 are 
+available. Sandbox-Host 003 is currently reserved see reservation details by hovering your mouse over 
+the colored block. 
+ 
+Note: You may have to scroll down until you reach the Sandbox-Host-0xx hosts. 
+ 
+ 
+ 
+1.3. Create the first lease by clicking create lease next to host calendar.
+
+7 
+ 
+1.4. You can choose a lease name. However, using eNBLease as the lease name is recommended to make 
+things less confusing moving forward. The start and end date can be left blank for a default reservation 
+of 2 hours, which should be sufficient. If you feel like you would need additional time, you can enter in 
+your start and end date, to request for a maximum of 5 hours of resource allocation. Make sure your 
+time zone is set correctly.  
+ 
+Note: Lease names must be unique across the ARA portal. If you receive a duplicate name error, append 
+your NetID. 
+ 
+  
+ 
+ 
+1.5. Use the Site dropdown menu and select Sandbox. Use the trailing numbers from Sandbox-Host-xxx for 
+the device ID. For example, Sandbox-Host-006 is selected in the figure below.
+
+8 
+ 
+1.6. Leave the wireless section of the lease blank and click create lease. 
+ 
+ 
+ 
+ 
+ 
+1.7. If done correctly with an available host the following messages will appear at the top right of the screen.
+
+9 
+ 
+1.8. Do the same for the second lease using your other available host. Using the lease name UELease is 
+recommended to avoid confusion later. Sandbox-Host-009 is used in the example below.
+
+10 
+ 
+1.9. Provide a screenshot of both successfully created hosts’ lease details in your lab report. To see lease 
+details click on the blue lease name.  
+ 
+ 
+ 
+ 
+Ensure both leases are in ACTIVE state before creating containers. If the lease is PENDING, wait or refresh 
+until it becomes ACTIVE.  Also please note that the leases will come ACTIVE only when they are within the 
+time window you have defined for them. Before that time, they will remain PENDING . 
+ 
+2. Create two containers.  
+2.1. Navigate to Container → Containers → Create Container.
+
+11 
+ 
+2.2. For the first container, choose a name. It is recommended to use “eNBContainer” for the name to avoid 
+confusion. Use the docker image arawirelesshub/srsran:srsenb 
+ 
+ 
+ 
+2.3. Fill in the Spec tab with the following specs.  
+• 
+Hostname: eNB (recommended, but you can choose) 
+• 
+CPU: 6  
+• 
+Memory: 8192  
+• 
+Lease Name: eNBLease (or the name you chose for the first lease).
+
+12 
+ 
+2.4. Click the up arrow for ARA_Shared_Net in Networks tab, making sure that it moves to the Allocated 
+section, then click create. ARA_Shared_Net connects the containers to the shared virtual network, 
+allowing communication between the eNB and UE containers and enabling Internet access via the 
+physical network.
+
+13 
+ 
+2.5. If done correctly, a message saying successfully created will appear at the top right. It might take a few 
+seconds for the container to get up and running so while waiting, create the second container. 
+ 
+ 
+2.6. For the second container, it is recommended to use the name “UEContainer” and use the image 
+arawirelesshub/srsran:srsue_4g. For the Spec tab, use all the same specs except Hostname: UE and 
+Lease Name: UELease.
+
+14 
+ 
+ 
+ 
+ 
+2.7. Provide screenshots of both successfully created containers’ overview tabs. Go to the container overview 
+by clicking on the blue container name.
+
+15 
+ 
+3. Connect to containers using jumpbox. 
+3.1. Select the eNBContainer and go to the Console tab.
+
+16 
+ 
+3.2. Run the command passwd using a password you won’t forget “root” is recommended, then start the ssh 
+service using the following command: service ssh start 
+ 
+ 
+ 
+ 
+3.3. Do this for the UEContainer as well.  
+ 
+ 
+ 
+ 
+3.4. Open two terminals or command prompt windows and ssh into ARA’s jumpbox 
+username@jbox.arawireless.org. Make sure that the RSA private key you used to sign up for ARA’s 
+jumpbox is in the .ssh file on the machine you are using.  
+ 
+Note: Your username can be found on the Upload Public Key page.
+
+17 
+ 
+ 
+Alternatively, make sure that your private key is in the directory you are currently in, and you can 
+run the command ‘ssh -i private_key username@jbox.arawireless.org’. Additional information 
+on ARA jumpbox can be found here. 
+ 
+ 
+ 
+3.5. Go back to overview of eNBContainer, under specs a floating IP address is listed. This is the Ip address 
+you will use to ssh from ARA’s jumpbox to the container using username root and the password you 
+chose.  
+ 
+Note: It may take a few seconds for the floating IP to appear. If you do not see a floating IP immediately, 
+refresh the page.
+
+18 
+ 
+3.6. Open two additional eNB terminals, and 3 UE terminals as well.
+
+19 
+ 
+4. Starting the EPC and eNB 
+4.1. In the terminal assigned to the eNBContainer run the command srsepc to start the EPC and then in the 
+2nd eNBContainer terminal run the command srsenb.  
+ 
+The Evolved Packet Core (EPC) is a key component of the 4G LTE network architecture, 
+responsible for control functions such as user authentication, session management, and resource 
+allocation.  
+ 
+Observe the startup messages and answer: 
+1. What three main components are initialized? (Hint: HSS, MME, and ___) 
+2. What MCC and MNC values do you see? 
+3. What does "SPGW" stand for and what is its role? 
+Leave this running - you'll see more messages when other components connect. 
+ 
+The ‘srsenb’ command starts the eNB service, that is the hardware component of the LTE 
+network used for direct communication with mobile devices, managing radio communications, 
+and connecting to the EPC. Once the eNB service is initiated, it will start broadcasting and 
+connecting to User Equipment(UE).  
+ 
+Observe the startup messages, and comment on what you see.  
+  
+5. Starting the UE 
+5.1. In one of the terminals for UEContainer run the command srsue 
+Watch the connection process and note: 
+1. Cell found - What's the PCI and PRB count? 
+2. PLMN found - Does it match the network configured in EPC? 
+3. Random Access - What's your C-RNTI? 
+4. Final message - What IP address was assigned? 
+ 
+Observe Network Attachment 
+Look at Terminal 1 (EPC) - you'll see the authentication process: 
+Find and record: 
+• 
+IMSI number: ___________ 
+• 
+Allocated IP: ___________ 
+• 
+Bearer QCI: ___________ (Quality Class Identifier) 
+Look at Terminal 2 (eNB) - you should see: 
+• 
+"RACH:" message with preamble number 
+• 
+"User 0x46 connected"  
+ 
+5.2. In the other terminal for UEContainer run the command ping 172.16.0.1. This will check whether you are 
+connected to the core. Provide a screenshot of your successful ping in the lab report.
+
+20 
+ 
+6. Running the throughput test 
+6.1. In the terminals that are running srsenb and srsue type t and hit enter to start the console trace. 
+6.2. In the unused terminal for eNBContainer run the command  
+iperf -s -u -i 1 
+ 
+6.3. In the terminal for UEContainer used to run the ping command run the command  
+iperf -c 172.16.0.1 -u -i 1 -b 25M -t 10  
+ 
+6.4. Provide a screenshot of both console traces in your lab report. Typing t and hitting enter will stop the 
+console trace. Type t and hit enter again to start it again. 
+ 
+6.5. In the lab report, define the options for iperf used for the UEContainer and define the brate seen in both 
+console traces. 
+6.6. Run the command  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+iperf -c 172.16.0.1 -u -i 1 -b 25M -t 10  
+ 
+but change the value for the -b flag to make a noticeable difference in the brate. Try atleast 3 different 
+values. Provide a screenshot of the console traces and the value for -b that was used. At what point does 
+the requested bandwidth exceed the achievable throughput? What indicates saturation? 
+ 
+6.7. In the same terminals, now test TCP performance. First, stop the UDP iperf server (Ctrl+C in eNB 
+terminal). In eNB terminal, start TCP server: 
+ 
+iperf -s 
+ 
+In UE terminal, run TCP test: 
+iperf -c 172.16.0.1 -t 10 -i 1 
+  
+Document the TCP throughput and compare with your UDP results. Why might they differ? 
+ 
+6.8. Test uplink and downlink simultaneously. In eNB terminal (restart UDP server): 
+ 
+iperf -s -u 
+ 
+In UE terminal: 
+iperf -c 172.16.0.1 -u -b 20M -d -t 10 -i 1 
+ 
+ Screenshot both directions' throughput. How does simultaneous traffic affect performance? Is the total 
+bidirectional throughput equal to the sum of unidirectional tests? Explain.
+
+21 
+ 
+7. Create a new UE 
+https://arawireless.readthedocs.io/en/latest/ara_technical_manual/sandbox_service.html 
+7.1. To see the effects that the distance between the UE and eNB can have on throughput, find another 
+Sandbox-Host that is further or closer to the eNB. Delete the lease for the current UE, make a new one, 
+and rerun the experiment. The figure above illustrates the location of the Sandbox-Host machine to aid 
+you with your decision to pick a UE further from or closer to your current one. 
+ 
+7.2. Describe the changes you observed in your lab report and provide screenshots to support your claims 
+based on change in throughput and so on. Specifically, comment on the link quality based on metrics 
+such as RSRP, RSRQ, SNR, CFO and so on. 
+ 
+ 
+8. Deleting Leases 
+8.1. Navigate to Reservations → Leases and use the box next to Lease name to select both leases, then click 
+Delete Leases.  
+ 
+ 
+ 
+8.2. Provide a screenshot of the empty Leases page in your lab report.

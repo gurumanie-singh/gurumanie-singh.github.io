@@ -1,0 +1,123 @@
+CPRE431 — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ CPRE431 · Information System Security
+
+ 
+ Security Foundations —
+attack & defence.
+ 
+
+ 
+ Explored fundamental security principles including cryptography, authentication, access control, and defensive strategies, with hands-on labs covering encryption, password cracking, DoS attacks, and firewall configuration.
+ 
+
+ 
+
+ 
+
+ 
+ overview
+
+ What I
+learned.
+
+ 
+ CPRE431 introduces mechanisms for protecting information systems from accidental and intentional threats. Topics include basic cryptography, authentication, access control, malicious code, and network security mechanisms such as firewalls, intrusion detection, and SSL/TLS. Ethics and legal issues round out the curriculum, with labs and programming assignments focusing on practical security tools, cryptanalysis, and system configuration.
+ 
+
+ 
+
+ 
+
+ 
+ labs
+
+ Hands-on
+exercises.
+
+ 
+ 
+ Encrypted Attachment Analysis
+
+ Acted as a security administrator to analyse a suspected data-leak attachment — computed MD5 hashes with OpenSSL, decrypted archives, and recovered plaintext from OpenSSL-encrypted files using symmetric decryption.
+
+ 
+
+ 
+ Password Cracking from /etc/shadow
+
+ Identified hash types and salts from a provided VM's /etc/shadow file, then used appropriate tools and methods to crack user passwords, reinforcing understanding of password hashing.
+
+ 
+
+ 
+ Slowloris DoS Experiment
+
+ Reproduced a Slowloris-style denial-of-service attack on an isolated CloudLab slice, gaining hands-on experience with resource exhaustion attacks in a controlled environment.
+
+ 
+
+ 
+ iptables Firewall Rules
+
+ Created iptables rules to filter and control traffic, implemented basic firewall policies, and observed how rule changes affect connectivity and service accessibility.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ outcomes
+
+ Skills
+gained.
+
+ 
+ Practical cryptography usage, password hashing and recovery, network-level attacks and defences, firewall configuration, and clear technical report writing.
+ 
+
+ 
+ Cryptography
+ OpenSSL
+ Password Cracking
+ iptables
+ CloudLab
+ DoS Attacks
+ SSL/TLS
+ Access Control
+ 
+
+ 
+ 
+ View Code on GitHub →
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

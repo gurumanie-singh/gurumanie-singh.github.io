@@ -1,0 +1,129 @@
+CPRE430 — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ CPRE430 · Networking Protocols & Security
+
+ 
+ Network Protocols —
+security & design.
+ 
+
+ 
+ Explored the TCP/IP protocol suite, application-layer services, IP routing, and network security through lectures and hands-on Wireshark-based labs in virtualised environments.
+ 
+
+ 
+
+ 
+
+ 
+ overview
+
+ What I
+learned.
+
+ 
+ In CPRE430 I explored the TCP/IP protocol suite, application-layer services, IP routing, and network security through a blend of lectures and hands-on labs. The course emphasised critical analysis of protocol design trade-offs and practical implementation details using virtualised lab environments.
+ 
+
+ 
+ Lab exercises included packet capture and analysis with Wireshark, simulating TCP/UDP communications, extracting header fields from raw packets, and testing attack scenarios with mitigation techniques. These modules reinforced understanding of layered architectures and security considerations at each network layer.
+ 
+
+ 
+ Upon completion I gained proficiency in evaluating protocol architectures, interpreting routing tables, assessing security vulnerabilities, and designing solutions for robust, secure network infrastructures.
+ 
+
+ 
+
+ 
+
+ 
+ highlights
+
+ Key
+areas.
+
+ 
+ 
+ Packet Analysis
+
+ Captured and dissected live traffic with Wireshark, extracting TCP/UDP header fields and reconstructing application-layer payloads.
+
+ 
+
+ 
+ Protocol Design Trade-offs
+
+ Critically analysed TCP vs UDP trade-offs, congestion control mechanisms, and reliable delivery strategies across different network conditions.
+
+ 
+
+ 
+ IP Routing & Tables
+
+ Configured and interpreted routing tables, studied OSPF and BGP routing protocols, and simulated multi-hop network topologies.
+
+ 
+
+ 
+ Attack & Mitigation
+
+ Reproduced common network attacks in controlled lab environments and implemented defensive techniques at each layer of the TCP/IP stack.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ technology
+
+ Stack &
+tools.
+
+ 
+ Hands-on networking labs using Wireshark for packet analysis, virtualised environments for topology simulation, and scripting for automated protocol testing.
+ 
+
+ 
+ Wireshark
+ TCP/IP
+ UDP
+ IP Routing
+ Network Security
+ VirtualBox
+ 
+
+ 
+ 
+ View on GitHub →
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

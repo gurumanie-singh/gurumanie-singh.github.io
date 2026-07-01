@@ -1,0 +1,45 @@
+Break-in Lab Overview
+532 Corp is a large multinational corporation whose primary source of revenue is from its research and development activities. 532 Corp has concerns that their employees are leaking company secrets and actively trying to bring 532Corp down. 532Corp is also at severe risk of being exploited since their cybersecurity engineer just left the company.
+Sarah, the former cybersecurity engineer at 532 Corp was in charge of securing all the company data and ensuring that hackers could not take advantage of any potential vulnerabilities. Unfortunately, she left the company and hasn’t really left much information behind.
+The CEO of 532Corp hired you to access any vulnerabilities that Sarah “forgot” to document. Let’s just say she didn’t really leave 532 Corporation on the best terms (cough cough she was fired) and hence her work wasn’t really documented well. She didn’t really leave much behind as to what she found, but we’re hoping that you can figure out all the vulnerabilities. For all we know, 532Corp could be hacked already.
+Your task is to perform an assessment on what Sarah left behind and perform penetration tests where necessary to see if any aspects of the 532Corporation network are susceptible to being exploited. Anything you find sketchy or can essentially “hack” is important for us to know.
+Engagement Scope
+To perform a penetration test and assessment of the 532Corp network you must conduct all experiments in the new Kali Linux boxes in ISELab.
+Your attacks should target the following IP range: 82.46.91.0/24.
+Additionally, you can use the company website to learn more about the employees and the company: https://532corp.hackerville.org. NOTE: The certificate is out of date, but you can still access the website. Additionally, Sarah left a file with the usernames of the employees who still work here. She didn’t give us the passwords, nor did she tell us whose account is on each computer, but that’s where we are hoping you come in.
+NOTE: The external IP address range listed below should not be attacked without first connecting to the lab environment. The class lab environment uses the ISEFlow software which creates a simulated version of the internet. If you attack this IP range without first connecting to your student Kali Linux computer you will be attacking real hosts on the Internet and potentially engaging in illegal activities.
+Technical Recommendations
+If you are stuck, below is a list of recommendations of attacks that you can research or look into performing. Keep in mind that a large number of vulnerabilities in modern corporate networks arise from vulnerabilities in custom web applications, weak passwords, misconfigurations, password reuse, and exploitable old machines.
+SSH, Telnet, and X2Go Client.
+Password Cracking (John, Hydra)
+Web Application Vulnerabilities
+Pentesting Software
+Open Ports
+Misconfigured Permissions
+Spam Emails
+Standardized Query Language
+Methodology
+To ensure full points on your break-in lab submission, it is important that you thoroughly document your findings. If you find something weird, report it. If you can exploit something, also report it. If you find something that looks suspicious or could be harmful, make sure to keep note of that in your report. In this lab you are not only digging for holes, but seeing if those same holes can be exploited. Try to think like a 532 employee/user but also try to understand once you find something you think could be a vulnerability, how you could try to potentially exploit it.
+Hints
+Below are some small hints we have provided for the lab environment:
+When designing a lab environment that is going to be used concurrently by a large number of students we tend to avoid vulnerabilities that involve either remote or local exploitation of memory corruption vulnerabilities. This is because these types of exploits will lead to system instability, undefined behavior, or unsafe states. Additionally, it is less common to exploit things like memory corruption vulnerabilities than it was in the 1990s and earlier.
+Network-Based Online Brute Force Attacks are very noisy. If you don’t get in with a small list of common/default passwords then there is probably another solution you are not seeing. This is not always the case for offline brute force attacks, however.
+As with a real network environment there are multiple paths which you can take to accomplish the overall objective.
+The ability to research (say “Google”) is an incredibly important skill. The set of available technologies is very large and it is not uncommon to run into new scenarios where you have to learn new technologies very quickly. Because of this, the course lab environment does not exclusively include methods discussed in class, but new ones which will require you to learn new skills on the fly.
+Be patient if you try to do something and you don’t get a command line response immediately.
+‘Q’ or ‘QUIT’ = telnet, “exit” or “EXIT” = SSH, Control C to stop a program that is executing.
+An X2Go error usually occurs if you’re using the wrong session type.
+There are some Firefox pop-ups that you should pay attention to and fill out. Pick a unique profile name.
+Expected Deliverable
+At the end of the engagement, you will provide a report to the CEO of 532Corp that concludes all of your findings. The report should detail the following: steps you took to compromise the environment, recommendations on how the organization could fix the issues you have identified, and guidance on how the company can instrument detection around specific attacker techniques, tactics, and procedures (TTPs). Your report should have the following:
+Executive Summary: This should be less than one page and describe at a high level your findings. It should focus primarily on business risks and things that someone in a management or C-suite position would be interesting. These individuals are likely not interested in the clever trick you used to exploit a particular vulnerability.
+Issues Identified: List the particular issues or vulnerabilities that you discovered and provide recommendations on the risk of the issues. Additionally, if you were able to exploit the vulnerability list what you did to exploit the vulnerabilities.
+Attack Narrative: Along with each vulnerability you should detail a chronological ordering of the steps you took to compromise the environment. It should include the steps you performed whether it was successful or not. It is often useful to include an attack graph or diagram which details the chain of events or vulnerabilities that were exploited to compromise the environment.
+Strategic Recommendations: High level recommendations on what can be done to address the issues.
+Conclusion: Conclude any takeaways/ what you learned from this lab.
+NOTE: Accomplishment of the objective and complete compromise of the lab environment is not required nor expected. This lab environment is designed to suit individuals with a variety of different skill levels. The expectation is that this lab environment will be a learning experience.
+Student Kali Linux Machines
+You will use your Kali Linux virtual machines for the break-in lab. To access the student VMs, students first need to connect to VSphere via Iowa State’s VPN. This is located at: https://iselab01.ece.iastate.edu
+When not working on the lab, you should power down your virtual machine to save resources. Do not leave password crackers (john, hydra) running infinitely once you have gained the information or login you require.
+Student Support Discord
+Use the discord, or email Dr. Jacobson and the TA to ask questions. This lab is provided a month before the end of the semester with the expectation that it will take a while to make progress. Start early and ask questions early.

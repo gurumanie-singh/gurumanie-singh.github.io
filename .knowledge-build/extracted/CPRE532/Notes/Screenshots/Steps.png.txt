@@ -1,0 +1,29 @@
+Key Distribution
+
+Center (KDC)
+Client Authentication to the AS
+r he
+& Kos
+> Authentication
+Server (AS)
+Client (C) Ticket granting ticket (TGT)
+& Kc-TGS Client Service Authorization
+Session key ID of
+Signs exchanges Msg C service :
+between C and TGS requested :
+" - & Kroes
+client + timestamp
+
+Ticket-granting
+Server (TGS)
+
+4 Ke-s
+
+For exchanges Tee eee eee eee ee eee .
+between C and S
+
+client + timestamp
+
+timestamp
+
+Service Server (SS)

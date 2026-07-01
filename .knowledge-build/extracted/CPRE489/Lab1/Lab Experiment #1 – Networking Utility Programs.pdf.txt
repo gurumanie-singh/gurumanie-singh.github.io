@@ -1,0 +1,165 @@
+CPR E 4890: Computer Networking and Data Communication 
+Lab Experiment #1 – Networking Utility Programs 
+Summary: 
+This networking lab provided me with hands-on experience on essential diagnostic and 
+analysis tools used in computer networks. I was able to learn how to identify network 
+interfaces and their IP addresses, understand the loopback interface's role in 
+troubleshooting, and measure network latency using ping commands to various 
+destinations. I also discovered why local pings are significantly faster than remote ones 
+due to differences between testing the internal network stack versus routing through 
+multiple physical devices. The lab covered DNS resolution using nslookup to translate 
+domain names to IP addresses, identify mail exchangers, and distinguish between aliases 
+and canonical names. 
+Using traceroute and tcptraceroute, which tracked packet paths across networks and I 
+was also able to learn more about why TCP packets often succeed where ICMP packets 
+are dropped by routers. The iperf tool taught bandwidth measurement and unit conversion, 
+while nmap introduced port scanning to identify open services. Finally, as for the packet 
+capture tools like tcpdump and Wireshark, these enabled me to analyze network traffic in 
+real-time, identify attack sources during simulated ping floods, examine TCP connection 
+details, understand port usage for common protocols like HTTP and HTTPS, and 
+differentiate between packet types (ICMP, UDP, TCP) used by various networking utilities. 
+Overall, the lab equipped me with fundamental skills for network troubleshooting, 
+performance optimization, and security monitoring. 
+ip a & ifconfig 
+1. What devices (interfaces) are available on your machine? What are the IP 
+addresses assigned to them? 
+There are 4 devices (interfaces) available on the machine. These are:  
+Interface 
+IP Address 
+lo 
+127.0.0.1 
+enp4s0f0 
+192.168.254.22 
+enp4s0f1 
+192.168.75.22 
+enp0s31f6 
+None
+
+2. What is the device (interface) named `lo` used for? Use manual pages or 
+search online. What address is assigned to the device? 
+The device (interface) named `lo` is called a loopback address and it is a reserved IPv4 
+address range 127.0.0.0/8. The loopback interface usually uses the first address 127.0.0.1 
+in this range. A loopback interface is a virtual interface and does not represent any 
+hardware devices. It is just part of the internal TCP/IP stack of the OS. Our machine can 
+use this interface to communicate with itself, and it’s very useful in troubleshooting and 
+diagnostics. The key purpose of the loopback address is to help in troubleshooting 
+scenarios where we want to isolate and identify if a network issue is caused by an internal 
+problem inside the machine network stack itself. 
+ping 
+3. Ping the following destinations and report the average round-trip-time (the 
+latency) to each one: 
+www.google.com : Takes an average of 16.070s 
+ 
+www.iastate.edu : Takes an average of 28.578s 
+ 
+vm.iastate.edu : Takes an average of 0.940s
+
+127.0.0.1 : Takes an average of 0.041s 
+ 
+www.cam.ac.uk : Takes an average of 14.920s 
+ 
+4. Rank the latency from least to greatest. Why do you suppose this is the case? 
+Why are pings to 127.0.0.1 so much faster than pings to other destinations? Use 
+the internet, manual pages, or ask your TA if stuck. 
+Name 
+Time 
+127.0.0.1 
+0.041s 
+vm.iastate.edu 
+0.940s 
+www.cam.ac.uk 
+14.920s 
+www.google.com 
+16.070s 
+www.iastate.edu 
+28.578s 
+ 
+The reason why the latency for the ping command is the fastest to 127.0.0.1 compared to 
+other destinations is because a ping to 127.0.0.1 tests the local machine’s network stack
+
+whereas for other destinations the request is being sent out through multiple routers, 
+swithces and long distances such as to servers. 
+5. Using the manual pages for ping (man ping), determine which flag/option can 
+be used to specify the interface pings will be sent out of? Which option can be 
+used to specify packet size? 
+Use this flag to specify the interface pings will be sent out of : -I 
+Use this flag to specify the packet size: -s 
+traceroute & tcptraceroute 
+6. Perform a traceroute to google.com. How many hops does it take for your 
+packets to reach google.com? What is the latency? About how many hops are 
+within the ISU network (example internal address: vm.iastate.edu)? 
+It takes 16 hops to get to google.com. This was checked using an online IP lookup tool and 
+it was found that on hop #16 (the IP stated is google’s). The latency was roughly 15ms. 
+There are about 10 hops within the ISU network. 
+7. Perform another traceroute to google.com using TCP packets instead of ICMP. 
+Are there any differences in the output? (Hint: sudo is required for 
+tcptraceroute)
+
+The key difference between the traceroute command we ran, and the sudo tcptraceroute is 
+the routers may be configured to drop/not respond to specific packets (namely our ICMP 
+packets). However, when we use sudo tcptraceroute, our packets being used are now TCP 
+SYN packets instead of ICMP packets. We can notice that there are less asterisks when 
+using TCP packets instead which goes to show that our ICMP packets were being dropped 
+by some routers. 
+nslookup 
+8. Perform nslookup of www.iastate.edu. What is the IP address of this server? 
+ 
+After doing nslookup of www.iastate.edu, the IP address for the server comes out to 
+129.186.1.200 
+9. What is the mail exchanger for ece.iastate.edu? 
+The mail exchanger for ece.iastate.edu is vulcan.ece.iastate.edu.
+
+10. Which of the following are aliases? If it’s an alias, record its canonical name. 
+www.apple.com : This is an alias, it’s canonical name is www-apple-com.v.aaplimg.com. 
+Apple.com : This is not an alias. It is the canonical name. 
+www.google.com : This is not an alias. It is a canonical name. 
+iperf 
+11. Your TA is running the iperf server program on the machine 192.168.254.1. Run 
+the iperf client program against the TA’s iperf server and report the bandwidth 
+of the connection in Gigabits per second (Gbps), Gigabytes per second (GBps), 
+Megabits per second (Mbps), and Megabytes per second (MBps). 
+After running the iperf command on the server program being hosted by the TA, the 
+reported bandwidth is 940 Mbps, which is also 0.94 Gbps, 117.5 MBps, 0.1175 GBps. 
+nmap 
+12. Run a port map against your own machine. Is port 22 open? Which service runs 
+on this port? 
+Port 22 is open. Secure Shell is the service that runs on port 22.
+
+tcpdump 
+13. For this exercise, work with a partner and alternate roles. Your machine is 
+currently undergoing a ping flood attack! On partner #1’s computer, execute 
+ping [address] where “address” is partner #2’s IP address. On partner #2’s 
+computer, use tcpdump and filter for ICMP packets to determine the IP address 
+of the machine that is sending the packets. Include the IP addresses of your 
+machine and your partner’s machine in your report. (Note: use IP address 
+192.168.254.x where x can be found using earlier command; also, for a more 
+accurate flood attack, –f can be used but requires sudo). 
+The above is the output I got when my machine was undergoing the ping flood attack. My 
+partner’s IP address was 192.168.254.21 and my machine’s IP address 192.168.254.22. 
+Below is the screenshot for when I carried out the attack against my partner.
+
+Wireshark 
+14. For each connection, indicate the duration and the number of packets sent 
+from your computer during that connection. 
+52.252.224.122 is the www.iastate.edu IP address when looking through nslookup. In the 
+above screenshot, we can see that the duration and # of packets sent from my computer 
+during the first connection is 115.8975 and 17 packets sent (A -> B) respectively. In the 
+second connection the duration is 5.7770 and 4 packets sent (A -> B). In the third 
+connection the duration is 170.5874 and 245 packets sent (A -> B). In the fourth connection 
+the duration is 170.4095 and 30 packets sent (A -> B). In the fifth connection the duration is 
+170.5179 and 24 packets sent (A -> B). In the last connection, the duration is 0.2050 and 15 
+packets sent (A -> B). 
+15. What were the destination ports used and what protocols do they correspond 
+to? 
+The destination ports used were 80 and 443 respectively. 80 is HTTP and 443 is HTTPS. The 
+ports used from our machine were ephemeral ports. 
+16. Determine how much data (in bytes) each ICMP packet contains. (Hint: the 
+conversations panel does not support ICMP explicitly; you can capture the 
+traffic between your two nodes to make sure the result is valid) 
+An ICMP packet contains 98 bytes in each packet. I was able to find this out by pinging my 
+own localhost and changing the interface on Wireshark to loopback.
+
+17. What types of packets are sent with traceroute? What types of packets are sent with 
+tcptraceroute? 
+The packets sent via traceroute are UDP packets when we visit www.ebay.com. 
+The packets sent via tcptraceroute are TCP packets when we visit www.ebay.com.

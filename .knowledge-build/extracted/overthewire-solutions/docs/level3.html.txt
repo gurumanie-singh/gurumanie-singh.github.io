@@ -1,0 +1,154 @@
+Level 3: Hidden Files — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 3
+ Hidden Files
+
+ Locate a hidden file inside the inhere directory to retrieve the next-level password.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is stored in a hidden file inside the inhere directory. You must locate and read that hidden file.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 2 and SSH into Level 3
+
+ 
+ After retrieving the Level 3 password from Level 2, exit your current SSH session:
+ 
+
+ exit
+
+ 
+ Then, connect as bandit3 using the password obtained:
+ 
+
+ ssh bandit3@bandit.labs.overthewire.org -p 2220
+
+ 2. List the Contents of the Home Directory
+
+ 
+ Once logged in as bandit3, run:
+ 
+
+ ls
+
+ 
+ You should see a directory named inhere.
+ 
+
+ 3. Change into the inhere Directory
+
+ 
+ Enter the hidden-files directory:
+ 
+
+ cd inhere
+
+ 4. Observe No Visible Files
+
+ 
+ Running a plain ls shows nothing:
+ 
+
+ ls
+
+ 
+ However, a hidden file is present but not yet visible.
+ 
+
+ 5. Reveal Hidden Files
+
+ 
+ To list hidden files, use ls -la (or ls -A):
+ 
+
+ ls -la
+
+ 
+ You will now see a file named ...Hiding-From-You.
+ 
+
+ 6. Read the Hidden File
+
+ 
+ Display the contents to obtain the Level 4 password:
+ 
+
+ cat ...Hiding-From-You
+
+ 
+ The output is the password for bandit4.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 2.
+
+ ssh bandit3@bandit.labs.overthewire.org -p 2220 — connect as bandit3.
+
+ ls — list visible files (shows inhere directory).
+
+ cd inhere — change into the inhere directory.
+
+ ls -la — list all files, including hidden ones; reveals ...Hiding-From-You.
+
+ cat ...Hiding-From-You — display the hidden file to get the Level 4 password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit3@bandit.labs.overthewire.org -p 2220
+ls
+cd inhere
+ls
+ls -la
+cat ...Hiding-From-You

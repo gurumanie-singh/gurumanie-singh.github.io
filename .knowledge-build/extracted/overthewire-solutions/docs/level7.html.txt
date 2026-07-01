@@ -1,0 +1,130 @@
+Level 7: grep & Piping — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 7
+ grep & Piping
+
+ Use grep and pipes to filter content and find the password next to the word "millionth".
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level appears immediately next to the word "millionth" in data.txt.
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 6 and SSH into Level 7
+
+ 
+ After obtaining the Level 7 password from /var/lib/dpkg/info/bandit7.password, exit the current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit7 using the password acquired:
+ 
+
+ ssh bandit7@bandit.labs.overthewire.org -p 2220
+
+ 2. List the Home Directory
+
+ 
+ Once logged in as bandit7, run:
+ 
+
+ ls
+
+ 
+ You will see data.txt listed.
+ 
+
+ 3. Inspect data.txt
+
+ 
+ To view its contents:
+ 
+
+ cat data.txt
+
+ 
+ The file contains many entries. According to the instructions, the password is located immediately after the word "millionth".
+ 
+
+ 4. Search for the Word "millionth"
+
+ 
+ To extract the password, filter lines containing "millionth":
+ 
+
+ cat data.txt | grep "millionth"
+
+ 
+ This command outputs the line where the word "millionth" appears, revealing the password next to it.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to local machine from Level 6.
+
+ ssh bandit7@bandit.labs.overthewire.org -p 2220 — connect as bandit7.
+
+ ls — list files; shows data.txt.
+
+ cat data.txt — view entire file contents.
+
+ cat data.txt | grep "millionth" — filter for the line containing "millionth" and display the password.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit7@bandit.labs.overthewire.org -p 2220
+ls
+cat data.txt
+cat data.txt | grep "millionth"

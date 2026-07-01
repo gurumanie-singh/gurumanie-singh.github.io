@@ -1,0 +1,63 @@
+CPRE 4310
+M06 HW
+Assignments will be submitted in PDF format via Canvas. 
+Please submit your homework online through Canvas. Late homework will not be accepted. 
+Important: Your submission must be in .pdf format ONLY!
+Please ensure that you support all your answers with the correct screenshots showing your solutions.
+You are not allowed to use AI tools to answer any of the HW questions
+Explain what is the differences between an IPS and a Firewall?
+An IPS is an extension to an IDS that also has the capability to block or prevent packets, whereas a Firewall acts as a first line of defence in a network to block traffic based on rules. Furthermore, IPS have the ability to analyze traffic for malicious content and then stop threats that may have bypassed our Firewall.
+A SYN flood is a form of denial-of-service attack in which an attacker sends a succession of SYN requests to a target's system. This is a well-known type of attack and is generally not effective against modern networks. It works if a server allocates resources after receiving a SYN, but before it has received the ACK. If Half-open connections bind resources on the server, it may be possible to take up all these resources by flooding the server with SYN messages. Syn flood is a common attack and it can be blocked with Linux/Unix iptables rules. Can you craft iptables rules that can block SYN flooding attacks? Explain your work and rationale.
+Since we are talking about SYN packets, this immediately means TCP connection. This being said the rule would be to drop TCP packets that try to get to our system:
+sudo iptables -A INPUT -p tcp -j DROP 
+or 
+sudo iptables -A FORWARD -p tcp -j DROP
+Either of the above can be used depending on what the network structure looks like. The first rule blocks any TCP packets from getting into a device while the second rule blocks TCP packets from being forwarded. It would depend on the structure to determine which command works better.
+SMTP (Simple Mail Transfer Protocol) is the standard protocol for transferring mail between hosts over TCP. A TCP connection is set up between a user agent and a server program. The server listens on TCP port 25 for incoming connection requests. The user end of the connection is on a TCP port number above 1023. Suppose you wish to build a packet filter rule set allowing inbound and outbound SMTP traffic. You generate the following rule set:
+Describe the effect of each rule.
+Rule A:
+Allows communication to be established since server is listening on port 25, so TCP requests sent to that port from outside by the User Agent (UA) will be allowed.
+Rule B:
+Allows server to respond to the UA by allowing TCP communications to be sent to ports above 1023.
+Rule C:
+Allows TCP communication from server to port 25. Might allow for our server to send mail to other servers listening on port 25. But, this is not really helpful or needed because the UA is not listening on port 25 for this question.
+Rule D:
+Allows TCP communications to enter from ports above 1023, also not needed because our server is not listening on port 1023 for anything. Furthermore, could be a security risk since it allows external devices to talk to our server on ports above 1023.
+Rule E:
+Good to have a deny policy as compared to a default accept policy. It is implemented correctly however from a functional standpoint not the best way to go about things. Great for a security standpoint.
+Your host in this example has IP address 172.16.1.1. Someone tries to send e-mail from a remote host with IP address 192.168.3.4. If successful, this generates an SMTP dialogue between the remote user and the SMTP server on your host consisting of SMTP commands and mail. Additionally, assume that a user on your host tries to send e-mail to the SMTP server on the remote system. Four typical packets for this scenario are as shown:
+Indicate which packets are permitted or denied and which rule is used in each case.
+Someone from the outside world (10.1.2.3) attempts to open a connection from port 5150 on a remote host to the Web proxy server on port 8080 on one of your local hosts (172.16.3.4) in order to carry out an attack. Typical packets are as ­follows:
+Will the attack succeed? Give details.
+So with the rules above the attacker’s SYN to port 8080 is denied so the attack fails. But if the SYN did somehow get through, our host is allowed to reply because of Rule B.
+To provide more protection, the rule set from the preceding problem is modified as follows:
+Describe the change.
+This rule set is better because it ensures that only the actual SMTP servers are being contacted. It is modified to ensure that the communications are only taking place from SMTP servers to other SMTP servers and all other communication is denied. Only connections that are expected to be SMTP ports are allowed. It blocks any communication that is not from the source port 25 from either our side or the outside.
+Apply this new rule set to the same six packets of the preceding problem. Indicate which packets are permitted or denied and which rule is used in each case.
+Rule | Direction | Scr Addr | Dst Addr | Protocol | Dst Port | Action
+A | In | External | Internal | TCP | 25 | Permit
+B | Out | Internal | External | TCP | >1023 | Permit
+C | Out | Internal | External | TCP | 25 | Permit
+D | In | External | Internal | TCP | >1023 | Permit
+E | Either | Any | Any | Any | Any | Deny
+Packet | Direction | Scr Addr | Dst Addr | Protocol | Dst Port | Action
+1 | In | 192.168.3.4 | 172.16.1.1 | TCP | 25 | Permit (Rule A)
+2 | Out | 172.16.1.1 | 192.168.3.4 | TCP | 1234 | Permit (Rule B)
+3 | Out | 172.16.1.1 | 192.168.3.4 | TCP | 25 | Permit (Rule C)
+4 | In | 192.168.3.4 | 172.16.1.1 | TCP | 1357 | Permit (Rule D)
+Packet | Direction | Src Addr | Dst Addr | Protocol | Dst Port | Action
+5 | In | 10.1.2.3 | 172.16.3.4 | TCP | 8080 | Deny (Rule E)
+6 | Out | 172.16.3.4 | 10.1.2.3 | TCP | 5150 | Permit (Rule B)
+Rule | Direction | Src Addr | Dst Addr | Protocol | Src Port | Dst Port | Action
+A | In | External | Internal | TCP | >1023 | 25 | Permit
+B | Out | Internal | External | TCP | 25 | >1023 | Permit
+C | Out | Internal | External | TCP | >1023 | 25 | Permit
+D | In | External | Internal | TCP | 25 | >1023 | Permit
+E | Either | Any | Any | Any | Any | Any | Deny
+Packet | Direction | Scr Addr | Dst Addr | Protocol | Dst Port | Action
+1 | In | 192.168.3.4 | 172.16.1.1 | TCP | 25 | Permit (Rule A)
+2 | Out | 172.16.1.1 | 192.168.3.4 | TCP | 1234 | Permit (Rule B)
+3 | Out | 172.16.1.1 | 192.168.3.4 | TCP | 25 | Permit (Rule C)
+4 | In | 192.168.3.4 | 172.16.1.1 | TCP | 1357 | Permit (Rule D)
+5 | In | 10.1.2.3 | 172.16.3.4 | TCP | 8080 | Deny (Rule E)
+6 | Out | 172.16.3.4 | 10.1.2.3 | TCP | 5150 | Deny (Rule E)

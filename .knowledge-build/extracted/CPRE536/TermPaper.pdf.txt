@@ -1,0 +1,553 @@
+XXX-X-XXXX-XXXX-X/XX/$XX.00 ©2025 IEEE 
+Validation and Reliability Assessment of Autopsy 
+Forensic Suite for Artifact Extraction 
+ 
+Gurumanie Singh Dhiman  
+Department of Electrical and Computer Engineering 
+Iowa State University 
+Ames, USA 
+dhiman@iastate.edu
+Abstract — Digital forensic investigations rely heavily on 
+software tools to turn raw data into something that makes sense 
+in court. Naturally, most people automatically assume that these 
+tools work perfectly, especially the big, expensive ones. Still, for 
+smaller labs using open-source software, reliability is something 
+that needs to be proven, not just assumed. This paper examines 
+this problem by testing the Autopsy forensic suite (v4.22.1) to 
+assess its effectiveness. I set up a specific experiment to verify 
+three key points: whether it locates the files, whether the 
+metadata is accurate, and whether I can obtain the same results 
+twice. I created a dataset that resembles a real case, including 
+deleted files and browser history. In the end, the results showed 
+that while Autopsy excels at finding files that are still present 
+(with 100% accuracy), it struggles with recovering deleted files 
+(achieving only about 80% accuracy) and becomes increasingly 
+confusing 
+with 
+time 
+zones. 
+This 
+paper 
+presents 
+a 
+straightforward method for small labs to evaluate their tools 
+without incurring a substantial budget. 
+Keywords — Tool Validation, Digital Forensics, Autopsy, 
+NIST, Deleted Files, Reliability. 
+I. INTRODUCTION 
+The primary objective of a digital investigation is to trust 
+the tools that you are using. In court, evidence is scrutinized 
+very closely. Standards, such as the Daubert rule in the U.S., 
+stipulate that scientific evidence must be derived from reliable 
+methods [1]. In the case of digital forensics, this means 
+determining whether our software is effective and how 
+frequently it produces errors. 
+Large government agencies have the resources to conduct 
+extensive studies or purchase expensive tools, such as EnCase. 
+However, many local police departments and private 
+investigators rely on open-source tools because they are free 
+of charge. Autopsy is one of the most popular ones out there, 
+but there isn't really a simple checker guide for labs to test it 
+themselves. This can leave them vulnerable to many forms of 
+legal attacks. 
+The specific problem that I am trying to address in this 
+paper is the lack of easily validated tests. Most of the official 
+tests from NIST are too complicated for a normal person to do 
+quickly. This leads people to trust the software without 
+checking it (due to time constraints), which is a dangerous 
+practice in the real world. 
+II. RELATED WORK AND BACKGROUND 
+Recently, there has been a lot written about why we need 
+to test tools, but actually doing it is a completely different 
+story. In order to understand why my results came out the way 
+tht they did, it helps to understand a bit about how the file 
+system works. 
+A. Standards and Guidelines 
+NIST has a program called CFTT that tests tools [2]. 
+However, their reports often refer to outdated versions or 
+specific setups that don't match what a student or small lab 
+typically uses. Additionally, the SWGDE guidelines tell us 
+that validation isn't just a one-time process, but instead it’s 
+something that must be continually performed to ensure the 
+tool being used meets your specific needs [3]. 
+B. The Challenge of NTFS 
+In my experiments, the main issues came from how 
+Windows stores files in NTFS. Every file has a record in a big 
+table called the MFT. When a file is "Allocated," the table 
+points to the data on the disk. 
+But when you delete a file, the computer does one of two 
+things: 
+• Flagging: It marks the deleted table entry as 
+"Unallocated" (empty). 
+• Bitmap Update: It tells the Drive that the space where 
+the data was is now "Free." 
+Forensic tools like Autopsy must examine the table and 
+be able to identify those "ghost" entries. The problem, or 
+inconsistency, occurs when the table indicates the file is 
+present, but the computer has already overwritten the old data 
+with new data in the same place. This study attempts to 
+replicate that error to see if Autopsy is able to detect it. 
+C. Commercial vs Open Source 
+Comparative studies often pit open-source tools against 
+the commercial giants. Carrier [4] laid the groundwork for 
+file system analysis, arguing that open-source tools enable 
+"white box" testing, where the code itself can be audited. On 
+the other hand, commercial tools are "black boxes," where 
+they are validated only by their outputs. Research by 
+Garfinkel [5] highlighted that all forensic tools, regardless of 
+price, contain bugs and inconsistencies. For instance, varying 
+interpretations of the timestamps in the Windows Registry or 
+NTFS MFT can lead to timeline discrepancies of several 
+hours, depending on the tool used. 
+D. Challenges in File Recovery Validation 
+Recovering deleted files is non-deterministic. In modern 
+file systems (NTFS, APFS), when a file is deleted, its entry is 
+flagged, and its clusters are marked as free. A tool must parse 
+the MFT to find these "orphan" entries/files. However, if the 
+operating system has reused those clusters for new data, then 
+the file becomes corrupted. 
+Validating a tool's ability to distinguish between partial 
+and complete recovery is a complex and challenging task. 
+Typical validation patterns in the literature involve creating
+
+"known-deleted" datasets where specific files are deleted at 
+recorded times to measure a tool's false positive (reporting a 
+file as recovered when it is overwritten) and false negative 
+(failing to find the MFT entry) rates. Furthermore, validation 
+must distinguish between "file carving" (scanning raw disk 
+bytes for headers/footers) and file-system-based recovery 
+(parsing MFT attributes). This distinction is critical because 
+file system-based recovery retains metadata (filenames, 
+timestamps), whereas carving often loses it. Consequently, 
+standard validation practices emphasize not just the recovery 
+of content, but the preservation of the chain of custody. If a 
+tool recovers a file fragment but misidentifies its original 
+location or timestamps, the evidence may be inadmissible in 
+court. 
+E. Timeline and Time Zone Handling 
+A critical, often overlooked aspect of validation is timeline 
+reconstruction. Forensic tools build timelines by parsing MAC 
+(Modified, Accessed, Changed) times from the MFT and 
+standardizing them for the examiner. However, discrepancies 
+often arise during the conversion of these raw timestamps to 
+the examiner’s local time or Coordinated Universal Time 
+(UTC). Research by Casey and Carrier suggests that 
+misinterpretations of the "Created" versus "Modified" 
+timestamps, or failures to consider the BIOS clock settings of 
+the suspect machine, can introduce significant errors. This 
+paper examines whether Autopsy correctly handles these 
+conversions or if it introduces offsets that could skew a 
+criminal alibi. 
+III. METHODOLOGY 
+To really test if Autopsy (v4.22.1) is reliable, I designed 
+an experiment where I knew exactly what was on the disk 
+before I started. This is called a "Ground Truth" approach. If 
+the tool says something different from what I know, then the 
+tool is wrong. 
+A. Setting up the Test Environment 
+I wanted to ensure that my computer didn't interfere with 
+the results, so I performed all operations within a Virtual 
+Machine. 
+• Host Machine: Windows 10 Enterprise, Intel Core i7, 
+32GB RAM. 
+• Virtualization: VMware Workstation 16 Pro. 
+• Tool: Autopsy v4.22.1 (64-bit) running on The Sleuth 
+Kit framework. 
+• Target Media: A 2GB virtual hard disk (VHD) 
+formatted as NTFS. 
+B. Creating the Data 
+Often, people test tools on random hard drives, but this 
+approach doesn't work because you don't know what you're 
+looking for. I built a clean dataset from scratch: 
+• Wiped Drive: I zeroed out the Drive so it was empty. 
+• Added Files: I put 25 documents and 30 images on it. 
+I selected 25 documents and 30 images to ensure the 
+dataset was small enough to manage manually yet 
+representative of a mixed real-world case. 
+• The "Shift+Delete" Trick: I created a specific file 
+called Secrets.txt that contained the message "The 
+secret password is password :)" inside it. Then I used 
+Shift+Delete to erase it, skipping the Recycle Bin 
+entirely. 
+• System Files: I let Windows create its own background 
+files, such as desktop.ini, to see how the tool handles 
+system files versus user files. 
+• Deletion Scenarios: 
+o 
+Scenario A (Recycle Bin): 5 files were 
+deleted normally, moving them to the 
+Recycle Bin. 
+o 
+Scenario B (Permanent): 10 files were 
+"Shift+Deleted," bypassing the Recycle Bin 
+and marking MFT entries as unallocated 
+immediately. 
+Before I started the analysis, I created a list of the "hashes" 
+(digital fingerprints) for every file, allowing me to have a 
+master list to check against. 
+The dataset was not random but instead it was engineered 
+to trigger specific edge cases known to challenge forensic 
+parsers. The volume was zero-wiped before formatting to 
+ensure a forensic clean slate. I then went ahead and populated 
+the Drive with a diverse types of 25 document files (.docx, 
+.pdf, .txt) and 30 image files (.jpg, .png). 
+Crucially, specific files were created to test the 
+"Shift+Delete" bypass mechanism. A file named Secrets.txt 
+was generated with specific ASCII content ("The secret 
+password is password :)"). It was then permanently deleted to 
+force immediate MFT flag updates (this was one of the files 
+within the 25 document files that were deleted). For the 
+Secrets.txt file, it was immediately made to override the space 
+with the Autopsy installer file.  
+Additionally, system files such as desktop.ini were 
+allowed to generate naturally to test the tool’s ability to 
+distinguish between user-generated and system-generated 
+deletion events. Before imaging, a cryptographic hash (SHA-
+256) was generated for every file, creating an immutable 
+"Ground Truth" master list against which all Autopsy results 
+would be measured. 
+C. How I Tested it 
+I ran the test three times to be sure. I loaded the Drive into 
+Autopsy and ran the standard "Ingest Modules," such as 
+Recent Activity and Keyword Search. Then I tried to export 
+the "Deleted Files" and compare their hashes to my master list. 
+• Ingestion: The disk image was loaded into Autopsy. 
+The "Ingest Modules" selected were main Hash 
+Lookup, File Type Identification, Exif Parser, 
+Keyword Search, and Recent Activity. 
+• Extraction: I then navigated to the Autopsy interface 
+to locate artifacts. Then the "Deleted Files" view and 
+the "Web History" view were exported. 
+• Verification: The MD5 hashes of the recovered files 
+were compared against the Ground Truth list. Any 
+deviation in the hash value indicated a failure in 
+integrity (e.g., partial overwrite). 
+IV. RESULTS AND DISCUSSION 
+The results revealed some interesting findings. Overall, 
+Autopsy is quite good, but upon closer examination of the
+
+deleted files, I found some apparent limitations. I have three 
+screenshots that help explain what happened. 
+A. Regular Files and Folders 
+For the 55 regular files that weren't deleted, Autopsy was 
+nearly perfect on them. It got a 98.2% accuracy rate. Only one 
+of them returned a hash mismatch due to a known issue with 
+metadata updating during the imaging process. 
+Analysis of the Folders (Fig. 1): One of the best features 
+of Autopsy is that it is able to rebuild the folder structure. 
+Looking at the first screenshot, you can see that even though I 
+deleted a lot of documents and images, it still displays the 
+entire folder tree for vol4. It found the $Deleted folder and the 
+user folders, such as "Documents", "Photos", and “Secrets.” 
+This is quite important because in a real-life investigation, 
+proving that a folder named "Secrets" existed is just as 
+important as finding the files inside it. It tells us about the 
+intent of the user. The screenshot shows us that Autopsy is 
+exceptionally skilled at reading the MFT structure, even when 
+the files are deleted. 
+• Visual Verification: The directory structure was 
+reconstructed perfectly. 
+• Integrity: All 55 extracted files had the hashes that 
+matched with the Ground Truth. 
+• Implication: This confirmed that Autopsy’s TSK core 
+correctly parses the NTFS MFT and Bitmap attributes 
+for active files. 
+• Forensic Implication: Preserving the directory 
+structure is critical. Even if the file content is lost, the 
+proof that a folder named "Secrets" existed provides 
+context that a regular raw data carve would clearly 
+miss. Autopsy correctly interpreted the parent-child 
+relationships defined in the MFT, proving that its 
+parsing engine is reliable even when the "Allocated" 
+bit is flipped to zero. 
+ 
+ 
+Fig. 1. Reconstructed Directory Tree. (Autopsy successfully parsed the 
+NTFS MFT to rebuild the folder structure despite the deletion events. Note: 
+There may be an inconsistent number of documents and images due to the 
+issues when setting up the experiment.) 
+ 
+Setup 
+Contamination 
+Note: 
+Although 
+the 
+experimental design specified a ground truth of 55 user-
+created files (25 documents and 30 images), the raw file list 
+generated by Autopsy reveals a total file count exceeding 55. 
+This is due to the inherent nature of the NTFS file system and 
+the testing setup. The disk image was created within a 
+running Windows 10 Virtual Machine, leading to the 
+necessary inclusion of system-generated files (e.g., $LogFile, 
+$MFT, $Secure, and 
+\$Recycle.Bin) and numerous 
+temporary files created by the operating system during the 
+brief period of file creation. Furthermore, due to running the 
+experiment a few times for different results there are also 
+cases where this interfered with the directory structure. These 
+system files and errors, while present in the file list 
+screenshot, were excluded from the actual validation count in 
+TABLE I as they were not part of the controlled ground-truth 
+dataset.  
+ 
+The results, summarized in TABLE I, indicate a high 
+degree of reliability for allocated (non-deleted) files. Autopsy 
+successfully recovered all 25 documents and their metadata 
+accurately. 
+TABLE I.  
+ARTIFACT RECOVERY ACCURACY FOR AUTOPSY 
+Artifact 
+Type 
+Total 
+Correctly 
+Recovered 
+Incorrect / 
+Incomplete 
+Accuracy 
+(in %) 
+Documents 
+25 
+25 
+0 
+100 
+Images 
+30 
+29 
+1 
+96.6 
+Deleted 
+Files 
+15 
+12 
+3 
+80 
+a. Sample of a Table footnote. (Table footnote) 
+The primary limitation was observed in the recovery 
+of deleted files. Autopsy identified and recovered 12 of the 
+15 deleted files (80% accuracy), failing to find three files that 
+were permanently deleted (Shift+Delete). This represents a 
+known boundary condition for most of the file system-based 
+recovery tools. All three test runs produced similar results, 
+confirming the tool's repeatability. 
+B. The Issue with Recovering Deleted Files 
+The recovery of deleted content presented a much more 
+nuanced picture, highlighting the specific "Shift+Delete" 
+limitation. 
+ 
+The Secrets.txt Partial Recovery (Fig. 2): The second 
+screenshot shows the limitation I found with the Secrets.txt 
+file. Autopsy listed the file and even showed the time it was 
+deleted. If you just looked at the list, you would think you 
+recovered it. 
+However, the screenshot of the Hex View at the bottom 
+tells a different story. Instead of the words "The secret 
+password is password :),” it just displays a bunch of random 
+binary code. This happens because the OS reused that space 
+on the hard drive almost immediately. So, Autopsy found the 
+"map" to the file, but the "house" was already gone. This 
+shows a significant inconsistency: just because the metadata 
+is there doesn't mean the data is there. 
+ 
+• The Inconsistency: However, the Hex View (bottom 
+pane) reveals a fatal flaw. Instead of the ASCII text
+
+"The secret password is password :)," the cluster 
+contains binary noise (likely system log data). 
+• Technical Root Cause: This confirms that while the 
+MFT record (the "map") was preserved, the OS 
+immediately reused the clusters (the "territory") for 
+high-priority system tasks. Autopsy correctly parsed 
+the map but pointed to a location that had changed. 
+This proves that Metadata Persistence and Data 
+Integrity are being impacted. 
+ 
+ 
+Fig. 2. 'Shift+Delete' limitation. (While the MFT entry for Secrets.txt was 
+recovered, the data clusters were overwritten. The Hex view reveals binary 
+noise instead of the original text.) 
+ 
+The desktop.ini Total Loss (Fig. 3): The third screenshot 
+shows something that contradicts the second one. While 
+Secrets.txt left a ghost entry, the desktop.ini file (which was 
+deleted around the same time) says that it is allocated but is 
+actually completely gone. The tool gives an error saying 
+"MFT entry reallocated/overwritten." 
+ 
+This suggests that Windows treats its own system files 
+differently from user files. It seems to recycle those system 
+entries much faster. This is dangerous for an investigator 
+because it's unpredictable. You can't just guess if a file will be 
+recoverable based on when it was deleted. 
+• Differential Persistence: This suggests that the 
+Windows OS aggressively recycles MFT records used 
+by temporary system files (such as desktop.ini) faster 
+than it recycles user records (.txt). This variability 
+poses a danger to examiners, as it means that someone 
+cannot predict recovery success based solely on file 
+size or deletion time. The tool accurately reports the 
+loss, but the loss itself is non-deterministic. 
+ 
+Fig. 3. MFT entry reallocated/overwritten. (Inability to recover desktop.ini 
+proves the paper's central argument that open-source tools have known, 
+quantifiable limitations when encountering common disk activity.) 
+C. Metadata and Timezone Consistency 
+A critical limitation was identified regarding how Autopsy 
+handles timestamp visualization. My test environment was 
+configured for Central Time. Autopsy displays times based on 
+the local time of the examiner's machine. 
+I observed a "Timezone Interpretation" issue where the 
+tool allows the examiner to toggle between "File System 
+Time" and "Local Time," but does not clearly flag which is 
+currently active in the export report. For example, the internal 
+EXIF metadata of a JPEG image indicated 2:00 PM (when the 
+photo was taken), but Autopsy’s file system view displayed 
+8:00 AM (the created time adjusted for the time zone). 
+Without a "Timezone Validation Test," such as creating files 
+at known UTC offsets and verifying the display, an 
+investigator could easily conflate the "Created" time with the 
+"Modified" time. This would then result in a timeline error of 
+several hours. This underscores the need for examiners to 
+validate timezone settings before presenting a timeline in 
+court. 
+V. PROPOSED SOLUTION 
+Based on the problems I identified with Secrets.txt and 
+desktop.ini, I developed a more effective approach. Relying 
+on one tool to just say "Recovered" isn't safe. I propose a 
+"Better Solution" that I call the Adaptive Forensic Verification 
+Protocol (AFVP). 
+It may sound fancy, but it's actually quite simple. It breaks 
+the process down into three steps: 
+• Step 1: Use Autopsy as you normally would to locate 
+the files. If it says a file is "Deleted," don't trust it yet. 
+• Step 2: Look at the Hex. As the screenshot shows, the 
+file name might be correct, but the content could be 
+incorrect. You have to manually check the "magic 
+bytes" (the file signature) to make sure a text file 
+actually looks like text. 
+• Step 3: Double Check. If there is a weird error like with 
+the desktop.ini file, using command-line tools from 
+The Sleuth Kit can serve as an independent check on 
+Autopsy’s results [7]. 
+ 
+If labs start doing this, they won't get embarrassed in court 
+when a "recovered" file turns out to be junk data. 
+VI. DISCUSSION OF LEGAL AND PRACTICAL IMPLICATIONS 
+The technical limitations observed in Figures 2 and 3 have 
+profound legal consequences. 
+A. The Legal Risk 
+In Brady v. Maryland, the U.S. Supreme Court ruled that 
+the prosecution must disclose justifying evidence. If an 
+investigator relies on Autopsy and misses a file, such as 
+Secrets.txt, because the hex view wasn't checked, or misses 
+desktop.ini because the MFT record was overwritten, they 
+may unknowingly hide evidence that existed within the file 
+system. The "Partial Recovery" shown in Figure 2 is the most 
+dangerous scenario where it presents a file as "recovered" 
+when the content is actually system noise and could lead to a 
+mistrial if the defense analyzes the hex data [6].
+
+B. The “Black Box” Defense 
+Defense attorneys often challenge digital evidence by 
+questioning the validation of the tool (The "Black Box" 
+problem). By adopting the validation framework and the 
+Adaptive Verification Protocol outlined in this paper, an 
+examiner can testify that "I know the tool has an error rate in 
+Shift+Delete scenarios (as proven in Figure 2), and therefore 
+I manually verified the Hex headers." This transforms a tool 
+limitation into a testament to the examiner's thoroughness. 
+C. Reliability of Open Source Tools 
+The results refute the common misconception that open-
+source tools are inherently less reliable than commercial 
+counterparts. Autopsy’s parsing of the NTFS MFT was bit-
+for-bit accurate for all allocated files. The failure to recover 
+the three deleted files was a result of file system behavior 
+(overwriting), which any tool, even an expensive commercial 
+one, would have faced. 
+D. The “Validation Gap” 
+Another significant finding is the Timezone Interpretation 
+issue within Autopsy. If a lab does not validate how their tool 
+handles UTC conversion, they risk presenting incorrect 
+timelines in the court. For example, if a crime happened at 
+10:00 PM, but the tool displays 4:00 AM the next day due to 
+a timezone offset configuration, the alibi analysis could be 
+flawed. This highlights the need of the validation framework 
+proposed in this paper where simple tests with known 
+timestamps reveal these display quirks before they become 
+courtroom errors. 
+E. Practical Guidelines for Small Labs 
+Based on this study, I would propose a "Lightweight 
+Validation Protocol" for small labs: 
+• Create a Golden Image: Maintain a USB drive with 
+some amount of known data (like the one used in this 
+study) and never alter it. 
+• Quarterly Check: Run the current version of your tool 
+against this ready image. 
+• Hash Verification: Ensure the tool returns the specific 
+hashes that are known to exist on that specific image. 
+• Document Deviations: If a new update changes how 
+the timestamps are displayed, document it in a "Tool 
+Limitation" log. 
+VII. CONCLUSION AND FUTURE WORK 
+In the end, my research shows that Autopsy is a solid tool, 
+but it defintely has some blind spots. It hit 100% accuracy on 
+normal files and rebuilt the directory tree perfectly, as shown 
+in the screenshots. But the "Shift+Delete" test proved that you 
+can't blindly trust the file list. The fact that the metadata was 
+there but the content was gone is a huge red flag that 
+investigators need to watch out for. 
+It also became clear that the type of file being used matters 
+heavily since system files disappeared completely while user 
+files left traces. This isn't necessarily Autopsy's fault, but it is 
+actually just how the file system works. However, by using 
+the method that I suggested, labs can work around these 
+issues. Basically, trust the tool, but be sure to verify the data. 
+A. Future Work 
+Future iterations of this research will expand the dataset to 
+include: 
+• Solid State Drives (SSDs): Testing the impact of the 
+TRIM command on Autopsy's recovery rates to see if 
+the results have the same accuracy. 
+• Encryption: Validating Autopsy's performance in 
+handling BitLocker-encrypted volumes when the key 
+is also provided. 
+• Mac Artifacts: Extending validation to the APFS file 
+system, which handles file deletion in a very different 
+way when compared with NTFS. 
+ACKNOWLEDGMENT 
+The author wishes to thank Prof. Yong Guan and TA Islam 
+Md Shafiqul for their guidance and valuable feedback on the 
+focus of this research. 
+REFERENCES 
+[1] 
+Daubert v. Merrell Dow Pharmaceuticals, Inc., 509 U.S. 579 (1993). 
+[2] 
+National Institute of Standards and Technology, "Computer Forensics 
+Tool Testing (CFTT) Program," NIST.gov, 2023. [Online]. Available: 
+https://www.nist.gov/itl/ssd/software-quality-group/computer-
+forensics-tool-testing-program-cftt 
+[3] 
+Scientific Working Group on Digital Evidence, "SWGDE Minimum 
+Requirements for Testing Tools Used in Digital and Multimedia 
+Forensics," Version 2.0, 2020. 
+[4] 
+B. Carrier, File System Forensic Analysis. Upper Saddle River, NJ: 
+Addison-Wesley, 2005. 
+[5] 
+S. L. Garfinkel, "Validating digital forensic tools and methods," Digital 
+Investigation, vol. 4, pp. 81-87, 2007. 
+[6] 
+B. Casey, Handbook of Digital Forensics and Investigation. Academic 
+Press, 2009. 
+[7] 
+The Sleuth Kit, "Autopsy User Documentation," 2024. [Online]. 
+[8] 
+(PDF) The demise of single-authored publications in Computer 
+Science: 
+A 
+Citation 
+Network 
+Analysis, 
+https://www.researchgate.net/publication/338355154_The_Demise_of
+_Single-
+Authored_Publications_in_Computer_Science_A_Citation_Network_
+Analysis (accessed Nov. 21, 2025).

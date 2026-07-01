@@ -1,0 +1,7 @@
+note: we could speed this up with a table lookup version
+ * for more details on CRC calculation see:
+ * https://barrgroup.com/blog/crc-series-part-3-crc-implementation-code-cc
+barrgroup.com/blog/crc-series-part-3-crc-implementation-code-cc
+work by byte
+work by bit
+return remainder

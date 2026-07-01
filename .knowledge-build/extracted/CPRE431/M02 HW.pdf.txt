@@ -1,0 +1,109 @@
+CPRE 431 
+Module 2 HW 
+ 
+Assignments will be submitted in PDF format via Canvas.  
+Please submit your homework online through Canvas. Late homework will not be accepted.  
+Important: Your submission must be in .pdf format ONLY! 
+You are not allowed to use AI tools to answer any of the HW questions 
+ 
+1. Suppose that your friend suggests the following way to confirm that both of you have the same 
+secret key. You create a random bit string which is having the length of the key, then, XOR it 
+with the key, and send the result over the channel. Your partner XORs the incoming block with 
+the key (which should be the same key) and sends the result back. If what you receive is your 
+original string, you have verified that your partner has the same secret key, yet neither of you 
+has ever transmitted the key on the channel. Is there a flaw in this scheme? 
+This way seems to be secure at first glace when I worked it out on my own. Since the key is never 
+really send from one person to the other, it seems like a good idea. If we say the random bit string is 
+S and let the key be K. Then the first person XORs S and K to get a result (R). Then when R is sent to 
+his friend, he XORs R with K to get a result S. He then sends S back to the first person who is able to 
+confirm that this was his original string. 
+The main flaw in using this scheme is that someone who may be sitting in the middle (Man in the 
+middle) will see both the messages sent over. First he will see the R that the first person sent, then 
+he will see the S that the second person sent back. Having both the R and S in his hands, the attacker 
+(if he is smart enough, and he knows what you are doing) simply has to XOR R and S together to 
+retreive the K that you and your partner have been using. XOR is an associative and commutative 
+function which is the reason why this method is actually weak.
+
+2. Fill in the table below, according to the following assumptions: 
+Modern computers run approximately 3 billion compute cycles per second and with cloud 
+computing, it is easily imaginable that a well-funded private organization can rent 100,000 such 
+systems in the cloud. To test whether a given ciphertext decrypted with a key matches a known 
+plaintext, takes approximately 1000 compute cycles.  
+a. Assuming that we have a block of ciphertext with known plaintext, indicate the time in years needed 
+to test every possible key for each key length, in the case of: 
+i. 
+One modern computer. 
+Per Modern Computer: 3 ∗109,  and with testing: 
+3∗109
+1000 = 3 ∗106 𝑘𝑒𝑦𝑠/𝑠𝑒𝑐𝑜𝑛𝑑 
+Then for converting from seconds to years, we divide by (60 ∗60 ∗24 ∗365) in the calculations. 
+Key Length (bits) 
+Number of Keys 
+Attack Time (Years) (Worst case scenario) 
+56 
+256 
+256
+3 ∗106 = 278 𝑑𝑎𝑦𝑠 =  761 𝑦𝑒𝑎𝑟𝑠 
+128 
+2128 
+2128
+3 ∗106 = 3.60 ∗1024 𝑦𝑒𝑎𝑟𝑠 
+256 
+2256 
+2256
+3 ∗106 = 1.22 ∗1063 𝑦𝑒𝑎𝑟𝑠 
+512 
+2512 
+2512
+3 ∗106 = 1.42 ∗10140 𝑦𝑒𝑎𝑟𝑠 
+ 
+ii. 
+A well-funded private organization as described above. 
+Per Modern Computer: 3 ∗109, With cloud computing: 3 ∗109 ∗100,000 
+Per Modern Computer, with cloud computing, and testing: 
+3∗109∗100,000
+1000
+= 3 ∗1011 keys/second 
+Then for converting from seconds to years, we divide by (60 ∗60 ∗24 ∗365) in the calculations. 
+Key Length (bits) 
+Number of Keys 
+Attack Time (Years) (Worst case scenario) 
+56 
+256 
+256
+3 ∗1011 = 2.7 𝑑𝑎𝑦𝑠 =  0.00739 𝑦𝑒𝑎𝑟𝑠 
+128 
+2128 
+2128
+3 ∗1011 = 3.65 ∗1019 𝑦𝑒𝑎𝑟𝑠 
+256 
+2256 
+2256
+3 ∗1011 = 1.22 ∗1058 𝑦𝑒𝑎𝑟𝑠 
+512 
+2512 
+2512
+3 ∗1011 = 1.42 ∗10135 𝑦𝑒𝑎𝑟𝑠
+
+b. Assume you were working on a research lab, and you were asked to find a solution to improve the 
+cracking performance and time. Your team came up with two promising solutions.  
+i. 
+Use specialized hardware to increase the speed of such an attack by 1000 times. 
+ii. 
+Make cryptanalysis of the cipher to be able to guess half of the key bits at little cost.  
+Explain with calculations which solution do you think would give better results? 
+While solution (i) seems to be a good idea, increasing the speed of such an attack by 1000 times makes 
+nearly no difference in the grand scheme of things. For example, while it may improve the Attack time for 
+56 bits from 761 years to 278 days, assuming the key/sec speed is now 3 ∗109 instead of 3 ∗106 from our 
+part 2(a)(i), this seems as though it goes down from 761 years to 278 days so it is a good solution. But the 
+moment our number of bits go up to 128, it still takes 3.59 ∗1021 𝑦𝑒𝑎𝑟𝑠 with our speed being 1000 times 
+faster. 
+In contrast, using cryptanalysis and being able to guess half of the key bits is a significantly better solution 
+out of the two.  
+This solution would give better results because if we are able to somehow guess half of the key bits, then 
+using example 2(a)(i) with 56 bits (halved to 28), with our attack speed still at 3 ∗106 we reduce our time 
+from 761 years to 1.49 minutes. Even using the same example but with 128 bits (halved to 64), attack speed 
+still at 3 ∗106 we reduce our time from 3.60 ∗1024 years to 194,980 years. Yes, 194,980 years is still a long 
+time, but in the grand scheme of things we were able to bring down the time from 3.60 ∗1024 to 195 ∗
+103 years. 
+All in all, it is clear that the better results are given by solution (ii).

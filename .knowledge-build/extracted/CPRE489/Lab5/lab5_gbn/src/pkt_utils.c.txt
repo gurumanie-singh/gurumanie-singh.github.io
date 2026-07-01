@@ -1,0 +1,6 @@
+clear packet
+calc and store crc in network byte order
+print packet type
+print sequence number
+print packet data
+print CRC

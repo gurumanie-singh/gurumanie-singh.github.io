@@ -1,0 +1,15 @@
+CPRE 4310
+M07 HW
+Assignments will be submitted in PDF format via Canvas. 
+Please submit your homework online through Canvas. Late homework will not be accepted. 
+Important: Your submission must be in .pdf format ONLY!
+You are not allowed to use AI tools to answer any of the HW questions
+If your WiFi Access Point (AP) and device both are capable to use 2.4 GHz and 5 GHz bands. Which one should you use and why? 
+When it comes to speed we would want to use 5 GHz bands since they have lower interference (since fewer devices use it). Additionally, it also supports more non-overlapping channels which basically results in better performance.
+On the contrary, 2.4 Ghz bands travel farther and are able to penentrate walls much better. Overall, it really depends on how far the AP is set up in our environment use case. But for speed the 5 Ghz gives much higher data rates.
+Identify a security flaw that appears in both 2G and 3G networks
+In both 2G and 3G networks, they were vulnerable to Fake BTS attacks. Even though 3G networks introducted mutual authentication, downgrade attacks could force the device to fall back to 2G which basically makes both these generations susceptible to this threat.
+Describe two primary threats that are specific to cloud computing?
+Shared Technology Isolation Issues and Account or Service Hijacking are two primary threats that are quite specific to cloud computing. A countermeasure for the first threat is to ensure promoting strong authentication and access controls for admin access. A countermeasure for the second threat is to leverage strong Two-Factor Authentication (2FA) techniques. 
+What is OpenStack?
+OpenStack is an open source software project from the OpenStack Foundation which basically aims to produce an open source cloud OS. Its main objective is to create and manage huge groups of virtual private servers in a cloud computing environment. Additionally, OpenStack is embedded into data center infra and cloud computing products. It provides multi-tenant IaaS and aims to meet the needs of public and private clouds, regardless of size, by being simple to implement and massively scalable. Furthermore, the security module for OpenStack is called Keystone. (Source: lecture notes)

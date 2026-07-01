@@ -1,0 +1,125 @@
+COMS415 — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Portfolio
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ COMS415 · Software System Safety
+
+ 
+ Safety-Critical
+systems.
+ 
+
+ 
+ Conducted systematic hazard and failure analyses on safety-critical systems — from stereotactic radiosurgery devices to Mars lander software — using Fault Tree, SFMECA, and formal verification methods.
+ 
+
+ 
+
+ 
+
+ 
+ overview
+
+ What I
+learned.
+
+ 
+ In COMS415 I applied systematic hazard analysis to safety-critical systems, using Fault Tree and Software Fault Tree methods to identify and prioritise failure conditions under worst-case scenarios. Assignments included performing Software Failure Modes, Effects, and Criticality Analysis (SFMECA) on an infant incubator thermostat, constructing detailed event and data tables for safety functions, and deriving software safety requirements following Leveson's Safeware framework.
+ 
+
+ 
+ I also leveraged static code analysis to verify safety-critical modules (e.g., Mars Polar Lander's software), devised test harnesses for "untestable" surgical systems, and analysed real-world high-dependability incidents to recommend systems-based design and testing improvements.
+ 
+
+ 
+
+ 
+
+ 
+ highlights
+
+ Key
+analyses.
+
+ 
+ 
+ Fault Tree Analysis (FTA)
+
+ Built software fault trees for stereotactic radiosurgery and Mars lander systems, identifying single-point failure paths and deriving minimal cut sets.
+
+ 
+
+ 
+ SFMECA
+
+ Performed Software Failure Modes, Effects, and Criticality Analysis on an infant incubator thermostat, rating severity and likelihood of each failure mode.
+
+ 
+
+ 
+ Static Code Verification
+
+ Applied static analysis techniques to verify safety-critical flight software, detecting latent defects in the Mars Polar Lander codebase.
+
+ 
+
+ 
+ Leveson's Safeware Framework
+
+ Derived software safety requirements for human-computer interfaces following Leveson's systems-theoretic approach to accident prevention.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ technology
+
+ Methods &
+tools.
+
+ 
+ Applied formal safety analysis methods to real-world systems, combining theoretical frameworks with practical verification and testing strategies.
+ 
+
+ 
+ Fault Tree Analysis
+ SFMECA
+ Static Analysis
+ Leveson's Safeware
+ Hazard Analysis
+ Safety Requirements
+ 
+
+ 
+ 
+ View on GitHub →
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering

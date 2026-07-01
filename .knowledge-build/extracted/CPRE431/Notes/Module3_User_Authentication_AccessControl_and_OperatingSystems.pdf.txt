@@ -1,0 +1,354 @@
+Usey Authenthcation, Access Contre! , and Operating Systems
+\IMivo th User Authentcakon
+
+“Iwo Steps of Authentcahon
+
+L_ Idenhficohon —— user ID, unique but not secret
+
+L_ Vevrificahon —— password pin...
+
+Neans of Authentication
+l.. Knows —— password, pin qn answers
+
+L_ possessel —— foken
+
+L_ is —— stoahc biometvics (fingerprint, retina )
+
+L_ does —~ dynamic biomelncs (voice pattern, handwrihng )
+
+Password Based Authentication
+L_ Identity
+{_ Pastword
+
+Vulmeyability of Passwovds
+
+L_ Offline Dictionary Attack —— Countermeasure * contvol access to DB
+L_ Specific Account Alfack
+
+lock account after failed attempts
+L_ Populav Pastword Attack, —— block @mpufers that make muthple attempss
+L_ Password Guessing Against o Single Uscr — tain users in password selechon
+L_ Computer Hijacking — avyto-logovt
+L_ Exploiting Ufer Mistakes: — usev frajning , LFA
+
+Exploiting Mulhple Pasrwove Use — contol Selechon of pastwords quoss Venice
+L Electronic Monifoving — encrypt communications that cend passwords
+
+Shoring Patswords
+
+Insidey Atfaclke
+
+Outsider Attade
+
+Encvyphng Passwords
+L. dvawback - Lecvef Key must be Stored Con file /memory )
+
+= if attacker can read database, then likely they can read Key
+
+Hash the Passwords
+
+Crackmg Passwords
+Brute Fovee Attadc on Mashed Passwords
+L_ Attack duration depends on sire of possible password sef
+i - ah 118
+on n-bit hashvalve - 2 affempts Ex: mp6 ng bit needs 2 attempt
+L_ Easiev Jo find passwovd vathar than hath of password 44 total
+
+charache avail
+on Keyboard
+
+Rainbow Tables & Salhng
+
+Rainbow (abet
+
+— Does nef include cody passwords Vice CQOOOULO whith yeduces space req,-
+
+| for vainbow fabics — up to 178
+Trade of Fs
+
+| L__ reduce search Time increase storage Space
+
+Countermeasures
+
+L_ londey password | slower hash algos , salt the password before hash
+
+Sathng Passwords
+L_ pul random S~bit value CSatt) , ald to end of password
+L_
+
+now rainbow fabics no longer feasable
+
+| Space required jweveased by factor of 2
+
+UA Token Rased Authentication
+
+Memory Cards Smart Cards
+
+L_
+
+Sture buf do ovt process data L_ Contains microprocero7
+
+L ex ~ hotel card L looks like wedil card
+
+Smort Token Elecronic 1D cards CelD)
+
+L_ eq: ORG toKen
+
+Biometric. Authentica ton
+
+L face, ivis, fingerprint, voice ...
+
+Intro to Access Covrtrol CAC)
+What is Access contvol ?
+L_ the dow side the system that conhols what you can access
+L_ Au{hemficahon — yvenfy that user cvedenhals ave valid
+L_ Avthorinahon — grant pevmifsiun to a system entity fo accers resoce
+\_ Audit — independent yeview of system records fo test system contol
+L_ ensure comphonce, detcu breaches
+Subjech —— classified further into quwner, group , world
+L_ Objecl — aw resource to whith access iS controlled
+
+|. Aceess right — the way a subjecl may acess an objech
+
+Geneval veqvirements of Actess Contvol
+L_ Reliable input
+
+L__ Fine ond Coorse sped fi cahenst
+
+| Least Privilege
+
+L__ seperation of duly
+
+Amos} vsed
+L_ Open & (Closed policies]
+
+L Policy combinations & Conflict vesslvtion
+
+L_
+
+L Dual Control
+
+Administrative policies
+
+‘Tapes of Access controls CPart 1)
+
+Access Control Policies
+
+L_ Disevetjonary Access Control CHAC)
+
+L_
+
+contyofS gccess based on the identity of veqvester and on
+
+acceSS rules Cavihornoatons) stating what reqvestevs can oy
+
+cannot do Ex . Access Matnx ) Access Gntvol sts, Capability Lists,
+
+Authonahon Table
+Mondatovy Access Control CMAC )
+Controls access hased on comparing secority labels with
+sewrity Cearavices
+Role-based Access Control (RBAC)
+L_ ComtralS access based on poles the veers have on system and on
+| vles stating what access is allowed for each role
+roles can be static & dynamic
+L Constvaints
+L_ highev vole includes all access rights of flower role
+L_ mutvally exdvSive : user can only be assigned one cole
+L_ covdinality . max tH with pesped tu roiet
+LO vax Wasers ASSIGNLA Fo pole
+L_ max tof voles a vsey can be assigned to
+L_ preveqwisite . condition upon which user can be aGigned mie
+
+L_
+
+USey can ohly be assigned Senior iF alveady aSSigned junior
+
+Types of Access Comtyols (Part 2)
+RBAC
+
+L admin ASSIGN access Permission to role
+L_ limitations *
+
+L_ Role Explosion
+
+L_ Toxic Combinafions
+
+L_ Management Nightmare §
+
+\_ Lack of Context
+
+evolved version
+
+Mtvibvte Based Access Control C ABACY”
+
+of RBAC
+L_ uses attyibules of subjectS, objeds & envivonment Cinstead of yoles )
+L_ move svitoble in adapting dynamic acess
+L based on +
+— achon ——— >
+Avthorizaton
+
+— user — Yes/No
+
+— subjeck ——>
+
+— objec 9 ———>
+
+— context ———>
+
+—— policy ———>
+
+MAC
+
+L_ based on muth-tevel secunty CMLS )
+
+L fop secet > secvet > confidential > restricted > unclassified
+Subjeck has Security clearance
+
+L swject has seconty classification
+
+| two reqviyed properhes fur Confidenbality
+\_
+
+No read yp
+| no wryte down
+
+Drawback *~ all ques Through administrator
+
+AC _UNUS/EINUX Access Contre V
+
+UNIX File Access Control
+
+L_ administered vsing modes Cimdex nodes )
+
+L directories are Structured in a hietavchical tree
+
+File type: normal file user group other
+i To To,
+~
+inode user can read file ]
+L_ ; : user Can write to file
+mode .Ib bits user cannot execute the file
+{__ id group can read file —~
+owner lt group cannot write or execute file
+| group id other cannot read, write or execute file
+L Sie
+L time Stamps categovies
+| oe L_ usey That owns the file Uv
+PLrmissiont L_ users om the files group 4
+[Yead fuitc, e&rcvte lL other ysert re
+Special permission £ = all usert Call of the obove) &
+
+\_ setvid bit
+L_ setgid bit
+
+LL sticky bit
+
+Qpevating System Security
+
+Operating Cystem Sirategy
+L_
+
+L_
+
+white jist approved apps
+
+Patch thivd paviy apps & Of vulnerobi lites
+
+L vestrich admin privileges
+
+create ga defense In depth system
+
+Syttem Security Planning
+
+The first step in deploying a
+Plan needs to new system is planning
+identify appropriate
+personnel and
+training to install
+and manage the
+system
+
+Planning should
+include a wide
+security assessment
+of the organization
+
+Planning process needs to
+determine security
+requirements for the
+system, applications,
+data, and users
+
+Aim is to maximize
+security while
+minimizing costs
+
+Operating System Hardening
+L 1, Secave the base OS
+
+|
+Insta & patch oS & permussivn J
+L Harden k Configure OS (remove sevvices not needed config user k grow)
+
+L. Install & wnfig additjoual controls, such ad anti-vives Hort-based
+
+| fivewalls and IDf
+
+3. Test security of O35 to ensure steps taken adeqvately addvess
+
+Security needs
+
+Qpevating System Security Part 2
+
+Recap from part 1 above
+
+L_
+
+remove unviecessayy seyvices, applicahonr 5, protocols
+L_ Configuve usevt, groups, and avihenhcativn
+
+= configwe vefowce control
+
+—_ insfall additonal security contvols
+
+L__ fest the System secunty
+
+Application Configwation
+
+L_
+
+Secwity policy can contol app execvhon
+| L_ white-pisting & black-Ushing
+of parhcday concern with remotely accessed services such as
+
+Web & File tvonsfer Services
+
+Encryption Technolog y
+
+Security Mam tainence
+
+L_
+
+Pruceyy fs) Comhnve vs
+LO uniter & onalyre (v9 data
+L perform reqvlar backups
+
+_
+
+vecovering from Compromise
+
+L veqvilav security teshng
+
+LL patch & update oll critical software
+
+Logging
+
+L on avtomahe analysis of vgs is preferred
+
+Data Bacup & Archive
+
+L gepends on needs of company /organizahon
+
+L_ archive means retaining data backups

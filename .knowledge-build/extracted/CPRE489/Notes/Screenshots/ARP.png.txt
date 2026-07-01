@@ -1,0 +1,6 @@
+Host A broadcasts an
+ARP Request containing I,
+
+Host B responds with an
+ARP Response containing
+the pair (I,, Ps)

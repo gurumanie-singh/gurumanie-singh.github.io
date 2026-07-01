@@ -1,0 +1,119 @@
+Results
+Gurumanie Dhiman
+9.333
+Out of 10 points
+15:00
+Time for this attempt
+Your Answers:
+9.333 / 10 points
+For the following network diagram, ﬁll in the table below. Host B sent a packet to Host A. Assuming the ARP caches are initially clear for Router R1 and Host B, but all other
+devices have populated tables for this routing scenario, ﬁll in the following table to demonstrate the packet ﬂow of ICMP and ARP protocols.
+Figure 1: Network diagram for the packet sequencing tables below.
+Caution: The ﬁrst and last packets have already been populated in the table for you.
+Figure 1: The sequence and roles of packets in the routing process.
+Packet
+Hardware Address
+IP Address
+Payload Type
+Destination
+Source
+Destination
+Source
+1
+ Broadcast
+ Host B
+ N/A
+ N/A
+ ARP Request
+2
+93.33%
+1
+
+Host B
+R1 en1
+N/A
+N/A
+ARP Reply
+3
+R1 en1
+Host B
+Host A
+Host 
+B
+ICMP Echo Request
+4
+Broadcast
+R1 en0
+N/A
+N/A
+ARP Request
+5
+R1 en0
+R2 en0
+N/A
+N/A
+ARP Reply
+6
+R2 en0
+R1 en0
+Host A
+Host 
+B
+ICMP Echo Request
+7
+Next Hops
+R2 en1
+Host A
+Host 
+B
+ICMP Echo Request
+8
+Host A
+R3 en0
+Host A
+Host 
+B
+ICMP Echo Request
+9
+Host A
+R3 en1
+Host A
+Host 
+B
+ICMP Echo Request
+10
+Next Hops
+R3 en1
+Host B
+Host 
+A
+ICMP Echo Reply
+11
+Next Hops
+R3 en0
+Host B
+Host 
+A
+ICMP Echo Reply
+12
+R2 en1
+Next 
+Hops
+Host B
+Host 
+A
+ICMP Echo Reply
+13
+R1 en0
+R2 en0
+Host B
+Host 
+A
+ICMP Echo Reply
+14
+ Host B
+ R1 en1
+ Host B
+ Host A
+ ICMP Echo Reply
+Note: You can drag and drop the correct response to each blank or select the word Answer in each blank for a dropdown with the same option choices.

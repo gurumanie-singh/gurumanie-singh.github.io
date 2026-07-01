@@ -1,0 +1,127 @@
+CPRE 431 
+M03 HW 
+Assignments will be submitted in PDF format via Canvas.  
+Please submit your homework online through Canvas. Late homework will not be accepted.  
+Please ensure that you support all your answers with the correct screenshots showing your solutions. 
+ 
+1. In this “lab” problem, you will be working on a Linux Server Virtual Machine (VM). An image of 
+this VM is available on Canvas (attached with the HW). The VM is having an administrator and 5 
+users, as shown in the figure below. You don’t have access to any of the users of the Server, to be 
+able to access the Server, you will need to perform password cracking! You were given a line of 
+password hash from (/etc/shadow) for the administrator (admin1) of the Server (attached with 
+the HW). 
+a. Determine the used hash type of the password. 
+$6$ represents SHA-512 hash was used for all users 
+b. Determine the salt value of the password. 
+xgLS35S6 for Admin. It is the value between the second $ and third $. 
+c. Crack the passwords of all users using OpenSSL tool. 
+Admin: P@ssw0rd 
+user1: trustno1 
+user2: basketball 
+user3: pokemon 
+user4: batman 
+user5: qwerty12345 
+Hints: 
+- It would be useful if you search for Linux shadow file password format.   
+- You must use the latest OpenSSL version 1.1.1x for this problem. It would be helpful to 
+read about creating Linux password hashes using OpenSSL. 
+- You can use a password list for your cracking. There is a password list of most used 100K 
+passwords, according to NIST attached with the HW. 
+- You will need to write some code to iterate through the password list (feel free to use any 
+language you prefer). 
+- After cracking the password, ensure that you can access the Server.
+
+2. The given Server users are managed as follows: 
+- 
+There are 5 users: user1, user2, …, user5. The first four users are staff members, but 
+user5 is an external consultant. 
+- 
+User1 and user2 are programmers only, user4 is a manager only, and user3 is both 
+programmer and manager.  
+ 
+a. You are now the administrator of the server, and you are responsible for managing users 
+and groups. Create 3 groups named “allstaff”, “prog” (short for programmers) and 
+“mgmt” (short for management). Add users to the corresponding groups. List the users 
+and groups to ensure the correct previous setup of system users and groups. Explain with 
+screenshots how you applied this. 
+ 
+- 
+Inside their home directory, each programmer has a directory called code and a 
+directory called documentation. Inside the code directory, there is a file called 
+source_code.txt, as well as one application called myapp.exe. Inside the 
+documentation directory, there is a file called notes.txt. 
+- 
+Each manager has a directory called finance (for financial information) including a 
+confidential business.txt file. 
+- 
+Each user also has a file called schedule.txt in their home directory. 
+ 
+The below shows how I added allstaff, prog, and mgmt groups. 
+ 
+ 
+The below shows how I added the users to their respective groups.
+
+We are also able to confirm that the users were allocated to the correct groups by using the command 
+(sudo cat /etc/group) which shows the below output at the end of the file: 
+ 
+b. Configure file access controls so that it explicitly applies only the following: 
+- 
+All users can view each other's schedules, but not other files in their home directory 
+(except for as stated in the following). 
+- 
+All staff can view files in the documentation directory of other staff. 
+- 
+Programmers can view and edit each other's source code files, create new files in any 
+code directory, as well as run each other's myapp.exe files. 
+- 
+Financial information (in the finance directory) is only viewable by the manager that 
+owns the files, not by any other user. 
+ 
+For step 1, I used (chmod u=r,go=r schedule.txt), all other users also able to view each others schedules 
+and the upcoming steps ensure that other files in each users home directory is only accessible to the users 
+that need the permission. 
+ 
+For step 2, I used (chgrp -R allstaff documentation/) and (chmod 750 documentation/) for the 
+documentation directory for all users 1-4 and also added (chmod ug=r,o=- notes.txt) for the notes.txt file. 
+ 
+For step 3, I used (chgrp -R prog code/) and (chmod -R g+rwx code/) to be able to read, write, execute 
+within the code/ directory. 
+ 
+For step 4, I used (chmod -R go-rwx finance/) in user 3 and user 4 ensuring only they are able to view their 
+files and also ensuring that only user 3 can view his own finance/ directory and user 4 can view his own 
+finance/ directory. 
+ 
+The below are the checks conducted to ensure all the permissions are given correctly. 
+User 5 only able to see schedule.txt and nothing else since he is not a staff.
+
+User 1 Access Rights (able to access all the users schedules, all code directories, create and modify new 
+files within code directory, but not able to enter finance directory of user3 and user4): 
+ 
+ 
+ 
+User 2 Access Rights (able to access all the users schedules, all code directories, create and modify new 
+files within code directory, but not able to enter finance directory of user3 and user4):
+
+User 3 Access Rights (Since user 3 is a programmer and manager, he is able to access code directories for 
+all users and the finance directory for his own user.) 
+ 
+ 
+ 
+ 
+User 4 Access Rights (Since user 4 is only a manager, he is able to access code directories for all users and 
+the finance directory for his own user.) 
+ 
+ 
+ 
+ 
+ 
+If I missed something that you would like me to include to further clarify, please let me know.
+
+Hints: 
+- Take screenshots of setting the access and listing it using (ls -l). Also, take screenshots of 
+testing that the access control works by logging in as each user and checking they can(not) 
+access the specified files/directories. 
+- Use only the basic Linux permissions. Do NOT use advanced permissions such as setfacl 
+or getfacl. 
+- Use the “Introduction to Linux” Page to help you in the needed commands for this 
+Homework.

@@ -1,0 +1,185 @@
+2/14/25, 4:27 PM
+ Module 04: Quiz : CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 1 of 6
+https://canvas.iastate.edu/courses/116478/quizzes/569242
+ Module 04: Quiz 
+Due Feb 14 at 11:59pm
+Points 10
+Questions 5
+Time Limit 10 Minutes
+Instructions
+Purpose
+This quiz is over the materials for Module 04. This quiz focuses on understanding network attack
+point scenarios (including what network layers a bad actor can attack based on where they are
+positioned in relation to the victim), defining the vulnerability types, and applying information about
+both to classify and determine where an attack fits within the taxonomy of network-based
+vulnerabilities.
+Task
+DO NOT HIT THE BUTTON UNTIL YOU'RE READY TO TAKE THE QUIZ.
+You may not work in groups or with another person.
+You may only take this quiz once.
+Make sure you will not be interrupted so you can focus on completing the quiz.
+Make sure you have a reliable internet connection.
+You have 10 minutes to complete this quiz. Once you start the quiz, you cannot stop the timer.
+Pay attention to the time. The time remaining is located on a timer on the right sidebar.
+The quiz will automatically submit after your time is up or if it hits the due date (whichever
+comes first).
+If you accidentally navigate away from the quiz but have time remaining, you should be able to
+pick up where you left off.
+
+2/14/25, 4:27 PM
+ Module 04: Quiz : CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 2 of 6
+https://canvas.iastate.edu/courses/116478/quizzes/569242
+Attempt History
+Attempt
+Time
+Score
+LATEST
+Attempt 1
+9 minutes
+10 out of 10
+ Correct answers are hidden.
+Score for this quiz: 10 out of 10
+Submitted Feb 14 at 4:26pm
+This attempt took 9 minutes.
+
+For multiple select questions (e.g., the 'select all that apply' questions with checkboxes), Canvas
+auto-grading will reduce the overall score for incorrectly selected options. Unselected options will
+not alter the score (you won't gain or lose points for not selecting a statement or option, regardless
+of whether it is correct or incorrect). Be mindful when selecting options for this style of
+question. Please review the FAQs page
+(https://canvas.iastate.edu/courses/116478/pages/frequently-asked-questions#GradingQ7) for scoring
+information on these types of problems.
+Open book/notes/internet - but answers must be your own. Do not copy and do not plagiarize.
+Don't hit the button until you're ready to take the quiz!
+Grading Criteria
+To complete this assignment, you will answer all of the questions for this assignment. Canvas will
+show your scores upon submission. If you have questions about what you missed, please contact
+your TA.
+Solutions
+You will be able to see your quiz responses after submitting the quiz. Canvas will show answers with
+feedback. Please note this feedback and any corrections; you will only see this screen once.
+There are several different attack points in the network model. Consider Alice and Bob, who are on
+two different networks and are communicating with each other. For the next two questions, select all
+correct attack information based on where the attacker is located (some questions may have more
+than one correct answer - pick all correct ones).
+
+2/14/25, 4:27 PM
+ Module 04: Quiz : CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 3 of 6
+https://canvas.iastate.edu/courses/116478/quizzes/569242
+
+Question 1
+2 / 2 pts
+  Physical Layer
+Correct.
+  Network Layer
+Correct.
+  Transport Layer
+Correct.
+  Application Layer
+Correct.
+  User Layer
+Correct
+  None of the layers can be attacked
+All layers can be attacked in this scenario.
+
+Question 2
+2 / 2 pts
+  Physical Layer
+  Network Layer
+Correct
+  Transport Layer
+Correct
+  Application Layer
+Correct
+Note: Canvas auto-grading will reduce the overall score on these problems for incorrectly selected
+network layers. Unselected network layers will not alter the score (you won't gain or lose points for not
+selecting a statement, regardless of whether it is correct or incorrect).
+ 
+If the bad actor is located on Bob's network, which network layer(s) on Bob's computer can be
+attacked? Select all that apply.
+Which network layers on your computer can an attacker sitting somewhere on the Internet attack?
+
+2/14/25, 4:27 PM
+ Module 04: Quiz : CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 4 of 6
+https://canvas.iastate.edu/courses/116478/quizzes/569242
+  User Layer
+Correct
+  None of the layers can be attacked
+The network, transport, application, and user layers can be attacked in this scenario. The physical
+layer cannot be attacked since the routers replace that header in the packet along the way as part of
+the routing protocol.
+
+Question 3
+1 / 1 pts
+  True
+  False
+Correct
+
+Question 4
+1 / 1 pts
+Answer 1:
+not be easily mitigated, may require mitigation in higher-layer protocols
+system set up incorrectly or system default are used
+very difficult to find, may or may not be easy to fix once discovered
+Correct. very difficult to find, may or may not be easy to fix once discovered
+Answer 2:
+not considering security ramifications in the protocol
+misinterpretation in the protocol specification
+Correct
+True or False: If an attacker gains access to Bob's network but not his computer, the attacker can
+read/decipher the encrypted data sent between Alice and Bob.
+Match the information and example to the type of vulnerability listed below.
+Implementation vulnerabilities
+What it is: very difficult to find, may or may not be easy to fix once discovered
+Example: misinterpretation in the protocol specification
+
+2/14/25, 4:27 PM
+ Module 04: Quiz : CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 5 of 6
+https://canvas.iastate.edu/courses/116478/quizzes/569242
+system default passwords are not changed
+
+Question 5
+4 / 4 pts
+Answer 1:
+capture all of the traffic on a network
+changing an address in the packet to an incorrect value
+Correct
+reassembly buffer overflow
+repeated, unfinished TCP three-way handshake connections
+Answer 2:
+Authentication-Based Vulnerability
+Correct
+Header-Based Vulnerability
+Protocol-Based Vulnerability
+Traffic-Based Vulnerability
+Answer 3:
+capture all of the traffic on a network
+changing an address in the packet to an incorrect value
+reassembly buffer overflow
+repeated, unfinished TCP three-way handshake connections
+For the following attacks, match the name to its description and to its type of security vulnerability
+within the network taxonomy.
+Address Spoofing
+What it is: changing an address in the packet to an incorrect value
+Where it is in the taxonomy: [ Select ]
+SYN Flood
+What it is: [ Select ]
+Where it is in the taxonomy: Protocol-Based Vulnerability
+
+2/14/25, 4:27 PM
+ Module 04: Quiz : CPR E/CYBSC 4300/5300 (Spring 2025)
+Page 6 of 6
+https://canvas.iastate.edu/courses/116478/quizzes/569242
+Correct
+Answer 4:
+Authentication-Based Vulnerability
+Header-Based Vulnerability
+Protocol-Based Vulnerability
+Correct
+Traffic-Based Vulnerability
+Quiz Score: 10 out of 10

@@ -1,0 +1,201 @@
+Introduction to Cryptography Tools
+lO defined as the procets of concealing
+What ove cvyptoqvaphy tools q the contents of a message from all
+excepf those who Know +he Key
+L Syramelvic = same Key
+
+L ASYrameync * different Key
+
+| Simply meant what if private chovid
+What is confidentiality 7 yemain private
+
+L Cryptography cav provide confidentiality throvgh vsing encryption
+
+Characterizing Cvuptoqraphic Systems
+
+L
+
+Operations used for encrypthon
+Caesar Cipher . swift Plainfext letters K posihon to right
+
+L Substituhon : replace one element in plaintext with another
+C Yal— fence ciphev ; plaintext written Mw yow!
+L Twansposthon * rearrange element
+
+L Product Systems + multiple stages of substivten & Avansprsition
+{yupes of Keys used
+L \ummeine + sender /veceiver use Jame Key
+
+L Public > sendev/receiver use different key Casymmcetic )
+Processing of plaintext
+
+more common
+
+U Block Cipher * procels one block of elements at «a time
+t— fostev fe uSe lesS code
+
+ie Slyeam Cipher * pvoceds inpvt elements continveusly
+
+Macks
+
+L Goal
+L Discovey the plaintext (Good D
+L Nistover the Key (Better)
+
+Assumed attacker Kngwiedge
+
+L
+L
+
+Ciphevtext
+Alqgovidhm
+
+L other pairs of Cplainiext, ciphertext ) using some Key
+Attack« methods
+
+L Brule ~fovce 2 4rA Wvery possible Key on ciphertext
+
+L Cy¥ptonalysis = exploit characteristics of algo to deduce praintett
+ery Key
+
+Symmetric Key encyyption
+LL onty one Key Ca Secret key )
+
+Shared Shared
+secret key secret key
+
+K K
+Strong
+Encryption Decryption
+E() D()
+
+Yata Encyption Gandavd (DES ) => Key Size considered INSECURE
+
+Plaintext Ciphertext Plaintext
+
+[ Algo rithm considered SECURE
+Block ste + 64 bits 5 Use 3DES
+tr 2 Keys
+L Key length = 56 bits C64 bils, but & ave parity )
+
+3DES
+L Thvee times slower than DES
+L Applies DES three times
+
+Advanced Enwyption Standard (AES )
+
+L Block sine ~ (2% 28
+L -— 2" keys
+Key length - 18, 116, 256 bits
+L Substiivhou ~ permutahon networks Cvsed in ATTPS)
+AtHtacics
+L Brute-force ~ depends on Key length & compvter speed
+
+L Cy yptanalysis
+
+Data Authenhcahon
+
+User A Usev BR
+pr, Kag Block Kaa
+C,> Eves CP1, Kae ) bk 7 P.= Daes (C,,K qe )
+Davth ~
+chavged some bits C, ¢ Gavbage
+L Usev Authentication
+
+Usev A Block User B
+C.> Eqgs CP1, kag) —h _, P= Ones (4, Kae)
+
+Davth Cy ¢
+Ca- Eves (P, Kxy) Gavbage
+
+Data Confidenhality
+Usey A User B
+PAL Kag Kage
+C,> Eves CP1) Kap) t+ P= Ones CC, Kae)
+
+Pavth
+Av4 Ao decvypt
+using Kxy (different Key )
+
+Public Key Encryption
+
+L_ Keys come in pairs , one public k one private
+
+Private Key Public Key
+
+Example s
+L_ Rivest, Shamiv, Adfeman (RSA)
+L_ Diffie-Hellman Key exchange algorithm
+L_ Digital Signature Standard CDSS )
+
+L Eliptic curve wyptoqvaphy CEcc )
+
+Algorithm Digital Signature Symmetric Key Encryption of
+Distribution Secret Keys
+RSA Yes Yes Yes
+Diffie-Hellman No Yes No
+DSS Yes No No
+Elliptic Curve Yes Yes Yes
+Confidenhality
+
+Symmetne VI Asymmelvic
+L_ Svppose (0 users need to communicale with each ofher
+L_ How many symmetric Keys? 45
+L_ How many asymmetvic Keys? 20
+Public key enayyphon clower than symmetric dve to alguitim
+
+ComPRXITY
+L_ encvypt large data? yore sSymmetvic
+
+Key Management / Exchange
+\_ Public key - Crusted ent ty /ovganiratn
+
+L_ Private key. USe public-key encyyphon to sted 4Ymucme Key
+
+Key Generohon
+
+L_ Open SSL
+
+Hashing Agortthms
+L
+
+One woy
+inieqvit
+
+L_"Nestage Aufhenticahon Code CMAC)
+LAlse called Keyed hash
+
+| funchon
+Ex. HMAC
+
+HASY\ Vappheedions - passwords imtvusior
+detechon
+dees not take a Key during
+
+q hashing process
+
+gives a fixed Sire hath
+
+L_ Ex. MDS (message digest )
+
+SHA- 1 Cxecuve hashing algo’)
+SHA-2 ,SMA-4
+
+Atack= against HASH *
+L_ Cruptaval ysis
+L_ Brute force
+
+Diguial Signature
+L_ Eqvivatent to handwritten SNgnature Ex. DLA
+L_ Usev Avtheniication RSA -psa
+
+—_ Data Authenhcation (Data Integrity > ECDSA
+
+Now -vepudiathion * AW use public key encryption
+| Since only one usev hats A
+Applicahons ~ private Key
+
+L_ Sensthve email commonjcation)
+LL financial transaction
+
+L_ Software dis g§ulyou

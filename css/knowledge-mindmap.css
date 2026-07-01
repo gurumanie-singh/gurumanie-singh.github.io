@@ -1,0 +1,442 @@
+/* ============================================================================
+   knowledge-mindmap.css
+   Radial knowledge mindmap — cyan accent on dark canvas, 8px spacing scale.
+   Loaded only on knowledge pages; uses Geist from design-system.css.
+   ========================================================================== */
+
+:root {
+  --km-bg: #0a0a0f;
+  --km-surface: #12121a;
+  --km-surface-2: #1a1a24;
+  --km-border: rgba(255, 255, 255, 0.08);
+  --km-accent: #22d3ee;
+  --km-accent-dim: rgba(34, 211, 238, 0.15);
+  --km-accent-glow: rgba(34, 211, 238, 0.35);
+  --km-text: #ececf1;
+  --km-muted: #86868f;
+  --km-radius: 10px;
+}
+
+.km-page {
+  background: var(--km-bg);
+  min-height: 100vh;
+  color: var(--km-text);
+}
+
+.km-shell {
+  display: grid;
+  grid-template-columns: 1fr min(420px, 42vw);
+  gap: 0;
+  min-height: calc(100vh - 64px);
+}
+
+@media (max-width: 960px) {
+  .km-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: min(55vh, 480px) auto;
+  }
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+.km-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--km-border);
+  background: var(--km-surface);
+  flex-wrap: wrap;
+}
+
+.km-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.km-category-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--km-accent);
+}
+
+.km-progress-text {
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+}
+
+.km-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.km-btn {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--km-border);
+  background: var(--km-surface-2);
+  color: var(--km-text);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+
+.km-btn:hover {
+  border-color: var(--km-accent);
+  color: var(--km-accent);
+}
+
+.km-btn.is-active {
+  background: var(--km-accent-dim);
+  border-color: var(--km-accent);
+  color: var(--km-accent);
+}
+
+/* ── Radial canvas ───────────────────────────────────────────────────────── */
+.km-canvas-wrap {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(34, 211, 238, 0.04), transparent),
+    var(--km-bg);
+}
+
+.km-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+.km-canvas.is-dragging { cursor: grabbing; }
+
+.km-node-class {
+  fill: var(--km-surface-2);
+  stroke: var(--km-border);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: stroke var(--duration-fast) var(--ease-out);
+}
+
+.km-node-class:hover,
+.km-node-class.is-selected {
+  stroke: var(--km-accent);
+}
+
+.km-node-topic {
+  fill: var(--km-surface);
+  stroke: var(--km-border);
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.km-node-topic:hover,
+.km-node-topic.is-active {
+  stroke: var(--km-accent);
+  filter: drop-shadow(0 0 8px var(--km-accent-glow));
+}
+
+.km-node-topic.is-reviewed {
+  stroke: var(--km-accent);
+}
+
+.km-progress-arc {
+  fill: none;
+  stroke: var(--km-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.km-edge {
+  stroke: var(--km-border);
+  stroke-width: 1;
+  fill: none;
+  opacity: 0.6;
+}
+
+.km-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  fill: var(--km-text);
+  pointer-events: none;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.km-label-class {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--km-accent);
+}
+
+.km-label-center {
+  font-size: 14px;
+  font-weight: 700;
+  fill: var(--km-text);
+}
+
+/* ── Detail panel ────────────────────────────────────────────────────────── */
+.km-panel {
+  border-left: 1px solid var(--km-border);
+  background: var(--km-surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .km-panel { border-left: none; border-top: 1px solid var(--km-border); }
+}
+
+.km-panel-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8);
+  text-align: center;
+  color: var(--km-muted);
+  font-size: var(--fs-sm);
+}
+
+.km-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-6);
+}
+
+.km-panel-header {
+  margin-bottom: var(--sp-4);
+}
+
+.km-topic-title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: var(--sp-2);
+}
+
+.km-class-badge {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  color: var(--km-accent);
+  background: var(--km-accent-dim);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--sp-3);
+}
+
+.km-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.km-tag {
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+  border: 1px solid var(--km-border);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-full);
+}
+
+.km-summary {
+  font-size: var(--fs-base);
+  color: var(--km-text);
+  line-height: 1.6;
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-3);
+  background: var(--km-surface-2);
+  border-radius: var(--km-radius);
+  border-left: 3px solid var(--km-accent);
+}
+
+.km-detail {
+  font-size: var(--fs-sm);
+  color: var(--km-muted);
+  line-height: 1.7;
+}
+
+.km-detail p { margin-bottom: var(--sp-3); }
+.km-detail strong { color: var(--km-text); font-weight: 600; }
+.km-detail code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--km-surface-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--km-accent);
+}
+.km-detail ul, .km-detail ol {
+  margin: var(--sp-2) 0 var(--sp-3) var(--sp-4);
+}
+.km-detail li { margin-bottom: var(--sp-1); }
+.km-detail h3, .km-detail h4 {
+  color: var(--km-text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  margin: var(--sp-4) 0 var(--sp-2);
+}
+
+.km-commands {
+  margin-top: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.km-commands-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--km-muted);
+}
+
+.km-command {
+  background: var(--km-bg);
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  overflow: hidden;
+}
+
+.km-command-top {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.km-command pre {
+  flex: 1;
+  margin: 0;
+  padding: var(--sp-3);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--km-accent);
+  background: transparent;
+}
+
+.km-copy {
+  flex-shrink: 0;
+  align-self: stretch;
+  padding: 0 var(--sp-3);
+  border: none;
+  border-left: 1px solid var(--km-border);
+  background: var(--km-surface-2);
+  color: var(--km-muted);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+
+.km-copy:hover { color: var(--km-accent); }
+.km-copy.is-copied { color: #4ade80; }
+
+.km-command-explain {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+  border-top: 1px solid var(--km-border);
+}
+
+.km-panel-actions {
+  padding: var(--sp-3) var(--sp-6);
+  border-top: 1px solid var(--km-border);
+  display: flex;
+  gap: var(--sp-2);
+}
+
+/* ── Flashcard overlay ───────────────────────────────────────────────────── */
+.km-flash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10, 10, 15, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+
+.km-flash-overlay.is-open { display: flex; }
+
+.km-flash-card {
+  width: min(520px, 100%);
+  min-height: 280px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.km-flash-inner {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.km-flash-card.is-flipped .km-flash-inner {
+  transform: rotateY(180deg);
+}
+
+.km-flash-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  background: var(--km-surface);
+  border: 1px solid var(--km-border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.km-flash-face.back {
+  transform: rotateY(180deg);
+  overflow-y: auto;
+}
+
+.km-flash-title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  margin-bottom: var(--sp-4);
+  color: var(--km-accent);
+}
+
+.km-flash-hint {
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+  margin-top: auto;
+  padding-top: var(--sp-4);
+}
+
+.km-flash-controls {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+  justify-content: center;
+}
+
+.km-flash-close {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+}

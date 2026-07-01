@@ -1,0 +1,58 @@
+Gurumanie Singh Dhiman 
+CprE 5360 
+Prof. Guan, Yong 
+ 
+Forensic Tool Validation: Methodologies and Principles, Legal Implications and Issues 
+ 
+Abstract 
+Forensic tools are critical when it comes to digital investigations, yet many of them are used without any sort 
+of formal validation which then risks errors and challenges in court. This proposal aims to test hypotheses 
+about forensic tool accuracies and their reliability by designing and applying a validation framework to open-
+source forensic tools. The first specific aim is to survey the existing validation standards and practices. The 
+second specific aim is to conduct experiments on selected tools using controlled data to measure artifact 
+extraction accuracy, metadata integrity, and repeatability. Together, these aims will produce practical, 
+repeatable guidelines that smaller labs can adopt to validate tools effectively. 
+Introduction 
+Digital forensics as a field depends heavily on software tools that extract and interpret data from devices. If 
+these tools produce invalid or inconsistent results, the integrity of the data found from the forensic findings is 
+compromised. Legal proceedings, criminal investigations, and civil cases all rely on the forensic tools and their 
+results. Many labs that are smaller or regional lack standard processes to test and verify the tools they rely on. 
+This research will focus on validating forensic tools by combining literature survey with some testing, which 
+aims to reveal how well current tools perform on typical forensic tasks and what labs can do to ensure the 
+same level of reliability. This paper will contribute by outlining a lightweight validation framework that 
+balances rigor with feasibility for smaller labs. 
+Hypothesis 
+Forensic tools commonly used in investigations have measurable limitations when it comes to artifact 
+extraction and metadata preservation. Applying a simple, reproducible validation framework will expose 
+those limitations and further improve such tools. 
+Specific Aims 
+1. Review and compare existing standards, practices, and guidelines for forensic tool validation using 
+NIST or SWGDE, including possible legal/court precedents. 
+2. Conduct experimental validation on specific open-source forensic tools using a small dataset to 
+assess their accuracy, repeatability, and metadata integrity.
+
+Potential Pitfalls and Alternative Strategies 
+Challenges 
+▪ 
+Selected tools may not support all artifact types (deleted files, nested directories) 
+▪ 
+Variability due to different versions or configurations of tools might change/hinder results 
+▪ 
+Time constraints for experiments with large datasets or many test cases 
+Alternative Strategies 
+▪ 
+Limit test dataset to the artifact types that are supported. Additionally, document unsupported cases 
+and then possibly include a commercial tool if available to fill in the gaps. 
+▪ 
+Standardize using a specific tool version. Write down configurations. Repeat certain tests if needed. 
+Furthermore, document if different version outputs vary too much. 
+▪ 
+Using reasonably small but representative datasets. Emphasizing depth on fewer tools/artifact types 
+rather than breadth. 
+References 
+https://science.yalecollege.yale.edu/stem-fellowships/how-write-proposal 
+https://www.nist.gov/itl/ssd/software-quality-group/computer-forensics-tool-testing-program-cftt 
+https://www.swgde.org/documents/published-complete-listing/18-q-001-minimum-requirements-for-
+testing-tools-used-in-digital-and-multimedia-forensics/ 
+https://www.aafs.org/sites/default/files/media/documents/DigitalEvidence%20SWGDE%2018-Q-001-
+1.0%20.pdf

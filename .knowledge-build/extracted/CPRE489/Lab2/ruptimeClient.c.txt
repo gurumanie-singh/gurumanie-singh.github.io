@@ -1,0 +1,6 @@
+Usage: ./ruptimeClient <server_ip>
+Create a basic TCP socket
+Set up our server address using the IP passed in as an argument
+Connect to our server
+Receive the uptime data from our server
+Print: server_ip: uptime output

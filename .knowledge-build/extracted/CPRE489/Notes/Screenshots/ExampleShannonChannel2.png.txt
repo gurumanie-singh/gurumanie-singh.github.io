@@ -1,0 +1,21 @@
+W
+
++ Consider an AWGN channel with a bandwidth of 27 KHz and SNR = 35 GB.
+Is it possible to transmit reliably over this channel at R = 350 Kbps?
+
+SWR (dB) = 35 dB = Jo log SWR
+
+So:
+
+Ly o
+=) SWR = Jo = 3/62
+
+W : ley, ( (+5wR)
+
+z( KH2 - foy. I+ 3162)
+
+313,43 kbps
+A
+350 k bps R= Io Kbps 2
+
+impess: ble

@@ -1,0 +1,9 @@
+Create a basic TCP socket
+Set up our server address
+Bind the socket to our address
+Listen for incoming connections
+Loop indefinitely, handling one client at a time
+Block until our client eventually connects
+don't exit and instead try accepting the next connection
+Run uptime and capture the output into uptimeOutput
+Send the uptime string to our client

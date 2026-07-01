@@ -1,0 +1,353 @@
+Firewall & Iwtvusion Preverthon System
+
+Intvo to fivewal\
+
+Why we need Frewalls ?
+
+Internal (protected) network External (untrusted) network
+| (e.g. enterprise network) Firewall (eg. Internet)
+used af a perimeter defence
+
+LL. single entry point fo impose secuvity ‘
+
+| & avditing
+
+means tv protech LAN
+
+Location of fw
+
+L For home network (2-3 computers )
+
+L_ cn vyoutev
+for large ovgannahon CiovO Compvters )
+
+L_
+
+On vyovtev
+
+Fw chavacterishes
+
+L_ Design goals
+L_
+L
+
+all traffic in to ovt must pass thw
+only avthorized tvaffic defined im lvcal security policy qnowed
+L fw itself is immune to penenlahon
+Geneval {echniques
+LL service conbol . filter based on IP / pvt 1
+
+divechon covifrol | to internal LAN, to external interme l
+
+usev contol 5} Student v8 facuity
+
+Cf
+
+behaviev contol; filtev email with Spar
+
+» Characteristics that a firewall access policy could use to filter traffic include:
+
+Capabilihes be Uimitathons
+L defines single choke point L Cannot protech agains? attacks
+‘o bypassing fw
+
+L provides locahov fov monitoring may not folly prvtec¥ againsr
+L Security events lL. mternal +*hreaty
+
+convenient platform foy several laptop, phone ov usp may be
+intevnet f&onchKovs anat ave infected ovt Hde qhen brovght
+
+not security velated msde networnt
+
+Tyees of fw
+
+pacer Fiieritg
+
+LL accept reject based 0” protocal heaters
+Stateful packeb inspechon
+L adds state info on whet happened previowly td packet filltrning fw
+&pplicahen proxy
+L_ vetay fy apphkcation proxy
+
+civcuit level prexy
+
+velar by transpor¥ connechon I
+Normati4 fw implemented oy roviey
+
+Protocol! Header CICPD Protece! Header CIP)
+
+4 8 14 16 19 3
+
+‘Destination IP Address
+Options + Padding (optional)
+
+Port Number (what application)
+
+Protocol Number
+Webserver (HTTP): 80
+
+HTTPS: 443 TCP: 6
+
+Email (SMTP): 25 Remember these numbers! UDP: 17
+
+SSH: 22 ICMP: 1
+
+FolNet: 23 Remember these numbers!
+
+Packet Filtering FW CParf I)
+
+What is packet filtering fw ?
+
+L_
+L
+
+Security POUCY implemented by se¥ of vulel
+
+vule’ define whith paacel¥s can pass
+
+L fw jnspecks avviving packcel¢ (all divechon) agnindt yyuie seb
+L_ dcfavil policies © action for packets when no vul€ matehet
+
+L
+
+accept Catiow, fuvwavd )
+
+_ dwop Creject, discard ) Vk vecommended
+
+Packet Filtering Rules
+L Packel Infv
+| L IP adldv L_ povt + LL protecet Lew imlerface Lumens
+Vules
+L conditions defined usivg packet infs | direction
+LL uitdeords CR) support te match multiple valves
+L athens Ayercally accep oy dope
+
+L fist of rules Processed nm orev
+
+Ex cl Packet Filtering Fw
+Lc.
+
+im os
+
+iptables Clinux) ,ipfw (mac) pf (BSD) windows fw
+stanSalone sw
+L
+
+Comodo , novtn, check priv
+hw
+L fu
+
+melvded i most rovtedt
+
+LL dedicated hw . Cisco ASA /PYX ~ De SoaicwAve
+ping = Sends req, f» deuce — > then receives vesponse
+
+Packet Filtering FW CPpart 2)
+Issues with Packer Filtering Fw
+= odvantages - Simplicrty  fvanspavent Ho users, very fast
+
+L disadvantages » |imited W9INGA , do nok Sepgorf advanced vSer guih,
+
+vuluerabte to attacks on TCP/IP byQt | improper ong . cf attad
+
+bast on content inside phen ir wont be defected
+
+AMow /Deny Defavit Police TCP /webserver communicabon J
+___ Browsing using TCP requestresponse sequence chcesvel-
+L SecuntYy Pov chew webges
+VAL AD ToP sypJ Ki Ss a es}
+L sefavit deny beter wep op 8S
+Es shef — Y —SAS| stab chee!
+
+from fonchoaal yrevy Pov
+
+L defavit allow better $2 way handthaye —)
+
+Stateful Packet Inspection FW
+Dvawback of Packet Filtering fw
+L
+
+Vule vsed one way is fine, gut we need to send TCP SYN ACK
+
+back seo we need Iwo way — this can be spoofed
+
+Stateful Pactet Inspechon fw
+L vemembers packet! based on connection vyeqwest© /commvunicahon
+
+L need to store info Coverhead )
+
+L happers at transport layer
+
+Other types of fw & jocatons
+Application—tevel gateway Ceroxy fw)
+LL more secure than packet filters
+LL addibonal processing overhead on each connector
+L_ works om applicahon (ayer
+
+Civcvit - level gatewoy Calo a proxy fw)
+
+L_ works on Jvauspovl layer, vest is cawe as obove
+
+L_
+
+f
+
+used when wmside users ave tvwurted
+
+Host-Based Firewalls
+Firewall locaton
+* Used to secure an individual host
+* Available in operating systems or can be provided as an add-on package LL .
+omm
+* Filter and restrict packet flows Common tv SCparale Inte mal
+* Common location is a server
+
+nw inlo two rons
+
+Filtering rules can be tailored to the host ' 7
+* Protection is provided independent of topology
+* Provides an additional layer of protection L.
+end vsev computers &
+Personal Firewall intevnal veyvevs
+
+* Controls traffic between a personal computer or workstation and the Internet or
+
+enterprise network prel ce facan 9 sevuert evt in DMZ
+
+* For both home or corporate use
+* Typically is a software module on a personal computer
+
+* Can be housed in a router that connects all of the home computers to a DSL, cable
+modem, or other Internet interface
+
+* Typically much less complex than server-based or stand-alone firewalls
+* Primary role is to deny unauthorized remote access
+
+* May also monitor outgoing traffic to detect and block worms and malware activity
+
+Firewalls with IP Tables ( Part 1)
+
+LinvX , Netéater & (PVobfes
+
+userspace
+
+kernelspace
+
+L_ netfilifer - fw in linux system
+
+\_ iwtables = write vules fov netfilter
+
+Network
+Interface
+Cards
+
+hardware
+
+LL need to have admin accets fiv above,
+
+IP Tables Concepts (tables, chains, vvles )
+Le nWow you fe sey votes
+
+L fables contain chams ——> chains contain packet filtev rvies
+
+<Cept ,dvo Y nr
+\ INPUT packets destined to this computer Ca Pr, Pry eter J
+
+OUTPUT packets originating from this computer
+
+FORWARD packets being forwarded by this computer
+
+PREROUTING altering packets as they come in to this
+computer (e.g. nat, mangle)
+
+POSTROUTING altering packets as they go out of this
+computer (e.g. nat, mangle)
+
+Common If Taies Syntax
+
+iptables [-t table] [-operation chain] [-p protocol] [-s srcip]
+[-d dstip] [-i inif| [-o outif] [-param1 valuel ...] -j target
+
+v
+
+table: filter, nat, mangle
+
+v
+
+operation: (first uppercase letter) Append, Delete,
+
+Insert, List, Flush, Policy, ...
+
+chain: INPUT, OUPTUT, FORWARD, PREROUTING,
+
+POSTROUTING
+
+protocol: tcp, udp, icmp, all, ...
+
+srcip, dstip: |P address, e.g. 1.1.1.1, 2.2.2.0/24
+
+inif, outif. interface name, e.g. ethO
+
+param, value: protocol specific parameter and value
+» sport, dport, tcp-flags, icmp-type,...
+
+target: ACCEPT, DROP, RETURN, ...
+
+vvy¥$sy v
+
+v
+
+Commands
+
+L_ view ves
+L_ iptables -L -n —ov_~—s iptables —L FoRWARD —v
+dvop 4cp
+lL uae iptables —~A FORWARD -P tcp —j4 DROP
+blocke packets om ethO gnd destned for yo.w.0-t
+
+Ludo iptabics ~A FORWARD —i ethO —a@ 10.10.1.1-) DROP
+
+Firewalls! with IP Tables CPavt 2) )
+[_ Forward iy used frv middle device ( }- } H
+
+Intvusion Pyeventiov System
+Ips
+L_ extevsion to IDS that also has capability to attempt bh block
+
+oV pveve nt
+
+Hlost-Bosed [PS CHIps)
+L Can be signature or anomaly based fp WenkKfy attacks
+L_ exormples of isfves it oddvees
+
+\_ mods F cys¥emM resources
+
+L_ privilege escalation exploits
+
+L butfey ovevfjgw
+
+cov be wed on pervsonat compute! av sevvevis
+L_ has extva featve called pandbox
+
+L_ fates exe fil and executes i* m elated env
+
+Netwovk- Based iPS (NIPS )
+L Same aS WPS, can vee anomaly & signature based
+LL gbititd As modify or dvop packet “TH teay down TeP cnn
+
+L. provide flow data pvorechoy
+
+Digital Immune System
+L cowmmplchenfive defence agaivs t malwarl
+L success depemds ©” malware an alysis to detec) ntu & mnvvative
+
+malware strains
+
+Snort Intne
+
+L_ enabies snort to be a IPS
+L_ jnavdes o replace ophou allowing snort ps modify packet
+instead of dvopping
+lL ysefor fev honey pts
+
+U attadler) cee faileve bot donk Know why

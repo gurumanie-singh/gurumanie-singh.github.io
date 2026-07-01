@@ -1,0 +1,19 @@
+Dhiman Gurumanie Singh
+CPRE431: Lab 4
+After setting up both the server and the client with the necessary updates and installations, we run the command “slowhttptest -c 1000 -H -g -o apache_no_mitigation -i 10 -r 200 -t GET -u http://server -x 24 -p 3 -l 120” and get the below response:
+Letting the above command run for the entire time duration, it does not make the server go down. This is because the server was able to handle 1000 connections easily, when we increased the number to 1500 connections, I was able to get the server to go down.
+Assuming that the command needs to be modified to make the server go down, we increase the connections to 1500 instead of 1000:
+Now as we can see the server goes down in the 10th second itself (image shows 15th second because I was not able to time it right). 
+The below is additional proof from the server side terminal:
+The above is shown when we run the “lynx http://server” command while the service is down.
+However, the test ends with the server being back up around 60th second mark because the server starts closing our requests.
+Additionally, while the server is being brought down, we can run the command “netstat -anp | grep :80 | grep ESTABLISHED” and see:
+The above shows all the connections that have been established with the server from just our attacker machine.
+Moving on, when we scp the apache_no_mitigation.html file to our computer and open it, we see:
+Next, when we change our correct interface to limit the rate of outgoing traffic to 100kbps, we get the following:
+We can clearly see that even with the rate limiting of outgoing traffic, our attack on the server is still successful. Towards the end we had our service up and running again but that is because the server started closing all our requests.
+Next, we set up the ip table rules on the server to 20 connections for port 80:
+While the service was down for our attacker machine, I was still able to access “lynx http://server” and this is because our server made it inaccessible for the attacker machine only.
+For the final case, using nginx and setting it up as per the lab instructions, we get the below:
+As we can see, my server does not go down at all. I think this may be due to a few different reasons but the key reason is because of the rule we set up to ensure that the worker connections are set to 100k instead of the default value. 
+Overall, this lab was pretty fun. I did have some issues and set backs in getting the same results as the lab document, but there are various reasons for that. I noticed a key issue is that my server was able to get up and running after the 60th second maybe because there may be some different settings in the way mine is set up. I would assume it is because my server has a time limit after which it decides to start dropping connections to restore the uptime.

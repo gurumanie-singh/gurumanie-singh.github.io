@@ -1,0 +1,372 @@
+— §2025-CPRE-4300-1 > Quizzes » Hl Module 09: Quiz
+
+Spring 2025
+= . . Submission Details:
+oo @ Module 09: Quiz
+Time: 9 minutes
+
+Announcements Due Apr 18 at 11:59pm Points 10 Questions 5 Time Limit 12 Minutes
+Current Score: 10 out of 10
+ih Grades 2)
+
+i Kept Score: 10 out of 10
+
+Course Reserves Instructions P
+
+© Smart Search DO NOT HIT THE BUTTON UNTIL YOU'RE READY TO TAKE THE QUIZ.
+ie ISU Syllabus
+@) Statements
+
+Take the Quiz
+
+/
+
+This quiz is over the materials for Module 08 and Module 09. Module 08 topics include sockets,
+application-level programming, buffer overflows, and server/client communication. Module 09 materials
+cover email communications, email header analysis, and spoofing. Before beginning this quiz, it would be
+best to understand the content of email headers and how sockets are initialized and used.
+
+Purpose
+
+Task
+
+e You may only take this quiz once.
+
+e Make sure you will not be interrupted so you can focus on completing the quiz.
+
+e Make sure you have a reliable internet connection.
+
+e You have 12 minutes to complete this quiz. Once you start the quiz, you cannot stop the timer.
+
+o Pay attention to the time. The time remaining is located on a timer on the right sidebar.
+
+© The quiz will automatically submit after your time is up or if it hits the due date (whichever comes
+first).
+
+© If you accidentally navigate away from the quiz but have time remaining, you should be able to
+pick up where you left off.
+
+e For multiple select questions (e.g., the ‘select all that apply' questions with checkboxes), Canvas auto-
+grading will reduce the overall score for incorrectly selected options. Unselected options will not alter
+the score (you won't gain or lose points for not selecting a statement or option, regardless of whether
+it is correct or incorrect). Be mindful when selecting options for this style of question.
+
+¢ Open book/open notes/open internet - but answers must be your own. Do not copy and do not
+plagiarize.
+
+e Don't hit the button until you're ready to take the quiz!
+
+Grading Criteria
+
+To complete this assignment, you will answer all of the questions for this assignment. Canvas will show
+your scores upon submission. If you have questions about what you missed, please contact your TA.
+
+Solutions
+
+You will be able to see your quiz responses after submitting the quiz. Canvas will show answers with
+feedback. Please note this feedback and any corrections; you will only see this screen once.
+
+Attempt History
+
+Attempt Time Score
+
+LATEST Attempt 1 9 minutes 10 out of 10
+
+Score for this quiz: 10 out of 10
+Submitted Apr 18 at 4:13pm
+This attempt took 9 minutes.
+
+Question 1 2/2 pts
+
+Select all that apply: Email was originally designed to be used to send
+simple text messages. MIME has enabled the transfer of complex data
+types, which in turn has enabled bad actors to send the following through
+email
+
+Note: Canvas auto-grading will reduce the overall score for this problem for incorrectly
+selected options. Unselected options will not alter the score (you won't gain or lose points
+
+for options not selected, regardless of whether it is correct or incorrect).
+
+! :
+Correct! viruses
+Correct
+I
+Correct! worms
+Correct
+
+! oe
+Correct! malicious code
+
+Correct
+I
+Correct! hyperlink to a malicious website
+
+Correct
+
+Correct!
+
+images that send information to a server when the email is opened
+
+Correct
+
+Question 2 2/2 pts
+
+Select all that apply: Buffer overflow is a security concern because it could
+
+Note: Canvas auto-grading will reduce the overall score for this problem for incorrectly
+selected options. Unselected options will not alter the score (you won't gain or lose points
+
+for options not selected, regardless of whether it is correct or incorrect).
+
+Correct!
+allow another program to execute
+
+Correct
+
+I
+Correct! cause a denial of service (DoS)
+
+Correct
+
+I
+Correct! corrupt existing data
+
+Correct
+I
+Correct! crash a program
+
+Correct
+
+Correct!
+
+expose security-sensitive data
+
+Correct
+Question 3 2/2pts
+Microsoft Outlook Gmail
+Application Application
+
+Internet
+
+Figure 1: Alice, using MS Outlook, is separated from
+Bob, using Gmail, by three MTAs.
+
+For the scenario outlined in Figure 1, indicate what information is
+contained in the email headers on the email intercepted at the designated
+point along the path. Assume Alice is sending an email to Bob.
+
+Option1 Option2 | Option3 Option4 | Option 5
+Header Header Header
+Alice’s Email] | |MS Outlook MTA B MTA B
+Alice’s Email
+Contents Header
+
+MS Outlook} | |MS Outlook
+Header Header
+Alice’s Email] | |Alice’s Email
+Contents Contents
+
+Option 1
+Option 2
+Option 3
+
+Correct. Each MTA will add its own header on top of what headers
+already exist (i.e., encapsulates existing data and adds a header to that
+encapsulated data).
+
+Option 5
+
+Question 4 2/2 pts
+
+Alice and Bob have been good friends for years and frequently email each
+other using SMTP. They always use the same computers on the same
+networks when emailing each other, and the email travels across the
+Internet through the MTAs depicted in Figure 2.
+
+e) Internet
+
+° &
+——
+‘a a a) 3) alice@dougj1.net
+
+bob@bobsmail.org —
+MTA1 TAZ MTA3 MTA4
+eve-el-1@hackalot.com
+
+Figure 2: Network diagram depicting the connectivity
+between Alice, Bob, Eve, and various Mail Transfer Agents
+(MTAs), highlighting the flow of email communications.
+
+Suppose Eve sends Alice a spoofed email impersonating Bob. Select all of
+the true statements.
+
+Note: Canvas auto-grading will reduce the overall score for this problem for
+incorrectly selected options. Unselected options will not alter the score (you won't
+gain or lose points for options not selected, regardless of whether it is correct or
+
+incorrect).
+
+If Eve is spoofing Bob's email, there is no way for Alice to determine who
+really sent the email in this scenario.
+
+Each MTA header is stripped off and replaced as the email traverses the
+Internet, Alice can only see the last MTA in the header, making the emails
+indistinguishable when spoofed.
+
+Correct!
+
+Once she received the email, Alice would see that it was routed through
+the same mail servers as Bob’s email.
+
+Correct.
+
+Correct!
+
+Alice will know it’s a spoofed email when she doesn’t see a header
+containing Bob’s IP address.
+
+Correct.
+
+Bob and Eve’s computers are located behind routers, so their real IP
+addresses will be hidden from Alice.
+
+Page 309 of the textbook goes into more detail about email
+headers and "email forensics", which can be used in this situation to
+find a phishing email.
+
+Question 5 2/2 pts
+
+Myles and Julia are working on a team project, and Myles needs to send a
+document to Julia. He sends Julia the document via the email system using
+Thunderbird's desktop client. Julia receives and reads the email using
+Microsoft Outlook Exchange. The scenario shown below in Figure 3
+depicts the email path between Myles and Julia, which includes the
+devices Myles’s computer, Julia’s computer, and email servers 1-4 (for this
+problem, we’re ignoring the intermediary router hops on the Internet).
+
+(2d Internet
+
+Email Server 1 Email Server 2 Email Server 3 Email Server 4
+
+Figure 3: Example email relay between Myles & Julia.
+
+For the connection protocol at each arrow, identify which device is the
+client and which is the server. Fill out Table 1 with information on which
+device is the client and which is the server at each location.
+
+Table 1: Client-Server Information for the Email Relay.
+
+Location Client Server
+A [ Select ] , [ Select ] S
+B [ Select ] 7 [ Select ] 7
+Cc [ Select ] , [ Select ] S
+D [ Select ] 7 [ Select ] 7
+E [ Select ] , [ Select ] S
+
+Consider the application protocol name and the purpose specific to that
+point. Fill out Table 2 with the protocols IMAP4, SMTP Port 25, and SMTP
+Port 587, which are all used at least once in this scenario and reflect their
+typical usage in email transmission.
+
+Table 2: Protocol Information for the Email
+
+Relay.
+Location Protocol
+A [ Select ] 7
+B [ Select ] 7
+Cc SMTP Port 25
+D SMTP Port 25
+E IMAP4
+
+Answer 1:
+
+Correct! Myles's Computer
+
+Correct.
+
+Answer 2:
+
+Correct! Email Server 41
+
+Correct.
+
+Answer 3:
+
+Correct! Myles's Computer
+
+Correct.
+
+Answer 4:
+
+Correct! Email Server 41
+
+Correct.
+
+Answer 5:
+
+Correct! Email Server 41
+
+Correct.
+
+Answer 6:
+
+Correct! Email Server 2
+
+Correct.
+
+Answer 7:
+
+Correct! Email Server 2
+
+Correct.
+
+Answer 8:
+
+Correct! Email Server 3
+
+Correct.
+
+Answer 9:
+
+Correct! Julia's Computer
+
+Correct.
+
+Answer 10:
+
+Correct! Email Server 4
+
+Correct.
+
+Answer 11:
+
+Correct! SMTP Port 587
+
+Correct.
+
+Answer 12:
+
+Correct! SMTP Port 587
+
+Correct.
+
+Answer 13:
+
+Correct! SMTP Port 25
+
+Correct.
+
+Answer 14:
+
+Correct! SMTP Port 25
+
+Correct.
+
+Answer 15:
+
+Correct! IMAP4
+
+Correct.
+
+Quiz Score: 10 out of 10

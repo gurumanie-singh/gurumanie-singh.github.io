@@ -1,0 +1,145 @@
+Level 11: ROT13 Cipher — Gurumanie Singh
+ 
+ 
+ 
+ 
+ 
+
+ 
+ Gurumanie Singh
+ ← Back to Guide
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ Bandit · Level 11
+ ROT13 Cipher
+
+ Use tr to apply ROT13 decoding to a file and reveal the password.
+
+ 
+
+ 
+
+ 
+ Goal
+ Level Goal
+
+ 
+ The password for the next level is stored in data.txt, where all lowercase (a-z) and uppercase (A-Z) letters have been rotated by 13 positions (ROT13).
+ 
+
+ 
+
+ 
+
+ 
+ Solution
+ Step-by-Step Solution
+
+ 1. Exit Level 10 and SSH into Level 11
+
+ 
+ After obtaining the Level 11 password from data.txt in Level 10, exit the current session:
+ 
+
+ exit
+
+ 
+ Then connect as bandit11 using the password acquired:
+ 
+
+ ssh bandit11@bandit.labs.overthewire.org -p 2220
+
+ 2. List the Home Directory
+
+ 
+ Once logged in as bandit11, run:
+ 
+
+ ls
+
+ 
+ You will see data.txt listed.
+ 
+
+ 3. Inspect data.txt
+
+ 
+ To view its contents:
+ 
+
+ cat data.txt
+
+ 
+ The file contains text with all letters rotated by 13 positions. The instructions indicate you must apply a ROT13 transformation to this text.
+ 
+
+ 4. Decode Using tr
+
+ 
+ To reverse the ROT13 encoding, use:
+ 
+
+ cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm
+
+ 
+ The first string (ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz) represents the original alphabet, and the second string (NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm) shifts each letter by 13 positions. The output reveals the password for bandit12.
+ 
+
+ 5. Alternative tr Syntax
+
+ 
+ The same ROT13 transformation can also be done using:
+ 
+
+ cat data.txt | tr A-Za-z N-ZA-Mn-za-m
+
+ 
+ This shorter syntax maps each letter to the character 13 positions ahead in the alphabet. It produces the same decoded output.
+ 
+
+ 
+
+ 
+
+ 
+ Summary
+ Key Commands
+
+ 
+ 
+ exit — return to your local machine from Level 10.
+
+ ssh bandit11@bandit.labs.overthewire.org -p 2220 — connect as bandit11.
+
+ ls — list files; shows data.txt.
+
+ cat data.txt — view ROT13-encoded contents.
+
+ cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm — apply ROT13 decoding; retrieve the bandit12 password.
+
+ cat data.txt | tr A-Za-z N-ZA-Mn-za-m — alternative, shorter ROT13 decoding syntax.
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+ Gurumanie Singh Dhiman
+ © 2026 · Singapore · B.S. Computer Engineering
+
+COMMANDS:
+exit
+ssh bandit11@bandit.labs.overthewire.org -p 2220
+ls
+cat data.txt
+cat data.txt | tr ABCDEFGHIJKLKMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm
+cat data.txt | tr A-Za-z N-ZA-Mn-za-m

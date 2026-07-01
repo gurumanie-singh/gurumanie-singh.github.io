@@ -1,0 +1,23 @@
+CPRE/CYBSC-5360_FALL-2025 
+PROJECT-1 
+ 
+Please follow the instructions to search for the target item with Encase. 
+Note: The procedure with screenshots and the file paths of the evidence are required when 
+answering the questions. Zero points for the answer without the required description. 
+Disk images are located at: https://iastate.box.com/s/pr0mnxa6qls3zcxh9mwyhfyl0rmmdvwt 
+ 
+Project 1 (Please use 25Fall_Project1B.img) 
+1. (1 point) Who is James Cooper's supplier of marijuana? 
+2. (2 points) What is the address of the supplier? 
+3. (1 point) When was the email sent to the supplier? 
+4. (2 points) What is the full list of High Schools that James Cooper sells at? 
+5. (1 point) Can you find the cover of High Times magazine? 
+6. (1 point) Can you find the supplier's photo? 
+7. (2 point) Can you find out and show James Cooper's photo? 
+ 
+ 
+Hint: 
+• Find the password to unlock the suspicious file 
+• Try to think of any words that can be a “password”, e.g. key, secret... 
+• Pictures can be stored in any types of files or embedded in other files 
+• Use the file signature to search might make your search more efficient
