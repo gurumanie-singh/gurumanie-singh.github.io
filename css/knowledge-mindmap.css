@@ -1,5 +1,5 @@
 /* ============================================================================
-   knowledge-mindmap.css — Domain hub drill-down UI
+   knowledge-mindmap.css — Left-to-right accordion knowledge tree
    ========================================================================== */
 
 :root {
@@ -104,13 +104,6 @@
   flex-wrap: wrap;
 }
 
-.km-toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  flex-shrink: 0;
-}
-
 .km-category-label {
   font-size: var(--fs-sm);
   font-weight: 600;
@@ -119,9 +112,40 @@
   color: var(--km-accent);
 }
 
-.km-progress-text {
+.km-search-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.km-search-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.km-filter-select {
+  font-family: var(--font-sans);
   font-size: var(--fs-xs);
-  color: var(--km-muted);
+  padding: var(--sp-2) var(--sp-3);
+  padding-right: var(--sp-6);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--km-border);
+  background: var(--km-bg);
+  color: var(--km-text);
+  outline: none;
+  cursor: pointer;
+  max-width: 140px;
+  transition: border-color var(--km-transition);
+}
+
+.km-filter-select:hover,
+.km-filter-select:focus {
+  border-color: var(--km-accent);
 }
 
 .km-search-wrap {
@@ -197,12 +221,6 @@
   color: var(--km-muted);
 }
 
-.km-toolbar-actions {
-  display: flex;
-  gap: var(--sp-2);
-  flex-shrink: 0;
-}
-
 .km-btn {
   font-family: var(--font-sans);
   font-size: var(--fs-xs);
@@ -221,331 +239,7 @@
   color: var(--km-accent);
 }
 
-/* ── Shell layout ────────────────────────────────────────────────────────── */
-.km-shell {
-  display: grid;
-  grid-template-columns: 1fr min(440px, 42vw);
-  min-height: calc(100vh - 52px);
-}
-
-@media (max-width: 768px) {
-  .km-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
-}
-
-/* ── Domain hub ──────────────────────────────────────────────────────────── */
-.km-hub-wrap {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 45%, rgba(34, 211, 238, 0.05), transparent),
-    var(--km-bg);
-  transition: opacity var(--km-transition), transform var(--km-transition);
-}
-
-.km-hub-wrap.is-dimmed {
-  opacity: 0.55;
-  transform: scale(0.98);
-}
-
-.km-hub-desktop {
-  display: block;
-  height: 100%;
-  min-height: 520px;
-}
-
-.km-hub-mobile {
-  display: none;
-  padding: var(--sp-4);
-  gap: var(--sp-2);
-  flex-direction: column;
-}
-
-@media (max-width: 768px) {
-  .km-hub-desktop { display: none; }
-  .km-hub-mobile { display: flex; }
-}
-
-.km-canvas {
-  width: 100%;
-  height: 100%;
-  min-height: 520px;
-  display: block;
-}
-
-.km-edge {
-  stroke: var(--km-border);
-  stroke-width: 1;
-  fill: none;
-}
-
-.km-node-center {
-  fill: var(--km-surface-2);
-  stroke: var(--km-accent);
-  stroke-width: 2;
-}
-
-.km-node-domain {
-  fill: var(--km-surface);
-  stroke: var(--km-border);
-  stroke-width: 2;
-  transition: stroke var(--km-transition), filter var(--km-transition);
-}
-
-.km-node-domain:hover,
-.km-node-domain.is-active {
-  stroke: var(--km-accent);
-  filter: drop-shadow(0 0 10px var(--km-accent-glow));
-}
-
-.km-label {
-  font-family: var(--font-sans);
-  fill: var(--km-text);
-  text-anchor: middle;
-  dominant-baseline: central;
-  pointer-events: none;
-}
-
-.km-label-center {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.km-label-center-sub {
-  font-size: 10px;
-  fill: var(--km-muted);
-}
-
-.km-domain-icon {
-  font-size: 18px;
-}
-
-.km-domain-count-label {
-  font-size: 11px;
-  font-weight: 600;
-  fill: var(--km-accent);
-}
-
-.km-domain-name {
-  font-size: 10px;
-  fill: var(--km-muted);
-}
-
-/* Mobile domain cards */
-.km-domain-card {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  width: 100%;
-  padding: var(--sp-3) var(--sp-4);
-  border: 1px solid var(--km-border);
-  border-radius: var(--km-radius);
-  background: var(--km-surface);
-  color: var(--km-text);
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--font-sans);
-  transition: border-color var(--km-transition), transform var(--km-transition), opacity var(--km-transition);
-}
-
-.km-domain-card:hover,
-.km-domain-card.is-active {
-  border-color: var(--km-accent);
-  transform: scale(1.01);
-}
-
-.km-domain-card-icon { display: inline-flex; align-items: center; flex-shrink: 0; line-height: 0; }
-
-.km-domain-card-name {
-  display: block;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-}
-
-.km-domain-card-count {
-  display: block;
-  font-size: var(--fs-xs);
-  color: var(--km-muted);
-}
-
-/* ── Right panel ─────────────────────────────────────────────────────────── */
-.km-panel {
-  border-left: 1px solid var(--km-border);
-  background: var(--km-surface);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  opacity: 1;
-  transform: scale(1);
-  transition: opacity var(--km-transition), transform var(--km-transition);
-}
-
-@media (max-width: 768px) {
-  .km-panel {
-    border-left: none;
-    border-top: 1px solid var(--km-border);
-    min-height: 320px;
-  }
-}
-
-.km-panel-empty {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sp-8);
-  color: var(--km-muted);
-  font-size: var(--fs-sm);
-}
-
-/* Breadcrumb */
-.km-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-1);
-  padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--km-border);
-  font-size: var(--fs-xs);
-}
-
-.km-bc-link {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--km-accent);
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-size: var(--fs-xs);
-}
-
-.km-bc-link:hover { text-decoration: underline; }
-
-.km-bc-sep { color: var(--km-muted); }
-
-.km-bc-current {
-  color: var(--km-muted);
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Topic list (level 2) */
-.km-topic-list-header {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-4);
-  border-bottom: 1px solid var(--km-border);
-}
-
-.km-domain-icon-lg {
-  display: inline-flex;
-  align-items: center;
-  line-height: 0;
-}
-
-.km-domain-card-icon {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  line-height: 0;
-}
-
-.km-search-icon {
-  display: inline-flex;
-  vertical-align: middle;
-  margin-right: 4px;
-  line-height: 0;
-}
-
-.km-search-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: var(--fs-xs);
-  color: var(--km-accent);
-}
-
-.km-domain-heading {
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.km-domain-count {
-  font-size: var(--fs-xs);
-  color: var(--km-muted);
-}
-
-.km-topic-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--sp-2);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
-}
-
-.km-topic-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
-  width: 100%;
-  padding: var(--sp-3) var(--sp-4);
-  border: 1px solid var(--km-border);
-  border-radius: var(--radius-sm);
-  background: var(--km-bg);
-  color: var(--km-text);
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--font-sans);
-  transition: border-color var(--km-transition), opacity var(--km-transition), transform var(--km-transition);
-}
-
-.km-topic-card:hover {
-  border-color: var(--km-accent);
-  transform: scale(1.005);
-}
-
-.km-topic-card.is-reviewed {
-  border-left: 3px solid var(--km-accent);
-}
-
-.km-topic-card-title {
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.km-topic-card-tags {
-  display: flex;
-  gap: var(--sp-1);
-  flex-shrink: 0;
-}
-
-.km-tag-pill {
-  font-size: 10px;
-  color: var(--km-muted);
-  border: 1px solid var(--km-border);
-  padding: 2px 6px;
-  border-radius: var(--radius-full);
-}
-
-/* Detail panel (level 3) */
-.km-panel-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--sp-4) var(--sp-6);
-}
-
+/* ── Leaf card content (shared) ─────────────────────────────────────────── */
 .km-topic-title {
   font-size: var(--fs-h3);
   font-weight: 600;
@@ -652,7 +346,7 @@
 }
 
 .km-copy:hover { color: var(--km-accent); }
-.km-copy.is-copied { color: #4ade80; }
+.km-copy.is-copied { color: var(--km-accent); }
 
 .km-command-explain {
   padding: var(--sp-2) var(--sp-3);
@@ -661,91 +355,7 @@
   border-top: 1px solid var(--km-border);
 }
 
-.km-panel-actions {
-  padding: var(--sp-3) var(--sp-4);
-  border-top: 1px solid var(--km-border);
-}
-
-/* ── Flashcards ──────────────────────────────────────────────────────────── */
-.km-flash-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(10, 10, 15, 0.92);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sp-4);
-}
-
-.km-flash-overlay.is-open { display: flex; }
-
-.km-flash-card {
-  width: min(520px, 100%);
-  min-height: 280px;
-  perspective: 1000px;
-  cursor: pointer;
-}
-
-.km-flash-inner {
-  position: relative;
-  width: 100%;
-  min-height: 280px;
-  transform-style: preserve-3d;
-  transition: transform 0.5s var(--ease-out);
-}
-
-.km-flash-card.is-flipped .km-flash-inner { transform: rotateY(180deg); }
-
-.km-flash-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  background: var(--km-surface);
-  border: 1px solid var(--km-border);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-8);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.km-flash-face.back {
-  transform: rotateY(180deg);
-  overflow-y: auto;
-}
-
-.km-flash-title {
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  margin-bottom: var(--sp-4);
-  color: var(--km-accent);
-}
-
-.km-flash-hint {
-  font-size: var(--fs-xs);
-  color: var(--km-muted);
-  margin-top: auto;
-  padding-top: var(--sp-4);
-}
-
-.km-flash-controls {
-  display: flex;
-  gap: var(--sp-2);
-  margin-top: var(--sp-4);
-  justify-content: center;
-}
-
-.km-flash-close {
-  position: absolute;
-  top: var(--sp-4);
-  right: var(--sp-4);
-}
-
-/* ==========================================================================
-   Left-to-right accordion tree
-   ======================================================================== */
-
+/* ── Left-to-right accordion tree ───────────────────────────────────────── */
 .km-canvas-wrap {
   position: relative;
   display: flex;
@@ -857,6 +467,77 @@
   max-width: 220px;
 }
 
+/* ── Node type variants ─────────────────────────────────────────────────── */
+.km-pill-type-domain {
+  height: 40px;
+  padding: 0 var(--sp-5);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  max-width: 220px;
+  background: var(--km-surface);
+  border-color: var(--km-border);
+}
+
+.km-pill-type-domain .km-pill-label {
+  font-weight: 700;
+}
+
+.km-pill-type-topic {
+  /* standard pill — base .km-pill rules apply */
+}
+
+/* Content nodes: card-like pill + type icon */
+.km-pill-type-concept,
+.km-pill-type-technique,
+.km-pill-type-attack,
+.km-pill-type-defense,
+.km-pill-type-detection,
+.km-pill-type-command {
+  height: 38px;
+  padding: 0 var(--sp-3) 0 var(--sp-3);
+  border-radius: var(--radius-md);
+  background: var(--km-surface);
+  border-color: var(--km-border);
+  max-width: 210px;
+}
+
+.km-pill-type-tool {
+  height: 38px;
+  background: transparent;
+  border-style: dashed;
+  border-width: 1.5px;
+  border-color: var(--km-node-stroke);
+}
+
+.km-pill-type-tool:hover {
+  background: var(--km-accent-dim);
+}
+
+.km-pill-type-lab,
+.km-pill-type-case-study {
+  height: 38px;
+  border-color: var(--km-accent);
+  box-shadow: 0 0 0 1px var(--km-accent-dim), var(--km-shadow-sm);
+}
+
+.km-pill-type-lab.is-expanded,
+.km-pill-type-case-study.is-expanded,
+.km-pill-type-lab.is-leaf-open,
+.km-pill-type-case-study.is-leaf-open {
+  border-color: var(--km-accent);
+  background: var(--km-accent-dim);
+}
+
+.km-pill-icon-type {
+  color: var(--km-muted);
+}
+
+.km-pill-type-attack .km-pill-icon-type,
+.km-pill-type-technique .km-pill-icon-type {
+  color: var(--km-accent);
+}
+
 .km-pill-icon {
   display: inline-flex;
   flex-shrink: 0;
@@ -938,6 +619,47 @@
 
 .km-leaf-panel .km-tags {
   margin-bottom: var(--sp-6);
+}
+
+.km-leaf-panel .km-related {
+  margin-bottom: var(--sp-6);
+}
+
+.km-related-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--km-muted);
+  margin-bottom: var(--sp-2);
+}
+
+.km-related-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.km-related-chip {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: 9999px;
+  border: 1px solid var(--km-border);
+  background: var(--km-surface-2);
+  color: var(--km-text);
+  cursor: pointer;
+  transition:
+    border-color var(--km-transition),
+    color var(--km-transition),
+    background var(--km-transition);
+}
+
+.km-related-chip:hover {
+  border-color: var(--km-accent);
+  color: var(--km-accent);
+  background: var(--km-accent-dim);
 }
 
 .km-leaf-panel .km-summary {

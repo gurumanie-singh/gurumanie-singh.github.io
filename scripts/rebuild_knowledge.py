@@ -17,6 +17,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from knowledge_schema import (  # noqa: E402
+    OLD_CLUSTER_DOMAINS,
+    build_knowledge_document,
+    extract_cluster_buckets,
+    finalize_topic_record,
+)
 from build_knowledge import (  # noqa: E402
     CLASS_META,
     EXTRACT_DIR,
@@ -42,20 +48,7 @@ OUT_PATH = ROOT / "data" / "cybersecurity.json"
 LOG_PATH = ROOT / "rebuild-progress.log"
 MODEL = "claude-sonnet-4-6"
 
-DOMAINS = [
-    ("network-security", "Network Security"),
-    ("web-security", "Web Security"),
-    ("exploitation-vulnerability", "Exploitation & Vulnerability Research"),
-    ("reconnaissance-osint", "Reconnaissance & OSINT"),
-    ("cryptography", "Cryptography"),
-    ("linux-cli", "Linux & CLI"),
-    ("malware-threat", "Malware & Threat Analysis"),
-    ("digital-forensics", "Digital Forensics"),
-    ("cloud-infrastructure", "Cloud & Infrastructure Security"),
-    ("software-code-security", "Software & Code Security"),
-    ("intrusion-detection-monitoring", "Intrusion Detection & Monitoring"),
-    ("incident-response", "Incident Response"),
-]
+DOMAINS = list(OLD_CLUSTER_DOMAINS)
 
 NETWORK_SECURITY_CAP = 80
 DOMAIN_TOPIC_FLOOR = {
@@ -907,7 +900,7 @@ Return JSON only:
 {{"enriched": [...], "added": [...]}}
 
 Schema per topic:
-{{"topicId": "...", "title": "...", "tags": [...], "summary": "...", "detail": "...", "commands": [{{"cmd":"...","explain":"..."}}]}}
+{{"topicId": "...", "title": "...", "type": "concept|tool|technique|...", "tags": [...], "summary": "...", "core_idea": "markdown body (detail accepted as alias)", "commands": [{{"cmd":"...","explain":"..."}}], "related": [], "metadata": {{"difficulty": "intermediate", "confidence": "decent", "relevance": "both", "cert_mapping": [], "last_updated": "YYYY-MM-DD"}}}}
 
 Quality: cheat-sheet density, specific titles, accurate command syntax. No homework/admin content.
 '''
@@ -927,7 +920,7 @@ Already covered (do not duplicate or lightly rephrase):
 Return JSON only: {{"added": [...]}}
 
 Each added topic must follow this schema:
-{{"topicId": "kebab-case", "title": "Specific Concept Name", "tags": [...], "summary": "1-2 sentences, 15+ words", "detail": "Full markdown, 100+ words", "commands": [{{"cmd":"...","explain":"..."}}]}}
+{{"topicId": "kebab-case", "title": "Specific Concept Name", "type": "concept", "tags": [...], "summary": "1-2 sentences, 15+ words", "core_idea": "Full markdown, 100+ words", "commands": [{{"cmd":"...","explain":"..."}}], "related": [], "metadata": {{"difficulty": "intermediate", "confidence": "decent", "relevance": "both", "cert_mapping": [], "last_updated": "YYYY-MM-DD"}}}}
 
 Cover professional concepts a Security Engineer or SOC analyst must know in {domain_name}.
 Omit commands for concept-only topics. No homework/admin content.
@@ -942,7 +935,16 @@ def apply_api_augment_data(topics: list[dict], data: dict) -> tuple[list[dict], 
             e = enriched[t["topicId"]]
             t["title"] = clean_title(e.get("title", t["title"]))
             t["summary"] = e.get("summary", t["summary"])
-            t["detail"] = e.get("detail", t["detail"])
+            if e.get("core_idea"):
+                t["core_idea"] = e["core_idea"]
+            if e.get("detail"):
+                t["detail"] = e["detail"]
+            elif e.get("core_idea"):
+                t["detail"] = e["core_idea"]
+            else:
+                t["detail"] = e.get("detail", t.get("detail", ""))
+            if t.get("detail") and not t.get("core_idea"):
+                t["core_idea"] = t["detail"]
             if e.get("tags"):
                 t["tags"] = e["tags"]
             if e.get("commands"):
@@ -1193,13 +1195,13 @@ def validate_topics(topics: list[dict]) -> list[dict]:
                 continue
         t["topicId"] = slugify(t.get("topicId") or t["title"])
         t["title"] = clean_title(t["title"])
-        valid.append(t)
+        valid.append(finalize_topic_record(t))
     return valid
 
 
 def write_output(domain_buckets: dict[str, list[dict]]) -> None:
     log("\n=== PHASE 5: Write & Validate ===")
-    domains_out = []
+    prepared: dict[str, list[dict]] = {}
     for domain_id, domain_name in DOMAINS:
         topics = validate_topics(domain_buckets.get(domain_id, []))
         seen: set[str] = set()
@@ -1215,21 +1217,22 @@ def write_output(domain_buckets: dict[str, list[dict]]) -> None:
             st = t.get("sourceType", "notes")
             source_type_counts[st] += 1
             final.append(t)
-        domains_out.append({
-            "domainId": domain_id,
-            "domainName": domain_name,
-            "topicCount": len(final),
-            "topics": final,
-        })
+        prepared[domain_id] = final
+        log(f"  {domain_name}: {len(final)} topics validated")
 
-    out = {
-        "category": "Cybersecurity",
-        "lastBuilt": datetime.now(timezone.utc).isoformat(),
-        "domains": domains_out,
-    }
+    out = build_knowledge_document(prepared, category="Cybersecurity")
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    log(f"Wrote {OUT_PATH}")
+    log(f"Wrote nested root tree to {OUT_PATH}")
+    log(f"  Top-level domains: {len(out['root']['children'])}")
+    log(f"  Tree depth: {max(tree_depth_for_log(out['root']), 0)}")
+
+
+def tree_depth_for_log(node: dict) -> int:
+    children = node.get("children") or []
+    if not children:
+        return 0
+    return 1 + max(tree_depth_for_log(c) for c in children)
 
 
 def print_summary(domain_buckets: dict[str, list[dict]]) -> None:

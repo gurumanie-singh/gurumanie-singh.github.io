@@ -1,64 +1,63 @@
-# Knowledge Base Build — Progress Log
+# Knowledge Base — Architecture & Progress
 
-## Step 1 — Component Generalization
+## Current UI (2026)
 
-**Finding:** The interactive AWS security study tool (Ensign InfoSecurity interview prep) was **not present** in this repository or under `/Users/guru/Documents`. A search for `mindmap`, `ensign`, and `aws study` returned no matches.
-
-**Action:** Built a **new reusable component** matching the specified visual language instead:
+The Knowledge page is a **left-to-right accordion tree** — not a radial mindmap.
 
 | File | Purpose |
 |------|---------|
-| `js/knowledge-mindmap.js` | Radial SVG mindmap, progress arcs, flashcard mode, detail panel |
-| `css/knowledge-mindmap.css` | Dark canvas (`#0a0a0f`), cyan accent (`#22d3ee`), 8px spacing |
-| `knowledge/index.html` | Page shell loading `data-category="cybersecurity"` |
+| `knowledge/index.html` | Page shell, theme bootstrap, `#knowledge-mindmap` mount |
+| `js/knowledge-mindmap.js` | `KnowledgeMindmap` class — tree layout, accordion expansion, leaf panel, search |
+| `css/knowledge-mindmap.css` | `--km-*` theme tokens, pill nodes, tree canvas, leaf panel |
+| `data/knowledge-node.schema.json` | Canonical node schema |
+| `data/knowledge-taxonomy-map.md` | Legacy cluster → top-level taxonomy mapping |
+| `data/cybersecurity.json` | Production nested `root` tree |
+| `data/sample-mindmap-data.json` | UI dev fixture (deep Cryptography branch) |
 
-**Why not generalize:** There was no existing AWS component to refactor. The new `KnowledgeMindmap` class accepts any `data/[category].json` via the `data-category` attribute — adding `data/software.json` or `data/hardware.json` later requires only a new data file and page (or attribute change), zero component edits.
+### Interaction model
 
-**Component features:**
-- Loads `../data/{category}.json` at runtime
-- Summary shown in panel by default; full markdown detail below
-- Commands in monospace blocks with per-command copy button
-- Progress arcs per class node + localStorage reviewed tracking
-- Flashcard mode (summary front / detail back)
-- Pan/drag on radial canvas
+- **Layout:** Root at left; columns grow rightward; SVG bezier connectors
+- **State:** `expandedPath` (accordion — one open branch per level) + `openLeafId` (leaf detail panel, separate from expansion)
+- **Navigation:** Click branch → expand/collapse; click leaf → right-side detail card; hash sync on `expandedPath`; **↑ Root** scrolls without resetting expansion
+- **Search:** Text + Type + Tag filters over `flatNodes` (linear scan, max 25 results)
+- **Leaf panel:** Full title, tags, related chips, summary, `core_idea` markdown, commands with copy
 
-## Step 4 — Integration
+### Data model
 
-- `vite.config.js` — added `knowledge` entry point
-- `index.html` — single nav link: **Knowledge** → `knowledge/index.html`
-- No other existing pages modified
+Nested `root` tree (max depth 5):
 
-## Step 2–3 — Extraction
+```
+root → taxonomy domain (15 top-level) → legacy group / topic → concept leaf
+```
 
-Run: `python3 scripts/build_knowledge.py`
+Node fields: `id`, `title`, `label`, `type`, `children`, plus content fields (`summary`, `core_idea`, `why_it_matters`, `related[]`, `metadata`, etc.) on leaves.
 
-Outputs:
-- `data/cybersecurity.json`
-- `extraction-progress.log`
-- `.knowledge-build/extracted/` (raw extracted text per file)
+Legacy `domains[]` JSON still loads via `normalizeLegacy()` in JS.
 
-See `extraction-progress.log` for per-file parser decisions and skip reasons.
+### Pipeline
 
-## Extraction Summary (final run)
-
-| Folder | Topics | Files extracted |
-|--------|-------:|----------------:|
-| COMS415 | 16 | 6 |
-| CPRE430 | 38 | 12 |
-| CPRE431 | 114 | 35 |
-| CPRE489 | 221 | 90 |
-| CPRE532 | 133 | 44 |
-| CPRE536 | 30 | 11 |
-| nmap-notes | 7 (curated) | 3 |
-| overthewire-solutions | 14 levels | 16 |
-| **Total** | **573** | **217** |
-
-Post-refinement: `python3 scripts/refine_knowledge.py` replaces garbled OCR nmap topics with curated command reference nodes and filters overthewire to level-only topics.
-
-## Rebuild
+| Script | Output |
+|--------|--------|
+| `scripts/rebuild_knowledge.py` | Full extract → synthesize → augment → nested `data/cybersecurity.json` |
+| `scripts/build_knowledge.py` | Per-folder extract into classes schema |
+| `scripts/recluster_knowledge.py` | Re-cluster into nested root tree |
+| `scripts/knowledge_schema.py` | Shared schema helpers + `build_knowledge_document()` |
 
 ```bash
-python3 scripts/build_knowledge.py   # extract + synthesize
-python3 scripts/refine_knowledge.py  # curated fixes
+python3 scripts/rebuild_knowledge.py   # full production rebuild
 npm run build
 ```
+
+## Integration
+
+- `vite.config.js` — `knowledge` entry point
+- `index.html` — nav link to `knowledge/index.html`
+
+## Content status
+
+- **Production:** `data/cybersecurity.json` — 15 top-level domains, 140 leaf notes (8 domains populated)
+- **Dev fixture:** `knowledge/index.html` currently points at `sample-mindmap-data.json`
+
+## Removed (legacy)
+
+Previous radial SVG hub, domain orbit, side topic list, breadcrumb bar, flashcard mode, and pan/zoom camera — all removed from JS and CSS.

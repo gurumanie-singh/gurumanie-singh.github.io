@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Re-cluster data/cybersecurity.json from classes → domains.
-Reads category/classes/topics, outputs category/domains/topics.
+Re-cluster data/cybersecurity.json from classes or legacy buckets.
+Outputs nested root tree (category + root.children).
 """
 from __future__ import annotations
 
@@ -13,23 +13,20 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from knowledge_schema import (  # noqa: E402
+    OLD_CLUSTER_DOMAINS,
+    build_knowledge_document,
+    extract_cluster_buckets,
+)
+
 IN_PATH = ROOT / "data" / "cybersecurity.json"
 OUT_PATH = IN_PATH
 
-DOMAINS = [
-    ("network-security", "Network Security", "🌐"),
-    ("web-security", "Web Security", "🕸️"),
-    ("exploitation-vulnerability", "Exploitation & Vulnerability Research", "💥"),
-    ("reconnaissance-osint", "Reconnaissance & OSINT", "🔍"),
-    ("cryptography", "Cryptography", "🔐"),
-    ("linux-cli", "Linux & CLI", "🐧"),
-    ("malware-threat", "Malware & Threat Analysis", "🦠"),
-    ("digital-forensics", "Digital Forensics", "🔬"),
-    ("cloud-infrastructure", "Cloud & Infrastructure Security", "☁️"),
-    ("software-code-security", "Software & Code Security", "🛡️"),
-    ("intrusion-detection-monitoring", "Intrusion Detection & Monitoring", "📡"),
-    ("incident-response", "Incident Response", "🚨"),
-]
+DOMAINS = [(d[0], d[1], "") for d in OLD_CLUSTER_DOMAINS]
 
 DOMAIN_KEYWORDS: dict[str, list[str]] = {
     "network-security": [
@@ -291,8 +288,13 @@ def main():
     domain_buckets: dict[str, list[dict]] = {d[0]: [] for d in DOMAINS}
     merge_log: dict[str, list[str]] = defaultdict(list)
 
-    # Accept legacy classes schema or re-run on existing domains schema
-    if "domains" in raw and "classes" not in raw:
+    if raw.get("root") and not raw.get("classes"):
+        print("Input already uses nested root tree — extracting legacy cluster buckets for re-cluster.")
+        domain_buckets = extract_cluster_buckets(raw)
+        for domain_id, domain_name, _icon in DOMAINS:
+            domain_buckets.setdefault(domain_id, [])
+        classes = []
+    elif "domains" in raw and "classes" not in raw:
         class_iter = []
         for dom in raw["domains"]:
             for topic in dom.get("topics", []):
@@ -310,7 +312,8 @@ def main():
     else:
         classes = raw.get("classes", [])
 
-    for cls in classes:
+    if classes:
+        for cls in classes:
         class_id = cls.get("classId", "")
         class_code = cls.get("classCode", CLASS_CODE_MAP.get(class_id, class_id))
         short_code = CLASS_CODE_MAP.get(class_id, class_code.replace(" ", ""))
@@ -324,17 +327,11 @@ def main():
             domain_id = assign_domain(t, class_id)
             domain_buckets[domain_id].append(t)
 
-    output_domains = []
-    total_before = sum(len(v) for v in domain_buckets.values())
-    total_after = 0
-    total_merged = 0
-
     for domain_id, domain_name, icon in DOMAINS:
         topics = domain_buckets[domain_id]
         before = len(topics)
         topics, merged = dedupe_topics(topics)
-        total_merged += merged
-        total_after += len(topics)
+        domain_buckets[domain_id] = topics
 
         # clean topic ids
         seen_ids: set[str] = set()
@@ -351,25 +348,21 @@ def main():
             if "classCodes" in t and len(t["classCodes"]) > 1:
                 merge_log[domain_name].append("+".join(t["classCodes"]))
 
-        output_domains.append({
-            "domainId": domain_id,
-            "domainName": domain_name,
-            "icon": icon,
-            "topics": topics,
-        })
-
         merge_note = ""
         if merged:
             merge_note = f" (merged {merged} duplicates)"
         print(f"{domain_name}: {len(topics)} topics{merge_note}.")
 
-    out = {"category": raw.get("category", "Cybersecurity"), "domains": output_domains}
+    out = build_knowledge_document(domain_buckets, category=raw.get("category", "Cybersecurity"))
     OUT_PATH.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    print(f"\nFinal: {len(output_domains)} domains, {total_after} topics after deduplication "
-          f"(from {total_before} pre-merge assignments, {total_merged} merges).")
-    for d in output_domains:
-        print(f"  {d['domainName']}: {len(d['topics'])}")
+    total_after = sum(
+        len(leaf)
+        for tax in out["root"]["children"]
+        for group in tax.get("children", [])
+        for leaf in group.get("children", [])
+    )
+    print(f"\nFinal: {len(out['root']['children'])} top-level domains, {total_after} leaf notes in nested tree.")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,19 @@ const PILL_PAD_X = 14;
 
 /** Inline SVG icons per domainId — stroke via currentColor (--km-accent) */
 const DOMAIN_ICON_PATHS = {
+  fundamentals: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/>',
+  networks: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="8" y1="7.5" x2="10.5" y2="16"/><line x1="16" y1="7.5" x2="13.5" y2="16"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
+  systems: '<rect x="3" y="4" width="18" height="14" rx="2"/><polyline points="7 9 9 11 7 13"/><line x1="11" y1="13" x2="15" y2="13"/><line x1="11" y1="9" x2="15" y2="9"/>',
+  identity: '<circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0114 0"/><circle cx="17" cy="7" r="2"/><path d="M19 11v1"/>',
+  'cloud-security': '<path d="M7 18h10a4 4 0 000-8 5.5 5.5 0 00-10.5 2A3.5 3.5 0 007 18z"/>',
+  'detection-monitoring': '<polyline points="3 14 7 10 11 13 15 7 19 9 21 6"/><circle cx="18" cy="5" r="2"/>',
+  'offensive-security': '<circle cx="12" cy="12" r="8"/><line x1="12" y1="4" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="4" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="20" y2="12"/><circle cx="12" cy="12" r="2"/>',
+  'malware-re': '<ellipse cx="12" cy="14" rx="5" ry="6"/><circle cx="12" cy="8" r="3"/>',
+  'governance-risk-compliance': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="9" y1="12" x2="11" y2="14"/><line x1="11" y1="14" x2="15" y2="10"/>',
+  'labs-ctfs': '<path d="M5 5h14l-1 14H6L5 5z"/><path d="M9 5V3h6v2"/><line x1="9" y1="11" x2="15" y2="11"/>',
+  tools: '<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>',
+  'case-studies': '<path d="M6 4h10l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/>',
+  'career-interview-prep': '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>',
   'network-security': '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="8" y1="7.5" x2="10.5" y2="16"/><line x1="16" y1="7.5" x2="13.5" y2="16"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
   'web-security': '<rect x="3" y="4" width="18" height="14" rx="2"/><line x1="3" y1="8" x2="21" y2="8"/><rect x="15" y="13" width="5" height="4" rx="1"/><path d="M16.5 13v-1a1.5 1.5 0 013 0v1"/>',
   'exploitation-vulnerability': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/>',
@@ -29,6 +42,68 @@ const DOMAIN_ICON_PATHS = {
 function domainIconSvg(iconKey, size = 16) {
   const paths = DOMAIN_ICON_PATHS[iconKey] || DOMAIN_ICON_PATHS.key;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+/** Inline SVG icons per node type — stroke via currentColor */
+const TYPE_ICON_PATHS = {
+  concept: '<rect x="5" y="4" width="14" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/>',
+  tool: '<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>',
+  technique: '<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>',
+  attack: '<path d="M12 9v4"/><path d="M12 3l7 14H5L12 3z"/>',
+  defense: '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/>',
+  lab: '<path d="M9 3h6"/><path d="M10 3v5.5L5.5 18h13L14 8.5V3"/><line x1="8" y1="15" x2="16" y2="15"/>',
+  detection: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>',
+  command: '<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
+  case_study: '<path d="M6 4h10l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"/><line x1="9" y1="13" x2="15" y2="13"/>',
+};
+
+const CONTENT_TYPES = new Set([
+  'concept', 'tool', 'technique', 'attack', 'defense', 'lab', 'detection', 'command', 'case_study',
+]);
+
+const SEARCH_TYPE_OPTIONS = [
+  'domain', 'topic', 'concept', 'tool', 'technique', 'attack', 'defense', 'lab', 'detection', 'command', 'case_study',
+];
+
+function formatTypeLabel(type) {
+  return String(type).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function typeIconSvg(typeKey, size = 12) {
+  const paths = TYPE_ICON_PATHS[typeKey] || TYPE_ICON_PATHS.concept;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+function pillTypeClass(type) {
+  if (type === ROOT_TYPE) return 'km-pill-root';
+  const slug = (type || 'concept').replace(/_/g, '-');
+  return `km-pill-type-${slug}`;
+}
+
+function pillHeight(type) {
+  if (type === ROOT_TYPE) return 44;
+  if (type === 'domain') return 40;
+  if (CONTENT_TYPES.has(type)) return 38;
+  return PILL_H;
+}
+
+function pillIconSize(type) {
+  if (type === 'domain') return 16;
+  if (type === 'topic') return 14;
+  if (CONTENT_TYPES.has(type)) return 12;
+  return 14;
+}
+
+function pillIconHtml(node) {
+  const type = node.type || 'concept';
+  if (type === ROOT_TYPE) return '';
+  if (type === 'domain' || type === 'topic') {
+    return `<span class="km-pill-icon km-pill-icon-domain">${domainIconSvg(node.icon || node.id, pillIconSize(type))}</span>`;
+  }
+  if (CONTENT_TYPES.has(type)) {
+    return `<span class="km-pill-icon km-pill-icon-type">${typeIconSvg(type, pillIconSize(type))}</span>`;
+  }
+  return '';
 }
 
 function hasChildren(node) {
@@ -55,6 +130,100 @@ function deriveLabel(title) {
 
 function nodeLabel(node) {
   return node.label || deriveLabel(node.title || '');
+}
+
+const NODE_TYPES = new Set([
+  'domain', 'topic', 'concept', 'tool', 'technique', 'attack', 'defense',
+  'lab', 'detection', 'command', 'case_study',
+]);
+const ROOT_TYPE = 'root';
+const LEGACY_TYPE_ALIASES = { subtopic: 'concept', leaf: 'concept' };
+
+function defaultMetadata(overrides = {}) {
+  const today = new Date().toISOString().slice(0, 10);
+  return {
+    difficulty: 'intermediate',
+    confidence: 'decent',
+    relevance: 'both',
+    cert_mapping: [],
+    last_updated: today,
+    ...overrides,
+  };
+}
+
+function inferTypeFromDepth(depth, hasKids) {
+  if (depth === 0) return ROOT_TYPE;
+  if (depth === 1) return 'domain';
+  if (depth === 2) return hasKids ? 'topic' : 'concept';
+  return 'concept';
+}
+
+function normalizeNodeType(node, depth) {
+  const kids = hasChildren(node);
+  let t = node.type || inferTypeFromDepth(depth, kids);
+  if (LEGACY_TYPE_ALIASES[t]) t = LEGACY_TYPE_ALIASES[t];
+  if (depth === 0) return ROOT_TYPE;
+  if (!NODE_TYPES.has(t)) t = inferTypeFromDepth(depth, kids);
+  if (t === 'topic' && !kids && depth >= 2) return 'concept';
+  return t;
+}
+
+function isContentLeaf(node) {
+  if (hasChildren(node)) return false;
+  if (node.type === ROOT_TYPE || node.type === 'domain' || node.type === 'topic') return false;
+  return true;
+}
+
+function normalizeContentFields(node) {
+  if (!isContentLeaf(node)) {
+    node.children = node.children || [];
+    return;
+  }
+  if (node.detail && !node.core_idea) node.core_idea = node.detail;
+  node.summary = node.summary || '';
+  node.why_it_matters = node.why_it_matters || '';
+  node.core_idea = node.core_idea || node.detail || '';
+  node.example_scenario = node.example_scenario || '';
+  node.detection_angle = node.detection_angle || '';
+  node.defensive_takeaway = node.defensive_takeaway || '';
+  node.commands = node.commands || [];
+  node.related = node.related || [];
+  node.tags = node.tags || [];
+  node.metadata = { ...defaultMetadata(), ...(node.metadata || {}) };
+}
+
+function normalizeTreeNode(node, depth = 0) {
+  if (!node.label) node.label = deriveLabel(node.title || '');
+  node.type = normalizeNodeType(node, depth);
+  normalizeContentFields(node);
+  (node.children || []).forEach((child) => normalizeTreeNode(child, depth + 1));
+}
+
+function coreContent(node) {
+  return node.core_idea || node.detail || '';
+}
+
+function legacyTopicNode(t) {
+  return {
+    id: t.topicId,
+    title: t.title,
+    label: t.label,
+    type: t.type,
+    tags: t.tags || [],
+    summary: t.summary || '',
+    why_it_matters: t.why_it_matters || '',
+    core_idea: t.core_idea || t.detail || '',
+    detail: t.detail || '',
+    example_scenario: t.example_scenario || '',
+    detection_angle: t.detection_angle || '',
+    defensive_takeaway: t.defensive_takeaway || '',
+    commands: t.commands || [],
+    related: t.related || [],
+    metadata: t.metadata,
+    sourceType: t.sourceType,
+    sources: t.sources,
+    children: t.children || [],
+  };
 }
 
 function markdownTable(block) {
@@ -93,35 +262,31 @@ function renderMarkdown(md) {
 }
 
 function normalizeLegacy(raw) {
-  if (raw.root) return raw;
+  if (raw.root) {
+    normalizeTreeNode(raw.root, 0);
+    return raw;
+  }
   if (raw.domains) {
-    return {
+    const normalized = {
       category: raw.category || 'Knowledge',
       lastBuilt: raw.lastBuilt,
       root: {
         id: (raw.category || 'knowledge').toLowerCase().replace(/\s+/g, '-'),
         title: raw.category || 'Knowledge',
-        type: 'root',
+        type: ROOT_TYPE,
         children: raw.domains.map((d) => ({
           id: d.domainId,
           title: d.domainName,
           type: 'domain',
           icon: d.domainId,
+          label: d.label,
           summary: `${d.topicCount ?? (d.topics || []).length} topics`,
-          children: (d.topics || []).map((t) => ({
-            id: t.topicId,
-            title: t.title,
-            type: 'topic',
-            tags: t.tags || [],
-            summary: t.summary || '',
-            detail: t.detail || '',
-            commands: t.commands || [],
-            sourceType: t.sourceType,
-            sources: t.sources,
-          })),
+          children: (d.topics || []).map((t) => legacyTopicNode(t)),
         })),
       },
     };
+    normalizeTreeNode(normalized.root, 0);
+    return normalized;
   }
   return raw;
 }
@@ -169,6 +334,7 @@ export class KnowledgeMindmap {
   }
 
   indexTree(node, parentId) {
+    normalizeContentFields(node);
     if (!node.label) node.label = deriveLabel(node.title || '');
     this.nodeById.set(node.id, node);
     if (parentId) this.parentById.set(node.id, parentId);
@@ -334,9 +500,19 @@ export class KnowledgeMindmap {
     this.rootEl.innerHTML = `
       <div class="km-toolbar">
         <span class="km-category-label">${escapeHtml(this.tree?.category || 'Knowledge')}</span>
-        <div class="km-search-wrap">
-          <input type="search" class="km-search" id="kmSearch" placeholder="Search nodes..." autocomplete="off" />
-          <div class="km-search-results" id="kmSearchResults" hidden></div>
+        <div class="km-search-group">
+          <div class="km-search-filters">
+            <select class="km-filter-select" id="kmFilterType" aria-label="Filter by type">
+              <option value="">All types</option>
+            </select>
+            <select class="km-filter-select" id="kmFilterTag" aria-label="Filter by tag">
+              <option value="">All tags</option>
+            </select>
+          </div>
+          <div class="km-search-wrap">
+            <input type="search" class="km-search" id="kmSearch" placeholder="Search nodes..." autocomplete="off" />
+            <div class="km-search-results" id="kmSearchResults" hidden></div>
+          </div>
         </div>
         <button type="button" class="km-btn" id="kmResetBtn">Reset</button>
       </div>
@@ -409,23 +585,24 @@ export class KnowledgeMindmap {
       if (!node) continue;
       const btn = document.createElement('button');
       btn.type = 'button';
+      const nodeType = node.type || 'concept';
+      const pH = pillHeight(nodeType);
       btn.className = 'km-pill';
+      btn.classList.add(pillTypeClass(nodeType));
       btn.dataset.id = id;
+      btn.dataset.type = nodeType;
       btn.title = node.title;
       btn.style.left = `${pos.x}px`;
-      btn.style.top = `${pos.y - PILL_H / 2}px`;
+      btn.style.top = `${pos.y - pH / 2}px`;
       btn.style.minWidth = `${pos.w}px`;
 
-      if (node.type === 'root') btn.classList.add('km-pill-root');
       if (this.isExpandedBranch(id)) btn.classList.add('is-expanded');
       if (this.openLeafId === id) btn.classList.add('is-leaf-open');
       if (!hasChildren(node)) btn.classList.add('km-pill-leaf');
       if (entering.has(id)) btn.classList.add('is-entering');
       if (exiting.has(id)) btn.classList.add('is-exiting');
 
-      const icon = (node.type === 'domain' || node.icon)
-        ? `<span class="km-pill-icon">${domainIconSvg(node.icon || node.id, 14)}</span>`
-        : '';
+      const icon = pillIconHtml(node);
 
       btn.innerHTML = `${icon}<span class="km-pill-label">${escapeHtml(nodeLabel(node))}</span>`;
       btn.addEventListener('click', () => this.handleNodeClick(node));
@@ -469,6 +646,7 @@ export class KnowledgeMindmap {
 
   leafCardHtml(node) {
     const tags = (node.tags || []).map((t) => `<span class="km-tag">${escapeHtml(t)}</span>`).join('');
+    const related = this.relatedSectionHtml(node);
     const commands = (node.commands || []).length ? `
       <div class="km-commands">
         <div class="km-commands-label">Commands</div>
@@ -487,14 +665,36 @@ export class KnowledgeMindmap {
       <button type="button" class="km-leaf-close km-btn" id="kmLeafClose">Back</button>
       <h2 class="km-topic-title">${escapeHtml(node.title)}</h2>
       ${tags ? `<div class="km-tags">${tags}</div>` : ''}
+      ${related}
       <div class="km-summary">${escapeHtml(node.summary || '')}</div>
-      <div class="km-detail">${renderMarkdown(node.detail || '')}</div>
+      <div class="km-detail">${renderMarkdown(coreContent(node))}</div>
       ${commands}
+    `;
+  }
+
+  relatedSectionHtml(node) {
+    const ids = (node.related || []).filter((id) => id && id !== node.id && this.nodeById.has(id));
+    if (!ids.length) return '';
+
+    const chips = ids.map((id) => {
+      const rel = this.nodeById.get(id);
+      const label = nodeLabel(rel);
+      return `<button type="button" class="km-related-chip" data-id="${escapeHtml(id)}" title="${escapeHtml(rel.title)}">${escapeHtml(label)}</button>`;
+    }).join('');
+
+    return `
+      <div class="km-related">
+        <div class="km-related-label">Related</div>
+        <div class="km-related-chips">${chips}</div>
+      </div>
     `;
   }
 
   bindLeafCard(card) {
     card.querySelector('#kmLeafClose')?.addEventListener('click', () => this.closeLeaf());
+    card.querySelectorAll('.km-related-chip').forEach((btn) => {
+      btn.addEventListener('click', () => this.navigateToSearchResult(btn.dataset.id));
+    });
     card.querySelectorAll('.km-copy').forEach((btn) => {
       btn.addEventListener('click', async () => {
         try {
@@ -535,6 +735,14 @@ export class KnowledgeMindmap {
   reset() {
     this.expandedPath = [this.tree.root.id];
     this.openLeafId = null;
+    const input = this.rootEl.querySelector('#kmSearch');
+    if (input) input.value = '';
+    this.clearSearchFilters();
+    const resultsEl = this.rootEl.querySelector('#kmSearchResults');
+    if (resultsEl) {
+      resultsEl.hidden = true;
+      resultsEl.innerHTML = '';
+    }
     this.renderAll();
     this.syncHash(false);
     this.jumpToRoot();
@@ -556,19 +764,47 @@ export class KnowledgeMindmap {
     this.scrollNodeIntoView(nodeId);
   }
 
-  runSearch(query) {
+  runSearch() {
     const resultsEl = this.rootEl.querySelector('#kmSearchResults');
+    const input = this.rootEl.querySelector('#kmSearch');
     if (!resultsEl) return;
-    const q = query.trim().toLowerCase();
-    if (!q) {
+
+    const q = (input?.value || '').trim().toLowerCase();
+    const { type, tag } = this.getSearchFilters();
+    const hasQuery = q.length > 0;
+    const hasFilters = Boolean(type || tag);
+
+    if (!hasQuery && !hasFilters) {
       resultsEl.hidden = true;
       resultsEl.innerHTML = '';
       return;
     }
+
     const matches = this.flatNodes.filter((n) => {
-      const hay = `${n.title || ''} ${n.label || ''} ${n.summary || ''} ${(n.tags || []).join(' ')}`.toLowerCase();
+      if (n.type === ROOT_TYPE) return false;
+      if (type && n.type !== type) return false;
+      if (tag && !(n.tags || []).includes(tag)) return false;
+      if (!hasQuery) return true;
+
+      const meta = n.metadata || {};
+      const hay = [
+        n.title || '',
+        n.label || '',
+        n.summary || '',
+        n.why_it_matters || '',
+        coreContent(n),
+        n.example_scenario || '',
+        n.detection_angle || '',
+        n.defensive_takeaway || '',
+        (n.tags || []).join(' '),
+        (n.related || []).join(' '),
+        meta.difficulty || '',
+        meta.relevance || '',
+        (meta.cert_mapping || []).join(' '),
+      ].join(' ').toLowerCase();
       return hay.includes(q);
     }).slice(0, 25);
+
     if (!matches.length) {
       resultsEl.hidden = false;
       resultsEl.innerHTML = '<div class="km-search-empty">No matches</div>';
@@ -585,16 +821,58 @@ export class KnowledgeMindmap {
       btn.addEventListener('click', () => {
         this.navigateToSearchResult(btn.dataset.id);
         resultsEl.hidden = true;
-        const input = this.rootEl.querySelector('#kmSearch');
         if (input) input.value = '';
+        this.clearSearchFilters();
       });
     });
   }
 
+  getSearchFilters() {
+    const typeEl = this.rootEl.querySelector('#kmFilterType');
+    const tagEl = this.rootEl.querySelector('#kmFilterTag');
+    return {
+      type: typeEl?.value || '',
+      tag: tagEl?.value || '',
+    };
+  }
+
+  clearSearchFilters() {
+    const typeEl = this.rootEl.querySelector('#kmFilterType');
+    const tagEl = this.rootEl.querySelector('#kmFilterTag');
+    if (typeEl) typeEl.value = '';
+    if (tagEl) tagEl.value = '';
+  }
+
+  populateSearchFilters() {
+    const typeSel = this.rootEl.querySelector('#kmFilterType');
+    const tagSel = this.rootEl.querySelector('#kmFilterTag');
+    if (!typeSel || !tagSel) return;
+
+    const presentTypes = new Set(this.flatNodes.map((n) => n.type).filter(Boolean));
+    const typeOptions = SEARCH_TYPE_OPTIONS.filter((t) => presentTypes.has(t));
+
+    typeSel.innerHTML = [
+      '<option value="">All types</option>',
+      ...typeOptions.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(formatTypeLabel(t))}</option>`),
+    ].join('');
+
+    const tags = new Set();
+    this.flatNodes.forEach((n) => (n.tags || []).forEach((t) => tags.add(t)));
+    const sortedTags = [...tags].sort((a, b) => a.localeCompare(b));
+
+    tagSel.innerHTML = [
+      '<option value="">All tags</option>',
+      ...sortedTags.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`),
+    ].join('');
+  }
+
   bindEvents() {
-    this.rootEl.querySelector('#kmSearch')?.addEventListener('input', (e) => {
-      this.runSearch(e.target.value);
-    });
+    const triggerSearch = () => this.runSearch();
+
+    this.populateSearchFilters();
+    this.rootEl.querySelector('#kmSearch')?.addEventListener('input', triggerSearch);
+    this.rootEl.querySelector('#kmFilterType')?.addEventListener('change', triggerSearch);
+    this.rootEl.querySelector('#kmFilterTag')?.addEventListener('change', triggerSearch);
     this.rootEl.querySelector('#kmResetBtn')?.addEventListener('click', () => this.reset());
     this.rootEl.querySelector('#kmJumpRoot')?.addEventListener('click', () => this.jumpToRoot());
 
@@ -602,7 +880,7 @@ export class KnowledgeMindmap {
     scroll?.addEventListener('scroll', () => this.updateJumpRootButton());
 
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.km-search-wrap')) {
+      if (!e.target.closest('.km-search-group')) {
         const r = this.rootEl.querySelector('#kmSearchResults');
         if (r) r.hidden = true;
       }

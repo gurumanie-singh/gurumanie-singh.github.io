@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gurumanie-singh.github.io/data/knowledge-node.schema.json",
+  "title": "Knowledge Node",
+  "description": "Recursive node in the cybersecurity knowledge tree (root + children).",
+  "type": "object",
+  "required": ["id", "title", "type", "children"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "label": {
+      "type": "string",
+      "description": "Optional short pill label (2–4 words). Derived from title if omitted."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "root",
+        "domain",
+        "topic",
+        "concept",
+        "tool",
+        "technique",
+        "attack",
+        "defense",
+        "lab",
+        "detection",
+        "command",
+        "case_study"
+      ]
+    },
+    "children": {
+      "type": "array",
+      "items": { "$ref": "#" },
+      "default": []
+    },
+    "icon": {
+      "type": "string",
+      "description": "Optional domain icon key for pill rendering."
+    },
+    "summary": { "type": "string" },
+    "why_it_matters": { "type": "string" },
+    "core_idea": {
+      "type": "string",
+      "description": "Primary markdown body. Legacy alias: detail."
+    },
+    "detail": {
+      "type": "string",
+      "description": "Deprecated — use core_idea. Still accepted for backward compatibility."
+    },
+    "example_scenario": { "type": "string" },
+    "detection_angle": { "type": "string" },
+    "defensive_takeaway": { "type": "string" },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cmd"],
+        "properties": {
+          "cmd": { "type": "string" },
+          "explain": { "type": "string" }
+        }
+      }
+    },
+    "related": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Cross-links: array of node IDs outside the parent/child tree."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "metadata": { "$ref": "#/$defs/metadata" },
+    "sourceType": { "type": "string" },
+    "sources": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sourceFiles": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "difficulty": {
+          "type": "string",
+          "enum": ["beginner", "intermediate", "advanced"]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["weak", "decent", "solid"]
+        },
+        "relevance": {
+          "type": "string",
+          "enum": ["offensive", "defensive", "both"]
+        },
+        "cert_mapping": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "review_date": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO date (YYYY-MM-DD), optional."
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "source_quality": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        }
+      }
+    },
+    "knowledgeDocument": {
+      "type": "object",
+      "required": ["category", "root"],
+      "properties": {
+        "category": { "type": "string" },
+        "lastBuilt": { "type": "string", "format": "date-time" },
+        "root": { "$ref": "#" },
+        "domains": {
+          "type": "array",
+          "description": "Legacy flat schema — converted at load time via normalizeLegacy()."
+        }
+      }
+    }
+  }
+}
