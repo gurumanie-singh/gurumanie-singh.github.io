@@ -12,7 +12,6 @@ The Knowledge page is a **left-to-right accordion tree** — not a radial mindma
 | `data/knowledge-node.schema.json` | Canonical node schema |
 | `data/knowledge-taxonomy-map.md` | Legacy cluster → top-level taxonomy mapping |
 | `data/cybersecurity.json` | Production nested `root` tree |
-| `data/sample-mindmap-data.json` | UI dev fixture (deep Cryptography branch) |
 
 ### Interaction model
 
@@ -56,7 +55,6 @@ npm run build
 ## Content status
 
 - **Production:** `data/cybersecurity.json` — 15 top-level domains, 140 leaf notes (8 domains populated)
-- **Dev fixture:** `knowledge/index.html` currently points at `sample-mindmap-data.json`
 
 ## Removed (legacy)
 
