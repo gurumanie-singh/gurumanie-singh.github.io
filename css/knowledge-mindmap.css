@@ -670,3 +670,200 @@
   top: var(--sp-4);
   right: var(--sp-4);
 }
+
+/* ==========================================================================
+   Recursive mindmap overrides (desktop orbit + mobile drill-down)
+   ======================================================================== */
+
+.km-page {
+  min-height: 100vh;
+  background: var(--km-bg);
+}
+
+.km-canvas-wrap {
+  position: relative;
+  min-height: calc(100vh - 58px);
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 48%, rgba(34, 211, 238, 0.06), transparent),
+    var(--km-bg);
+}
+
+.km-breadcrumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--km-border);
+  background: linear-gradient(to bottom, rgba(17, 17, 24, 0.92), rgba(17, 17, 24, 0.65));
+  backdrop-filter: blur(5px);
+}
+
+.km-desktop-canvas {
+  min-height: calc(100vh - 58px);
+  padding-top: 42px;
+}
+
+.km-canvas {
+  width: 100%;
+  height: calc(100vh - 58px);
+  min-height: 620px;
+  display: block;
+}
+
+.km-edge {
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1.2;
+}
+
+.km-edge-bg {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.km-node {
+  transform-origin: center;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.km-node-circle {
+  fill: var(--km-surface);
+  stroke: var(--km-border);
+  stroke-width: 2;
+  transition: stroke var(--km-transition), filter var(--km-transition), fill var(--km-transition);
+}
+
+.km-node:hover .km-node-circle {
+  stroke: var(--km-accent);
+}
+
+.km-node-focus .km-node-circle {
+  fill: var(--km-surface-2);
+  stroke: var(--km-accent);
+  filter: drop-shadow(0 0 12px var(--km-accent-glow));
+}
+
+.km-node-bg {
+  opacity: 0.3;
+}
+
+.km-node-bg .km-node-circle {
+  fill: rgba(17, 17, 24, 0.8);
+}
+
+.km-node-branch .km-node-circle {
+  stroke: rgba(34, 211, 238, 0.35);
+}
+
+.km-node-leaf .km-node-circle {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.km-label {
+  font-family: var(--font-sans);
+  fill: var(--km-text);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  font-size: 11px;
+}
+
+.km-leaf-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -42%);
+  width: min(640px, 90vw);
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+  background: rgba(17, 17, 24, 0.97);
+  border: 1px solid var(--km-border);
+  border-radius: 16px;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.48);
+  padding: var(--sp-5) var(--sp-6);
+  z-index: 25;
+  animation: kmLeafIn 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.km-leaf-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 2;
+}
+
+@keyframes kmLeafIn {
+  from { opacity: 0; transform: translate(-50%, -38%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -42%) scale(1); }
+}
+
+.km-mobile-canvas {
+  display: none;
+}
+
+.km-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+}
+
+.km-mobile-item {
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  background: var(--km-surface);
+  color: var(--km-text);
+  text-align: left;
+  font-family: var(--font-sans);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.km-mobile-item-title {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.km-mobile-item-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--km-muted);
+}
+
+.km-mobile-leaf {
+  padding: var(--sp-3);
+}
+
+.km-mobile-leaf .km-leaf-card {
+  position: static;
+  transform: none;
+  width: 100%;
+  max-height: none;
+  animation: none;
+}
+
+.km-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--sp-3) 0;
+}
+
+.km-detail th,
+.km-detail td {
+  border: 1px solid var(--km-border);
+  padding: 8px;
+  text-align: left;
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 768px) {
+  .km-desktop-canvas {
+    display: none;
+  }
+
+  .km-mobile-canvas {
+    display: block;
+    padding-top: 42px;
+    min-height: calc(100vh - 58px);
+  }
+}

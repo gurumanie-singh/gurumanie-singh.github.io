@@ -1,0 +1,107 @@
+{
+  "category": "Cybersecurity",
+  "lastBuilt": "2026-07-02T00:00:00Z",
+  "root": {
+    "id": "cybersecurity",
+    "title": "Cybersecurity",
+    "type": "root",
+    "children": [
+      {
+        "id": "cryptography",
+        "title": "Cryptography",
+        "type": "domain",
+        "icon": "key",
+        "summary": "Confidentiality, integrity, and authentication through symmetric/asymmetric encryption, hashing, and trust infrastructure.",
+        "children": [
+          {
+            "id": "cryptography-fundamentals",
+            "title": "Cryptography Fundamentals",
+            "type": "topic",
+            "tags": ["cryptography", "fundamentals"],
+            "summary": "Symmetric crypto uses one shared key, asymmetric uses a public/private pair, and hashing is one-way.",
+            "children": [
+              {
+                "id": "cryptography-fundamentals-three-systems",
+                "title": "Three Cryptographic Systems",
+                "type": "subtopic",
+                "summary": "Symmetric key, public key, and hash functions solve different problems.",
+                "detail": "| Type | How It Works | Examples |\n|---|---|---|\n| **Symmetric Key** | The same key encrypts and decrypts | DES, AES, IDEA |\n| **Public Key (Asymmetric)** | A matched key pair — either key can encrypt, only the other can decrypt | RSA |\n| **Hash Function** | One-way — maps arbitrary-length input to a fixed-size output; not reversible | MD5, SHA family |"
+              },
+              {
+                "id": "cryptography-fundamentals-key-distribution",
+                "title": "Key Distribution",
+                "type": "subtopic",
+                "summary": "Symmetric keys are hard to distribute at scale; public keys solve this via PKI.",
+                "detail": "- **Symmetric** — physically hand over the key, use an existing shared key to deliver a new one (doesn't scale to many parties), or rely on a trusted third party (Kerberos model)\n- **Public Key** — publish the public key openly; managed at scale via **PKI**"
+              },
+              {
+                "id": "cryptography-fundamentals-practical-issues",
+                "title": "Practical Issues",
+                "type": "leaf",
+                "summary": "Key protection and poor password selection undermine even sound cryptographic systems.",
+                "detail": "Key distribution and protection, denial-of-service against the crypto system itself, controlling employee access to key material, and — very commonly — **poor key/password selection by users**, which undermines even a mathematically sound system.",
+                "sourceType": "enriched",
+                "sources": ["CPRE431"]
+              }
+            ]
+          },
+          {
+            "id": "kerberos-protocol",
+            "title": "Kerberos — Trusted Third-Party Authentication",
+            "type": "topic",
+            "tags": ["kerberos", "authentication", "cryptography"],
+            "summary": "Kerberos exchanges session keys via tickets issued by a trusted KDC, so passwords are never sent over the network after initial setup.",
+            "children": [
+              {
+                "id": "kerberos-design-goals",
+                "title": "Design Goals",
+                "type": "leaf",
+                "summary": "No plaintext passwords ever cross the network or sit on the KDC; tickets are short-lived and isolate one session's compromise from others.",
+                "detail": "- No plaintext passwords ever sent over the network\n- No plaintext passwords stored on the KDC (Key Distribution Center)\n- Passwords kept in memory only as briefly as possible\n- Compromise of one user's session doesn't compromise others\n- Tickets have a finite lifetime, bounding exposure\n- Transparent to the end user, with minimal changes required to applications",
+                "sourceType": "enriched",
+                "sources": ["CPRE431"]
+              },
+              {
+                "id": "kerberos-components",
+                "title": "Key Terminology & Server Components",
+                "type": "leaf",
+                "summary": "Principals authenticate within a realm; the AS issues TGTs and the TGS exchanges them for service tickets.",
+                "detail": "**Terminology**\n- **Principal** — any Kerberos participant, named `primary_name.instance@REALM` (e.g. `jones@IASTATE.EDU`)\n- **Realm** — the administrative domain (e.g. `IASTATE.EDU`)\n- **Instance** — usually empty; can denote an elevated role (`root`, `admin`)\n\n**Server Components**\n- **AS (Authentication Server)** — holds the user database; issues **TGTs (Ticket Granting Tickets)**\n- **TGS (Ticket Granting Server)** — exchanges a valid TGT for a **service ticket** scoped to a specific resource",
+                "sourceType": "enriched",
+                "sources": ["CPRE431"]
+              },
+              {
+                "id": "kerberos-auth-flow",
+                "title": "Authentication Flow",
+                "type": "leaf",
+                "summary": "User authenticates once to the AS, exchanges the resulting TGT for a service ticket at the TGS, then presents that ticket directly to the target service.",
+                "detail": "1. User authenticates to the AS → receives a **TGT**\n2. User presents the TGT to the TGS → receives a **service ticket** for the specific resource they want\n3. User presents the service ticket to the target application/server → granted access\n\n**Active Directory Integration:** AD uses Kerberos to issue both a TGT and a session ticket, then hands off to an X.500-style directory service for the remainder of the session.",
+                "sourceType": "enriched",
+                "sources": ["CPRE431"]
+              },
+              {
+                "id": "kerberos-attacks",
+                "title": "Common Attacks",
+                "type": "leaf",
+                "summary": "Kerberoasting cracks weak service-account passwords offline; Golden Ticket forges persistent domain-wide access.",
+                "detail": "- **Kerberoasting** — request service tickets for accounts with weak passwords, then crack the encrypted portion offline\n- **AS-REP Roasting** — target accounts with Kerberos pre-authentication disabled\n- **Golden Ticket** — forge a TGT after compromising the KDC's master (`krbtgt`) key\n- **Pass-the-Ticket** — reuse a stolen valid ticket directly, without the underlying password",
+                "sourceType": "enriched",
+                "sources": ["CPRE431"]
+              }
+            ]
+          },
+          {
+            "id": "pgp-encryption-flow",
+            "title": "PGP (Pretty Good Privacy) — Hybrid Encryption Flow",
+            "type": "topic",
+            "tags": ["pgp", "encryption", "cryptography"],
+            "summary": "PGP combines symmetric and asymmetric encryption: a fast symmetric session key encrypts the message, and the recipient's public key encrypts just that session key.",
+            "sourceType": "enriched",
+            "sources": ["CPRE431"],
+            "detail": "### Why Hybrid?\nAsymmetric encryption is computationally expensive for large messages; symmetric encryption is fast but needs a securely-shared key. PGP gets both: use symmetric encryption for the bulk data, and asymmetric encryption only for the small session key.\n\n### Encryption Flow\n1. Sender generates a random **symmetric session key**\n2. The session key encrypts the actual message\n3. The session key itself is encrypted with the **recipient's public key**\n4. Both the encrypted message and the encrypted session key are sent together\n\n### Decryption Flow\n1. Recipient uses their **private key** to decrypt the session key\n2. The recovered session key decrypts the message"
+          }
+        ]
+      }
+    ]
+  }
+}
