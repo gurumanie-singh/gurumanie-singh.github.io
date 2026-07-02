@@ -7,14 +7,84 @@
   --km-surface: #111118;
   --km-surface-2: #1a1a24;
   --km-border: rgba(255, 255, 255, 0.08);
+  --km-divider: rgba(255, 255, 255, 0.06);
   --km-accent: #22d3ee;
+  --km-accent-hover: #67e8f9;
   --km-accent-dim: rgba(34, 211, 238, 0.12);
   --km-accent-glow: rgba(34, 211, 238, 0.35);
   --km-text: #ececf1;
   --km-muted: #86868f;
+  --km-text-muted: #86868f;
+  --km-node-bg: #111118;
+  --km-node-stroke: rgba(255, 255, 255, 0.14);
+  --km-edge: rgba(255, 255, 255, 0.16);
+  --km-edge-active: #22d3ee;
+  --km-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.24);
   --km-radius: 10px;
   --km-transition: 200ms cubic-bezier(0.22, 1, 0.36, 1);
-  --km-transition-map: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  --km-transition-tree: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --km-bg: #fafafa;
+    --km-surface: #ffffff;
+    --km-surface-2: #f4f4f5;
+    --km-border: rgba(0, 0, 0, 0.09);
+    --km-divider: rgba(0, 0, 0, 0.06);
+    --km-accent: #0891b2;
+    --km-accent-hover: #0e7490;
+    --km-accent-dim: rgba(8, 145, 178, 0.1);
+    --km-accent-glow: rgba(8, 145, 178, 0.25);
+    --km-text: #18181b;
+    --km-muted: #6c6c75;
+    --km-text-muted: #6c6c75;
+    --km-node-bg: #f4f4f5;
+    --km-node-stroke: rgba(0, 0, 0, 0.1);
+    --km-edge: rgba(0, 0, 0, 0.12);
+    --km-edge-active: #0891b2;
+    --km-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+[data-theme="light"] {
+  --km-bg: #fafafa;
+  --km-surface: #ffffff;
+  --km-surface-2: #f4f4f5;
+  --km-border: rgba(0, 0, 0, 0.09);
+  --km-divider: rgba(0, 0, 0, 0.06);
+  --km-accent: #0891b2;
+  --km-accent-hover: #0e7490;
+  --km-accent-dim: rgba(8, 145, 178, 0.1);
+  --km-accent-glow: rgba(8, 145, 178, 0.25);
+  --km-text: #18181b;
+  --km-muted: #6c6c75;
+  --km-text-muted: #6c6c75;
+  --km-node-bg: #f4f4f5;
+  --km-node-stroke: rgba(0, 0, 0, 0.1);
+  --km-edge: rgba(0, 0, 0, 0.12);
+  --km-edge-active: #0891b2;
+  --km-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] {
+  --km-bg: #0a0a0f;
+  --km-surface: #111118;
+  --km-surface-2: #1a1a24;
+  --km-border: rgba(255, 255, 255, 0.08);
+  --km-divider: rgba(255, 255, 255, 0.06);
+  --km-accent: #22d3ee;
+  --km-accent-hover: #67e8f9;
+  --km-accent-dim: rgba(34, 211, 238, 0.12);
+  --km-accent-glow: rgba(34, 211, 238, 0.35);
+  --km-text: #ececf1;
+  --km-muted: #86868f;
+  --km-text-muted: #86868f;
+  --km-node-bg: #111118;
+  --km-node-stroke: rgba(255, 255, 255, 0.14);
+  --km-edge: rgba(255, 255, 255, 0.16);
+  --km-edge-active: #22d3ee;
+  --km-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.24);
 }
 
 .km-page {
@@ -673,164 +743,228 @@
 }
 
 /* ==========================================================================
-   Recursive mindmap overrides (desktop orbit + mobile drill-down)
+   Left-to-right accordion tree
    ======================================================================== */
-
-.km-page {
-  min-height: 100vh;
-  background: var(--km-bg);
-}
 
 .km-canvas-wrap {
   position: relative;
-  min-height: calc(100vh - 58px);
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 48%, rgba(34, 211, 238, 0.06), transparent),
-    var(--km-bg);
+  display: flex;
+  min-height: calc(100vh - 52px);
+  background: var(--km-bg);
 }
 
-.km-breadcrumb {
+.km-tree-scroll {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  min-height: calc(100vh - 52px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.km-tree-inner {
+  position: relative;
+  min-height: calc(100vh - 52px);
+}
+
+.km-tree-edges {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  z-index: 20;
-  display: flex;
-  flex-wrap: wrap;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.km-tree-edge {
+  fill: none;
+  stroke: var(--km-edge);
+  stroke-width: 1.5;
+  transition: stroke var(--km-transition-tree), opacity var(--km-transition-tree), stroke-dashoffset var(--km-transition-tree);
+}
+
+.km-tree-edge.is-active {
+  stroke: var(--km-edge-active);
+  stroke-width: 2;
+}
+
+.km-tree-edge.is-entering {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+.km-tree-edge.is-entered,
+.km-tree-edge:not(.is-entering) {
+  stroke-dashoffset: 0;
+}
+
+.km-tree-nodes {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Pill nodes ─────────────────────────────────────────────────────────── */
+.km-pill {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border-radius: 9999px;
+  border: 1px solid var(--km-node-stroke);
+  background: var(--km-node-bg);
+  color: var(--km-text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  box-shadow: var(--km-shadow-sm);
+  transition:
+    border-color var(--km-transition-tree),
+    background var(--km-transition-tree),
+    transform var(--km-transition-tree),
+    opacity var(--km-transition-tree),
+    box-shadow var(--km-transition-tree);
+}
+
+.km-pill:hover {
+  border-color: var(--km-accent);
+}
+
+.km-pill.is-expanded {
+  border-color: var(--km-accent);
+  background: var(--km-surface-2);
+  box-shadow: 0 0 0 1px var(--km-accent-dim), var(--km-shadow-sm);
+}
+
+.km-pill.is-leaf-open {
+  border-color: var(--km-accent);
+  background: var(--km-accent-dim);
+}
+
+.km-pill-root {
+  height: 44px;
+  padding: 0 var(--sp-6);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  max-width: 220px;
+}
+
+.km-pill-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--km-accent);
+  line-height: 0;
+}
+
+.km-pill-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Accordion enter animation */
+.km-pill.is-entering {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.km-pill.is-entered {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Jump to root ───────────────────────────────────────────────────────── */
+.km-jump-root {
+  position: fixed;
+  top: calc(52px + var(--sp-4));
+  left: var(--sp-4);
+  z-index: 30;
+  display: inline-flex;
   align-items: center;
   gap: var(--sp-1);
-  padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--km-border);
-  background: linear-gradient(to bottom, rgba(17, 17, 24, 0.92), rgba(17, 17, 24, 0.65));
-  backdrop-filter: blur(5px);
-  font-size: var(--fs-xs);
-}
-
-.km-desktop-canvas {
-  min-height: calc(100vh - 58px);
-  padding-top: 42px;
-}
-
-.km-canvas {
-  width: 100%;
-  height: calc(100vh - 58px);
-  min-height: 620px;
-  display: block;
-}
-
-.km-edge {
-  stroke: rgba(255, 255, 255, 0.18);
-  stroke-width: 1.2;
-}
-
-.km-edge-bg {
-  stroke: rgba(255, 255, 255, 0.08);
-}
-
-.km-camera {
-  transition: transform var(--km-transition-map);
-}
-
-.km-node-animated {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform var(--km-transition-map), opacity var(--km-transition-map);
-}
-
-.km-node-exit {
-  pointer-events: none;
-}
-
-.km-node-circle {
-  fill: var(--km-surface);
-  stroke: var(--km-border);
-  stroke-width: 2;
-  transition: stroke var(--km-transition), filter var(--km-transition), fill var(--km-transition);
-}
-
-.km-node:hover .km-node-circle {
-  stroke: var(--km-accent);
-}
-
-.km-node-focus .km-node-circle {
-  fill: var(--km-surface-2);
-  stroke: var(--km-accent);
-  filter: drop-shadow(0 0 12px var(--km-accent-glow));
-}
-
-.km-node-bg {
-  opacity: 0.3;
-}
-
-.km-node-bg .km-node-circle {
-  fill: rgba(17, 17, 24, 0.8);
-}
-
-.km-node-branch .km-node-circle {
-  stroke: rgba(34, 211, 238, 0.35);
-}
-
-.km-node-leaf .km-node-circle {
-  stroke: rgba(255, 255, 255, 0.2);
-}
-
-.km-node-leaf.is-leaf-open .km-node-circle {
-  stroke: var(--km-accent);
-  filter: drop-shadow(0 0 8px var(--km-accent-glow));
-}
-
-.km-label {
-  font-family: var(--font-sans);
-  fill: var(--km-text);
-  text-anchor: middle;
-  dominant-baseline: central;
-  pointer-events: none;
-  font-size: 11px;
-}
-
-.km-leaf-card {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -42%);
-  width: min(720px, 92vw);
-  max-height: calc(100vh - 140px);
-  overflow: auto;
-  background: rgba(17, 17, 24, 0.97);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 9999px;
   border: 1px solid var(--km-border);
-  border-radius: 16px;
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.48);
-  padding: var(--sp-8);
-  z-index: 25;
-  animation: kmLeafIn 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--km-surface);
+  color: var(--km-accent);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--km-shadow-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity var(--km-transition), transform var(--km-transition);
 }
 
-.km-leaf-card .km-topic-title {
+.km-jump-root.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.km-jump-root:hover {
+  border-color: var(--km-accent);
+  color: var(--km-accent-hover);
+}
+
+/* ── Leaf detail panel (right side) ─────────────────────────────────────── */
+.km-leaf-panel {
+  flex: 0 0 min(480px, 42vw);
+  max-width: 100%;
+  border-left: 1px solid var(--km-border);
+  background: var(--km-surface);
+  overflow-y: auto;
+  padding: var(--sp-8);
+  position: relative;
+}
+
+.km-leaf-panel .km-topic-title {
   margin: 0 0 var(--sp-4);
   padding-right: var(--sp-12);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--km-text);
 }
 
-.km-leaf-card .km-tags {
+.km-leaf-panel .km-tags {
   margin-bottom: var(--sp-6);
 }
 
-.km-leaf-card .km-summary {
+.km-leaf-panel .km-summary {
   margin-bottom: var(--sp-6);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  padding: var(--sp-3);
+  background: var(--km-bg);
+  border-radius: var(--km-radius);
+  border-left: 3px solid var(--km-accent);
 }
 
-.km-leaf-card .km-detail {
+.km-leaf-panel .km-detail {
   line-height: 1.65;
+  color: var(--km-muted);
+  font-size: var(--fs-sm);
 }
 
-.km-leaf-card .km-detail p {
+.km-leaf-panel .km-detail p {
   margin-bottom: var(--sp-4);
 }
 
-.km-leaf-card .km-detail li {
+.km-leaf-panel .km-detail li {
   margin-bottom: var(--sp-2);
 }
 
-.km-leaf-card .km-commands {
+.km-leaf-panel .km-commands {
   margin-top: var(--sp-8);
 }
 
@@ -839,57 +973,6 @@
   top: var(--sp-6);
   right: var(--sp-6);
   z-index: 2;
-}
-
-@keyframes kmLeafIn {
-  from { opacity: 0; transform: translate(-50%, -38%) scale(0.96); }
-  to { opacity: 1; transform: translate(-50%, -42%) scale(1); }
-}
-
-.km-mobile-canvas {
-  display: none;
-}
-
-.km-mobile-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-  padding: var(--sp-3);
-}
-
-.km-mobile-item {
-  border: 1px solid var(--km-border);
-  border-radius: var(--km-radius);
-  background: var(--km-surface);
-  color: var(--km-text);
-  text-align: left;
-  font-family: var(--font-sans);
-  padding: var(--sp-3) var(--sp-4);
-}
-
-.km-mobile-item-title {
-  display: block;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-}
-
-.km-mobile-item-meta {
-  display: block;
-  margin-top: 2px;
-  font-size: var(--fs-xs);
-  color: var(--km-muted);
-}
-
-.km-mobile-leaf {
-  padding: var(--sp-3);
-}
-
-.km-mobile-leaf .km-leaf-card {
-  position: static;
-  transform: none;
-  width: 100%;
-  max-height: none;
-  animation: none;
 }
 
 .km-detail table {
@@ -901,19 +984,46 @@
 .km-detail th,
 .km-detail td {
   border: 1px solid var(--km-border);
-  padding: 8px;
+  padding: var(--sp-2);
   text-align: left;
   font-size: var(--fs-xs);
 }
 
 @media (max-width: 768px) {
-  .km-desktop-canvas {
-    display: none;
+  .km-canvas-wrap {
+    flex-direction: column;
   }
 
-  .km-mobile-canvas {
-    display: block;
-    padding-top: 42px;
-    min-height: calc(100vh - 58px);
+  .km-leaf-panel {
+    flex: none;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--km-border);
+    max-height: 55vh;
+  }
+
+  .km-tree-scroll {
+    min-height: 45vh;
+  }
+
+  .km-jump-root {
+    top: auto;
+    bottom: var(--sp-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-pill,
+  .km-tree-edge,
+  .km-jump-root,
+  .km-pill.is-entering,
+  .km-pill.is-entered {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+
+  .km-pill.is-entering {
+    opacity: 1;
+    transform: none;
   }
 }

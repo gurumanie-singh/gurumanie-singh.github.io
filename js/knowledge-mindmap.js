@@ -1,33 +1,34 @@
 /* ============================================================================
-   knowledge-mindmap.js
-   Recursive mind map: every node is a bubble, arbitrary depth.
+   knowledge-mindmap.js — Left-to-right accordion knowledge tree
    ========================================================================== */
 
-const KM_ANIM_MS = 400;
+const COL_GAP = 220;
+const ROW_GAP = 52;
+const ROOT_X = 48;
+const PILL_MIN_W = 100;
+const PILL_H = 36;
+const PILL_PAD_X = 14;
 
-/** Inline SVG icons per domainId — 24×24, stroke only, cyan accent */
+/** Inline SVG icons per domainId — stroke via currentColor (--km-accent) */
 const DOMAIN_ICON_PATHS = {
   'network-security': '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="8" y1="7.5" x2="10.5" y2="16"/><line x1="16" y1="7.5" x2="13.5" y2="16"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
   'web-security': '<rect x="3" y="4" width="18" height="14" rx="2"/><line x1="3" y1="8" x2="21" y2="8"/><rect x="15" y="13" width="5" height="4" rx="1"/><path d="M16.5 13v-1a1.5 1.5 0 013 0v1"/>',
   'exploitation-vulnerability': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="8" y1="10" x2="16" y2="14"/><line x1="16" y1="10" x2="8" y2="14"/>',
   'reconnaissance-osint': '<circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/><line x1="10" y1="7" x2="10" y2="13"/><line x1="7" y1="10" x2="13" y2="10"/>',
   cryptography: '<circle cx="8" cy="14" r="4"/><path d="M12 14h5a3 3 0 010 6h-1"/><line x1="12" y1="10" x2="12" y2="14"/>',
-  'linux-cli': '<rect x="3" y="4" width="18" height="14" rx="2"/><polyline points="7 9 9 11 7 13"/><line x1="11" y1="13" x2="15" y2="13"/><rect x="17" y="12" width="2" height="2" fill="#22d3ee" stroke="none"/>',
-  'malware-threat': '<ellipse cx="12" cy="14" rx="5" ry="6"/><circle cx="12" cy="8" r="3"/><line x1="9" y1="5" x2="8" y2="2"/><line x1="15" y1="5" x2="16" y2="2"/><line x1="7" y1="14" x2="4" y2="16"/><line x1="17" y1="14" x2="20" y2="16"/><line x1="8" y1="18" x2="6" y2="21"/><line x1="16" y1="18" x2="18" y2="21"/>',
-  'digital-forensics': '<path d="M6 4h10l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"/><circle cx="14" cy="14" r="4"/><line x1="16.5" y1="16.5" x2="19" y2="19"/>',
-  'cloud-infrastructure': '<path d="M7 18h10a4 4 0 000-8 5.5 5.5 0 00-10.5 2A3.5 3.5 0 007 18z"/><rect x="10" y="12" width="4" height="3" rx="0.5"/><path d="M11.5 12v-1a1 1 0 012 0v1"/>',
-  'software-code-security': '<polyline points="8 6 4 12 8 18"/><polyline points="16 6 20 12 16 18"/><line x1="13" y1="5" x2="11" y2="19"/><polyline points="11 16 13 19 15 16"/>',
-  'intrusion-detection-monitoring': '<polyline points="3 14 7 10 11 13 15 7 19 9 21 6"/><circle cx="15" cy="7" r="1.5" fill="#22d3ee" stroke="none"/>',
-  'incident-response': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="12" y1="9" x2="12" y2="13"/><polyline points="10 15 12 17 16 13"/>',
+  'linux-cli': '<rect x="3" y="4" width="18" height="14" rx="2"/><polyline points="7 9 9 11 7 13"/><line x1="11" y1="13" x2="15" y2="13"/>',
+  'malware-threat': '<ellipse cx="12" cy="14" rx="5" ry="6"/><circle cx="12" cy="8" r="3"/>',
+  'digital-forensics': '<path d="M6 4h10l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z"/><circle cx="14" cy="14" r="4"/>',
+  'cloud-infrastructure': '<path d="M7 18h10a4 4 0 000-8 5.5 5.5 0 00-10.5 2A3.5 3.5 0 007 18z"/>',
+  'software-code-security': '<polyline points="8 6 4 12 8 18"/><polyline points="16 6 20 12 16 18"/>',
+  'intrusion-detection-monitoring': '<polyline points="3 14 7 10 11 13 15 7 19 9 21 6"/>',
+  'incident-response': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/>',
   key: '<circle cx="8" cy="14" r="4"/><path d="M12 14h5a3 3 0 010 6h-1"/><line x1="12" y1="10" x2="12" y2="14"/>',
 };
 
-const VIEW_CX = 600;
-const VIEW_CY = 420;
-
-function domainIconSvg(iconKey, size = 24) {
-  const paths = DOMAIN_ICON_PATHS[iconKey] || DOMAIN_ICON_PATHS['network-security'];
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+function domainIconSvg(iconKey, size = 16) {
+  const paths = DOMAIN_ICON_PATHS[iconKey] || DOMAIN_ICON_PATHS.key;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 }
 
 function hasChildren(node) {
@@ -42,9 +43,18 @@ function escapeHtml(v = '') {
     .replace(/"/g, '&quot;');
 }
 
-function polarToCartesian(cx, cy, r, angleDeg) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+/** Fallback: first meaningful noun phrase, max 4 words */
+function deriveLabel(title) {
+  if (!title) return '';
+  let t = title.replace(/\([^)]*\)/g, '').replace(/\s*[—–-]\s*.+$/, '').trim();
+  const words = t.split(/\s+/).filter(Boolean);
+  const skip = new Set(['the', 'a', 'an']);
+  while (words.length && skip.has(words[0].toLowerCase())) words.shift();
+  return words.slice(0, 4).join(' ');
+}
+
+function nodeLabel(node) {
+  return node.label || deriveLabel(node.title || '');
 }
 
 function markdownTable(block) {
@@ -116,12 +126,15 @@ function normalizeLegacy(raw) {
   return raw;
 }
 
-function nodeRadius(node, depth, focused) {
-  if (focused) return 52;
-  if (node.type === 'domain') return 38;
-  if (depth <= 1) return 34;
-  if (depth === 2) return 30;
-  return 26;
+function estimatePillWidth(label, isRoot) {
+  const charW = 7.2;
+  const base = label.length * charW + PILL_PAD_X * 2 + (isRoot ? 8 : 0);
+  return Math.max(PILL_MIN_W, Math.min(base, 200));
+}
+
+function bezierEdge(x1, y1, x2, y2) {
+  const mx = (x1 + x2) / 2;
+  return `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
 }
 
 export class KnowledgeMindmap {
@@ -132,12 +145,12 @@ export class KnowledgeMindmap {
     this.tree = null;
     this.nodeById = new Map();
     this.parentById = new Map();
-    this.focusPath = [];
+    /** Open branch from root: [rootId, childId, ...] — accordion path */
+    this.expandedPath = [];
     this.openLeafId = null;
     this.flatNodes = [];
-    this.prevLayouts = new Map();
-    this.cameraPan = { x: 0, y: 0 };
-    this._skipFlip = false;
+    this.prevVisibleIds = new Set();
+    this.rootCenterY = 400;
   }
 
   async init() {
@@ -147,33 +160,20 @@ export class KnowledgeMindmap {
     this.tree = raw;
     this.indexTree(raw.root, null);
     const fromHash = this.pathFromHash();
-    this.focusPath = fromHash.length ? fromHash : [raw.root.id];
+    this.expandedPath = fromHash.length ? fromHash : [raw.root.id];
     this.openLeafId = null;
-    this._skipFlip = true;
     this.renderLayout();
     this.renderAll();
     this.bindEvents();
     this.syncHash(true);
-    this._skipFlip = false;
   }
 
   indexTree(node, parentId) {
+    if (!node.label) node.label = deriveLabel(node.title || '');
     this.nodeById.set(node.id, node);
     if (parentId) this.parentById.set(node.id, parentId);
     this.flatNodes.push(node);
     (node.children || []).forEach((child) => this.indexTree(child, node.id));
-  }
-
-  focusNode() {
-    return this.nodeById.get(this.focusPath[this.focusPath.length - 1]);
-  }
-
-  isLeaf(node) {
-    return node && !hasChildren(node);
-  }
-
-  childrenOf(node) {
-    return node?.children || [];
   }
 
   pathFor(nodeId) {
@@ -201,61 +201,139 @@ export class KnowledgeMindmap {
       }
       valid.push(id);
     }
-    return valid;
+    return valid.length ? valid : [];
   }
 
   syncHash(replace = false) {
-    const next = `#${this.focusPath.join('/')}`;
+    const next = `#${this.expandedPath.join('/')}`;
     if (replace) history.replaceState(null, '', next);
     else if (window.location.hash !== next) window.location.hash = next;
   }
 
-  /** Branch navigation only — never use for leaves */
-  setFocus(nodeId, { pushHash = true, fromPopstate = false } = {}) {
-    const node = this.nodeById.get(nodeId);
-    if (!node || !hasChildren(node)) return;
-    this.focusPath = this.pathFor(nodeId);
-    this.openLeafId = null;
-    this.cameraPan = { x: 0, y: 0 };
-    this.renderAll();
-    if (pushHash && !fromPopstate) this.syncHash(false);
+  /** Visible columns for accordion tree */
+  getVisibleColumns() {
+    const columns = [[this.tree.root]];
+    if (!this.expandedPath.length) return columns;
+
+    const root = this.tree.root;
+    if (root.children?.length) columns.push(root.children);
+
+    for (let i = 1; i < this.expandedPath.length; i += 1) {
+      const node = this.nodeById.get(this.expandedPath[i]);
+      if (node && hasChildren(node)) columns.push(node.children);
+    }
+    return columns;
   }
 
-  /** Open leaf card without changing focusPath */
+  isEdgeActive(parentId, childId) {
+    const pi = this.expandedPath.indexOf(parentId);
+    return pi >= 0 && this.expandedPath[pi + 1] === childId;
+  }
+
+  isExpandedBranch(nodeId) {
+    const path = this.pathFor(nodeId);
+    const depth = path.length - 1;
+    return this.expandedPath[depth] === nodeId && hasChildren(this.nodeById.get(nodeId));
+  }
+
+  computeLayout() {
+    const columns = this.getVisibleColumns();
+    const positions = new Map();
+    const pillWidths = new Map();
+    const viewportMid = 400;
+
+    columns.forEach((col, depth) => {
+      col.forEach((node) => {
+        const isRoot = node.type === 'root';
+        pillWidths.set(node.id, estimatePillWidth(nodeLabel(node), isRoot));
+      });
+    });
+
+    const root = this.tree.root;
+    const rootW = pillWidths.get(root.id) || PILL_MIN_W;
+    positions.set(root.id, { x: ROOT_X, y: viewportMid, depth: 0, w: rootW });
+    this.rootCenterY = viewportMid;
+
+    if (columns.length > 1) {
+      const col1 = columns[1];
+      const blockH = (col1.length - 1) * ROW_GAP;
+      let startY = viewportMid - blockH / 2;
+      col1.forEach((node, i) => {
+        positions.set(node.id, {
+          x: ROOT_X + COL_GAP,
+          y: startY + i * ROW_GAP,
+          depth: 1,
+          w: pillWidths.get(node.id),
+        });
+      });
+    }
+
+    for (let d = 2; d < columns.length; d += 1) {
+      const parentId = this.expandedPath[d - 1];
+      const parentPos = positions.get(parentId);
+      const col = columns[d];
+      if (!parentPos || !col) continue;
+      const blockH = (col.length - 1) * ROW_GAP;
+      let startY = parentPos.y - blockH / 2;
+      col.forEach((node, i) => {
+        positions.set(node.id, {
+          x: ROOT_X + d * COL_GAP,
+          y: startY + i * ROW_GAP,
+          depth: d,
+          w: pillWidths.get(node.id),
+        });
+      });
+    }
+
+    const maxX = Math.max(...[...positions.values()].map((p) => p.x + (p.w || PILL_MIN_W)), 800);
+    const allY = [...positions.values()].map((p) => p.y);
+    const minY = Math.min(...allY, 0) - 80;
+    const maxY = Math.max(...allY, 0) + 80;
+
+    return { positions, columns, width: maxX + 120, height: maxY - minY + 120, minY };
+  }
+
+  toggleBranch(nodeId) {
+    const node = this.nodeById.get(nodeId);
+    if (!node || !hasChildren(node)) return;
+    const path = this.pathFor(nodeId);
+    const depth = path.length - 1;
+    if (depth === 0) return; // root never collapses
+
+    if (this.expandedPath[depth] === nodeId) {
+      this.expandedPath = this.expandedPath.slice(0, depth);
+    } else {
+      this.expandedPath = path;
+    }
+    this.openLeafId = null;
+    this.renderAll();
+    this.syncHash(false);
+    this.scrollNodeIntoView(nodeId);
+  }
+
   openLeaf(nodeId) {
     const node = this.nodeById.get(nodeId);
     if (!node || hasChildren(node)) return;
-    const layout = this.computeLayout();
-    const item = layout.items.find((i) => i.id === nodeId);
-    if (item) {
-      this.cameraPan = {
-        x: (VIEW_CX - item.x) * 0.35,
-        y: (VIEW_CY - item.y) * 0.35,
-      };
-    }
     this.openLeafId = nodeId;
     this.renderAll();
+    this.scrollNodeIntoView(nodeId);
   }
 
   closeLeaf() {
     this.openLeafId = null;
-    this.cameraPan = { x: 0, y: 0 };
     this.renderAll();
   }
 
   handleNodeClick(node) {
-    if (hasChildren(node)) {
-      this.setFocus(node.id);
-    } else {
-      this.openLeaf(node.id);
-    }
+    if (hasChildren(node)) this.toggleBranch(node.id);
+    else this.openLeaf(node.id);
   }
 
   renderLayout() {
     this.rootEl.className = 'km-page';
     this.rootEl.innerHTML = `
       <div class="km-toolbar">
-        <span class="km-category-label">${escapeHtml(this.tree.category || this.focusNode()?.title || 'Knowledge')}</span>
+        <span class="km-category-label">${escapeHtml(this.tree?.category || 'Knowledge')}</span>
         <div class="km-search-wrap">
           <input type="search" class="km-search" id="kmSearch" placeholder="Search nodes..." autocomplete="off" />
           <div class="km-search-results" id="kmSearchResults" hidden></div>
@@ -263,275 +341,130 @@ export class KnowledgeMindmap {
         <button type="button" class="km-btn" id="kmResetBtn">Reset</button>
       </div>
       <div class="km-canvas-wrap">
-        <nav class="km-breadcrumb" id="kmBreadcrumb" aria-label="Breadcrumb"></nav>
-        <div class="km-desktop-canvas" id="kmDesktopCanvas"></div>
-        <div class="km-mobile-canvas" id="kmMobileCanvas"></div>
+        <div class="km-tree-scroll" id="kmTreeScroll">
+          <button type="button" class="km-jump-root" id="kmJumpRoot" title="Back to root" aria-label="Back to root">↑ Root</button>
+          <div class="km-tree-inner" id="kmTreeInner"></div>
+        </div>
+        <aside class="km-leaf-panel" id="kmLeafPanel" hidden></aside>
       </div>
     `;
   }
 
   renderAll() {
-    this.renderBreadcrumb();
-    this.renderDesktop();
-    this.renderMobile();
+    this.renderTree();
+    this.renderLeafPanel();
+    this.updateJumpRootButton();
   }
 
-  renderBreadcrumb() {
-    const el = this.rootEl.querySelector('#kmBreadcrumb');
-    if (!el) return;
-    const crumbs = this.focusPath.map((id) => this.nodeById.get(id)).filter(Boolean);
-    if (this.openLeafId) {
-      const leaf = this.nodeById.get(this.openLeafId);
-      if (leaf) crumbs.push(leaf);
-    }
-    el.innerHTML = crumbs.map((node, idx) => {
-      const sep = idx > 0 ? '<span class="km-bc-sep">›</span>' : '';
-      const isLeafCrumb = this.openLeafId && node.id === this.openLeafId;
-      const isLastFocus = !isLeafCrumb && idx === crumbs.length - 1 && !this.openLeafId;
-      if (isLeafCrumb || isLastFocus) {
-        return `${sep}<span class="km-bc-current">${escapeHtml(node.title)}</span>`;
-      }
-      return `${sep}<button type="button" class="km-bc-link" data-id="${node.id}">${escapeHtml(node.title)}</button>`;
-    }).join('');
-    el.querySelectorAll('.km-bc-link').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        this.closeLeaf();
-        this.setFocus(btn.dataset.id);
-      });
-    });
-  }
+  renderTree() {
+    const scroll = this.rootEl.querySelector('#kmTreeScroll');
+    const inner = this.rootEl.querySelector('#kmTreeInner');
+    if (!inner) return;
 
-  computeLayout() {
-    const focus = this.focusNode();
-    const parentId = this.parentById.get(focus.id);
-    const parent = parentId ? this.nodeById.get(parentId) : null;
-    const children = this.childrenOf(focus);
-    const siblings = parent ? this.childrenOf(parent).filter((n) => n.id !== focus.id) : [];
-    const depth = this.focusPath.length - 1;
-    const childRadius = Math.min(280, Math.max(170, 105 + children.length * 8));
-    const items = [];
+    const { positions, width, height, minY } = this.computeLayout();
+    const visibleIds = new Set(positions.keys());
+    const entering = new Set([...visibleIds].filter((id) => !this.prevVisibleIds.has(id)));
+    const exiting = new Set([...this.prevVisibleIds].filter((id) => !visibleIds.has(id)));
 
-    items.push({
-      id: focus.id,
-      node: focus,
-      role: 'focus',
-      x: VIEW_CX,
-      y: VIEW_CY,
-      scale: 1,
-      opacity: 1,
-      radius: nodeRadius(focus, depth, true),
-    });
+    inner.style.width = `${width}px`;
+    inner.style.height = `${height}px`;
+    inner.style.paddingTop = `${Math.max(0, -minY + 60)}px`;
 
-    siblings.forEach((node, i) => {
-      const angle = (360 / Math.max(siblings.length, 1)) * i;
-      const pos = polarToCartesian(VIEW_CX, VIEW_CY, childRadius + 110, angle);
-      items.push({
-        id: node.id,
-        node,
-        role: 'sibling',
-        x: pos.x,
-        y: pos.y,
-        scale: 0.55,
-        opacity: 0.32,
-        radius: 28,
-      });
-    });
+    const yOffset = Math.max(0, -minY + 60);
 
-    children.forEach((node, i) => {
-      const angle = (360 / Math.max(children.length, 1)) * i;
-      const pos = polarToCartesian(VIEW_CX, VIEW_CY, childRadius, angle);
-      items.push({
-        id: node.id,
-        node,
-        role: 'child',
-        x: pos.x,
-        y: pos.y,
-        scale: 1,
-        opacity: 1,
-        radius: nodeRadius(node, depth + 1, false),
-      });
-    });
-
-    return { items, childRadius, focusId: focus.id };
-  }
-
-  renderDesktop() {
-    const mount = this.rootEl.querySelector('#kmDesktopCanvas');
-    if (!mount) return;
-
-    const layout = this.computeLayout();
-    const prev = new Map(this.prevLayouts);
-    const prevFocusId = prev.get('__focusId');
-    const exitNodes = [];
-    for (const [id, p] of prev) {
-      if (id === '__focusId') continue;
-      if (!layout.items.some((i) => i.id === id)) {
-        exitNodes.push({ id, ...p });
-      }
-    }
-
+    // SVG edges
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 1200 800');
-    svg.setAttribute('class', 'km-canvas');
+    svg.setAttribute('class', 'km-tree-edges');
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
 
-    const cameraG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    cameraG.setAttribute('class', 'km-camera');
-    cameraG.setAttribute('transform', `translate(${this.cameraPan.x}, ${this.cameraPan.y})`);
+    const edgesG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    edgesG.setAttribute('transform', `translate(0, ${yOffset})`);
 
-    const focusItem = layout.items.find((i) => i.role === 'focus');
+    for (const [childId, pos] of positions) {
+      if (pos.depth === 0) continue;
+      const parentId = this.parentById.get(childId);
+      const parentPos = positions.get(parentId);
+      if (!parentPos) continue;
+      const x1 = parentPos.x + (parentPos.w || PILL_MIN_W);
+      const y1 = parentPos.y;
+      const x2 = pos.x;
+      const y2 = pos.y;
+      const onPath = this.isEdgeActive(parentId, childId);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', bezierEdge(x1, y1, x2, y2));
+      path.setAttribute('class', `km-tree-edge${onPath ? ' is-active' : ''}${entering.has(childId) ? ' is-entering' : ''}${exiting.has(childId) ? ' is-exiting' : ''}`);
+      path.dataset.from = parentId;
+      path.dataset.to = childId;
+      edgesG.appendChild(path);
+    }
+    svg.appendChild(edgesG);
 
-    layout.items.forEach((item) => {
-      if (item.role === 'child' || item.role === 'sibling') {
-        this.drawEdge(cameraG, focusItem.x, focusItem.y, item.x, item.y, item.role === 'sibling' ? 'km-edge km-edge-bg' : 'km-edge');
-      }
-    });
+    const nodesLayer = document.createElement('div');
+    nodesLayer.className = 'km-tree-nodes';
+    nodesLayer.style.transform = `translateY(${yOffset}px)`;
 
-    exitNodes.forEach((item) => {
-      const ghost = this.createNodeGroup({
-        ...item,
-        node: this.nodeById.get(item.id) || { id: item.id, title: '' },
-        role: 'exit',
-        scale: 0.15,
-        opacity: 0,
-      });
-      ghost.setAttribute('data-node-id', item.id);
-      ghost.classList.add('km-node-exit');
-      const p = prev.get(item.id);
-      ghost.setAttribute('transform', `translate(${p.x}, ${p.y}) scale(${p.scale || 1})`);
-      ghost.style.opacity = String(p.opacity ?? 0.3);
-      cameraG.appendChild(ghost);
-    });
+    for (const [id, pos] of positions) {
+      const node = this.nodeById.get(id);
+      if (!node) continue;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'km-pill';
+      btn.dataset.id = id;
+      btn.title = node.title;
+      btn.style.left = `${pos.x}px`;
+      btn.style.top = `${pos.y - PILL_H / 2}px`;
+      btn.style.minWidth = `${pos.w}px`;
 
-    layout.items.forEach((item) => {
-      const g = this.createNodeGroup(item);
-      g.setAttribute('data-node-id', item.id);
-      g.setAttribute('transform', `translate(${item.x}, ${item.y}) scale(${item.scale})`);
-      g.style.opacity = String(item.opacity);
-      g.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.handleNodeClick(item.node);
-      });
-      if (this.openLeafId === item.id) g.classList.add('is-leaf-open');
-      cameraG.appendChild(g);
-    });
+      if (node.type === 'root') btn.classList.add('km-pill-root');
+      if (this.isExpandedBranch(id)) btn.classList.add('is-expanded');
+      if (this.openLeafId === id) btn.classList.add('is-leaf-open');
+      if (!hasChildren(node)) btn.classList.add('km-pill-leaf');
+      if (entering.has(id)) btn.classList.add('is-entering');
+      if (exiting.has(id)) btn.classList.add('is-exiting');
 
-    svg.appendChild(cameraG);
-    mount.innerHTML = '';
-    mount.appendChild(svg);
+      const icon = (node.type === 'domain' || node.icon)
+        ? `<span class="km-pill-icon">${domainIconSvg(node.icon || node.id, 14)}</span>`
+        : '';
 
-    if (!this._skipFlip) {
-      this.runFlip(cameraG, prev, layout, prevFocusId);
+      btn.innerHTML = `${icon}<span class="km-pill-label">${escapeHtml(nodeLabel(node))}</span>`;
+      btn.addEventListener('click', () => this.handleNodeClick(node));
+      nodesLayer.appendChild(btn);
     }
 
-    this.prevLayouts = new Map(layout.items.map((i) => [i.id, { x: i.x, y: i.y, scale: i.scale, opacity: i.opacity, role: i.role }]));
-    this.prevLayouts.set('__focusId', layout.focusId);
+    inner.innerHTML = '';
+    inner.appendChild(svg);
+    inner.appendChild(nodesLayer);
 
-    if (this.openLeafId) {
-      const leafNode = this.nodeById.get(this.openLeafId);
-      if (leafNode) {
-        const card = document.createElement('div');
-        card.className = 'km-leaf-card';
-        card.innerHTML = this.leafCardHtml(leafNode);
-        mount.appendChild(card);
-        this.bindLeafCard(card);
-      }
-    }
-  }
-
-  runFlip(cameraG, prev, layout, prevFocusId) {
-    const newIds = new Set(layout.items.map((i) => i.id));
-    const focusItem = layout.items.find((i) => i.role === 'focus');
-
-    layout.items.forEach((item) => {
-      const el = cameraG.querySelector(`[data-node-id="${item.id}"]`);
-      if (!el) return;
-      const p = prev.get(item.id);
-
-      if (p) {
-        const dx = p.x - item.x;
-        const dy = p.y - item.y;
-        const ds = (p.scale || 1) / item.scale;
-        el.style.transition = 'none';
-        el.setAttribute('transform', `translate(${item.x + dx}, ${item.y + dy}) scale(${item.scale * ds})`);
-        el.style.opacity = String(p.opacity ?? 1);
-        requestAnimationFrame(() => {
-          el.style.transition = '';
-          el.setAttribute('transform', `translate(${item.x}, ${item.y}) scale(${item.scale})`);
-          el.style.opacity = String(item.opacity);
-        });
-      } else if (item.role === 'child') {
-        const origin = prev.get(prevFocusId) || focusItem;
-        el.style.transition = 'none';
-        el.setAttribute('transform', `translate(${origin.x}, ${origin.y}) scale(0.15)`);
-        el.style.opacity = '0';
-        requestAnimationFrame(() => {
-          el.style.transition = '';
-          el.setAttribute('transform', `translate(${item.x}, ${item.y}) scale(${item.scale})`);
-          el.style.opacity = String(item.opacity);
-        });
-      }
-    });
-
-    cameraG.querySelectorAll('.km-node-exit').forEach((el) => {
-      const id = el.getAttribute('data-node-id');
-      const p = prev.get(id);
-      if (!p || newIds.has(id)) return;
-      requestAnimationFrame(() => {
-        el.setAttribute('transform', `translate(${focusItem.x}, ${focusItem.y}) scale(0.1)`);
-        el.style.opacity = '0';
+    requestAnimationFrame(() => {
+      inner.querySelectorAll('.is-entering').forEach((el) => {
+        el.classList.remove('is-entering');
+        el.classList.add('is-entered');
       });
-      setTimeout(() => el.remove(), KM_ANIM_MS);
+      inner.querySelectorAll('.km-tree-edge.is-entering').forEach((el) => {
+        el.classList.remove('is-entering');
+      });
     });
+
+    this.prevVisibleIds = visibleIds;
   }
 
-  createNodeGroup({ node, role, radius, x, y }) {
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const roleCls = role === 'focus' ? 'km-node-focus'
-      : role === 'sibling' ? 'km-node-bg'
-        : role === 'exit' ? 'km-node-exit'
-          : this.isLeaf(node) ? 'km-node-leaf' : 'km-node-branch';
-    g.setAttribute('class', `km-node km-node-animated ${roleCls}`);
-    g.style.cursor = 'pointer';
-
-    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    c.setAttribute('cx', 0);
-    c.setAttribute('cy', 0);
-    c.setAttribute('r', radius);
-    c.setAttribute('class', 'km-node-circle');
-
-    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    t.setAttribute('x', 0);
-    t.setAttribute('y', radius + 14);
-    t.setAttribute('class', 'km-label');
-    const short = node.title.length > 26 ? `${node.title.slice(0, 24)}…` : node.title;
-    t.textContent = short;
-
-    g.appendChild(c);
-    if ((node.type === 'domain' || node.icon) && radius >= 32) {
-      const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-      fo.setAttribute('x', -10);
-      fo.setAttribute('y', -radius + 10);
-      fo.setAttribute('width', 20);
-      fo.setAttribute('height', 20);
-      fo.innerHTML = domainIconSvg(node.icon || node.id, 18);
-      g.appendChild(fo);
+  renderLeafPanel() {
+    const panel = this.rootEl.querySelector('#kmLeafPanel');
+    if (!panel) return;
+    if (!this.openLeafId) {
+      panel.hidden = true;
+      panel.innerHTML = '';
+      return;
     }
-    g.appendChild(t);
-
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    title.textContent = node.summary ? `${node.title}\n${node.summary}` : node.title;
-    g.appendChild(title);
-    return g;
-  }
-
-  drawEdge(parent, x1, y1, x2, y2, cls = 'km-edge') {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1);
-    line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2);
-    line.setAttribute('y2', y2);
-    line.setAttribute('class', cls);
-    parent.appendChild(line);
+    const node = this.nodeById.get(this.openLeafId);
+    if (!node) {
+      panel.hidden = true;
+      return;
+    }
+    panel.hidden = false;
+    panel.innerHTML = this.leafCardHtml(node);
+    this.bindLeafCard(panel);
   }
 
   leafCardHtml(node) {
@@ -573,73 +506,54 @@ export class KnowledgeMindmap {
     });
   }
 
-  renderMobile() {
-    const mount = this.rootEl.querySelector('#kmMobileCanvas');
-    if (!mount) return;
-
-    if (this.openLeafId) {
-      const leafNode = this.nodeById.get(this.openLeafId);
-      mount.innerHTML = `<div class="km-mobile-leaf">${this.leafCardHtml(leafNode)}</div>`;
-      this.bindLeafCard(mount.querySelector('.km-mobile-leaf'));
-      return;
+  scrollNodeIntoView(nodeId) {
+    const scroll = this.rootEl.querySelector('#kmTreeScroll');
+    const pill = scroll?.querySelector(`[data-id="${nodeId}"]`);
+    if (scroll && pill) {
+      const left = pill.offsetLeft - 80;
+      scroll.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
     }
-
-    const focus = this.focusNode();
-    const list = this.childrenOf(focus);
-    mount.innerHTML = `
-      <div class="km-mobile-list">
-        ${list.map((node) => `
-          <button type="button" class="km-mobile-item" data-id="${node.id}">
-            <span class="km-mobile-item-title">${escapeHtml(node.title)}</span>
-            <span class="km-mobile-item-meta">${hasChildren(node) ? `${node.children.length} children` : 'Leaf'}</span>
-          </button>
-        `).join('')}
-      </div>
-    `;
-    mount.querySelectorAll('.km-mobile-item').forEach((btn) => {
-      btn.addEventListener('click', () => this.handleNodeClick(this.nodeById.get(btn.dataset.id)));
-    });
   }
 
-  navigateUp() {
-    if (this.openLeafId) {
-      this.closeLeaf();
-      return;
-    }
-    if (this.focusPath.length <= 1) return;
-    this.focusPath = this.focusPath.slice(0, -1);
-    this.renderAll();
-    this.syncHash(false);
+  jumpToRoot() {
+    const scroll = this.rootEl.querySelector('#kmTreeScroll');
+    const inner = this.rootEl.querySelector('#kmTreeInner');
+    if (!scroll) return;
+    const padTop = parseFloat(inner?.style.paddingTop) || 0;
+    const rootY = padTop + this.rootCenterY - scroll.clientHeight / 2;
+    scroll.scrollTo({ left: 0, top: Math.max(0, rootY), behavior: 'smooth' });
+  }
+
+  updateJumpRootButton() {
+    const btn = this.rootEl.querySelector('#kmJumpRoot');
+    const scroll = this.rootEl.querySelector('#kmTreeScroll');
+    if (!btn || !scroll) return;
+    const show = scroll.scrollLeft > 200 || scroll.scrollTop > 200;
+    btn.classList.toggle('is-visible', show);
   }
 
   reset() {
-    this.focusPath = [this.tree.root.id];
+    this.expandedPath = [this.tree.root.id];
     this.openLeafId = null;
-    this.cameraPan = { x: 0, y: 0 };
     this.renderAll();
     this.syncHash(false);
+    this.jumpToRoot();
   }
 
   navigateToSearchResult(nodeId) {
     const node = this.nodeById.get(nodeId);
     if (!node) return;
     if (hasChildren(node)) {
-      this.setFocus(node.id);
-      return;
-    }
-    const parentId = this.parentById.get(node.id);
-    this.focusPath = parentId ? this.pathFor(parentId) : [this.tree.root.id];
-    this.openLeafId = node.id;
-    const layout = this.computeLayout();
-    const item = layout.items.find((i) => i.id === nodeId);
-    if (item) {
-      this.cameraPan = {
-        x: (VIEW_CX - item.x) * 0.35,
-        y: (VIEW_CY - item.y) * 0.35,
-      };
+      this.expandedPath = this.pathFor(nodeId);
+      this.openLeafId = null;
+    } else {
+      const parentId = this.parentById.get(nodeId);
+      this.expandedPath = parentId ? this.pathFor(parentId) : [this.tree.root.id];
+      this.openLeafId = nodeId;
     }
     this.renderAll();
     this.syncHash(false);
+    this.scrollNodeIntoView(nodeId);
   }
 
   runSearch(query) {
@@ -652,7 +566,7 @@ export class KnowledgeMindmap {
       return;
     }
     const matches = this.flatNodes.filter((n) => {
-      const hay = `${n.title || ''} ${n.summary || ''} ${(n.tags || []).join(' ')}`.toLowerCase();
+      const hay = `${n.title || ''} ${n.label || ''} ${n.summary || ''} ${(n.tags || []).join(' ')}`.toLowerCase();
       return hay.includes(q);
     }).slice(0, 25);
     if (!matches.length) {
@@ -682,6 +596,11 @@ export class KnowledgeMindmap {
       this.runSearch(e.target.value);
     });
     this.rootEl.querySelector('#kmResetBtn')?.addEventListener('click', () => this.reset());
+    this.rootEl.querySelector('#kmJumpRoot')?.addEventListener('click', () => this.jumpToRoot());
+
+    const scroll = this.rootEl.querySelector('#kmTreeScroll');
+    scroll?.addEventListener('scroll', () => this.updateJumpRootButton());
+
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.km-search-wrap')) {
         const r = this.rootEl.querySelector('#kmSearchResults');
@@ -689,14 +608,20 @@ export class KnowledgeMindmap {
       }
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') this.navigateUp();
+      if (e.key === 'Escape') {
+        if (this.openLeafId) this.closeLeaf();
+        else if (this.expandedPath.length > 1) {
+          this.expandedPath = this.expandedPath.slice(0, -1);
+          this.renderAll();
+          this.syncHash(false);
+        }
+      }
     });
     window.addEventListener('hashchange', () => {
       const p = this.pathFromHash();
       if (p.length) {
-        this.focusPath = p;
+        this.expandedPath = p;
         this.openLeafId = null;
-        this.cameraPan = { x: 0, y: 0 };
         this.renderAll();
       } else {
         this.reset();
@@ -710,7 +635,7 @@ export function initKnowledgeMindmap(selector = '#knowledge-mindmap') {
   if (!el) return null;
   const map = new KnowledgeMindmap(el);
   map.init().catch((err) => {
-    el.innerHTML = `<p style="padding:24px;color:#f87171;">Failed to load knowledge map: ${escapeHtml(err.message)}</p>`;
+    el.innerHTML = `<p style="padding:24px;color:var(--km-text);">Failed to load knowledge map: ${escapeHtml(err.message)}</p>`;
   });
   return map;
 }
