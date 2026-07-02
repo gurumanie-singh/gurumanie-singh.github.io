@@ -269,7 +269,7 @@
   padding: var(--sp-3);
   background: var(--km-bg);
   border-radius: var(--km-radius);
-  border-left: 3px solid var(--km-accent);
+  border-left: 3px solid var(--pill-color, var(--km-accent));
 }
 
 .km-detail {
@@ -355,26 +355,35 @@
   border-top: 1px solid var(--km-border);
 }
 
-/* ── Left-to-right accordion tree ───────────────────────────────────────── */
+/* ── Viewport + camera tree ─────────────────────────────────────────────── */
 .km-canvas-wrap {
   position: relative;
-  display: flex;
   min-height: calc(100vh - 52px);
   background: var(--km-bg);
 }
 
-.km-tree-scroll {
+.km-tree-viewport {
   position: relative;
-  flex: 1;
-  min-width: 0;
-  overflow: auto;
+  width: 100%;
   min-height: calc(100vh - 52px);
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.km-tree-camera {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.km-tree-camera.is-animating {
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .km-tree-inner {
   position: relative;
-  min-height: calc(100vh - 52px);
 }
 
 .km-tree-edges {
@@ -389,12 +398,17 @@
   fill: none;
   stroke: var(--km-edge);
   stroke-width: 1.5;
+  opacity: 0.5;
   transition: stroke var(--km-transition-tree), opacity var(--km-transition-tree), stroke-dashoffset var(--km-transition-tree);
 }
 
 .km-tree-edge.is-active {
-  stroke: var(--km-edge-active);
   stroke-width: 2;
+  opacity: 1;
+}
+
+.km-tree-edge.is-muted {
+  opacity: 0.35;
 }
 
 .km-tree-edge.is-entering {
@@ -408,18 +422,22 @@
 }
 
 .km-tree-nodes {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 2;
 }
 
 /* ── Pill nodes ─────────────────────────────────────────────────────────── */
 .km-pill {
   position: absolute;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--sp-2);
-  height: 36px;
   padding: 0 var(--sp-4);
   border-radius: 9999px;
   border: 1px solid var(--km-node-stroke);
@@ -433,7 +451,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
   box-shadow: var(--km-shadow-sm);
   transition:
     border-color var(--km-transition-tree),
@@ -443,40 +460,60 @@
     box-shadow var(--km-transition-tree);
 }
 
+.km-pill[data-domain].is-vivid {
+  border-color: var(--pill-color, var(--km-node-stroke));
+}
+
+.km-pill[data-domain].is-vivid:hover {
+  border-color: var(--pill-color, var(--km-accent));
+}
+
+.km-pill[data-domain].is-muted {
+  border-color: color-mix(in srgb, var(--pill-color, var(--km-node-stroke)) 28%, var(--km-node-stroke));
+  opacity: 0.62;
+}
+
+.km-pill[data-domain].is-muted .km-pill-icon {
+  color: color-mix(in srgb, var(--pill-color) 55%, var(--km-muted));
+}
+
 .km-pill:hover {
-  border-color: var(--km-accent);
+  border-color: var(--pill-color, var(--km-accent));
 }
 
-.km-pill.is-expanded {
-  border-color: var(--km-accent);
-  background: var(--km-surface-2);
-  box-shadow: 0 0 0 1px var(--km-accent-dim), var(--km-shadow-sm);
+.km-pill.is-expanded.is-vivid {
+  border-color: var(--pill-color, var(--km-accent));
+  background: var(--pill-color-dim, var(--km-surface-2));
+  box-shadow: 0 0 0 1px var(--pill-color-dim, var(--km-accent-dim)), var(--km-shadow-sm);
 }
 
-.km-pill.is-leaf-open {
-  border-color: var(--km-accent);
-  background: var(--km-accent-dim);
+.km-pill.is-leaf-open.is-vivid {
+  border-color: var(--pill-color, var(--km-accent));
+  background: var(--pill-color-dim, var(--km-accent-dim));
 }
 
 .km-pill-root {
-  height: 44px;
   padding: 0 var(--sp-6);
   border-radius: var(--radius-md);
   font-size: var(--fs-sm);
   font-weight: 600;
-  max-width: 220px;
+  border-color: var(--km-node-stroke);
+  color: var(--km-text);
+}
+
+.km-pill-root.is-expanded {
+  border-color: var(--km-text);
+  background: var(--km-surface-2);
+  box-shadow: var(--km-shadow-sm);
 }
 
 /* ── Node type variants ─────────────────────────────────────────────────── */
 .km-pill-type-domain {
-  height: 40px;
   padding: 0 var(--sp-5);
   border-radius: var(--radius-md);
   font-size: var(--fs-sm);
   font-weight: 700;
-  max-width: 220px;
   background: var(--km-surface);
-  border-color: var(--km-border);
 }
 
 .km-pill-type-domain .km-pill-label {
@@ -494,39 +531,30 @@
 .km-pill-type-defense,
 .km-pill-type-detection,
 .km-pill-type-command {
-  height: 38px;
-  padding: 0 var(--sp-3) 0 var(--sp-3);
+  padding: 0 var(--sp-3);
   border-radius: var(--radius-md);
   background: var(--km-surface);
-  border-color: var(--km-border);
-  max-width: 210px;
 }
 
 .km-pill-type-tool {
-  height: 38px;
   background: transparent;
   border-style: dashed;
   border-width: 1.5px;
-  border-color: var(--km-node-stroke);
 }
 
-.km-pill-type-tool:hover {
-  background: var(--km-accent-dim);
+.km-pill-type-tool.is-vivid:hover {
+  background: var(--pill-color-dim, var(--km-accent-dim));
 }
 
 .km-pill-type-lab,
 .km-pill-type-case-study {
-  height: 38px;
-  border-color: var(--km-accent);
-  box-shadow: 0 0 0 1px var(--km-accent-dim), var(--km-shadow-sm);
+  box-shadow: var(--km-shadow-sm);
 }
 
-.km-pill-type-lab.is-expanded,
-.km-pill-type-case-study.is-expanded,
-.km-pill-type-lab.is-leaf-open,
-.km-pill-type-case-study.is-leaf-open {
-  border-color: var(--km-accent);
-  background: var(--km-accent-dim);
+.km-pill-type-lab.is-vivid,
+.km-pill-type-case-study.is-vivid {
+  border-color: var(--pill-color, var(--km-accent));
+  box-shadow: 0 0 0 1px var(--pill-color-dim, var(--km-accent-dim)), var(--km-shadow-sm);
 }
 
 .km-pill-icon-type {
@@ -541,7 +569,7 @@
 .km-pill-icon {
   display: inline-flex;
   flex-shrink: 0;
-  color: var(--km-accent);
+  color: var(--pill-color, var(--km-accent));
   line-height: 0;
 }
 
@@ -563,8 +591,8 @@
 
 /* ── Jump to root ───────────────────────────────────────────────────────── */
 .km-jump-root {
-  position: fixed;
-  top: calc(52px + var(--sp-4));
+  position: absolute;
+  top: var(--sp-4);
   left: var(--sp-4);
   z-index: 30;
   display: inline-flex;
@@ -597,31 +625,83 @@
   color: var(--km-accent-hover);
 }
 
-/* ── Leaf detail panel (right side) ─────────────────────────────────────── */
-.km-leaf-panel {
-  flex: 0 0 min(480px, 42vw);
-  max-width: 100%;
-  border-left: 1px solid var(--km-border);
-  background: var(--km-surface);
+/* ── Leaf detail modal ──────────────────────────────────────────────────── */
+body.km-modal-open {
+  overflow: hidden;
+}
+
+.km-leaf-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.km-leaf-modal:not([hidden]) {
+  pointer-events: auto;
+}
+
+.km-leaf-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="light"] .km-leaf-backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.km-leaf-modal.is-open .km-leaf-backdrop,
+.km-leaf-modal.is-closing .km-leaf-backdrop {
+  opacity: 1;
+}
+
+.km-leaf-modal.is-closing .km-leaf-backdrop {
+  opacity: 0;
+}
+
+.km-leaf-card {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: min(640px, calc(100vw - var(--sp-8)));
+  max-height: 80vh;
   overflow-y: auto;
   padding: var(--sp-8);
-  position: relative;
+  border-radius: var(--km-radius);
+  border: 1px solid var(--km-border);
+  background: var(--km-surface);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%) scale(0.96);
+  opacity: 0;
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.km-leaf-panel .km-topic-title {
+.km-leaf-modal.is-open .km-leaf-card {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.km-leaf-modal.is-closing .km-leaf-card {
+  transform: translate(-50%, -50%) scale(0.96);
+  opacity: 0;
+}
+
+.km-leaf-card .km-topic-title {
   margin: 0 0 var(--sp-4);
   padding-right: var(--sp-12);
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--km-text);
 }
 
-.km-leaf-panel .km-tags {
+.km-leaf-card .km-tags {
   margin-bottom: var(--sp-6);
 }
 
-.km-leaf-panel .km-related {
+.km-leaf-card .km-related {
   margin-bottom: var(--sp-6);
 }
 
@@ -657,36 +737,28 @@
 }
 
 .km-related-chip:hover {
-  border-color: var(--km-accent);
-  color: var(--km-accent);
-  background: var(--km-accent-dim);
+  border-color: var(--pill-color, var(--km-accent));
+  color: var(--pill-color, var(--km-accent));
+  background: var(--pill-color-dim, var(--km-accent-dim));
 }
 
-.km-leaf-panel .km-summary {
+.km-leaf-card .km-summary {
   margin-bottom: var(--sp-6);
-  font-size: var(--fs-base);
-  line-height: 1.6;
-  padding: var(--sp-3);
-  background: var(--km-bg);
-  border-radius: var(--km-radius);
-  border-left: 3px solid var(--km-accent);
 }
 
-.km-leaf-panel .km-detail {
+.km-leaf-card .km-detail {
   line-height: 1.65;
-  color: var(--km-muted);
-  font-size: var(--fs-sm);
 }
 
-.km-leaf-panel .km-detail p {
+.km-leaf-card .km-detail p {
   margin-bottom: var(--sp-4);
 }
 
-.km-leaf-panel .km-detail li {
+.km-leaf-card .km-detail li {
   margin-bottom: var(--sp-2);
 }
 
-.km-leaf-panel .km-commands {
+.km-leaf-card .km-commands {
   margin-top: var(--sp-8);
 }
 
@@ -712,32 +784,25 @@
 }
 
 @media (max-width: 768px) {
-  .km-canvas-wrap {
-    flex-direction: column;
-  }
-
-  .km-leaf-panel {
-    flex: none;
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid var(--km-border);
-    max-height: 55vh;
-  }
-
-  .km-tree-scroll {
-    min-height: 45vh;
+  .km-leaf-card {
+    width: calc(100vw - var(--sp-6));
+    max-height: 85vh;
+    padding: var(--sp-6);
   }
 
   .km-jump-root {
-    top: auto;
     bottom: var(--sp-4);
+    top: auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .km-pill,
   .km-tree-edge,
+  .km-tree-camera,
   .km-jump-root,
+  .km-leaf-backdrop,
+  .km-leaf-card,
   .km-pill.is-entering,
   .km-pill.is-entered {
     transition-duration: 0.01ms !important;
@@ -747,5 +812,11 @@
   .km-pill.is-entering {
     opacity: 1;
     transform: none;
+  }
+
+  .km-leaf-modal.is-open .km-leaf-card,
+  .km-leaf-modal.is-closing .km-leaf-card {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
 }
