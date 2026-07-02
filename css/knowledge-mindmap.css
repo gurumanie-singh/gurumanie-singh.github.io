@@ -14,6 +14,7 @@
   --km-muted: #86868f;
   --km-radius: 10px;
   --km-transition: 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  --km-transition-map: 400ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .km-page {
@@ -694,9 +695,15 @@
   left: 0;
   right: 0;
   z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--km-border);
   background: linear-gradient(to bottom, rgba(17, 17, 24, 0.92), rgba(17, 17, 24, 0.65));
   backdrop-filter: blur(5px);
+  font-size: var(--fs-xs);
 }
 
 .km-desktop-canvas {
@@ -720,9 +727,18 @@
   stroke: rgba(255, 255, 255, 0.08);
 }
 
-.km-node {
+.km-camera {
+  transition: transform var(--km-transition-map);
+}
+
+.km-node-animated {
+  transform-box: fill-box;
   transform-origin: center;
-  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--km-transition-map), opacity var(--km-transition-map);
+}
+
+.km-node-exit {
+  pointer-events: none;
 }
 
 .km-node-circle {
@@ -758,6 +774,11 @@
   stroke: rgba(255, 255, 255, 0.2);
 }
 
+.km-node-leaf.is-leaf-open .km-node-circle {
+  stroke: var(--km-accent);
+  filter: drop-shadow(0 0 8px var(--km-accent-glow));
+}
+
 .km-label {
   font-family: var(--font-sans);
   fill: var(--km-text);
@@ -772,22 +793,51 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -42%);
-  width: min(640px, 90vw);
+  width: min(720px, 92vw);
   max-height: calc(100vh - 140px);
   overflow: auto;
   background: rgba(17, 17, 24, 0.97);
   border: 1px solid var(--km-border);
   border-radius: 16px;
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.48);
-  padding: var(--sp-5) var(--sp-6);
+  padding: var(--sp-8);
   z-index: 25;
-  animation: kmLeafIn 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: kmLeafIn 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.km-leaf-card .km-topic-title {
+  margin: 0 0 var(--sp-4);
+  padding-right: var(--sp-12);
+}
+
+.km-leaf-card .km-tags {
+  margin-bottom: var(--sp-6);
+}
+
+.km-leaf-card .km-summary {
+  margin-bottom: var(--sp-6);
+}
+
+.km-leaf-card .km-detail {
+  line-height: 1.65;
+}
+
+.km-leaf-card .km-detail p {
+  margin-bottom: var(--sp-4);
+}
+
+.km-leaf-card .km-detail li {
+  margin-bottom: var(--sp-2);
+}
+
+.km-leaf-card .km-commands {
+  margin-top: var(--sp-8);
 }
 
 .km-leaf-close {
-  position: sticky;
-  top: 0;
-  float: right;
+  position: absolute;
+  top: var(--sp-6);
+  right: var(--sp-6);
   z-index: 2;
 }
 

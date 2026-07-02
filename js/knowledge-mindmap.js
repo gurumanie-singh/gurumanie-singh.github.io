@@ -3,6 +3,8 @@
    Recursive mind map: every node is a bubble, arbitrary depth.
    ========================================================================== */
 
+const KM_ANIM_MS = 400;
+
 /** Inline SVG icons per domainId — 24×24, stroke only, cyan accent */
 const DOMAIN_ICON_PATHS = {
   'network-security': '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="8" y1="7.5" x2="10.5" y2="16"/><line x1="16" y1="7.5" x2="13.5" y2="16"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
@@ -19,6 +21,9 @@ const DOMAIN_ICON_PATHS = {
   'incident-response': '<path d="M12 3l7 4v5c0 4.5-3.5 7.5-7 9-3.5-1.5-7-4.5-7-9V7l7-4z"/><line x1="12" y1="9" x2="12" y2="13"/><polyline points="10 15 12 17 16 13"/>',
   key: '<circle cx="8" cy="14" r="4"/><path d="M12 14h5a3 3 0 010 6h-1"/><line x1="12" y1="10" x2="12" y2="14"/>',
 };
+
+const VIEW_CX = 600;
+const VIEW_CY = 420;
 
 function domainIconSvg(iconKey, size = 24) {
   const paths = DOMAIN_ICON_PATHS[iconKey] || DOMAIN_ICON_PATHS['network-security'];
@@ -127,9 +132,12 @@ export class KnowledgeMindmap {
     this.tree = null;
     this.nodeById = new Map();
     this.parentById = new Map();
-    this.path = [];
-    this.leafOpen = false;
+    this.focusPath = [];
+    this.openLeafId = null;
     this.flatNodes = [];
+    this.prevLayouts = new Map();
+    this.cameraPan = { x: 0, y: 0 };
+    this._skipFlip = false;
   }
 
   async init() {
@@ -139,12 +147,14 @@ export class KnowledgeMindmap {
     this.tree = raw;
     this.indexTree(raw.root, null);
     const fromHash = this.pathFromHash();
-    this.path = fromHash.length ? fromHash : [raw.root.id];
-    this.leafOpen = this.isLeaf(this.currentNode());
+    this.focusPath = fromHash.length ? fromHash : [raw.root.id];
+    this.openLeafId = null;
+    this._skipFlip = true;
     this.renderLayout();
     this.renderAll();
     this.bindEvents();
     this.syncHash(true);
+    this._skipFlip = false;
   }
 
   indexTree(node, parentId) {
@@ -154,8 +164,8 @@ export class KnowledgeMindmap {
     (node.children || []).forEach((child) => this.indexTree(child, node.id));
   }
 
-  currentNode() {
-    return this.nodeById.get(this.path[this.path.length - 1]);
+  focusNode() {
+    return this.nodeById.get(this.focusPath[this.focusPath.length - 1]);
   }
 
   isLeaf(node) {
@@ -195,16 +205,57 @@ export class KnowledgeMindmap {
   }
 
   syncHash(replace = false) {
-    const next = `#${this.path.join('/')}`;
+    const next = `#${this.focusPath.join('/')}`;
     if (replace) history.replaceState(null, '', next);
     else if (window.location.hash !== next) window.location.hash = next;
+  }
+
+  /** Branch navigation only — never use for leaves */
+  setFocus(nodeId, { pushHash = true, fromPopstate = false } = {}) {
+    const node = this.nodeById.get(nodeId);
+    if (!node || !hasChildren(node)) return;
+    this.focusPath = this.pathFor(nodeId);
+    this.openLeafId = null;
+    this.cameraPan = { x: 0, y: 0 };
+    this.renderAll();
+    if (pushHash && !fromPopstate) this.syncHash(false);
+  }
+
+  /** Open leaf card without changing focusPath */
+  openLeaf(nodeId) {
+    const node = this.nodeById.get(nodeId);
+    if (!node || hasChildren(node)) return;
+    const layout = this.computeLayout();
+    const item = layout.items.find((i) => i.id === nodeId);
+    if (item) {
+      this.cameraPan = {
+        x: (VIEW_CX - item.x) * 0.35,
+        y: (VIEW_CY - item.y) * 0.35,
+      };
+    }
+    this.openLeafId = nodeId;
+    this.renderAll();
+  }
+
+  closeLeaf() {
+    this.openLeafId = null;
+    this.cameraPan = { x: 0, y: 0 };
+    this.renderAll();
+  }
+
+  handleNodeClick(node) {
+    if (hasChildren(node)) {
+      this.setFocus(node.id);
+    } else {
+      this.openLeaf(node.id);
+    }
   }
 
   renderLayout() {
     this.rootEl.className = 'km-page';
     this.rootEl.innerHTML = `
       <div class="km-toolbar">
-        <span class="km-category-label">${escapeHtml(this.tree.category || this.currentNode()?.title || 'Knowledge')}</span>
+        <span class="km-category-label">${escapeHtml(this.tree.category || this.focusNode()?.title || 'Knowledge')}</span>
         <div class="km-search-wrap">
           <input type="search" class="km-search" id="kmSearch" placeholder="Search nodes..." autocomplete="off" />
           <div class="km-search-results" id="kmSearchResults" hidden></div>
@@ -212,7 +263,7 @@ export class KnowledgeMindmap {
         <button type="button" class="km-btn" id="kmResetBtn">Reset</button>
       </div>
       <div class="km-canvas-wrap">
-        <div class="km-breadcrumb" id="kmBreadcrumb"></div>
+        <nav class="km-breadcrumb" id="kmBreadcrumb" aria-label="Breadcrumb"></nav>
         <div class="km-desktop-canvas" id="kmDesktopCanvas"></div>
         <div class="km-mobile-canvas" id="kmMobileCanvas"></div>
       </div>
@@ -228,117 +279,259 @@ export class KnowledgeMindmap {
   renderBreadcrumb() {
     const el = this.rootEl.querySelector('#kmBreadcrumb');
     if (!el) return;
-    const crumbs = this.path.map((id) => this.nodeById.get(id)).filter(Boolean);
+    const crumbs = this.focusPath.map((id) => this.nodeById.get(id)).filter(Boolean);
+    if (this.openLeafId) {
+      const leaf = this.nodeById.get(this.openLeafId);
+      if (leaf) crumbs.push(leaf);
+    }
     el.innerHTML = crumbs.map((node, idx) => {
       const sep = idx > 0 ? '<span class="km-bc-sep">›</span>' : '';
-      if (idx === crumbs.length - 1) return `${sep}<span class="km-bc-current">${escapeHtml(node.title)}</span>`;
+      const isLeafCrumb = this.openLeafId && node.id === this.openLeafId;
+      const isLastFocus = !isLeafCrumb && idx === crumbs.length - 1 && !this.openLeafId;
+      if (isLeafCrumb || isLastFocus) {
+        return `${sep}<span class="km-bc-current">${escapeHtml(node.title)}</span>`;
+      }
       return `${sep}<button type="button" class="km-bc-link" data-id="${node.id}">${escapeHtml(node.title)}</button>`;
     }).join('');
     el.querySelectorAll('.km-bc-link').forEach((btn) => {
-      btn.addEventListener('click', () => this.navigateTo(btn.dataset.id));
+      btn.addEventListener('click', () => {
+        this.closeLeaf();
+        this.setFocus(btn.dataset.id);
+      });
     });
+  }
+
+  computeLayout() {
+    const focus = this.focusNode();
+    const parentId = this.parentById.get(focus.id);
+    const parent = parentId ? this.nodeById.get(parentId) : null;
+    const children = this.childrenOf(focus);
+    const siblings = parent ? this.childrenOf(parent).filter((n) => n.id !== focus.id) : [];
+    const depth = this.focusPath.length - 1;
+    const childRadius = Math.min(280, Math.max(170, 105 + children.length * 8));
+    const items = [];
+
+    items.push({
+      id: focus.id,
+      node: focus,
+      role: 'focus',
+      x: VIEW_CX,
+      y: VIEW_CY,
+      scale: 1,
+      opacity: 1,
+      radius: nodeRadius(focus, depth, true),
+    });
+
+    siblings.forEach((node, i) => {
+      const angle = (360 / Math.max(siblings.length, 1)) * i;
+      const pos = polarToCartesian(VIEW_CX, VIEW_CY, childRadius + 110, angle);
+      items.push({
+        id: node.id,
+        node,
+        role: 'sibling',
+        x: pos.x,
+        y: pos.y,
+        scale: 0.55,
+        opacity: 0.32,
+        radius: 28,
+      });
+    });
+
+    children.forEach((node, i) => {
+      const angle = (360 / Math.max(children.length, 1)) * i;
+      const pos = polarToCartesian(VIEW_CX, VIEW_CY, childRadius, angle);
+      items.push({
+        id: node.id,
+        node,
+        role: 'child',
+        x: pos.x,
+        y: pos.y,
+        scale: 1,
+        opacity: 1,
+        radius: nodeRadius(node, depth + 1, false),
+      });
+    });
+
+    return { items, childRadius, focusId: focus.id };
   }
 
   renderDesktop() {
     const mount = this.rootEl.querySelector('#kmDesktopCanvas');
     if (!mount) return;
-    const focus = this.currentNode();
-    const children = this.childrenOf(focus);
-    const parent = this.nodeById.get(this.parentById.get(focus.id));
-    const siblings = parent ? this.childrenOf(parent).filter((n) => n.id !== focus.id) : [];
+
+    const layout = this.computeLayout();
+    const prev = new Map(this.prevLayouts);
+    const prevFocusId = prev.get('__focusId');
+    const exitNodes = [];
+    for (const [id, p] of prev) {
+      if (id === '__focusId') continue;
+      if (!layout.items.some((i) => i.id === id)) {
+        exitNodes.push({ id, ...p });
+      }
+    }
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 1200 800');
     svg.setAttribute('class', 'km-canvas');
 
-    const cx = 600;
-    const cy = 420;
-    const childRadius = Math.min(280, Math.max(170, 105 + children.length * 8));
+    const cameraG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    cameraG.setAttribute('class', 'km-camera');
+    cameraG.setAttribute('transform', `translate(${this.cameraPan.x}, ${this.cameraPan.y})`);
 
-    // path ancestors as faded background (still clickable)
-    const ancestors = this.path.slice(0, -1).map((id) => this.nodeById.get(id)).filter(Boolean);
-    ancestors.forEach((node, idx) => {
-      const p = polarToCartesian(180, 130 + idx * 110, 0, 0);
-      this.drawNode(svg, {
-        node,
-        x: p.x,
-        y: p.y,
-        radius: 24,
-        cls: 'km-node km-node-bg',
-        label: node.title,
-        onClick: () => this.navigateTo(node.id),
+    const focusItem = layout.items.find((i) => i.role === 'focus');
+
+    layout.items.forEach((item) => {
+      if (item.role === 'child' || item.role === 'sibling') {
+        this.drawEdge(cameraG, focusItem.x, focusItem.y, item.x, item.y, item.role === 'sibling' ? 'km-edge km-edge-bg' : 'km-edge');
+      }
+    });
+
+    exitNodes.forEach((item) => {
+      const ghost = this.createNodeGroup({
+        ...item,
+        node: this.nodeById.get(item.id) || { id: item.id, title: '' },
+        role: 'exit',
+        scale: 0.15,
+        opacity: 0,
       });
+      ghost.setAttribute('data-node-id', item.id);
+      ghost.classList.add('km-node-exit');
+      const p = prev.get(item.id);
+      ghost.setAttribute('transform', `translate(${p.x}, ${p.y}) scale(${p.scale || 1})`);
+      ghost.style.opacity = String(p.opacity ?? 0.3);
+      cameraG.appendChild(ghost);
     });
 
-    // siblings of focus in background ring
-    siblings.forEach((node, i) => {
-      const pos = polarToCartesian(cx, cy, childRadius + 110, (360 / Math.max(siblings.length, 1)) * i);
-      this.drawEdge(svg, cx, cy, pos.x, pos.y, 'km-edge km-edge-bg');
-      this.drawNode(svg, {
-        node,
-        x: pos.x,
-        y: pos.y,
-        radius: 24,
-        cls: 'km-node km-node-bg',
-        label: node.title,
-        onClick: () => this.navigateTo(node.id),
+    layout.items.forEach((item) => {
+      const g = this.createNodeGroup(item);
+      g.setAttribute('data-node-id', item.id);
+      g.setAttribute('transform', `translate(${item.x}, ${item.y}) scale(${item.scale})`);
+      g.style.opacity = String(item.opacity);
+      g.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.handleNodeClick(item.node);
       });
+      if (this.openLeafId === item.id) g.classList.add('is-leaf-open');
+      cameraG.appendChild(g);
     });
 
-    // focus node
-    this.drawNode(svg, {
-      node: focus,
-      x: cx,
-      y: cy,
-      radius: nodeRadius(focus, this.path.length - 1, true),
-      cls: 'km-node km-node-focus',
-      label: focus.title,
-      summary: focus.summary,
-      onClick: () => {
-        if (hasChildren(focus)) this.navigateTo(focus.id);
-        else this.toggleLeaf();
-      },
-    });
-
-    // children orbit ring
-    children.forEach((node, i) => {
-      const angle = (360 / Math.max(children.length, 1)) * i;
-      const pos = polarToCartesian(cx, cy, childRadius, angle);
-      this.drawEdge(svg, cx, cy, pos.x, pos.y, 'km-edge');
-      this.drawNode(svg, {
-        node,
-        x: pos.x,
-        y: pos.y,
-        radius: nodeRadius(node, this.path.length, false),
-        cls: `km-node ${this.isLeaf(node) ? 'km-node-leaf' : 'km-node-branch'}`,
-        label: node.title,
-        summary: node.summary,
-        onClick: () => this.navigateTo(node.id),
-      });
-    });
-
+    svg.appendChild(cameraG);
     mount.innerHTML = '';
     mount.appendChild(svg);
 
-    if (this.leafOpen && this.isLeaf(focus)) {
-      const card = document.createElement('div');
-      card.className = 'km-leaf-card';
-      card.innerHTML = this.leafCardHtml(focus);
-      mount.appendChild(card);
-      card.querySelectorAll('.km-copy').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(btn.dataset.cmd);
-            btn.textContent = 'Copied';
-            setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
-          } catch (_) {}
-        });
-      });
-      card.querySelector('#kmLeafClose')?.addEventListener('click', () => {
-        this.leafOpen = false;
-        this.renderAll();
-      });
+    if (!this._skipFlip) {
+      this.runFlip(cameraG, prev, layout, prevFocusId);
     }
+
+    this.prevLayouts = new Map(layout.items.map((i) => [i.id, { x: i.x, y: i.y, scale: i.scale, opacity: i.opacity, role: i.role }]));
+    this.prevLayouts.set('__focusId', layout.focusId);
+
+    if (this.openLeafId) {
+      const leafNode = this.nodeById.get(this.openLeafId);
+      if (leafNode) {
+        const card = document.createElement('div');
+        card.className = 'km-leaf-card';
+        card.innerHTML = this.leafCardHtml(leafNode);
+        mount.appendChild(card);
+        this.bindLeafCard(card);
+      }
+    }
+  }
+
+  runFlip(cameraG, prev, layout, prevFocusId) {
+    const newIds = new Set(layout.items.map((i) => i.id));
+    const focusItem = layout.items.find((i) => i.role === 'focus');
+
+    layout.items.forEach((item) => {
+      const el = cameraG.querySelector(`[data-node-id="${item.id}"]`);
+      if (!el) return;
+      const p = prev.get(item.id);
+
+      if (p) {
+        const dx = p.x - item.x;
+        const dy = p.y - item.y;
+        const ds = (p.scale || 1) / item.scale;
+        el.style.transition = 'none';
+        el.setAttribute('transform', `translate(${item.x + dx}, ${item.y + dy}) scale(${item.scale * ds})`);
+        el.style.opacity = String(p.opacity ?? 1);
+        requestAnimationFrame(() => {
+          el.style.transition = '';
+          el.setAttribute('transform', `translate(${item.x}, ${item.y}) scale(${item.scale})`);
+          el.style.opacity = String(item.opacity);
+        });
+      } else if (item.role === 'child') {
+        const origin = prev.get(prevFocusId) || focusItem;
+        el.style.transition = 'none';
+        el.setAttribute('transform', `translate(${origin.x}, ${origin.y}) scale(0.15)`);
+        el.style.opacity = '0';
+        requestAnimationFrame(() => {
+          el.style.transition = '';
+          el.setAttribute('transform', `translate(${item.x}, ${item.y}) scale(${item.scale})`);
+          el.style.opacity = String(item.opacity);
+        });
+      }
+    });
+
+    cameraG.querySelectorAll('.km-node-exit').forEach((el) => {
+      const id = el.getAttribute('data-node-id');
+      const p = prev.get(id);
+      if (!p || newIds.has(id)) return;
+      requestAnimationFrame(() => {
+        el.setAttribute('transform', `translate(${focusItem.x}, ${focusItem.y}) scale(0.1)`);
+        el.style.opacity = '0';
+      });
+      setTimeout(() => el.remove(), KM_ANIM_MS);
+    });
+  }
+
+  createNodeGroup({ node, role, radius, x, y }) {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const roleCls = role === 'focus' ? 'km-node-focus'
+      : role === 'sibling' ? 'km-node-bg'
+        : role === 'exit' ? 'km-node-exit'
+          : this.isLeaf(node) ? 'km-node-leaf' : 'km-node-branch';
+    g.setAttribute('class', `km-node km-node-animated ${roleCls}`);
+    g.style.cursor = 'pointer';
+
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', 0);
+    c.setAttribute('cy', 0);
+    c.setAttribute('r', radius);
+    c.setAttribute('class', 'km-node-circle');
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', 0);
+    t.setAttribute('y', radius + 14);
+    t.setAttribute('class', 'km-label');
+    const short = node.title.length > 26 ? `${node.title.slice(0, 24)}…` : node.title;
+    t.textContent = short;
+
+    g.appendChild(c);
+    if ((node.type === 'domain' || node.icon) && radius >= 32) {
+      const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+      fo.setAttribute('x', -10);
+      fo.setAttribute('y', -radius + 10);
+      fo.setAttribute('width', 20);
+      fo.setAttribute('height', 20);
+      fo.innerHTML = domainIconSvg(node.icon || node.id, 18);
+      g.appendChild(fo);
+    }
+    g.appendChild(t);
+
+    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+    title.textContent = node.summary ? `${node.title}\n${node.summary}` : node.title;
+    g.appendChild(title);
+    return g;
+  }
+
+  drawEdge(parent, x1, y1, x2, y2, cls = 'km-edge') {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('class', cls);
+    parent.appendChild(line);
   }
 
   leafCardHtml(node) {
@@ -367,76 +560,32 @@ export class KnowledgeMindmap {
     `;
   }
 
-  drawEdge(svg, x1, y1, x2, y2, cls = 'km-edge') {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1);
-    line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2);
-    line.setAttribute('y2', y2);
-    line.setAttribute('class', cls);
-    svg.appendChild(line);
-  }
-
-  drawNode(svg, { node, x, y, radius, cls, label, summary, onClick }) {
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', cls);
-    g.style.cursor = 'pointer';
-    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    c.setAttribute('cx', x);
-    c.setAttribute('cy', y);
-    c.setAttribute('r', radius);
-    c.setAttribute('class', 'km-node-circle');
-    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    t.setAttribute('x', x);
-    t.setAttribute('y', y + 3);
-    t.setAttribute('class', 'km-label');
-    const short = label.length > 26 ? `${label.slice(0, 24)}…` : label;
-    t.textContent = short;
-    g.appendChild(c);
-    if ((node.type === 'domain' || node.icon) && radius >= 32) {
-      const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-      fo.setAttribute('x', x - 10);
-      fo.setAttribute('y', y - radius + 10);
-      fo.setAttribute('width', 20);
-      fo.setAttribute('height', 20);
-      fo.innerHTML = domainIconSvg(node.icon || node.id, 18);
-      g.appendChild(fo);
-    }
-    g.appendChild(t);
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-    title.textContent = `${label}${summary ? `\n${summary}` : ''}`;
-    g.appendChild(title);
-    g.addEventListener('click', (e) => {
-      e.stopPropagation();
-      onClick();
+  bindLeafCard(card) {
+    card.querySelector('#kmLeafClose')?.addEventListener('click', () => this.closeLeaf());
+    card.querySelectorAll('.km-copy').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.cmd);
+          btn.textContent = 'Copied';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
+        } catch (_) {}
+      });
     });
-    svg.appendChild(g);
   }
 
   renderMobile() {
     const mount = this.rootEl.querySelector('#kmMobileCanvas');
     if (!mount) return;
-    const focus = this.currentNode();
-    const list = this.childrenOf(focus);
-    const isLeaf = this.isLeaf(focus);
-    if (isLeaf && this.leafOpen) {
-      mount.innerHTML = `<div class="km-mobile-leaf">${this.leafCardHtml(focus)}</div>`;
-      mount.querySelector('#kmLeafClose')?.addEventListener('click', () => {
-        this.leafOpen = false;
-        this.renderAll();
-      });
-      mount.querySelectorAll('.km-copy').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(btn.dataset.cmd);
-            btn.textContent = 'Copied';
-            setTimeout(() => { btn.textContent = 'Copy'; }, 1200);
-          } catch (_) {}
-        });
-      });
+
+    if (this.openLeafId) {
+      const leafNode = this.nodeById.get(this.openLeafId);
+      mount.innerHTML = `<div class="km-mobile-leaf">${this.leafCardHtml(leafNode)}</div>`;
+      this.bindLeafCard(mount.querySelector('.km-mobile-leaf'));
       return;
     }
 
+    const focus = this.focusNode();
+    const list = this.childrenOf(focus);
     mount.innerHTML = `
       <div class="km-mobile-list">
         ${list.map((node) => `
@@ -448,43 +597,49 @@ export class KnowledgeMindmap {
       </div>
     `;
     mount.querySelectorAll('.km-mobile-item').forEach((btn) => {
-      btn.addEventListener('click', () => this.navigateTo(btn.dataset.id));
+      btn.addEventListener('click', () => this.handleNodeClick(this.nodeById.get(btn.dataset.id)));
     });
   }
 
-  navigateTo(id, fromPopstate = false) {
-    const node = this.nodeById.get(id);
-    if (!node) return;
-    this.path = this.pathFor(id);
-    this.leafOpen = this.isLeaf(node);
-    this.renderAll();
-    if (!fromPopstate) this.syncHash(false);
-  }
-
   navigateUp() {
-    if (this.leafOpen) {
-      this.leafOpen = false;
-      this.renderAll();
+    if (this.openLeafId) {
+      this.closeLeaf();
       return;
     }
-    if (this.path.length <= 1) return;
-    this.path = this.path.slice(0, -1);
-    this.leafOpen = false;
+    if (this.focusPath.length <= 1) return;
+    this.focusPath = this.focusPath.slice(0, -1);
     this.renderAll();
     this.syncHash(false);
   }
 
   reset() {
-    this.path = [this.tree.root.id];
-    this.leafOpen = false;
+    this.focusPath = [this.tree.root.id];
+    this.openLeafId = null;
+    this.cameraPan = { x: 0, y: 0 };
     this.renderAll();
     this.syncHash(false);
   }
 
-  toggleLeaf() {
-    if (!this.isLeaf(this.currentNode())) return;
-    this.leafOpen = !this.leafOpen;
+  navigateToSearchResult(nodeId) {
+    const node = this.nodeById.get(nodeId);
+    if (!node) return;
+    if (hasChildren(node)) {
+      this.setFocus(node.id);
+      return;
+    }
+    const parentId = this.parentById.get(node.id);
+    this.focusPath = parentId ? this.pathFor(parentId) : [this.tree.root.id];
+    this.openLeafId = node.id;
+    const layout = this.computeLayout();
+    const item = layout.items.find((i) => i.id === nodeId);
+    if (item) {
+      this.cameraPan = {
+        x: (VIEW_CX - item.x) * 0.35,
+        y: (VIEW_CY - item.y) * 0.35,
+      };
+    }
     this.renderAll();
+    this.syncHash(false);
   }
 
   runSearch(query) {
@@ -514,7 +669,7 @@ export class KnowledgeMindmap {
     `).join('');
     resultsEl.querySelectorAll('.km-search-item').forEach((btn) => {
       btn.addEventListener('click', () => {
-        this.navigateTo(btn.dataset.id);
+        this.navigateToSearchResult(btn.dataset.id);
         resultsEl.hidden = true;
         const input = this.rootEl.querySelector('#kmSearch');
         if (input) input.value = '';
@@ -539,8 +694,9 @@ export class KnowledgeMindmap {
     window.addEventListener('hashchange', () => {
       const p = this.pathFromHash();
       if (p.length) {
-        this.path = p;
-        this.leafOpen = this.isLeaf(this.currentNode());
+        this.focusPath = p;
+        this.openLeafId = null;
+        this.cameraPan = { x: 0, y: 0 };
         this.renderAll();
       } else {
         this.reset();
