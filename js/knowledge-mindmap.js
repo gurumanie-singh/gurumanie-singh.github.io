@@ -1101,8 +1101,8 @@ export class KnowledgeMindmap {
       <button type="button" class="km-leaf-close km-btn" id="kmLeafClose" aria-label="Close">Close</button>
       <h2 class="km-topic-title">${escapeHtml(node.title)}</h2>
       ${tags ? `<div class="km-tags">${tags}</div>` : ''}
+      <div class="km-summary km-summary-lead">${escapeHtml(node.summary || '')}</div>
       ${related}
-      <div class="km-summary">${escapeHtml(node.summary || '')}</div>
       <div class="km-detail">${renderMarkdown(coreContent(node))}</div>
       ${commands}
     `;

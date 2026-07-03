@@ -306,6 +306,15 @@
   border-left: 3px solid var(--pill-color, var(--km-accent));
 }
 
+/* Promoted "if I only read one line" summary — sits above the detail bullets
+   so a quick scan gets the takeaway before any supporting detail. */
+.km-summary-lead {
+  font-size: var(--fs-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--km-text);
+  line-height: 1.45;
+}
+
 .km-detail {
   font-size: var(--fs-sm);
   color: var(--km-muted);
