@@ -335,6 +335,8 @@ function showLoadError(rootEl, err, dataPath) {
 
 const CAMERA_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const CAMERA_MS = 400;
+const PAN_MARGIN = 350;
+const PAN_SNAP_MS = 200;
 
 /** Fixed per top-level domain palette — dark (d) and light (l) variants */
 const DOMAIN_COLORS = {
@@ -409,6 +411,10 @@ export class KnowledgeMindmap {
     this.camera = { x: 0, y: 0, scale: 1 };
     this.rootCamera = { x: 0, y: 0 };
     this.pendingCameraFocus = null;
+    this.panDrag = null;
+    this.hasPanned = false;
+    this._wheelSnapTimer = null;
+    this._panHintTimer = null;
   }
 
   async init() {
@@ -442,8 +448,10 @@ export class KnowledgeMindmap {
     this.applyDomainPalette();
     this.renderAll();
     this.bindEvents();
+    this.bindPanEvents();
     this.syncHash(true);
     this.focusCameraOn(this.tree.root.id, false);
+    this.schedulePanHintFade();
     this.observeThemeChanges();
   }
 
@@ -706,6 +714,7 @@ export class KnowledgeMindmap {
       <div class="km-canvas-wrap">
         <div class="km-tree-viewport" id="kmTreeViewport">
           <button type="button" class="km-jump-root" id="kmJumpRoot" title="Back to root" aria-label="Back to root">↑ Root</button>
+          <p class="km-pan-hint" id="kmPanHint" aria-hidden="true">Drag to pan</p>
           <div class="km-tree-camera" id="kmTreeCamera">
             <div class="km-tree-inner" id="kmTreeInner"></div>
           </div>
@@ -829,11 +838,91 @@ export class KnowledgeMindmap {
     return { x: pos.x + pos.width / 2, y: pos.y + pos.height / 2 };
   }
 
+  getPanBounds() {
+    const vp = this.rootEl.querySelector('#kmTreeViewport');
+    const layout = this.lastLayout;
+    if (!vp || !layout) return null;
+
+    const scale = this.camera.scale;
+    const vw = vp.clientWidth;
+    const vh = vp.clientHeight;
+    let contentMinX = Infinity;
+    let contentMinY = Infinity;
+    let contentMaxX = -Infinity;
+    let contentMaxY = -Infinity;
+
+    for (const pos of layout.positions.values()) {
+      contentMinX = Math.min(contentMinX, pos.x);
+      contentMinY = Math.min(contentMinY, pos.y);
+      contentMaxX = Math.max(contentMaxX, pos.x + pos.width);
+      contentMaxY = Math.max(contentMaxY, pos.y + pos.height);
+    }
+
+    if (!Number.isFinite(contentMinX)) {
+      contentMinX = 0;
+      contentMinY = 0;
+      contentMaxX = layout.width;
+      contentMaxY = layout.height;
+    }
+
+    const margin = PAN_MARGIN;
+    let txMin = vw - margin - contentMaxX * scale;
+    let txMax = margin - contentMinX * scale;
+    let tyMin = vh - margin - contentMaxY * scale;
+    let tyMax = margin - contentMinY * scale;
+
+    if (txMin > txMax) {
+      const mid = (txMin + txMax) / 2;
+      txMin = mid - margin;
+      txMax = mid + margin;
+    }
+    if (tyMin > tyMax) {
+      const mid = (tyMin + tyMax) / 2;
+      tyMin = mid - margin;
+      tyMax = mid + margin;
+    }
+
+    return { minX: txMin, maxX: txMax, minY: tyMin, maxY: tyMax };
+  }
+
+  isCameraOutOfBounds() {
+    const bounds = this.getPanBounds();
+    if (!bounds) return false;
+    return (
+      this.camera.x < bounds.minX
+      || this.camera.x > bounds.maxX
+      || this.camera.y < bounds.minY
+      || this.camera.y > bounds.maxY
+    );
+  }
+
+  applyCameraTransform({ animate = false, snapBack = false } = {}) {
+    const cam = this.rootEl.querySelector('#kmTreeCamera');
+    if (!cam) return;
+
+    if (snapBack) {
+      const bounds = this.getPanBounds();
+      if (bounds) {
+        this.camera.x = Math.min(bounds.maxX, Math.max(bounds.minX, this.camera.x));
+        this.camera.y = Math.min(bounds.maxY, Math.max(bounds.minY, this.camera.y));
+      }
+    }
+
+    cam.classList.remove('is-animating', 'is-snap-back');
+    if (animate) {
+      const cls = snapBack ? 'is-snap-back' : 'is-animating';
+      cam.classList.add(cls);
+      cam.addEventListener('transitionend', () => cam.classList.remove(cls), { once: true });
+    }
+
+    const { x, y, scale } = this.camera;
+    cam.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+  }
+
   focusCameraOn(nodeId, animate = true) {
     const vp = this.rootEl.querySelector('#kmTreeViewport');
-    const cam = this.rootEl.querySelector('#kmTreeCamera');
     const center = this.getNodeCenter(nodeId);
-    if (!vp || !cam || !center) {
+    if (!vp || !center) {
       this.pendingCameraFocus = nodeId;
       return;
     }
@@ -847,19 +936,114 @@ export class KnowledgeMindmap {
     this.camera.x = tx;
     this.camera.y = ty;
 
-    if (animate) {
-      cam.classList.add('is-animating');
-      const onEnd = () => cam.classList.remove('is-animating');
-      cam.addEventListener('transitionend', onEnd, { once: true });
-    }
-
-    cam.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
-
     if (nodeId === this.tree.root.id) {
       this.rootCamera = { x: tx, y: ty };
     }
 
+    this.applyCameraTransform({ animate });
     this.updateJumpRootButton();
+  }
+
+  dismissPanHint() {
+    const hint = this.rootEl.querySelector('#kmPanHint');
+    if (!hint) return;
+    hint.classList.add('is-dismissed');
+    clearTimeout(this._panHintTimer);
+    this._panHintTimer = setTimeout(() => hint.remove(), 400);
+  }
+
+  schedulePanHintFade() {
+    const hint = this.rootEl.querySelector('#kmPanHint');
+    if (!hint || this.hasPanned) {
+      hint?.remove();
+      return;
+    }
+    clearTimeout(this._panHintTimer);
+    this._panHintTimer = setTimeout(() => {
+      if (!this.hasPanned) {
+        hint.classList.add('is-fading');
+        setTimeout(() => hint.remove(), 500);
+      }
+    }, 4000);
+  }
+
+  bindPanEvents() {
+    const vp = this.rootEl.querySelector('#kmTreeViewport');
+    if (!vp || vp.dataset.panBound) return;
+    vp.dataset.panBound = '1';
+
+    vp.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (e.target.closest('.km-pill, .km-jump-root, .km-pan-hint')) return;
+
+      this.rootEl.querySelector('#kmTreeCamera')?.classList.remove('is-animating', 'is-snap-back');
+      this.panDrag = {
+        pointerId: e.pointerId,
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        originX: this.camera.x,
+        originY: this.camera.y,
+        moved: false,
+      };
+      vp.setPointerCapture(e.pointerId);
+      vp.classList.add('is-grabbing');
+    });
+
+    vp.addEventListener('pointermove', (e) => {
+      if (!this.panDrag || e.pointerId !== this.panDrag.pointerId) return;
+      const dx = e.clientX - this.panDrag.startClientX;
+      const dy = e.clientY - this.panDrag.startClientY;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) this.panDrag.moved = true;
+
+      this.camera.x = this.panDrag.originX + dx;
+      this.camera.y = this.panDrag.originY + dy;
+      this.applyCameraTransform({ animate: false });
+      this.updateJumpRootButton();
+    });
+
+    const endPan = (e) => {
+      if (!this.panDrag || e.pointerId !== this.panDrag.pointerId) return;
+      if (vp.hasPointerCapture(e.pointerId)) vp.releasePointerCapture(e.pointerId);
+      vp.classList.remove('is-grabbing');
+
+      if (this.panDrag.moved) {
+        this.hasPanned = true;
+        this.dismissPanHint();
+      }
+
+      this.panDrag = null;
+
+      if (this.isCameraOutOfBounds()) {
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.applyCameraTransform({ animate: !reduced, snapBack: true });
+        this.updateJumpRootButton();
+      }
+    };
+
+    vp.addEventListener('pointerup', endPan);
+    vp.addEventListener('pointercancel', endPan);
+
+    vp.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) return;
+      e.preventDefault();
+      this.rootEl.querySelector('#kmTreeCamera')?.classList.remove('is-animating', 'is-snap-back');
+
+      this.camera.x -= e.deltaX;
+      this.camera.y -= e.deltaY;
+      this.applyCameraTransform({ animate: false });
+      this.updateJumpRootButton();
+      this.hasPanned = true;
+      this.dismissPanHint();
+
+      clearTimeout(this._wheelSnapTimer);
+      this._wheelSnapTimer = setTimeout(() => {
+        if (this.isCameraOutOfBounds()) {
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.applyCameraTransform({ animate: !reduced, snapBack: true });
+          this.updateJumpRootButton();
+        }
+      }, 150);
+    }, { passive: false });
   }
 
   renderLeafModal() {

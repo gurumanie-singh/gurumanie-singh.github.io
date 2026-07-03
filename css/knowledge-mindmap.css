@@ -402,6 +402,38 @@
   min-height: calc(100vh - 52px);
   overflow: hidden;
   touch-action: none;
+  cursor: grab;
+}
+
+.km-tree-viewport.is-grabbing {
+  cursor: grabbing;
+}
+
+.km-tree-viewport .km-pill {
+  cursor: pointer;
+}
+
+.km-pan-hint {
+  position: absolute;
+  bottom: var(--sp-4);
+  right: var(--sp-4);
+  z-index: 25;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 9999px;
+  border: 1px solid var(--km-border);
+  background: var(--km-surface);
+  color: var(--km-muted);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 500ms ease;
+}
+
+.km-pan-hint.is-fading,
+.km-pan-hint.is-dismissed {
+  opacity: 0;
 }
 
 .km-tree-camera {
@@ -414,6 +446,10 @@
 
 .km-tree-camera.is-animating {
   transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.km-tree-camera.is-snap-back {
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .km-tree-inner {
@@ -834,6 +870,7 @@ body.km-modal-open {
   .km-pill,
   .km-tree-edge,
   .km-tree-camera,
+  .km-pan-hint,
   .km-jump-root,
   .km-leaf-backdrop,
   .km-leaf-card,
