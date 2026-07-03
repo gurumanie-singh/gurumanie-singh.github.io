@@ -154,8 +154,14 @@ function defaultMetadata(overrides = {}) {
 function inferTypeFromDepth(depth, hasKids) {
   if (depth === 0) return ROOT_TYPE;
   if (depth === 1) return 'domain';
-  if (depth === 2) return hasKids ? 'topic' : 'concept';
-  return 'concept';
+  return hasKids ? 'topic' : 'concept';
+}
+
+/** Render-time sort — does not mutate source data */
+function sortNodesByLabel(nodes) {
+  return [...nodes].sort((a, b) =>
+    nodeLabel(a).localeCompare(nodeLabel(b), undefined, { sensitivity: 'base', numeric: true }),
+  );
 }
 
 function normalizeNodeType(node, depth) {
@@ -383,10 +389,16 @@ function isLightTheme() {
 }
 
 function estimatePillWidth(label, isRoot) {
+  if (isRoot) {
+    // Root uses --fs-sm + font-weight 600 and --sp-6 horizontal padding
+    const charW = 8.6;
+    const padX = 48;
+    return Math.max(PILL_MIN_W, Math.ceil(label.length * charW + padX));
+  }
   const charW = 7.2;
-  const iconExtra = isRoot ? 8 : 22;
+  const iconExtra = 22;
   const base = label.length * charW + PILL_PAD_X * 2 + iconExtra;
-  return Math.max(PILL_MIN_W, Math.min(base, isRoot ? 220 : 210));
+  return Math.max(PILL_MIN_W, Math.min(base, 210));
 }
 
 function bezierEdge(x1, y1, x2, y2) {
@@ -550,11 +562,11 @@ export class KnowledgeMindmap {
     if (!this.expandedPath.length) return columns;
 
     const root = this.tree.root;
-    if (root.children?.length) columns.push(root.children);
+    if (root.children?.length) columns.push(sortNodesByLabel(root.children));
 
     for (let i = 1; i < this.expandedPath.length; i += 1) {
       const node = this.nodeById.get(this.expandedPath[i]);
-      if (node && hasChildren(node)) columns.push(node.children);
+      if (node && hasChildren(node)) columns.push(sortNodesByLabel(node.children));
     }
     return columns;
   }

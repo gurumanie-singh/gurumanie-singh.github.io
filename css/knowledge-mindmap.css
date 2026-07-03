@@ -578,6 +578,14 @@
   font-weight: 600;
   border-color: var(--km-node-stroke);
   color: var(--km-text);
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.km-pill-root .km-pill-label {
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .km-pill-root.is-expanded {
