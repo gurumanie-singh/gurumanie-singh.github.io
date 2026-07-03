@@ -2,5 +2,6 @@ node_modules/
 dist/
 .DS_Store
 
-CPRE381/output/*.wlf
+# ModelSim / Quartus simulation outputs — not needed for GitHub Pages
+CPRE381/output/
 .aider*
