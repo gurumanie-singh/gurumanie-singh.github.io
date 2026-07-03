@@ -262,11 +262,11 @@ function renderMarkdown(md) {
 }
 
 function normalizeLegacy(raw) {
-  if (raw.root) {
+  if (raw?.root) {
     normalizeTreeNode(raw.root, 0);
     return raw;
   }
-  if (raw.domains) {
+  if (raw?.domains) {
     const normalized = {
       category: raw.category || 'Knowledge',
       lastBuilt: raw.lastBuilt,
@@ -289,6 +289,48 @@ function normalizeLegacy(raw) {
     return normalized;
   }
   return raw;
+}
+
+function validateTreeShape(raw) {
+  const errors = [];
+  if (!raw || typeof raw !== 'object') {
+    errors.push('Document is not a JSON object.');
+    return errors;
+  }
+  if (raw.root) {
+    validateNodeBranch(raw.root, errors, new Set(), []);
+    return errors;
+  }
+  if (raw.domains) return errors;
+  errors.push('Unrecognized shape: expected nested "root" or legacy "domains[]".');
+  return errors;
+}
+
+function validateNodeBranch(node, errors, seenIds, path) {
+  const here = [...path, node?.id || node?.title || '?'];
+  if (!node?.id) {
+    errors.push(`Node missing required "id" at ${here.join(' → ')}`);
+  } else if (seenIds.has(node.id)) {
+    errors.push(`Duplicate node id "${node.id}" at ${here.join(' → ')}`);
+  } else {
+    seenIds.add(node.id);
+  }
+  if (!node?.title) {
+    console.warn(`[KnowledgeMindmap] Node missing title: id="${node?.id || '?'}" at ${here.join(' → ')}`);
+  }
+  (node?.children || []).forEach((child) => validateNodeBranch(child, errors, seenIds, here));
+}
+
+function showLoadError(rootEl, err, dataPath) {
+  const detail = err?.stack || err?.message || String(err);
+  console.error('[KnowledgeMindmap] Failed to load knowledge map:', err);
+  rootEl.innerHTML = `
+    <div class="km-load-error" role="alert">
+      <h2 class="km-load-error-title">Failed to load knowledge map</h2>
+      <p class="km-load-error-path"><strong>Source:</strong> ${escapeHtml(dataPath)}</p>
+      <pre class="km-load-error-detail">${escapeHtml(detail)}</pre>
+    </div>
+  `;
 }
 
 const CAMERA_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -370,10 +412,28 @@ export class KnowledgeMindmap {
   }
 
   async init() {
-    const res = await fetch(this.dataPath);
-    if (!res.ok) throw new Error(`Failed to load ${this.dataPath}`);
-    const raw = normalizeLegacy(await res.json());
+    let raw;
+    try {
+      const res = await fetch(this.dataPath);
+      if (!res.ok) throw new Error(`HTTP ${res.status} loading ${this.dataPath}`);
+      raw = await res.json();
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        throw new Error(`Invalid JSON in ${this.dataPath}: ${err.message}`);
+      }
+      throw err;
+    }
+
+    raw = normalizeLegacy(raw);
+    const validationErrors = validateTreeShape(raw);
+    if (validationErrors.length) {
+      throw new Error(`Invalid knowledge data:\n${validationErrors.slice(0, 8).join('\n')}`);
+    }
+
     this.tree = raw;
+    this.nodeById.clear();
+    this.parentById.clear();
+    this.flatNodes = [];
     this.indexTree(raw.root, null);
     const fromHash = this.pathFromHash();
     this.expandedPath = fromHash.length ? fromHash : [raw.root.id];
@@ -423,6 +483,13 @@ export class KnowledgeMindmap {
   indexTree(node, parentId) {
     normalizeContentFields(node);
     if (!node.label) node.label = deriveLabel(node.title || '');
+    if (!node.id) {
+      console.warn('[KnowledgeMindmap] Skipping node without id:', node.title || node);
+      return;
+    }
+    if (this.nodeById.has(node.id)) {
+      console.warn(`[KnowledgeMindmap] Duplicate node id "${node.id}" — graph lookups will be corrupt; fix data.`);
+    }
     this.nodeById.set(node.id, node);
     if (parentId) this.parentById.set(node.id, parentId);
     this.flatNodes.push(node);
@@ -431,8 +498,14 @@ export class KnowledgeMindmap {
 
   pathFor(nodeId) {
     const chain = [];
+    const visited = new Set();
     let cur = nodeId;
     while (cur) {
+      if (visited.has(cur)) {
+        console.warn(`[KnowledgeMindmap] Cycle in parent chain at id "${cur}"`);
+        break;
+      }
+      visited.add(cur);
       chain.push(cur);
       cur = this.parentById.get(cur);
     }
@@ -1084,9 +1157,7 @@ export function initKnowledgeMindmap(selector = '#knowledge-mindmap') {
   const el = document.querySelector(selector);
   if (!el) return null;
   const map = new KnowledgeMindmap(el);
-  map.init().catch((err) => {
-    el.innerHTML = `<p style="padding:24px;color:var(--km-text);">Failed to load knowledge map: ${escapeHtml(err.message)}</p>`;
-  });
+  map.init().catch((err) => showLoadError(el, err, map.dataPath));
   return map;
 }
 

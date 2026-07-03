@@ -305,8 +305,11 @@ def build_knowledge_document(
             leaf_nodes.append(flat_topic_to_node(topic, depth=3))
 
         new_tax_id = OLD_TO_TAXONOMY[old_id]
+        # When legacy cluster id equals taxonomy domain id (e.g. web-security),
+        # suffix the intermediate group so it cannot collide with the domain node.
+        group_id = old_id if old_id != new_tax_id else f"{old_id}-group"
         group_node = {
-            "id": old_id,
+            "id": group_id,
             "title": old_name_by_id[old_id],
             "label": derive_label(old_name_by_id[old_id]),
             "type": "topic",

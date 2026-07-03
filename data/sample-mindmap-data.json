@@ -1,0 +1,52 @@
+{
+  "category": "Cybersecurity",
+  "lastBuilt": "2026-07-02T00:00:00Z",
+  "root": {
+    "id": "cybersecurity",
+    "title": "Cybersecurity",
+    "label": "Cybersecurity",
+    "type": "root",
+    "children": [
+      {
+        "id": "cryptography",
+        "title": "Cryptography",
+        "label": "Cryptography",
+        "type": "domain",
+        "icon": "cryptography",
+        "summary": "Dev fixture — deep Cryptography branch for UI testing.",
+        "children": [
+          {
+            "id": "cryptography-fundamentals",
+            "title": "Cryptography Fundamentals",
+            "label": "Fundamentals",
+            "type": "topic",
+            "tags": ["cryptography", "fundamentals"],
+            "summary": "Symmetric, asymmetric, and hashing primitives.",
+            "children": [
+              {
+                "id": "cryptography-fundamentals-three-systems",
+                "title": "Three Cryptographic Systems",
+                "label": "Three Systems",
+                "type": "concept",
+                "tags": ["cryptography"],
+                "summary": "Symmetric, asymmetric, and hashing compared.",
+                "core_idea": "Symmetric encryption uses one shared key. Asymmetric uses key pairs. Hashing is one-way.",
+                "related": ["cryptography-fundamentals-symmetric"]
+              },
+              {
+                "id": "cryptography-fundamentals-symmetric",
+                "title": "Symmetric Encryption",
+                "label": "Symmetric",
+                "type": "concept",
+                "tags": ["cryptography", "symmetric"],
+                "summary": "AES and shared-secret confidentiality.",
+                "core_idea": "AES encrypts bulk data with a single shared key distributed out-of-band.",
+                "related": ["cryptography-fundamentals-three-systems"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

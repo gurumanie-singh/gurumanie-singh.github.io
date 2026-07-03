@@ -1716,7 +1716,7 @@
         "summary": "8 notes across 1 section(s).",
         "children": [
           {
-            "id": "web-security",
+            "id": "web-security-group",
             "title": "Web Security",
             "label": "Web Security",
             "type": "topic",
@@ -4230,7 +4230,7 @@
         "summary": "12 notes across 1 section(s).",
         "children": [
           {
-            "id": "cryptography",
+            "id": "cryptography-group",
             "title": "Cryptography",
             "label": "Cryptography",
             "type": "topic",
