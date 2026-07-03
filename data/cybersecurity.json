@@ -92,16 +92,17 @@
                   "fundamentals",
                   "risk"
                 ],
-                "summary": "Risk requires all three: a threat actor, an exploitable vulnerability, and real impact if exploited.",
+                "summary": "Practical risk depends on valuable assets, realistic threats, exploitable weaknesses, and likely impact.",
                 "why_it_matters": "",
-                "core_idea": "- **Threat** — someone/something capable of causing harm (actor, malware, natural event)\n- **Vulnerability** — a weakness that could be exploited\n- **Impact** — the actual damage if the vulnerability is exploited\n- Remove any one factor and risk drops to near zero — e.g. a critical vulnerability with no plausible threat actor, or a threat with nothing valuable to hit\n- Used to prioritize: high-threat + high-vulnerability + high-impact issues go first, not just \"highest CVSS score\" alone",
+                "core_idea": "- Asset: what has value (systems, data, credentials, reputation).\n- Threat: actor or condition capable of causing loss.\n- Vulnerability: exploitable weakness in design, config, or process.\n- Probability and impact together determine practical priority.\n- A vulnerability without credible threat exposure is not always top risk.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
                 "related": [
                   "cia-triad",
-                  "risk-register-basics"
+                  "risk-register-basics",
+                  "security-control-types"
                 ],
                 "metadata": {
                   "difficulty": "beginner",
@@ -186,16 +187,17 @@
                   "fundamentals",
                   "controls"
                 ],
-                "summary": "Classify every control by what it does: stop, spot, fix, or work around a gap.",
+                "summary": "Attack categories map to where defenses fail: OS defaults, app flaws, insecure bundled code, and misconfiguration.",
                 "why_it_matters": "",
-                "core_idea": "- **Preventive** — stops the incident before it happens (firewall rule, MFA, input validation)\n- **Detective** — identifies an incident in progress or after the fact (IDS, log monitoring, SIEM alert)\n- **Corrective** — limits damage and restores normal operation after an incident (patching, restoring from backup)\n- **Compensating** — an alternative control used when the primary one isn't feasible (e.g. extra monitoring on a system that can't be patched yet)",
+                "core_idea": "- Operating system attacks exploit insecure defaults, missing patches, and exposed services.\n- Application-level attacks target business logic and unsafe input handling in app code.\n- Shrink-wrap code attacks abuse insecure scripts/modules shipped with products.\n- Misconfiguration attacks win when convenience settings override hardening.\n- Prioritize controls where misconfig + exploitability + impact overlap.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
                 "related": [
                   "cia-triad",
-                  "defense-in-depth"
+                  "defense-in-depth",
+                  "risk-threat-vulnerability-impact"
                 ],
                 "metadata": {
                   "difficulty": "beginner",
@@ -270,9 +272,9 @@
                   "network",
                   "recon"
                 ],
-                "summary": "Resolvers walk root → TLD → authoritative servers; misconfigured zone transfers leak the whole domain map.",
+                "summary": "DNS data reveals both naming flow and high-value infrastructure clues for attackers and defenders.",
                 "why_it_matters": "",
-                "core_idea": "- Resolution path: client → recursive resolver → root servers → TLD servers → authoritative server, cached per **TTL**\n- Key records: **A**/**AAAA** (host→IP), **CNAME** (alias to another hostname), **MX** (mail server), **NS** (authoritative servers), **TXT** (SPF/DKIM/DMARC), **SOA** (zone metadata)\n- **Zone transfer (AXFR)** replicates an entire zone — if open to anyone, one query dumps every subdomain and internal hostname; restrict with an `allow-transfer` ACL\n- DNS is a top recon source: subdomain enumeration, `whois`, and certificate-transparency logs (`crt.sh`) reveal attack surface without touching the target",
+                "core_idea": "- Record types (A, CNAME, MX, NS, PTR, SOA) expose service architecture.\n- SOA and NS metadata can identify authoritative infrastructure and admins.\n- Over-permissive zone transfer behavior leaks host inventory quickly.\n- DNS poisoning risks focus on trust in cache and resolver integrity.\n- Defenders harden by limiting transfer sources and monitoring anomalous changes.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
@@ -295,14 +297,15 @@
                   }
                 ],
                 "related": [
-                  "dns-zone-transfer"
+                  "dns-zone-transfer",
+                  "dns-cache-poisoning-basics"
                 ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE430"
@@ -320,9 +323,9 @@
                   "diagnostics",
                   "icmp"
                 ],
-                "summary": "ping tests host reachability and latency; traceroute maps the hop-by-hop path to a destination by sending packets with increasing TTL.",
+                "summary": "ICMP helps map reachability and filtering behavior, not just basic host liveness.",
                 "why_it_matters": "",
-                "core_idea": "### ping — reachability & latency\nSends ICMP echo requests to test if two hosts can communicate and to measure round-trip time.\n\n```\nping -c 3 www.iastate.edu\nPING www.iastate.edu (20.241.39.52): 56 data bytes\n64 bytes from 20.241.39.52: icmp_seq=0 ttl=114 time=20.475 ms\n```\n\n- **Latency** — round-trip time per packet\n- **Jitter** — variance in latency across packets; high jitter means an unstable path\n- Packet loss and high loss rates degrade real-time media badly — streaming video becomes choppy around 2–10% loss and effectively unwatchable above ~50%, since players repeatedly stall to rebuffer\n\n### traceroute — path discovery\nDiscovers the hop-by-hop route to a destination by sending packets with increasing **TTL** (time-to-live). Each router that decrements TTL to 0 drops the packet and returns a \"Time Exceeded\" ICMP message revealing its address — traceroute increments TTL by 1 each round to reveal the next hop.\n\n```\ntraceroute 1.1.1.1\n 1  _gateway (192.168.254.254)        0.55 ms\n 2  routera-...iastate.edu             4.5 ms\n ...\n14  one.one.one.one (1.1.1.1)          6.1 ms\n```\n\n- Asterisks (`*`) mean no response from that hop — the router may simply be configured not to reply to TTL-expired packets, not necessarily that it isn't forwarding traffic\n- Some routers/firewalls block ICMP but still forward TCP — use **TCP-based traceroute** to get around this\n- The same asymmetry (ICMP blocked, TCP allowed) is why ping sometimes fails through a firewall that a real TCP connection would pass through fine\n\n### Related tools\n- **iperf** — measures achievable bandwidth between two hosts\n- **nmap** — port scanning to discover open services\n- **tcpdump / Wireshark** — live packet capture for analyzing traffic, spotting attack traffic (e.g. a ping flood), and inspecting protocol fields directly",
+                "core_idea": "- Echo requests/replies support quick host discovery and path checks.\n- Type and code responses can indicate unreachable hosts vs blocked traffic.\n- Traceroute reveals routing hops and potential choke points.\n- ICMP filtering changes recon visibility but does not remove attack surface.\n- Use ICMP alongside TCP/UDP probes for accurate network interpretation.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
@@ -340,13 +343,15 @@
                     "explain": "Traceroute using TCP SYN packets — useful when routers block ICMP."
                   }
                 ],
-                "related": [],
+                "related": [
+                  "nmap-scanning-reference"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE430"
@@ -424,20 +429,22 @@
                   "tcp",
                   "network"
                 ],
-                "summary": "The TCP header carries sequence/ack numbers, control flags, and the receive window that together implement reliable, ordered, flow-controlled delivery.",
+                "summary": "TCP flags and header fields drive connection state, scan behavior, and many detection signatures.",
                 "why_it_matters": "",
-                "core_idea": "### Header Fields\n| Field | Purpose |\n|---|---|\n| Source / Destination Port | 16-bit port numbers identifying the endpoints |\n| Sequence Number | Byte index of the first data byte in this segment |\n| Acknowledgment Number | Byte index of the **next expected byte** — not the next expected segment |\n| Data Offset | Header length in 32-bit words (accounts for options) |\n| Control Bits | See below |\n| Window | Receiver's advertised flow-control window (bytes it's willing to accept) |\n| Checksum | Error detection over header + data |\n| Urgent Pointer | Valid only if URG flag set |\n| Options | MSS, window scaling, SACK-permitted, timestamps, NOP padding |\n\n### Control Bits\n| Flag | Meaning |\n|---|---|\n| **SYN** | Synchronize — initiates a connection, consumes 1 sequence number |\n| **ACK** | Acknowledgment field is valid |\n| **FIN** | Finish — gracefully closes a connection, consumes 1 sequence number |\n| **RST** | Reset — abruptly terminates a connection (no handshake) |\n| **PSH** | Push — deliver buffered data to the application immediately |\n| **URG** | Urgent — Urgent Pointer field is valid |\n\n### Acknowledgment Semantics\n- TCP ACKs are **byte-indexed, not segment-indexed** — `ACK(20)` means \"I've received everything through byte 19; I'm expecting byte 20 next\"\n- TCP ACKs are **cumulative** — one ACK confirms everything up to that point, even if several segments arrived since the last ACK\n- A **duplicate ACK** (same ACK number repeated) is an implicit signal that a segment was lost or reordered — three duplicate ACKs conventionally triggers **Fast Retransmit** without waiting for a timeout",
+                "core_idea": "- SYN, ACK, FIN, RST, PSH, and URG indicate connection intent and transitions.\n- Port fields map traffic to services and attack targets.\n- Sequence and acknowledgment numbers support session integrity and analysis.\n- Flag combinations power scan methods and IDS detection logic.\n- Malformed or unusual header patterns can indicate probing or evasion.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "tcp-connection-lifecycle"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE430"
@@ -456,20 +463,22 @@
                   "handshake",
                   "network"
                 ],
-                "summary": "SYN cookies defend against SYN floods by encoding connection state into the SYN-ACK sequence number instead of storing it.",
+                "summary": "Understanding handshake and teardown states is core to detecting scans, resets, and session abuse.",
                 "why_it_matters": "",
-                "core_idea": "- **Handshake**: SYN(seq=x) → SYN-ACK(seq=y, ack=x+1) → ACK(y+1). SYN/FIN each consume one sequence number\n- **SYN flood**: attacker sends SYNs and never completes the handshake, exhausting the server's half-open connection queue — classic DoS\n- **SYN cookies defense**: server encodes connection info directly into the SYN-ACK sequence number instead of allocating state — no memory used until the final ACK arrives and the hash is verified\n- **Teardown** is half-duplex: FIN → ACK, then the peer sends its own FIN → ACK independently; the side sending the final ACK enters **TIME_WAIT** to absorb delayed duplicates",
+                "core_idea": "- Three-way handshake establishes synchronized state before payload transfer.\n- FIN/RST behavior affects teardown semantics and detection fidelity.\n- SYN-heavy patterns can indicate scanning or DoS pressure.\n- State tracking helps separate normal retransmits from suspicious retries.\n- Connection lifecycle anomalies are high-value signals in network monitoring.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "tcp-segment-header"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE430"
@@ -1205,6 +1214,100 @@
                   "general"
                 ],
                 "sourceType": "enriched",
+                "children": []
+              },
+              {
+                "id": "arp-poisoning-mitm",
+                "title": "ARP Poisoning (MITM)",
+                "label": "ARP Poisoning",
+                "type": "concept",
+                "tags": [
+                  "network-security",
+                  "arp",
+                  "mitm"
+                ],
+                "summary": "ARP poisoning forges IP-to-MAC mappings so traffic is redirected through an attacker-controlled host.",
+                "why_it_matters": "",
+                "core_idea": "- Attackers send spoofed ARP replies to overwrite victim cache entries.\n- Common goal is man-in-the-middle interception or traffic manipulation.\n- Switching does not prevent it because ARP trust is weak by default.\n- Frequent spoof updates are typically needed to maintain control.\n- Defenses include dynamic ARP inspection, static critical entries, and monitoring.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "dns-cache-poisoning-basics",
+                  "mac-flooding-cam-table"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "mac-flooding-cam-table",
+                "title": "MAC Flooding and CAM Table Exhaustion",
+                "label": "MAC Flooding",
+                "type": "concept",
+                "tags": [
+                  "network-security",
+                  "switching",
+                  "mitm"
+                ],
+                "summary": "MAC flooding overwhelms a switch CAM table so traffic may be flooded like a hub.",
+                "why_it_matters": "",
+                "core_idea": "- Attack sends many fake source MACs to consume CAM table space.\n- Unknown-destination traffic can be flooded, increasing sniffing opportunity.\n- Modern switches often mitigate with port-security and rate limits.\n- Effectiveness varies by hardware, firmware, and configured protections.\n- Even failed attempts are useful detection signals of hostile recon.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "arp-poisoning-mitm"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "dns-cache-poisoning-basics",
+                "title": "DNS Cache Poisoning Basics",
+                "label": "DNS Cache Poisoning",
+                "type": "concept",
+                "tags": [
+                  "network-security",
+                  "dns",
+                  "spoofing"
+                ],
+                "summary": "DNS cache poisoning injects false name-to-IP data so users are redirected to attacker-selected destinations.",
+                "why_it_matters": "",
+                "core_idea": "- Attack success relies on resolver trust and cache acceptance behavior.\n- Poisoned entries persist until TTL expiry or cache flush.\n- Users can be silently redirected even when typing correct domains.\n- Hardening includes resolver updates, source-port/randomization, and DNSSEC support.\n- Monitor DNS anomalies and sudden answer changes for high-value domains.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "dns-resolution-fundamentals"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
                 "children": []
               }
             ]
@@ -2085,6 +2188,68 @@
                 "sources": [],
                 "sourceType": "added",
                 "children": []
+              },
+              {
+                "id": "kerberos-ticket-flow-as-tgs-tgt",
+                "title": "Kerberos Ticket Flow (AS/TGS/TGT)",
+                "label": "Kerberos Ticket Flow",
+                "type": "concept",
+                "tags": [
+                  "identity",
+                  "kerberos",
+                  "authentication"
+                ],
+                "summary": "Kerberos uses ticket exchanges (AS-REQ/REP and TGS-REQ/REP) to authenticate without repeatedly sending passwords.",
+                "why_it_matters": "",
+                "core_idea": "- Client first obtains a TGT from the Authentication Service path.\n- TGT is then used to request service-specific tickets from TGS.\n- Mutual trust depends on KDC integrity, clock sync, and key hygiene.\n- Ticket theft/relay risks focus on credential material handling, not plaintext passwords.\n- Defenses include strong service-account policy and constrained delegation design.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "pki-public-key-infrastructure"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "password-attack-models-online-offline",
+                "title": "Password Attack Models (Online vs Offline)",
+                "label": "Password Attack Models",
+                "type": "concept",
+                "tags": [
+                  "identity",
+                  "passwords",
+                  "authentication"
+                ],
+                "summary": "Password attacks differ by where guessing occurs: online against a live service or offline against stolen hashes.",
+                "why_it_matters": "",
+                "core_idea": "- Online attacks are throttled by lockout, MFA, and monitoring controls.\n- Offline attacks are limited mostly by hash strength and compute power.\n- Dictionary/hybrid/brute-force methods trade speed for coverage.\n- Long passphrases and modern KDFs materially increase attacker cost.\n- Credential reuse turns one compromise into multi-system risk.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "unix-password-storage-cracking"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
               }
             ]
           }
@@ -2153,20 +2318,22 @@
                   "web_security",
                   "owasp"
                 ],
-                "summary": "OWASP Top Ten frames web-app risk; SQLi and XSS remain the two most common exploitation paths.",
+                "summary": "Web compromise usually combines software flaws, weak config, and over-privileged runtime context.",
                 "why_it_matters": "",
-                "core_idea": "- **OWASP Top Ten** — industry checklist for critical web risks; treat as coverage baseline, not an exhaustive list\n- Server-side categories: exec vulnerabilities, exposed sample/default files, source disclosure, canonicalization (`../` path escape), extension bugs, input validation flaws — Nikto/Whisker automate detection\n- **SQL Injection** — unsanitized input reaches a raw query. **XSS** — malicious script posted to shared content runs in *other* users' browsers\n- Cookies carry session state since HTTP is stateless; same-origin policy stops cross-site cookie reads — never assume cookie contents are safe\n- WAFs (e.g. WordFence) filter malicious traffic in front of the app but don't replace fixing the underlying bug",
+                "core_idea": "- Patch lag and exposed defaults create recurring exploit windows.\n- Verbose errors and banners leak stack details useful for targeting.\n- Unsafe CGI/SSI and weak file permissions widen execution paths.\n- Running web services with excessive privileges magnifies impact.\n- Hardening should pair config baselines with regular verification scans.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "web-hardening-baseline-apache-iis"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE532"
@@ -2247,20 +2414,22 @@
                   "sql-injection",
                   "web"
                 ],
-                "summary": "### Mechanism When user input is concatenated directly into a SQL query, `UNION SELECT` lets an attacker append an entirely separate query whose results get merged into the original output.",
+                "summary": "SQL injection happens when untrusted input changes query intent and reaches the database interpreter.",
                 "why_it_matters": "",
-                "core_idea": "### Mechanism\nWhen user input is concatenated directly into a SQL query, `UNION SELECT` lets an attacker append an entirely separate query whose results get merged into the original output.\n\n### Typical Workflow\n1. **Find the column count** — `ORDER BY n` (increment `n` until it errors) or `UNION SELECT null,null,...` until the column count matches\n2. **Extract schema** — once columns align, query `information_schema.tables` / `.columns` to enumerate database structure\n3. **Extract data** — substitute real column names/tables into the UNION query to pull sensitive data directly into the page output\n\n### Fix\nUse **prepared statements / parameterized queries** everywhere, or an ORM's parameter binding — never string-concatenate user input into SQL.",
+                "core_idea": "- Common forms include UNION-based, tautology, blind, and error-based injection.\n- Impact ranges from auth bypass to data theft and destructive writes.\n- Parameterized queries and strict input validation are primary defenses.\n- Least-privileged DB accounts reduce blast radius when bugs exist.\n- Detailed DB error messages help attackers and should be suppressed.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "xss-reflected-stored"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE532"
@@ -2278,20 +2447,22 @@
                   "xss",
                   "web"
                 ],
-                "summary": "Reflected XSS executes in the victim's browser from a crafted URL; stored XSS persists in server-side data (comments, profiles) and hits every future viewer.",
+                "summary": "XSS executes attacker-controlled script in a trusted browser context, often to steal session state.",
                 "why_it_matters": "",
-                "core_idea": "### Types\n- **Reflected** — the payload is part of the request (e.g. a query parameter) and gets echoed back into the response unescaped; requires tricking the victim into clicking a crafted link\n- **Stored** — the payload is saved server-side (a comment, profile field, etc.) and executes for every user who later views that content — no crafted link needed\n- **DOM-based** — client-side JavaScript writes untrusted input directly into the DOM; the payload never even touches the server, so server-side sanitization alone won't catch it\n\n### Defense\n- **Context-aware output encoding** — encode differently depending on whether output lands in HTML body, an attribute, a URL, or a `<script>` block\n- **Content Security Policy (CSP)** — restricts which script sources the browser will execute\n- **HttpOnly** flag on session cookies — prevents JavaScript (including injected XSS payloads) from reading them, limiting the payoff of a successful XSS",
+                "core_idea": "- Reflected XSS comes from immediate request/response echo paths.\n- Stored XSS persists in backend data and affects many users.\n- Payloads often target cookies, tokens, and DOM-based trust assumptions.\n- Defenses include output encoding, CSP, and safe template patterns.\n- Session theft risk rises when cookies are not hardened (HttpOnly/SameSite/Secure).",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "cookie-poisoning-session-hijack"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE532"
@@ -2309,20 +2480,22 @@
                   "csrf",
                   "web"
                 ],
-                "summary": "CSRF tricks a logged-in browser into submitting unwanted state-changing requests. Synchronizer tokens and SameSite cookies mitigate it.",
+                "summary": "CSRF succeeds when browsers auto-send trusted state without verifying user intent.",
                 "why_it_matters": "",
-                "core_idea": "### Mechanism\nA victim is logged into a site; a malicious page (or email/link) triggers a request to that site — the browser automatically attaches the victim's session cookie, so the request looks legitimate to the server even though the victim never intended to send it.\n\n### Defenses\n- **Anti-CSRF tokens** — an unpredictable, per-session token embedded in forms; the server rejects state-changing requests that don't include the correct token\n- **SameSite cookies** — `SameSite=Lax` or `Strict` stops the browser from attaching the cookie to most cross-origin requests in the first place\n- **Origin/Referer verification** — an extra check on sensitive POST requests, confirming the request actually originated from your own site",
+                "core_idea": "- Use per-request anti-CSRF tokens validated server-side.\n- Enforce SameSite and origin/referrer checks for state-changing actions.\n- Avoid GET for sensitive operations and require explicit re-auth for critical actions.\n- Session and cookie hygiene directly affects CSRF impact.\n- Test CSRF controls with realistic multi-step authenticated flows.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "cookie-poisoning-session-hijack"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE532"
@@ -2358,6 +2531,70 @@
                   "CPRE532"
                 ],
                 "sourceType": "enriched",
+                "children": []
+              },
+              {
+                "id": "cookie-poisoning-session-hijack",
+                "title": "Cookie Poisoning and Session Hijacking",
+                "label": "Cookie Session Hijack",
+                "type": "concept",
+                "tags": [
+                  "web-security",
+                  "cookies",
+                  "session-management"
+                ],
+                "summary": "Session compromise occurs when attackers steal or tamper with cookies used for authentication state.",
+                "why_it_matters": "",
+                "core_idea": "- Stolen session cookies can bypass credential prompts and impersonate users.\n- Client-side editable cookie values should never control privilege decisions.\n- Harden with HttpOnly, Secure, SameSite, and short session lifetimes.\n- Rotate session identifiers after login and sensitive privilege changes.\n- Monitor impossible-travel and concurrent-session anomalies.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "xss-reflected-stored",
+                  "csrf-token-defense"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "web-hardening-baseline-apache-iis",
+                "title": "Web Hardening Baseline (Apache/IIS)",
+                "label": "Web Hardening Baseline",
+                "type": "concept",
+                "tags": [
+                  "web-security",
+                  "hardening",
+                  "apache",
+                  "iis"
+                ],
+                "summary": "Web hardening starts by minimizing exposed functionality and continuously validating secure configuration.",
+                "why_it_matters": "",
+                "core_idea": "- Patch web server, runtime, and modules on a tested but timely cadence.\n- Disable unused services, handlers, sample apps, and default accounts.\n- Suppress verbose errors and banners that leak stack metadata.\n- Run services with least privilege and strict file permission boundaries.\n- Validate baseline regularly with targeted web vulnerability scans.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "web-server-attack-categories"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
                 "children": []
               }
             ]
@@ -3226,20 +3463,22 @@
                   "detection-engineering",
                   "intrusion_detection_monitoring"
                 ],
-                "summary": "Signature detection catches known attacks with few false alarms; anomaly detection catches unknowns but needs a clean baseline.",
+                "summary": "IDS programs combine signature and anomaly logic; strength comes from layering both approaches.",
                 "why_it_matters": "",
-                "core_idea": "- **Signature/misuse detection** — matches known attack patterns; few false positives, but blind to novel attacks\n- **Anomaly detection** — profiles \"normal\" and flags deviation (threshold counters, statistical profiles, rule-based models); catches unknowns but has a higher false-positive rate and a hard \"what is normal\" baseline problem\n- **IDS vs IPS** — IDS watches and alerts; IPS watches and actively blocks\n- False positives vs. false negatives trade off directly — tuning one down pushes the other up\n- Before deploying: fix known vulnerabilities first, identify critical assets, then scope protections — don't try to cover everything on day one",
+                "core_idea": "- Signature detection is precise for known threats but misses novel payloads.\n- Anomaly detection catches behavior drift but needs careful baselining.\n- Noisy scans and floods test IDS thresholds and analyst workflow.\n- Context (asset criticality + protocol role) improves triage quality.\n- Best practice: correlate IDS events with logs, endpoint, and identity telemetry.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "snort-signature-basics"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE536"
@@ -3257,22 +3496,23 @@
                   "deception",
                   "intrusion_detection_monitoring"
                 ],
-                "summary": "A honeypot is a single decoy system; a HoneyNet emulates an entire network; a padded cell redirects a detected attacker into an isolated environment mid-attack.",
+                "summary": "Deception systems generate high-signal alerts and controlled intel on attacker behavior.",
                 "why_it_matters": "",
-                "core_idea": "| Concept | Description |\n|---|---|\n| **Honeypot** | A single system deliberately made to look worth breaking into, with varying levels of interaction/data collection |\n| **HoneyNet** | The same concept scaled up — an entire **emulated network** rather than one host |\n| **Padded Cell** | Works alongside a live IDS — once an attack is detected, the attacker's traffic is transparently switched into a protected, isolated environment instead of being cut off outright |\n\n### Advantages\nDiverts an attacker away from real production systems, buys defenders time to respond, enables detailed monitoring/logging of attacker tools and techniques, and is particularly useful for surfacing **insider threats** that wouldn't trigger perimeter-focused controls.\n\n### Disadvantages\nPossible **legal exposure** (entrapment concerns depending on jurisdiction and how the honeypot is presented), uncertain general effectiveness against a sophisticated adversary who fingerprints honeypots, the risk of provoking a more aggressive response once an attacker realizes they've been deceived, and real complexity to build and maintain convincingly.",
+                "core_idea": "- Honeypots are decoy assets designed to attract unauthorized interaction.\n- Honeynets expand deception into realistic multi-host environments.\n- Padded-cell concepts isolate attackers inside monitored containment zones.\n- Any interaction with deception assets is usually high-confidence suspicious activity.\n- Use strict segmentation so deception systems do not increase blast radius.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
                 "related": [
-                  "honeypots"
+                  "honeypots",
+                  "ids-analysis-methods"
                 ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE536"
@@ -3290,9 +3530,9 @@
                   "ids",
                   "detection-engineering"
                 ],
-                "summary": "Snort matches packet payload and headers against rule syntax — fast and precise for known attacks, blind to anything novel.",
+                "summary": "Snort signatures convert known attack patterns into actionable network detections.",
                 "why_it_matters": "",
-                "core_idea": "### Rule Format\n```\naction protocol src_ip src_port -> dst_ip dst_port (options)\n```\n- **action** — `alert`, `pass`, `log`, `activate`, `dynamic`\n- **options** — `content` (payload match), `sid` (rule ID), `rev` (revision number), among many others\n\n### Practical Notes\n- Fast to evaluate and highly precise against **known** attack patterns, by nature blind to genuinely novel behavior\n- Tune detection thresholds carefully — overly broad content matches generate excessive noise, defeating the purpose of a \"few false alarm\" signature-based approach",
+                "core_idea": "- Rules match protocol, direction, content, and context in packet streams.\n- Tune signatures to reduce false positives in your environment.\n- Use SQLi/XSS-focused rules on web-facing segments for early warning.\n- Pair alerting with response playbooks to avoid alert-only operations.\n- Continuously update signatures as attack payloads evolve.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
@@ -3302,13 +3542,15 @@
                     "explain": "Run Snort in live IDS mode against a specific interface using a rule config."
                   }
                 ],
-                "related": [],
+                "related": [
+                  "ids-analysis-methods"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE536"
@@ -3509,6 +3751,68 @@
                 "sources": [],
                 "sourceType": "added",
                 "children": []
+              },
+              {
+                "id": "tripwire-file-integrity-monitoring",
+                "title": "Tripwire File Integrity Monitoring",
+                "label": "Tripwire FIM",
+                "type": "concept",
+                "tags": [
+                  "detection",
+                  "tripwire",
+                  "integrity-monitoring"
+                ],
+                "summary": "File integrity monitoring detects unauthorized change by comparing trusted baselines against current state.",
+                "why_it_matters": "",
+                "core_idea": "- Baselines include critical binaries, configs, and security-sensitive paths.\n- Hash/attribute drift signals potential tampering or persistence activity.\n- Alert quality depends on tuned scope and approved-change workflows.\n- FIM is high-value after suspected malware or privilege escalation events.\n- Pair with endpoint and log telemetry for confident triage.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "static-vs-dynamic-malware-analysis"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "tcpdump-cli-packet-analysis",
+                "title": "tcpdump CLI Packet Analysis",
+                "label": "tcpdump Basics",
+                "type": "concept",
+                "tags": [
+                  "detection",
+                  "tcpdump",
+                  "packet-analysis"
+                ],
+                "summary": "tcpdump captures packet data from interfaces using precise command-line filters for rapid network triage.",
+                "why_it_matters": "",
+                "core_idea": "- Target specific interfaces and protocols to reduce noise quickly.\n- Use capture filters up front to limit volume and preserve relevance.\n- Write captures for later deep analysis in tools like Wireshark.\n- Great for validating alerts, tracing flows, and confirming exposure.\n- Command-line speed makes it useful in incident response under time pressure.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "wireshark-hex-header-fields"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
               }
             ]
           },
@@ -3585,20 +3889,22 @@
                   "incident-response",
                   "reporting"
                 ],
-                "summary": "Cover timeline, root cause, impact, actions taken, and preventive recommendations — tailor tone to the audience.",
+                "summary": "Post-incident reports should prioritize actionable risk reduction over narrative detail.",
                 "why_it_matters": "",
-                "core_idea": "- Structure: timeline of events, root cause, business impact, actions taken during response, preventive recommendations going forward\n- Write two versions or two clear sections — executive summary (business impact, plain language) vs. technical detail (IOCs, TTPs, logs)\n- Share relevant IOCs with ISACs or sector threat-intel groups where appropriate\n- Track each preventive recommendation through to actual closure — an unfixed root cause just produces a repeat incident",
+                "core_idea": "- Lead with executive-impact summary and affected business scope.\n- Document findings ordered by risk and exploitability.\n- Attach supporting evidence, timelines, and confidence level for each claim.\n- Map each finding to remediation owner and verification step.\n- Track unresolved residual risk and follow-up review dates.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "ir-lifecycle-nist"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [],
                 "sourceType": "added",
@@ -3672,22 +3978,23 @@
                   "incident-response",
                   "forensics"
                 ],
-                "summary": "Image before reboot, hash artifacts, log every handler, and store write-protected copies for legal admissibility.",
+                "summary": "Evidence handling must preserve integrity and timeline fidelity from collection to handoff.",
                 "why_it_matters": "",
-                "core_idea": "- Image the system *before* rebooting it — a reboot can destroy the volatile evidence you need most\n- Hash every artifact on acquisition so you can later prove it wasn't altered\n- Log who handled evidence, when, and why, at every transfer (chain of custody)\n- Volatile data capture order: memory → network connections → disk (most-volatile first)\n- Screenshot cloud consoles with visible timestamps — cloud evidence disappears fast and isn't imageable the same way",
+                "core_idea": "- Capture volatile data first when business and legal constraints allow.\n- Maintain chain-of-custody records for every transfer and access.\n- Use cryptographic hashes to verify evidence integrity over time.\n- Preservation decisions should be tied to investigation objectives and scope.\n- Separate containment actions from evidence tampering risk.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
                 "related": [
-                  "chain-of-custody"
+                  "chain-of-custody",
+                  "post-incident-reporting"
                 ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [],
                 "sourceType": "added",
@@ -4306,6 +4613,98 @@
                 ],
                 "sourceType": "enriched",
                 "children": []
+              },
+              {
+                "id": "privilege-escalation-paths-unpatched-software",
+                "title": "Privilege Escalation via Unpatched Software",
+                "label": "Privilege Escalation Paths",
+                "type": "concept",
+                "tags": [
+                  "offensive-security",
+                  "privilege-escalation"
+                ],
+                "summary": "Privilege escalation often succeeds by chaining initial access with unpatched OS or application flaws.",
+                "why_it_matters": "",
+                "core_idea": "- Initial low-priv footholds are common; escalation unlocks broader impact.\n- Local misconfig and vulnerable services create repeatable escalation paths.\n- Patch lag and weak least-privilege controls are frequent root causes.\n- Exploit attempts are noisy and should be constrained by agreed test scope.\n- Defenders prioritize patch hygiene and privilege boundary hardening.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "metasploit-autopwn-risk-and-scope"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "metasploit-autopwn-risk-and-scope",
+                "title": "Metasploit Use: Power, Risk, and Scope",
+                "label": "Metasploit Risk & Scope",
+                "type": "tool",
+                "tags": [
+                  "offensive-security",
+                  "metasploit",
+                  "exploitation"
+                ],
+                "summary": "Metasploit accelerates exploitation workflows, so strict scope control and verification discipline are essential.",
+                "why_it_matters": "",
+                "core_idea": "- Framework modules speed validation of known weaknesses.\n- Automation can overshoot intent if targets and bounds are loose.\n- Operator judgment is still required for safe exploitation choices.\n- Use captured evidence and reproducible steps for reporting quality.\n- Always align exploit activity with explicit rules of engagement.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "penetration-test-scope-rules-of-engagement"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "command-shell-backdoors-netcat",
+                "title": "Command-Shell Backdoors (Netcat Pattern)",
+                "label": "Command-Shell Backdoors",
+                "type": "concept",
+                "tags": [
+                  "offensive-security",
+                  "backdoor",
+                  "netcat"
+                ],
+                "summary": "Command-shell backdoors expose remote shell access and are commonly used to preserve post-exploitation control.",
+                "why_it_matters": "",
+                "core_idea": "- Simple listener/client patterns can create unauthorized remote command access.\n- Backdoor channels may run over nonstandard ports to evade casual checks.\n- Persistence value is high for attackers and high-priority for responders.\n- Defenders monitor anomalous listeners, process ancestry, and egress behavior.\n- Remove artifacts and validate full cleanup after authorized testing.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "tripwire-file-integrity-monitoring"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
               }
             ]
           },
@@ -4327,20 +4726,23 @@
                   "osint",
                   "reconnaissance_osint"
                 ],
-                "summary": "Passive recon builds a target profile using only publicly available information — no packets sent to the target itself.",
+                "summary": "OSINT works best when you combine passive public data with targeted active validation.",
                 "why_it_matters": "",
-                "core_idea": "### Why Passive First\nPassive reconnaissance never touches the target directly, so it can't be detected or logged by them — always the starting point before any active scanning.\n\n### Techniques\n- **Company website analysis** — staff bios, org charts, and technology mentions often leak useful details (employee names for username guessing, vendor names, internal jargon). Public-facing sites built on common CMSs (WordPress, Drupal) reveal a known attack surface just from the platform choice\n- **WHOIS** — registrant, admin/technical contacts, registrar, and netrange for a domain\n- **DNS enumeration** — subdomain discovery via certificate transparency logs (`crt.sh`), passive DNS aggregators (`dnsdumpster`), and tools like `viewdns.info`\n- **Document metadata** — PDFs/Office docs often embed author names, software versions, and internal usernames in metadata, harvestable in bulk with tools like `exiftool` or `FOCA`\n- **Social media & professional networks** — job postings reveal internal tech stacks; employee profiles reveal org structure and potential social-engineering targets\n- **Search engine dorking and Shodan** (below) — indexed content and internet-wide banner scanning without ever probing the target's infrastructure yourself\n\n### From Passive to Active\nOnce a profile is built, active techniques (port scanning, service enumeration — see the Nmap reference below) fill in the technical detail that passive sources can't provide, at the cost of leaving a trace on the target's side.",
+                "core_idea": "- Passive recon: websites, archived pages, public docs, job posts, social profiles.\n- Active recon: controlled lookups and scans that may be logged by targets.\n- Job listings and tech docs often leak stack versions and operating constraints.\n- Archive/cache sources can expose content removed from current pages.\n- Document findings by attack surface: identity, infra, apps, and third parties.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "google-dorking",
+                  "nmap-scanning-reference"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "general"
@@ -4359,9 +4761,9 @@
                   "port-scanning",
                   "reconnaissance_osint"
                 ],
-                "summary": "Scan type controls stealth/speed tradeoff; -sS is the default \"stealth\" choice, -sV/-O add fingerprinting.",
+                "summary": "Nmap is most effective when used in sequence: host discovery, service mapping, then targeted deep checks.",
                 "why_it_matters": "",
-                "core_idea": "| Flag | Scan | Note |\n|---|---|---|\n| `-sT` | TCP Connect | Full handshake, logged, no root needed |\n| `-sS` | SYN (\"stealth\") | RST instead of completing handshake; needs root |\n| `-sU` | UDP | Slower, less reliable — no handshake |\n| `-sA` | ACK | Maps firewall rules, not open/closed state |\n| `-Pn` | Skip host discovery | Use when ICMP is blocked |\n\n- Port states: **Open** = SYN/ACK reply. **Closed** = RST. **Filtered** = no reply (firewall likely dropping it silently)\n- `-sV` (version), `-O` (OS fingerprint), `-A` (aggressive: bundles both + scripts + traceroute)\n- NSE scripts (`--script <name>`) extend Nmap into vulnerability scanning, brute force, and enumeration",
+                "core_idea": "- Start with host discovery to separate alive targets from noise.\n- Run port and service/version detection before vulnerability scripts.\n- Adjust scan rate and scope to reduce operational risk and false alarms.\n- Use results to build attack paths, not just open-port lists.\n- Repeat after remediation to confirm exposure actually changed.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
@@ -4379,13 +4781,15 @@
                     "explain": "Run NSE's vulnerability-detection script category against a target."
                   }
                 ],
-                "related": [],
+                "related": [
+                  "osint-passive-recon-toolkit"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "general"
@@ -4434,25 +4838,159 @@
                   "recon",
                   "google-dorking"
                 ],
-                "summary": "Advanced search operators like site:, filetype:, and inurl: surface indexed files, login pages, and error messages that reveal information about a target.",
+                "summary": "Google dorks use search operators to discover exposed assets, files, and misconfigurations at scale.",
                 "why_it_matters": "",
-                "core_idea": "| Operator | Finds |\n|---|---|\n| `site:target.com` | Restrict results to a specific domain |\n| `filetype:pdf` | Restrict to a file type — combine with `site:` to find exposed documents |\n| `inurl:admin login` | Pages with specific terms in the URL — useful for locating admin panels |\n\n**Example:** `site:target.com filetype:pdf` surfaces every indexed PDF on a domain — often internal reports or presentations never meant to be public.\n\nA target's own `robots.txt` and cached pages are also worth checking directly — `robots.txt` sometimes lists paths the site owner explicitly wanted hidden from crawlers (which paradoxically flags them as interesting), and Google's cache can reveal content that's since been removed from the live site.",
+                "core_idea": "- Use operators like site:, filetype:, intitle:, and inurl: to narrow exposure hunting.\n- Focus on externally exposed data, not random query volume.\n- Validate findings manually because indexing can be stale or false-positive.\n- Use defensively: check what your own org exposes to public search.\n- Treat discovered data as sensitive even if publicly indexed.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "osint-passive-recon-toolkit"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "general"
                 ],
                 "sourceType": "enriched",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "offensive-wireless-attacks",
+            "title": "Wireless Attack Techniques",
+            "label": "Wireless Attack Techniques",
+            "type": "topic",
+            "children": [
+              {
+                "id": "wireless-evil-twin-rogue-ap",
+                "title": "Evil Twin / Rogue Access Point Attack",
+                "label": "Evil Twin Attack",
+                "type": "concept",
+                "tags": [
+                  "offensive-security",
+                  "wireless",
+                  "evil-twin"
+                ],
+                "summary": "An evil twin attack lures clients to a rogue AP that mimics a trusted wireless network.",
+                "why_it_matters": "",
+                "core_idea": "- Attacker clones SSID and entices clients using stronger or more convenient signal.\n- Victims route traffic through attacker-controlled infrastructure.\n- Enables credential harvesting, traffic capture, and content manipulation.\n- Operational success depends on client behavior and wireless controls in place.\n- Defenses include rogue AP detection, certificate validation, and user training.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "arp-poisoning-mitm"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "wep-cracking-legacy-risk",
+                "title": "WEP Cracking (Legacy Risk)",
+                "label": "WEP Cracking",
+                "type": "concept",
+                "tags": [
+                  "offensive-security",
+                  "wireless",
+                  "wep"
+                ],
+                "summary": "WEP is cryptographically weak and should be treated as deprecated legacy exposure, not modern protection.",
+                "why_it_matters": "",
+                "core_idea": "- Weak IV handling enables key recovery with sufficient captured traffic.\n- Packet-injection tactics can accelerate capture volume for key analysis.\n- Practical security posture: any WEP-enabled network is high risk.\n- Modern environments should use WPA2/WPA3 with strong auth.\n- Use WEP only as a migration red-flag in assessments.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "wireless-evil-twin-rogue-ap"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "wardriving-recon-exposure",
+                "title": "War Driving and Wireless Exposure Recon",
+                "label": "War Driving",
+                "type": "concept",
+                "tags": [
+                  "offensive-security",
+                  "wireless",
+                  "reconnaissance"
+                ],
+                "summary": "War driving maps wireless exposure and identifies weakly secured networks from nearby physical space.",
+                "why_it_matters": "",
+                "core_idea": "- Focus is discovery of SSIDs, encryption modes, and signal reach.\n- Helps quantify unintended coverage and rogue-broadcast risk.\n- Collected metadata supports prioritizing hardening and segmentation.\n- May reveal default configurations and outdated security modes.\n- Use ethically and only within authorized assessment boundaries.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "osint-passive-recon-toolkit"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "bluetooth-attack-families",
+                "title": "Bluetooth Attack Families (Bluejacking/Bluesnarfing/etc.)",
+                "label": "Bluetooth Attack Families",
+                "type": "concept",
+                "tags": [
+                  "offensive-security",
+                  "wireless",
+                  "bluetooth"
+                ],
+                "summary": "Bluetooth attacks target discoverability, weak pairing trust, and insecure device exposure paths.",
+                "why_it_matters": "",
+                "core_idea": "- Bluejacking pushes unsolicited messages; bluesnarfing steals data.\n- Bluebugging/bluesmack patterns can enable control abuse or service disruption.\n- Risk rises when devices remain discoverable or pair broadly by default.\n- Mobile endpoints increase impact due to credential and messaging data.\n- Defenses: non-discoverable defaults, strict pairing policy, and patch hygiene.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "wireless-evil-twin-rogue-ap"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
                 "children": []
               }
             ]
@@ -4485,22 +5023,24 @@
                   "fundamentals",
                   "malware_threat"
                 ],
-                "summary": "Malware is classified by how it spreads: viruses need a host program, worms self-replicate independently, and Trojans/ransomware rely on deception rather than replication.",
+                "summary": "Malware families differ by propagation model, payload goal, and persistence mechanism.",
                 "why_it_matters": "",
-                "core_idea": "### Classification by Replication Mechanism\n| Type | Needs a Host Program? | Self-Replicates? |\n|---|---|---|\n| **Virus** | Yes — attaches to and requires a host program to spread | Yes, but only via the host |\n| **Worm** | No — independent, self-contained | Yes, spreads autonomously across a network |\n| **Trojan** | No | No — relies on tricking a user into running it |\n| **Bot** | No | Often yes, as part of a coordinated botnet |\n\n### Countermeasures Against Self-Replicating Malware\n- **Antivirus software** — signature and heuristic-based detection\n- **Network segmentation** — limits how far a worm can spread once inside\n- **Consumer/system hardening** — patching known propagation vectors before a worm can exploit them\n\n### Ransomware Delivery Note\nRansomware that bypasses network-based mitigations typically does so by first landing on a **trusted, already-compromised host inside the business network** — once inside the trust boundary, network-perimeter controls that only inspect north-south (in/out) traffic have far less visibility into what that host does next.",
+                "core_idea": "- Trojans masquerade as benign software to deliver unauthorized capability.\n- Backdoors preserve remote access after initial compromise.\n- Worms self-propagate across reachable systems without direct user action.\n- Viruses typically attach to host files and spread with execution.\n- Classification helps prioritize containment and eradication steps.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
                 "related": [
-                  "colonial-pipeline-ransomware-case-study"
+                  "colonial-pipeline-ransomware-case-study",
+                  "worm-propagation-vs-virus-infection",
+                  "trojan-delivery-wrapper-techniques"
                 ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "general"
@@ -4714,20 +5254,22 @@
                   "analysis",
                   "reverse-engineering"
                 ],
-                "summary": "Static analysis inspects a sample without running it; dynamic analysis observes its actual behavior in an isolated sandbox — real workflows combine both.",
+                "summary": "Static and dynamic analysis complement each other for faster, safer malware triage.",
                 "why_it_matters": "",
-                "core_idea": "| Approach | What It Does | Limitation |\n|---|---|---|\n| **Static** | Strings, imports, disassembly — inspected without ever executing the sample | Packers and obfuscation can hide the real logic from static tools entirely |\n| **Dynamic** | Run the sample in an isolated sandbox VM, observe behavior: network IOCs, file/registry writes, API calls | Malware with anti-VM/anti-sandbox checks may detect the analysis environment and refuse to show its real behavior |\n\n### Practical Workflow\nCombine both: static analysis first for a quick triage and IOC extraction, then dynamic analysis in an isolated VM to reveal packed/obfuscated behavior — watching specifically for anti-VM checks (timing checks, hardware fingerprinting, hypervisor detection) that suggest the sample is evasive.",
+                "core_idea": "- Static analysis inspects binaries without execution to extract indicators and intent.\n- Dynamic analysis observes runtime behavior, network calls, and persistence actions.\n- File-integrity monitoring helps detect unauthorized post-compromise changes.\n- Use isolated sandboxes to limit analyst and infrastructure risk.\n- Cross-validate indicators between static artifacts and runtime telemetry.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "tripwire-file-integrity-monitoring"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "general"
@@ -4798,20 +5340,22 @@
                   "cryptography",
                   "fundamentals"
                 ],
-                "summary": "Symmetric crypto uses one shared key, asymmetric uses a public/private pair, and hashing is one-way — each solves a different problem and they're usually combined.",
+                "summary": "Crypto choices should map to confidentiality, integrity, and authentication requirements by data flow.",
                 "why_it_matters": "",
-                "core_idea": "### What Cryptography Does\nConceals the contents of a message from everyone except those who know the key — the core mechanism behind confidentiality, and (via signatures/MACs) integrity and authentication as well.\n\n### Three Cryptographic Systems\n| Type | How It Works | Examples |\n|---|---|---|\n| **Symmetric Key** | The same key encrypts and decrypts | DES, AES, IDEA |\n| **Public Key (Asymmetric)** | A matched key pair — either key can encrypt, only the other can decrypt | RSA |\n| **Hash Function** | One-way — maps arbitrary-length input to a fixed-size output; not reversible | MD5, SHA family |\n\n### Key Distribution\n- **Symmetric** — physically hand over the key, use an existing shared key to deliver a new one (doesn't scale to many parties), or rely on a trusted third party (Kerberos model)\n- **Public Key** — publish the public key openly; managed at scale via **PKI**\n\n### Practical Issues\nKey distribution and protection, denial-of-service against the crypto system itself, controlling employee access to key material, and — very commonly — **poor key/password selection by users**, which undermines even a mathematically sound system.",
+                "core_idea": "- Symmetric crypto is fast for bulk data; asymmetric crypto solves key exchange and trust.\n- Block vs stream cipher behavior matters for protocol design and misuse risks.\n- Hashes provide integrity checks, not reversible encryption.\n- Non-repudiation requires sound key management, not signatures alone.\n- Weak/legacy primitives create breakable trust even in modern systems.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "pki-public-key-infrastructure"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE431"
@@ -4860,20 +5404,22 @@
                   "certificates",
                   "cryptography"
                 ],
-                "summary": "PKI binds public keys to identities via trusted Certificate Authorities and signed X.509 certificates — described as \"50% technology, 50% bureaucracy.\"",
+                "summary": "PKI binds identities to public keys so encryption and signatures can be trusted at scale.",
                 "why_it_matters": "",
-                "core_idea": "### What PKI Does\nDistributes and manages public keys, binding each one to the identity of the party holding the matching private key. Global interoperability across organizations and jurisdictions is the hard part — hence the \"50% bureaucracy.\"\n\n### Components\n- **CA (Certificate Authority)** — the trusted third party; issues and revokes certificates, signs them so tampering is detectable, and maintains a **CRL (Certificate Revocation List)**. **If a CA is compromised, nothing it has ever vouched for can be trusted.**\n- **RA (Registration Authority)** — verifies applicant identity and handles administrative/billing tasks before passing the request to the CA to actually issue the certificate\n\n### X.509 Certificate Contents\n- Subject name and public key\n- Issuing CA, validity period (Not Before / Not After), serial number, version\n- Hash algorithm identifier (certificates are designed to be algorithm-independent)\n- CA and Subject unique IDs\n- **Digital signature** — a hash of the certificate, encrypted with the CA's private key\n- Extensions\n\n**Important:** certificate contents are **signed, not encrypted** — they're public and readable by anyone; the signature protects integrity, not confidentiality.\n\n### Trust Models\n| Model | Structure |\n|---|---|\n| **Hierarchical (Root CA)** | A root CA at the top, subordinate CAs below — structurally similar to DNS. Different certificate classes exist for different assurance levels (residential/anonymous vs. organizational) |\n| **Web of Trust** (PGP model) | Decentralized, transitive trust — if John trusts Joe and Joe trusts Mary, John can extend trust to Mary's certificate |\n| **Cross-Certification** | CAs establish direct trust with each other without relying on a shared root |",
+                "core_idea": "- Certificates assert subject identity through a CA trust chain.\n- Validation must include issuer trust, expiry, and revocation state.\n- Digital signatures support authenticity and non-repudiation claims.\n- Compromised CAs or private keys collapse trust regardless of algorithm strength.\n- Operational hygiene (issuance, rotation, revocation) is core PKI security.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
-                "related": [],
+                "related": [
+                  "cryptography-fundamentals"
+                ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE431"
@@ -4922,23 +5468,24 @@
                   "cracking",
                   "authentication"
                 ],
-                "summary": "Shadow passwords keep hashes root-only readable; once an attacker has the hash file, cracking is offline and unrate-limited.",
+                "summary": "Password security depends on strong hashing, salting, and resistance to offline cracking workflows.",
                 "why_it_matters": "",
-                "core_idea": "- Passwords are stored as a salted one-way hash, never plaintext — the system re-hashes login attempts and compares, never decrypts\n- **Shadow passwords** split `/etc/passwd` (still world-readable, no hash) from `/etc/shadow` (hash, root-only) — fixes the old world-readable-hash problem\n- Once an attacker has the hash file (leak, misconfigured FTP), cracking happens **offline** — no lockout applies. Tools like John the Ripper try username variants, dictionaries, then leetspeak/permutation rules\n- Related attack types: password spraying (one password, many accounts, dodges lockout), credential stuffing (reused leaked creds), pass-the-hash (reuse the hash directly, no cracking needed)\n- Mitigate with long passwords, slow salted hashing (bcrypt/scrypt/Argon2 — not raw MD5/SHA), MFA, and password managers",
+                "core_idea": "- Attackers prefer offline cracking after obtaining password hashes.\n- Dictionary, hybrid, and brute-force attacks trade speed vs coverage.\n- Salts prevent precomputed rainbow-table reuse across accounts.\n- Legacy hash choices and short passwords drastically reduce crack time.\n- Defenders combine strong KDFs, MFA, lockouts, and credential hygiene.",
                 "example_scenario": "",
                 "detection_angle": "",
                 "defensive_takeaway": "",
                 "commands": [],
                 "related": [
                   "password-attack-mitigations",
-                  "password-policy-vs-passwordless"
+                  "password-policy-vs-passwordless",
+                  "password-attack-models-online-offline"
                 ],
                 "metadata": {
                   "difficulty": "intermediate",
                   "confidence": "decent",
                   "relevance": "both",
                   "cert_mapping": [],
-                  "last_updated": "2026-07-02"
+                  "last_updated": "2026-07-03"
                 },
                 "sources": [
                   "CPRE431"
@@ -5293,6 +5840,68 @@
                 "commands": [],
                 "related": [
                   "compliance-frameworks-overview"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "penetration-test-scope-rules-of-engagement",
+                "title": "Penetration Test Scope and Rules of Engagement",
+                "label": "Pentest Scope & ROE",
+                "type": "concept",
+                "tags": [
+                  "grc",
+                  "penetration-testing",
+                  "governance"
+                ],
+                "summary": "Clear scope and rules of engagement prevent unsafe testing and align technical execution with business constraints.",
+                "why_it_matters": "",
+                "core_idea": "- Define in-scope assets, prohibited actions, and escalation contacts up front.\n- Document legal authorization and confidentiality obligations before testing.\n- Specify stop conditions for operational or safety risk.\n- Align evidence collection and cleanup expectations before kickoff.\n- Good ROE reduces ambiguity during high-pressure incident-like moments.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "vulnerability-assessment-vs-penetration-test"
+                ],
+                "metadata": {
+                  "difficulty": "intermediate",
+                  "confidence": "decent",
+                  "relevance": "both",
+                  "cert_mapping": [],
+                  "last_updated": "2026-07-03"
+                },
+                "sources": [],
+                "sourceType": "added",
+                "children": []
+              },
+              {
+                "id": "vulnerability-assessment-vs-penetration-test",
+                "title": "Vulnerability Assessment vs Penetration Test",
+                "label": "VA vs Pentest",
+                "type": "concept",
+                "tags": [
+                  "grc",
+                  "risk-management",
+                  "assessment"
+                ],
+                "summary": "A vulnerability assessment finds weaknesses; a penetration test validates exploitability and business impact.",
+                "why_it_matters": "",
+                "core_idea": "- VA emphasizes breadth and inventory of known issues.\n- Pentest emphasizes realistic attack paths and demonstrated risk.\n- Both are complementary and should feed remediation planning.\n- Method choice depends on objective, scope, and operational tolerance.\n- Reporting should separate confirmed exploit paths from theoretical findings.",
+                "example_scenario": "",
+                "detection_angle": "",
+                "defensive_takeaway": "",
+                "commands": [],
+                "related": [
+                  "penetration-test-scope-rules-of-engagement"
                 ],
                 "metadata": {
                   "difficulty": "intermediate",

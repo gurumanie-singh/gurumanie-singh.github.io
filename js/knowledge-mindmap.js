@@ -8,6 +8,7 @@ const ROOT_X = 48;
 const PILL_MIN_W = 100;
 const PILL_H = 36;
 const PILL_PAD_X = 14;
+const ROOT_PILL_MAX_W = 420;
 
 /** Inline SVG icons per domainId — stroke via currentColor (--km-accent) */
 const DOMAIN_ICON_PATHS = {
@@ -390,10 +391,12 @@ function isLightTheme() {
 
 function estimatePillWidth(label, isRoot) {
   if (isRoot) {
-    // Root uses --fs-sm + font-weight 600 and --sp-6 horizontal padding
-    const charW = 8.6;
-    const padX = 48;
-    return Math.max(PILL_MIN_W, Math.ceil(label.length * charW + padX));
+    // Root had a separate width estimator that could under-size longer labels.
+    // Keep root sizing source-of-truth here with a wider fit and sane ceiling.
+    const charW = 10.2;
+    const padX = 64;
+    const estimated = Math.ceil(label.length * charW + padX);
+    return Math.max(180, Math.min(estimated, ROOT_PILL_MAX_W));
   }
   const charW = 7.2;
   const iconExtra = 22;
@@ -818,6 +821,9 @@ export class KnowledgeMindmap {
       if (exiting.has(id)) btn.classList.add('is-exiting');
 
       btn.innerHTML = `${pillIconHtml(node)}<span class="km-pill-label">${escapeHtml(nodeLabel(node))}</span>`;
+      if (nodeType === ROOT_TYPE) {
+        console.info('[KnowledgeMindmap] Root label at render time:', nodeLabel(node));
+      }
       btn.addEventListener('click', () => this.handleNodeClick(node));
       nodesLayer.appendChild(btn);
     }
