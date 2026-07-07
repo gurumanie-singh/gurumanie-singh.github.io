@@ -1,10 +1,15 @@
 /* ============================================================================
-   knowledge-mindmap.js — Left-to-right accordion knowledge tree
+   knowledge-mindmap.js — Radial drill-down knowledge tree (vanilla JS + SVG edges)
    ========================================================================== */
 
-const COL_GAP = 220;
-const ROW_GAP = 52;
-const ROOT_X = 48;
+import { initParticleField } from './design-system.js';
+
+const RADIAL_SIBLING_X = 220;
+const RADIAL_CHILD_X = 300;
+const NODE_GAP_Y = 68;
+const MOBILE_BREAKPOINT = 720;
+const FONT_SIZE_FLOOR = 11;
+const LAYOUT_PAD = 100;
 const PILL_MIN_W = 100;
 const PILL_H = 36;
 const PILL_PAD_X = 14;
@@ -367,13 +372,40 @@ function layoutBox(node) {
   };
 }
 
-function edgeAnchors(parent, child) {
+function edgeAnchors(parent, child, mobile = false) {
+  const pcx = parent.x + parent.width / 2;
+  const pcy = parent.y + parent.height / 2;
+  const ccx = child.x + child.width / 2;
+  const ccy = child.y + child.height / 2;
+
+  if (mobile && child.y > parent.y + parent.height * 0.4) {
+    return {
+      x1: pcx,
+      y1: parent.y + parent.height,
+      x2: ccx,
+      y2: child.y,
+    };
+  }
+
+  if (ccx >= pcx) {
+    return {
+      x1: parent.x + parent.width,
+      y1: pcy,
+      x2: child.x,
+      y2: ccy,
+    };
+  }
   return {
-    x1: parent.x + parent.width,
-    y1: parent.y + parent.height / 2,
-    x2: child.x,
-    y2: child.y + child.height / 2,
+    x1: parent.x,
+    y1: pcy,
+    x2: child.x + child.width,
+    y2: ccy,
   };
+}
+
+function fontSizeForDepth(depth) {
+  const sizes = [15, 14, 13, 12, FONT_SIZE_FLOOR];
+  return sizes[Math.min(depth, sizes.length - 1)];
 }
 
 function isLightTheme() {
@@ -411,8 +443,12 @@ export class KnowledgeMindmap {
     this.tree = null;
     this.nodeById = new Map();
     this.parentById = new Map();
-    /** Open branch from root: [rootId, childId, ...] — accordion path */
+    /** Open branch from root: [rootId, childId, ...] — single active path */
     this.expandedPath = [];
+    this.rootRevealed = false;
+    this.introActive = true;
+    this.layoutMobile = false;
+    this._particleTeardown = null;
     this.openLeafId = null;
     this.flatNodes = [];
     this.prevVisibleIds = new Set();
@@ -451,17 +487,40 @@ export class KnowledgeMindmap {
     this.flatNodes = [];
     this.indexTree(raw.root, null);
     const fromHash = this.pathFromHash();
-    this.expandedPath = fromHash.length ? fromHash : [raw.root.id];
+    if (fromHash.length > 1) {
+      this.expandedPath = fromHash;
+      this.rootRevealed = true;
+      this.introActive = false;
+    } else {
+      this.expandedPath = [raw.root.id];
+      this.rootRevealed = false;
+      this.introActive = true;
+    }
     this.openLeafId = null;
     this.renderLayout();
+    this.initParticles();
     this.applyDomainPalette();
     this.renderAll();
     this.bindEvents();
     this.bindPanEvents();
     this.syncHash(true);
-    this.focusCameraOn(this.tree.root.id, false);
+    this.focusCameraOn(this.getFocusId(), false);
     this.schedulePanHintFade();
     this.observeThemeChanges();
+    if (this.introActive) {
+      this.rootEl.classList.add('is-intro');
+    }
+  }
+
+  initParticles() {
+    const wrap = this.rootEl.querySelector('.km-canvas-wrap');
+    if (!wrap) return;
+    this._particleTeardown?.();
+    this._particleTeardown = initParticleField(wrap, {
+      className: 'km-particles-canvas',
+      density: { mobile: 18, desktop: 36 },
+      mobileBreakpoint: MOBILE_BREAKPOINT,
+    });
   }
 
   observeThemeChanges() {
@@ -553,19 +612,42 @@ export class KnowledgeMindmap {
     else if (window.location.hash !== next) window.location.hash = next;
   }
 
-  /** Visible columns for accordion tree */
-  getVisibleColumns() {
-    const columns = [[this.tree.root]];
-    if (!this.expandedPath.length) return columns;
+  getFocusId() {
+    return this.expandedPath[this.expandedPath.length - 1] || this.tree?.root?.id;
+  }
 
-    const root = this.tree.root;
-    if (root.children?.length) columns.push(sortNodesByLabel(root.children));
+  depthFor(nodeId) {
+    return this.pathFor(nodeId).length - 1;
+  }
 
-    for (let i = 1; i < this.expandedPath.length; i += 1) {
-      const node = this.nodeById.get(this.expandedPath[i]);
-      if (node && hasChildren(node)) columns.push(sortNodesByLabel(node.children));
+  /** Nodes shown on canvas for the current drill focus */
+  getVisibleNodeIds() {
+    const focusId = this.getFocusId();
+    const focus = this.nodeById.get(focusId);
+    if (!focus) return new Set();
+
+    const visible = new Set([focusId]);
+
+    if (!this.rootRevealed && focusId === this.tree.root.id) {
+      return visible;
     }
-    return columns;
+
+    if (focusId === this.tree.root.id) {
+      sortNodesByLabel(this.tree.root.children || []).forEach((c) => visible.add(c.id));
+      return visible;
+    }
+
+    const parentId = this.parentById.get(focusId);
+    const parent = parentId ? this.nodeById.get(parentId) : null;
+    if (parent) {
+      sortNodesByLabel(parent.children || []).forEach((c) => visible.add(c.id));
+    }
+
+    if (hasChildren(focus)) {
+      sortNodesByLabel(focus.children).forEach((c) => visible.add(c.id));
+    }
+
+    return visible;
   }
 
   isEdgeActive(parentId, childId) {
@@ -576,77 +658,136 @@ export class KnowledgeMindmap {
   isExpandedBranch(nodeId) {
     const path = this.pathFor(nodeId);
     const depth = path.length - 1;
-    return this.expandedPath[depth] === nodeId && hasChildren(this.nodeById.get(nodeId));
+    if (depth === 0) return this.rootRevealed && this.expandedPath.length === 1;
+    return this.expandedPath[depth] === nodeId && this.expandedPath.length > depth;
+  }
+
+  placeSplitNodes(nodes, positions, centerX, centerY, focusBox, offsetX, depth, role, mobile) {
+    if (!nodes.length) return;
+
+    const gap = NODE_GAP_Y;
+
+    if (mobile) {
+      const boxes = nodes.map((n) => ({ node: n, box: layoutBox(n) }));
+      let y = centerY + focusBox.height / 2 + 56;
+      boxes.forEach(({ node, box }) => {
+        positions.set(node.id, {
+          x: centerX - box.width / 2,
+          y,
+          width: box.width,
+          height: box.height,
+          depth,
+          role,
+        });
+        y += box.height + gap;
+      });
+      return;
+    }
+
+    const left = nodes.slice(0, Math.ceil(nodes.length / 2));
+    const right = nodes.slice(Math.ceil(nodes.length / 2));
+
+    const stackSide = (sideNodes, side) => {
+      const boxes = sideNodes.map((n) => ({ node: n, box: layoutBox(n) }));
+      const totalH = boxes.reduce((s, b) => s + b.box.height, 0) + gap * Math.max(0, boxes.length - 1);
+      let y = centerY - totalH / 2;
+      boxes.forEach(({ node, box }) => {
+        const x = side === 'left'
+          ? centerX - offsetX - box.width
+          : centerX + offsetX;
+        positions.set(node.id, {
+          x,
+          y,
+          width: box.width,
+          height: box.height,
+          depth,
+          role,
+        });
+        y += box.height + gap;
+      });
+    };
+
+    stackSide(left, 'left');
+    stackSide(right, 'right');
   }
 
   computeLayout() {
-    const columns = this.getVisibleColumns();
-    const positions = new Map();
-    const viewportMid = 400;
+    const viewport = this.rootEl.querySelector('#kmTreeViewport');
+    const vw = viewport?.clientWidth || 900;
+    const vh = viewport?.clientHeight || 640;
+    const mobile = vw < MOBILE_BREAKPOINT;
+    this.layoutMobile = mobile;
 
-    const root = this.tree.root;
-    const rootBox = layoutBox(root);
-    positions.set(root.id, {
-      x: ROOT_X,
-      y: viewportMid - rootBox.height / 2,
-      width: rootBox.width,
-      height: rootBox.height,
-      depth: 0,
+    const focusId = this.getFocusId();
+    const focus = this.nodeById.get(focusId);
+    const positions = new Map();
+
+    const cx = Math.max(LAYOUT_PAD, vw / 2);
+    const cy = Math.max(LAYOUT_PAD + 40, vh / 2);
+
+    if (!focus) {
+      return { positions, width: vw, height: vh, paddingTop: 0, focusId, mobile };
+    }
+
+    const focusBox = layoutBox(focus);
+    positions.set(focusId, {
+      x: cx - focusBox.width / 2,
+      y: cy - focusBox.height / 2,
+      width: focusBox.width,
+      height: focusBox.height,
+      depth: this.depthFor(focusId),
+      role: 'focus',
     });
 
-    if (columns.length > 1) {
-      const col1 = columns[1];
-      const blockH = (col1.length - 1) * ROW_GAP;
-      let startY = viewportMid - blockH / 2;
-      col1.forEach((node, i) => {
-        const box = layoutBox(node);
-        const centerY = startY + i * ROW_GAP;
-        positions.set(node.id, {
-          x: ROOT_X + COL_GAP,
-          y: centerY - box.height / 2,
-          width: box.width,
-          height: box.height,
-          depth: 1,
-        });
-      });
+    if (!this.rootRevealed && focusId === this.tree.root.id) {
+      return this.finalizeLayout(positions, vw, vh, focusId, mobile);
     }
 
-    for (let d = 2; d < columns.length; d += 1) {
-      const parentId = this.expandedPath[d - 1];
-      const parentPos = positions.get(parentId);
-      const col = columns[d];
-      if (!parentPos || !col) continue;
-      const blockH = (col.length - 1) * ROW_GAP;
-      const parentCenterY = parentPos.y + parentPos.height / 2;
-      let startY = parentCenterY - blockH / 2;
-      col.forEach((node, i) => {
-        const box = layoutBox(node);
-        const centerY = startY + i * ROW_GAP;
-        positions.set(node.id, {
-          x: ROOT_X + d * COL_GAP,
-          y: centerY - box.height / 2,
-          width: box.width,
-          height: box.height,
-          depth: d,
-        });
-      });
+    let lateralNodes = [];
+    let childNodes = [];
+
+    if (focusId === this.tree.root.id) {
+      childNodes = sortNodesByLabel(this.tree.root.children || []);
+    } else {
+      const parentId = this.parentById.get(focusId);
+      const parent = parentId ? this.nodeById.get(parentId) : null;
+      lateralNodes = sortNodesByLabel(parent?.children || []).filter((n) => n.id !== focusId);
+      if (hasChildren(focus)) {
+        childNodes = sortNodesByLabel(focus.children);
+      }
     }
 
+    const childDepth = this.depthFor(focusId) + 1;
+    const lateralDepth = this.depthFor(focusId);
+
+    this.placeSplitNodes(lateralNodes, positions, cx, cy, focusBox, RADIAL_SIBLING_X, lateralDepth, 'sibling', mobile);
+    this.placeSplitNodes(childNodes, positions, cx, cy, focusBox, RADIAL_CHILD_X, childDepth, 'child', mobile);
+
+    return this.finalizeLayout(positions, vw, vh, focusId, mobile);
+  }
+
+  finalizeLayout(positions, vw, vh, focusId, mobile) {
     const boxes = [...positions.values()];
-    const minY = Math.min(...boxes.map((p) => p.y), 0) - 80;
-    const maxY = Math.max(...boxes.map((p) => p.y + p.height), 0) + 80;
-    const maxX = Math.max(...boxes.map((p) => p.x + p.width), 800) + 120;
-    const paddingTop = Math.max(0, -minY + 60);
+    const minY = Math.min(...boxes.map((p) => p.y), 0) - LAYOUT_PAD;
+    const maxY = Math.max(...boxes.map((p) => p.y + p.height), vh) + LAYOUT_PAD;
+    const minX = Math.min(...boxes.map((p) => p.x), 0) - LAYOUT_PAD;
+    const maxX = Math.max(...boxes.map((p) => p.x + p.width), vw) + LAYOUT_PAD;
+    const paddingTop = Math.max(0, -minY + 40);
+    const paddingLeft = Math.max(0, -minX + 40);
 
     for (const pos of positions.values()) {
       pos.y += paddingTop;
+      pos.x += paddingLeft;
     }
 
     return {
       positions,
-      width: maxX,
-      height: maxY - minY + paddingTop,
+      width: maxX - minX + paddingLeft + LAYOUT_PAD,
+      height: maxY - minY + paddingTop + LAYOUT_PAD,
       paddingTop,
+      paddingLeft,
+      focusId,
+      mobile,
     };
   }
 
@@ -655,17 +796,58 @@ export class KnowledgeMindmap {
     if (!node || !hasChildren(node)) return;
     const path = this.pathFor(nodeId);
     const depth = path.length - 1;
-    if (depth === 0) return; // root never collapses
 
-    if (this.expandedPath[depth] === nodeId) {
-      this.expandedPath = this.expandedPath.slice(0, depth);
+    if (depth === 0) {
+      if (!this.rootRevealed) {
+        this.rootRevealed = true;
+        this.expandedPath = [this.tree.root.id];
+      } else if (this.expandedPath.length === 1) {
+        this.rootRevealed = false;
+      } else {
+        this.expandedPath = [this.tree.root.id];
+      }
+    } else if (this.expandedPath[depth] === nodeId) {
+      this.expandedPath = path.slice(0, depth);
     } else {
       this.expandedPath = path;
+      this.rootRevealed = true;
     }
+
+    this.dismissIntro();
+    this.beginDrillTransition();
     this.openLeafId = null;
     this.renderAll();
     this.syncHash(false);
-    this.focusCameraOn(nodeId);
+    this.focusCameraOn(this.getFocusId());
+  }
+
+  dismissIntro() {
+    if (!this.introActive) return;
+    this.introActive = false;
+    this.rootEl.classList.remove('is-intro');
+  }
+
+  beginDrillTransition() {
+    this.rootEl.classList.add('is-drilling');
+    window.clearTimeout(this._drillTimer);
+    this._drillTimer = window.setTimeout(() => {
+      this.rootEl.classList.remove('is-drilling');
+    }, 560);
+  }
+
+  navigateToDepth(depth) {
+    if (depth === 0 && this.expandedPath.length === 1 && this.rootRevealed) {
+      this.rootRevealed = false;
+    } else {
+      this.expandedPath = this.expandedPath.slice(0, depth + 1);
+      this.rootRevealed = true;
+    }
+    this.dismissIntro();
+    this.beginDrillTransition();
+    this.openLeafId = null;
+    this.renderAll();
+    this.syncHash(false);
+    this.focusCameraOn(this.getFocusId());
   }
 
   openLeaf(nodeId) {
@@ -695,6 +877,7 @@ export class KnowledgeMindmap {
   }
 
   handleNodeClick(node) {
+    this.dismissIntro();
     if (hasChildren(node)) this.toggleBranch(node.id);
     else this.openLeaf(node.id);
   }
@@ -704,6 +887,7 @@ export class KnowledgeMindmap {
     this.rootEl.innerHTML = `
       <div class="km-toolbar">
         <span class="km-category-label">${escapeHtml(this.tree?.category || 'Knowledge')}</span>
+        <nav class="km-breadcrumbs" id="kmBreadcrumbs" aria-label="Knowledge path"></nav>
         <div class="km-search-group">
           <div class="km-search-filters">
             <select class="km-filter-select" id="kmFilterType" aria-label="Filter by type">
@@ -738,8 +922,29 @@ export class KnowledgeMindmap {
 
   renderAll() {
     this.renderTree();
+    this.renderBreadcrumbs();
     this.renderLeafModal();
     this.updateJumpRootButton();
+  }
+
+  renderBreadcrumbs() {
+    const el = this.rootEl.querySelector('#kmBreadcrumbs');
+    if (!el) return;
+
+    const parts = this.expandedPath.map((id, i) => {
+      const node = this.nodeById.get(id);
+      if (!node) return '';
+      const isLast = i === this.expandedPath.length - 1;
+      return `<button type="button" class="km-crumb${isLast ? ' is-current' : ''}" data-depth="${i}">${escapeHtml(nodeLabel(node))}</button>`;
+    }).filter(Boolean);
+
+    el.innerHTML = parts.reduce((html, part, i) => (
+      i === 0 ? part : `${html}<span class="km-crumb-sep" aria-hidden="true">/</span>${part}`
+    ), '');
+
+    el.querySelectorAll('.km-crumb').forEach((btn) => {
+      btn.addEventListener('click', () => this.navigateToDepth(Number(btn.dataset.depth)));
+    });
   }
 
   renderTree() {
@@ -748,8 +953,8 @@ export class KnowledgeMindmap {
 
     const layout = this.computeLayout();
     this.lastLayout = layout;
-    const { positions, width, height } = layout;
-    const visibleIds = new Set(positions.keys());
+    const { positions, width, height, mobile } = layout;
+    const visibleIds = this.getVisibleNodeIds();
     const entering = new Set([...visibleIds].filter((id) => !this.prevVisibleIds.has(id)));
     const exiting = new Set([...this.prevVisibleIds].filter((id) => !visibleIds.has(id)));
 
@@ -761,12 +966,13 @@ export class KnowledgeMindmap {
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
 
-    for (const [childId, pos] of positions) {
-      if (pos.depth === 0) continue;
+    for (const childId of visibleIds) {
       const parentId = this.parentById.get(childId);
+      if (!parentId || !visibleIds.has(parentId)) continue;
       const parentPos = positions.get(parentId);
-      if (!parentPos) continue;
-      const { x1, y1, x2, y2 } = edgeAnchors(parentPos, pos);
+      const pos = positions.get(childId);
+      if (!parentPos || !pos) continue;
+      const { x1, y1, x2, y2 } = edgeAnchors(parentPos, pos, mobile);
       const onPath = this.isEdgeActive(parentId, childId);
       const domainId = this.topDomainFor(childId);
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -783,9 +989,10 @@ export class KnowledgeMindmap {
     const nodesLayer = document.createElement('div');
     nodesLayer.className = 'km-tree-nodes';
 
-    for (const [id, pos] of positions) {
+    for (const id of visibleIds) {
+      const pos = positions.get(id);
       const node = this.nodeById.get(id);
-      if (!node) continue;
+      if (!node || !pos) continue;
       const nodeType = node.type || 'concept';
       const domainId = this.topDomainFor(id);
       const vivid = this.isVivid(id);
@@ -798,16 +1005,19 @@ export class KnowledgeMindmap {
       else if (domainId) btn.classList.add('is-muted');
       btn.dataset.id = id;
       btn.dataset.type = nodeType;
+      btn.dataset.depth = String(pos.depth ?? this.depthFor(id));
       btn.title = node.title;
       btn.style.left = `${pos.x}px`;
       btn.style.top = `${pos.y}px`;
       btn.style.width = `${pos.width}px`;
       btn.style.height = `${pos.height}px`;
+      btn.style.setProperty('--km-pill-fs', `${fontSizeForDepth(pos.depth ?? 0)}px`);
       if (domainId) {
         btn.style.setProperty('--pill-color', this.domainColorVar(domainId));
         btn.style.setProperty('--pill-color-dim', `var(--km-domain-${domainId}-dim)`);
       }
 
+      if (id === this.getFocusId()) btn.classList.add('is-focus');
       if (this.isExpandedBranch(id)) btn.classList.add('is-expanded');
       if (this.openLeafId === id) btn.classList.add('is-leaf-open');
       if (!hasChildren(node)) btn.classList.add('km-pill-leaf');
@@ -815,9 +1025,6 @@ export class KnowledgeMindmap {
       if (exiting.has(id)) btn.classList.add('is-exiting');
 
       btn.innerHTML = `${pillIconHtml(node)}<span class="km-pill-label">${escapeHtml(nodeLabel(node))}</span>`;
-      if (nodeType === ROOT_TYPE) {
-        console.info('[KnowledgeMindmap] Root label at render time:', nodeLabel(node));
-      }
       btn.addEventListener('click', () => this.handleNodeClick(node));
       nodesLayer.appendChild(btn);
     }
@@ -1155,6 +1362,12 @@ export class KnowledgeMindmap {
   }
 
   jumpToRoot() {
+    this.expandedPath = [this.tree.root.id];
+    this.rootRevealed = false;
+    this.openLeafId = null;
+    this.dismissIntro();
+    this.renderAll();
+    this.syncHash(false);
     this.focusCameraOn(this.tree.root.id, true);
   }
 
@@ -1168,6 +1381,9 @@ export class KnowledgeMindmap {
 
   reset() {
     this.expandedPath = [this.tree.root.id];
+    this.rootRevealed = false;
+    this.introActive = false;
+    this.rootEl.classList.remove('is-intro');
     this.openLeafId = null;
     const input = this.rootEl.querySelector('#kmSearch');
     if (input) input.value = '';
@@ -1179,12 +1395,14 @@ export class KnowledgeMindmap {
     }
     this.renderAll();
     this.syncHash(false);
-    this.jumpToRoot();
+    this.focusCameraOn(this.tree.root.id, true);
   }
 
   navigateToSearchResult(nodeId) {
     const node = this.nodeById.get(nodeId);
     if (!node) return;
+    this.dismissIntro();
+    this.rootRevealed = true;
     if (hasChildren(node)) {
       this.expandedPath = this.pathFor(nodeId);
       this.openLeafId = null;
@@ -1195,7 +1413,7 @@ export class KnowledgeMindmap {
     }
     this.renderAll();
     this.syncHash(false);
-    this.focusCameraOn(nodeId);
+    this.focusCameraOn(hasChildren(node) ? nodeId : this.getFocusId());
   }
 
   runSearch() {
@@ -1331,14 +1549,27 @@ export class KnowledgeMindmap {
           this.closeLeaf();
         } else if (this.expandedPath.length > 1) {
           this.expandedPath = this.expandedPath.slice(0, -1);
+          this.rootRevealed = true;
           this.renderAll();
           this.syncHash(false);
+          this.focusCameraOn(this.getFocusId());
+        } else if (this.rootRevealed) {
+          this.rootRevealed = false;
+          this.renderAll();
+          this.syncHash(false);
+          this.focusCameraOn(this.tree.root.id);
         }
       }
     });
     window.addEventListener('hashchange', () => {
       const p = this.pathFromHash();
-      if (p.length) {
+      if (p.length > 1) {
+        this.expandedPath = p;
+        this.rootRevealed = true;
+        this.openLeafId = null;
+        this.dismissIntro();
+        this.renderAll();
+      } else if (p.length === 1) {
         this.expandedPath = p;
         this.openLeafId = null;
         this.renderAll();

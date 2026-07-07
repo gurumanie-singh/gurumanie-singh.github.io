@@ -1,5 +1,5 @@
 /* ============================================================================
-   knowledge-mindmap.css — Left-to-right accordion knowledge tree
+   knowledge-mindmap.css — Radial drill-down knowledge tree
    ========================================================================== */
 
 :root {
@@ -110,6 +110,51 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--km-accent);
+  flex-shrink: 0;
+}
+
+/* ── Breadcrumb path ─────────────────────────────────────────────────────── */
+.km-breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.35rem;
+  min-width: 0;
+  flex: 1 1 200px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+}
+
+.km-crumb {
+  border: none;
+  background: transparent;
+  color: var(--km-muted);
+  padding: 0.15rem 0.35rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--km-transition), background var(--km-transition);
+}
+
+.km-crumb:hover {
+  color: var(--km-accent);
+  background: var(--km-accent-dim);
+}
+
+.km-crumb.is-current {
+  color: var(--km-text);
+  font-weight: 600;
+  cursor: default;
+}
+
+.km-crumb-sep {
+  color: var(--km-muted);
+  opacity: 0.55;
+  user-select: none;
 }
 
 .km-search-group {
@@ -403,10 +448,19 @@
   position: relative;
   min-height: calc(100vh - 52px);
   background: var(--km-bg);
+  overflow: hidden;
+}
+
+.km-particles-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .km-tree-viewport {
   position: relative;
+  z-index: 1;
   width: 100%;
   min-height: calc(100vh - 52px);
   overflow: hidden;
@@ -454,7 +508,11 @@
 }
 
 .km-tree-camera.is-animating {
-  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.km-page.is-drilling .km-tree-camera.is-animating {
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .km-tree-camera.is-snap-back {
@@ -490,16 +548,6 @@
   opacity: 0.35;
 }
 
-.km-tree-edge.is-entering {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-}
-
-.km-tree-edge.is-entered,
-.km-tree-edge:not(.is-entering) {
-  stroke-dashoffset: 0;
-}
-
 .km-tree-nodes {
   position: absolute;
   top: 0;
@@ -523,7 +571,7 @@
   background: var(--km-node-bg);
   color: var(--km-text);
   font-family: var(--font-sans);
-  font-size: var(--fs-xs);
+  font-size: var(--km-pill-fs, var(--fs-xs));
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
@@ -536,7 +584,8 @@
     background var(--km-transition-tree),
     transform var(--km-transition-tree),
     opacity var(--km-transition-tree),
-    box-shadow var(--km-transition-tree);
+    box-shadow var(--km-transition-tree),
+    font-size var(--km-transition-tree);
 }
 
 .km-pill[data-domain].is-vivid {
@@ -566,6 +615,12 @@
   box-shadow: 0 0 0 1px var(--pill-color-dim, var(--km-accent-dim)), var(--km-shadow-sm);
 }
 
+.km-pill.is-focus {
+  border-color: var(--pill-color, var(--km-accent));
+  box-shadow: 0 0 0 2px var(--pill-color-dim, var(--km-accent-dim)), var(--km-shadow-sm);
+  z-index: 3;
+}
+
 .km-pill.is-leaf-open.is-vivid {
   border-color: var(--pill-color, var(--km-accent));
   background: var(--pill-color-dim, var(--km-accent-dim));
@@ -574,13 +629,26 @@
 .km-pill-root {
   padding: 0 var(--sp-6);
   border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
+  font-size: max(var(--km-pill-fs, var(--fs-sm)), var(--fs-sm));
   font-weight: 600;
   border-color: var(--km-node-stroke);
   color: var(--km-text);
   overflow: visible;
   text-overflow: clip;
   white-space: nowrap;
+}
+
+/* Initial title reveal — root only, before first drill */
+.km-page.is-intro .km-pill-root {
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  padding: 0 var(--sp-8);
+  min-height: 52px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--km-border);
+  transform: scale(1.08);
+}
+
+.km-page.is-intro .km-tree-edges {
+  opacity: 0;
 }
 
 .km-pill-root .km-pill-label {
@@ -598,7 +666,7 @@
 .km-pill-type-domain {
   padding: 0 var(--sp-5);
   border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
+  font-size: max(var(--km-pill-fs, var(--fs-sm)), 11px);
   font-weight: 700;
   background: var(--km-surface);
 }
@@ -665,15 +733,72 @@
   text-overflow: ellipsis;
 }
 
-/* Accordion enter animation */
+/* Radial drill enter animation */
 .km-pill.is-entering {
   opacity: 0;
-  transform: translateX(-20px);
+  transform: scale(0.88) translateY(8px);
 }
 
 .km-pill.is-entered {
   opacity: 1;
-  transform: translateX(0);
+  transform: scale(1) translateY(0);
+}
+
+.km-tree-edge.is-entering {
+  opacity: 0;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+.km-tree-edge.is-entered,
+.km-tree-edge:not(.is-entering) {
+  opacity: 1;
+  stroke-dashoffset: 0;
+}
+
+/* Collapse / exit (stage 3 — symmetric fade) */
+.km-pill.is-exiting {
+  opacity: 0;
+  transform: scale(0.92);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .km-toolbar {
+    gap: var(--sp-2);
+  }
+
+  .km-breadcrumbs {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .km-pill {
+    font-size: max(var(--km-pill-fs, 12px), 11px);
+  }
+
+  .km-page.is-intro .km-pill-root {
+    font-size: 1.05rem;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-pill,
+  .km-tree-edge,
+  .km-tree-camera,
+  .km-pill-root {
+    transition-duration: 0.01ms !important;
+  }
+
+  .km-page.is-intro .km-pill-root {
+    transform: none;
+  }
+
+  .km-pill.is-entering {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ── Jump to root ───────────────────────────────────────────────────────── */
