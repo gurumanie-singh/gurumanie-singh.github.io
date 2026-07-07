@@ -18,10 +18,11 @@ const PILL_PAD_X = 14;
 const ROOT_PILL_MAX_W = 420;
 
 /* ── Entrance animation timing (visual layer only) ────────────────────────── */
-const EDGE_DRAW_MS = 280;          // edge "draw-in" duration
-const ROOT_CASCADE_STEP_MS = 80;   // Case A: per-rank delay, paired left/right
-const CHILD_STAGGER_STEP_MS = 50;  // Case B: per-index delay in a single list
-const STAGGER_CAP_MS = 400;        // max stagger before edge-draw offset
+const EDGE_DRAW_MS = 420;          // edge "draw-in" duration
+const NODE_ENTER_MS = 320;         // node pop-in duration after edge draw
+const ROOT_CASCADE_STEP_MS = 130;  // Case A: per-rank delay, paired left/right
+const CHILD_STAGGER_STEP_MS = 90;  // Case B: per-index delay in a single list
+const STAGGER_CAP_MS = 700;        // max stagger before edge-draw offset
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined'
@@ -1156,10 +1157,11 @@ export class KnowledgeMindmap {
     const staggerDelays = this.computeEnterDelays([...enteringNodes.keys(), ...enteringEdges.keys()]);
 
     // Prime entering edges: measure real path length, freeze dash at full length.
+    // Negative dashoffset draws along the path direction (parent -> child).
     for (const [childId, path] of enteringEdges) {
       const len = path.getTotalLength() || 0;
       path.style.strokeDasharray = `${len}`;
-      path.style.strokeDashoffset = `${len}`;
+      path.style.strokeDashoffset = `${-len}`;
       path.style.setProperty('--edge-draw-ms', `${EDGE_DRAW_MS}ms`);
       path.style.setProperty('--enter-delay', `${staggerDelays.get(childId) || 0}ms`);
     }
@@ -1177,13 +1179,31 @@ export class KnowledgeMindmap {
       // Force layout so the initial dashoffset/opacity is committed before flip.
       void inner.offsetWidth;
       inner.querySelectorAll('.km-pill.is-entering').forEach((el) => {
-        el.classList.remove('is-entering');
         el.classList.add('is-entered');
       });
       inner.querySelectorAll('.km-tree-edge.is-entering').forEach((el) => {
-        el.classList.remove('is-entering');
         el.classList.add('is-entered');
       });
+
+      for (const [childId, path] of enteringEdges) {
+        const delay = staggerDelays.get(childId) || 0;
+        window.setTimeout(() => {
+          // Keep the edge fully visible after draw-in; no dash pattern remains.
+          path.style.strokeDasharray = 'none';
+          path.style.strokeDashoffset = '0';
+          path.classList.remove('is-entering', 'is-entered');
+        }, delay + EDGE_DRAW_MS + 40);
+      }
+
+      for (const [id, btn] of enteringNodes) {
+        const base = staggerDelays.get(id) || 0;
+        const delay = enteringEdges.has(id) ? base + EDGE_DRAW_MS : base;
+        window.setTimeout(() => {
+          btn.classList.remove('is-entering', 'is-entered');
+          btn.style.removeProperty('--enter-delay');
+        }, delay + NODE_ENTER_MS + 40);
+      }
+
       if (this.pendingCameraFocus) {
         const id = this.pendingCameraFocus;
         this.pendingCameraFocus = null;
