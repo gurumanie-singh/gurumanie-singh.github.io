@@ -870,7 +870,6 @@ export class KnowledgeMindmap {
     const node = this.nodeById.get(nodeId);
     if (!node || !hasChildren(node)) return;
     const isRoot = nodeId === this.tree.root.id;
-    const recenter = isRoot;
 
     if (isRoot) {
       if (!this.rootRevealed) {
@@ -896,11 +895,12 @@ export class KnowledgeMindmap {
     }
 
     this.dismissIntro();
-    if (recenter) this.beginDrillTransition();
+    if (isRoot) this.beginDrillTransition();
     this.openLeafId = null;
     this.renderAll();
     this.syncHash(false);
-    if (recenter) this.focusCameraOn(this.tree.root.id);
+    // Any clicked branch node becomes the visual center.
+    this.focusCameraOn(nodeId, true);
   }
 
   dismissIntro() {
@@ -938,7 +938,9 @@ export class KnowledgeMindmap {
     this.openLeafId = null;
     this.renderAll();
     this.syncHash(false);
-    if (depth === 0) this.focusCameraOn(this.tree.root.id);
+    // Breadcrumb navigation uses the same smooth recenter behavior.
+    const targetId = this.expandedPath[depth] || this.tree.root.id;
+    this.focusCameraOn(targetId, true);
   }
 
   openLeaf(nodeId) {
@@ -947,6 +949,7 @@ export class KnowledgeMindmap {
     this.openLeafId = nodeId;
     this.expandedPath = this.pathFor(nodeId);
     this.renderAll();
+    this.focusCameraOn(nodeId, true);
   }
 
   closeLeaf() {
