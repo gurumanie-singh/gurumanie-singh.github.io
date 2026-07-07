@@ -153,22 +153,30 @@ function hexToRgb(hex) {
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 
-function initHeroParticles() {
-  const hero = document.querySelector('.hero');
-  // No canvas under reduced motion — nothing to pause, it never starts.
-  if (!hero || reduceMotion.matches) return;
+/**
+ * Decorative particle network on any host element.
+ * @param {HTMLElement} host — container (canvas is prepended, pointer-events: none)
+ * @param {{ className?: string, density?: { mobile: number, desktop: number }, mobileBreakpoint?: number }} [options]
+ * @returns {(() => void) | null} teardown, or null if skipped
+ */
+export function initParticleField(host, options = {}) {
+  if (!host || reduceMotion.matches) return null;
+
+  const className = options.className || 'hero-canvas';
+  const mobileBp = options.mobileBreakpoint ?? 768;
+  const density = options.density || { mobile: 28, desktop: 55 };
 
   const canvas = document.createElement('canvas');
-  canvas.className = 'hero-canvas';
+  canvas.className = className;
   canvas.setAttribute('aria-hidden', 'true');
-  hero.prepend(canvas);
+  host.prepend(canvas);
   const ctx = canvas.getContext('2d');
-  if (!ctx) { canvas.remove(); return; }
+  if (!ctx) { canvas.remove(); return null; }
 
-  const LINK_DIST = 110;     // px: connect particles closer than this
-  const LINK_MAX = 0.12;     // max line opacity (closer = more opaque)
-  const DOT_ALPHA = 0.35;    // particle opacity
-  const count = () => (window.innerWidth <= 768 ? 28 : 55);
+  const LINK_DIST = 110;
+  const LINK_MAX = 0.12;
+  const DOT_ALPHA = 0.35;
+  const count = () => (window.innerWidth <= mobileBp ? density.mobile : density.desktop);
 
   let width = 0, height = 0;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -207,7 +215,7 @@ function initHeroParticles() {
   };
 
   const resize = () => {
-    const rect = hero.getBoundingClientRect();
+    const rect = host.getBoundingClientRect();
     width = rect.width;
     height = rect.height;
     canvas.width = Math.round(width * dpr);
@@ -275,10 +283,11 @@ function initHeroParticles() {
   };
   window.addEventListener('resize', onResize);
 
-  document.addEventListener('visibilitychange', () => {
+  const onVisibility = () => {
     visible = !document.hidden;
     if (visible) start(); else stop();
-  });
+  };
+  document.addEventListener('visibilitychange', onVisibility);
 
   const io = new IntersectionObserver(([entry]) => {
     inView = entry.isIntersecting;
@@ -304,6 +313,20 @@ function initHeroParticles() {
   readAccent();
   resize();
   start();
+
+  return () => {
+    stop();
+    io.disconnect();
+    window.removeEventListener('resize', onResize);
+    document.removeEventListener('visibilitychange', onVisibility);
+    canvas.remove();
+  };
+}
+
+function initHeroParticles() {
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+  initParticleField(hero, { className: 'hero-canvas', density: { mobile: 28, desktop: 55 } });
 }
 
 /* ── INIT ────────────────────────────────────────────────────────────────── */
