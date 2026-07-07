@@ -4,12 +4,14 @@
 
 import { initParticleField } from './design-system.js';
 
-const RADIAL_SIBLING_X = 220;
 const RADIAL_CHILD_X = 300;
 const NODE_GAP_Y = 68;
 const MOBILE_BREAKPOINT = 720;
 const FONT_SIZE_FLOOR = 11;
 const LAYOUT_PAD = 100;
+/** Fixed world-space anchor — root and descendants layout from here so coords never get re-normalized */
+const WORLD_ORIGIN_X = 3200;
+const WORLD_ORIGIN_Y = 3200;
 const PILL_MIN_W = 100;
 const PILL_H = 36;
 const PILL_PAD_X = 14;
@@ -443,8 +445,12 @@ export class KnowledgeMindmap {
     this.tree = null;
     this.nodeById = new Map();
     this.parentById = new Map();
-    /** Open branch from root: [rootId, childId, ...] — single active path */
+    /** Breadcrumb / hash path to the most recently interacted branch */
     this.expandedPath = [];
+    /** Node IDs (non-root) whose children are currently visible */
+    this.expandedBranches = new Set();
+    /** Pinned layout coordinates — never recomputed once set, except root on full reset */
+    this.pinnedPositions = new Map();
     this.rootRevealed = false;
     this.introActive = true;
     this.layoutMobile = false;
@@ -487,10 +493,17 @@ export class KnowledgeMindmap {
     this.flatNodes = [];
     this.indexTree(raw.root, null);
     const fromHash = this.pathFromHash();
+    this.pinnedPositions.clear();
+    this.expandedBranches.clear();
     if (fromHash.length > 1) {
       this.expandedPath = fromHash;
       this.rootRevealed = true;
       this.introActive = false;
+      for (let i = 1; i < fromHash.length; i += 1) {
+        const id = fromHash[i];
+        const node = this.nodeById.get(id);
+        if (node && hasChildren(node)) this.expandedBranches.add(id);
+      }
     } else {
       this.expandedPath = [raw.root.id];
       this.rootRevealed = false;
@@ -504,7 +517,7 @@ export class KnowledgeMindmap {
     this.bindEvents();
     this.bindPanEvents();
     this.syncHash(true);
-    this.focusCameraOn(this.getFocusId(), false);
+    this.focusCameraOn(this.tree.root.id, false);
     this.schedulePanHintFade();
     this.observeThemeChanges();
     if (this.introActive) {
@@ -545,11 +558,7 @@ export class KnowledgeMindmap {
 
   isVivid(nodeId) {
     if (this.openLeafId === nodeId) return true;
-    const path = this.pathFor(nodeId);
-    for (let i = 0; i < path.length; i += 1) {
-      if (this.expandedPath[i] !== path[i]) return false;
-    }
-    return path.length <= this.expandedPath.length;
+    return this.getVisibleNodeIds().has(nodeId);
   }
 
   domainColorVar(domainId) {
@@ -612,54 +621,134 @@ export class KnowledgeMindmap {
     else if (window.location.hash !== next) window.location.hash = next;
   }
 
-  getFocusId() {
-    return this.expandedPath[this.expandedPath.length - 1] || this.tree?.root?.id;
-  }
-
   depthFor(nodeId) {
     return this.pathFor(nodeId).length - 1;
   }
 
-  /** Nodes shown on canvas for the current drill focus */
+  getFocusId() {
+    return this.expandedPath[this.expandedPath.length - 1] || this.tree?.root?.id;
+  }
+
+  isBranchExpanded(nodeId) {
+    if (nodeId === this.tree.root.id) return this.rootRevealed;
+    return this.expandedBranches.has(nodeId);
+  }
+
+  collectDescendantIds(nodeId) {
+    const node = this.nodeById.get(nodeId);
+    if (!node) return [];
+    const out = [];
+    for (const child of node.children || []) {
+      out.push(child.id);
+      out.push(...this.collectDescendantIds(child.id));
+    }
+    return out;
+  }
+
+  prunePinnedPositions(visibleIds) {
+    for (const id of [...this.pinnedPositions.keys()]) {
+      if (!visibleIds.has(id)) this.pinnedPositions.delete(id);
+    }
+  }
+
+  rebuildExpandedBranchesFromPath() {
+    this.expandedBranches.clear();
+    for (let i = 1; i < this.expandedPath.length; i += 1) {
+      const id = this.expandedPath[i];
+      const node = this.nodeById.get(id);
+      if (node && hasChildren(node)) this.expandedBranches.add(id);
+    }
+  }
+
+  /** All nodes that should appear on canvas */
   getVisibleNodeIds() {
-    const focusId = this.getFocusId();
-    const focus = this.nodeById.get(focusId);
-    if (!focus) return new Set();
+    const visible = new Set([this.tree.root.id]);
+    if (!this.rootRevealed) return visible;
 
-    const visible = new Set([focusId]);
-
-    if (!this.rootRevealed && focusId === this.tree.root.id) {
-      return visible;
-    }
-
-    if (focusId === this.tree.root.id) {
-      sortNodesByLabel(this.tree.root.children || []).forEach((c) => visible.add(c.id));
-      return visible;
-    }
-
-    const parentId = this.parentById.get(focusId);
-    const parent = parentId ? this.nodeById.get(parentId) : null;
-    if (parent) {
-      sortNodesByLabel(parent.children || []).forEach((c) => visible.add(c.id));
-    }
-
-    if (hasChildren(focus)) {
-      sortNodesByLabel(focus.children).forEach((c) => visible.add(c.id));
-    }
-
+    const walk = (parentId) => {
+      if (!this.isBranchExpanded(parentId)) return;
+      const parent = this.nodeById.get(parentId);
+      if (!parent) return;
+      for (const child of sortNodesByLabel(parent.children || [])) {
+        visible.add(child.id);
+        walk(child.id);
+      }
+    };
+    walk(this.tree.root.id);
     return visible;
   }
 
   isEdgeActive(parentId, childId) {
-    const pi = this.expandedPath.indexOf(parentId);
-    return pi >= 0 && this.expandedPath[pi + 1] === childId;
+    return this.isBranchExpanded(parentId) && this.getVisibleNodeIds().has(childId);
   }
 
   isExpandedBranch(nodeId) {
-    const path = this.pathFor(nodeId);
-    const depth = path.length - 1;
-    if (depth === 0) return this.rootRevealed && this.expandedPath.length === 1;
-    return this.expandedPath[depth] === nodeId && this.expandedPath.length > depth;
+    return this.isBranchExpanded(nodeId) && hasChildren(this.nodeById.get(nodeId));
+  }
+
+  copyPinnedInto(positions, visibleIds) {
+    for (const id of visibleIds) {
+      const pin = this.pinnedPositions.get(id);
+      if (pin) positions.set(id, { ...pin });
+    }
+  }
+
+  layoutRootAtViewportCenter(positions) {
+    const root = this.tree.root;
+    const box = layoutBox(root);
+    const cx = WORLD_ORIGIN_X;
+    const cy = WORLD_ORIGIN_Y;
+    const pos = {
+      x: cx - box.width / 2,
+      y: cy - box.height / 2,
+      width: box.width,
+      height: box.height,
+      depth: 0,
+      role: 'focus',
+    };
+    positions.set(root.id, pos);
+    this.pinnedPositions.set(root.id, { ...pos });
+  }
+
+  layoutChildrenOf(parentId, childNodes, positions, mobile) {
+    const parentPos = positions.get(parentId) || this.pinnedPositions.get(parentId);
+    const parent = this.nodeById.get(parentId);
+    if (!parentPos || !parent || !childNodes.length) return;
+
+    const pcx = parentPos.x + parentPos.width / 2;
+    const pcy = parentPos.y + parentPos.height / 2;
+    const depth = this.depthFor(parentId) + 1;
+    const offsetX = RADIAL_CHILD_X + Math.max(0, depth - 2) * 28;
+    const focusBox = { width: parentPos.width, height: parentPos.height };
+
+    this.placeSplitNodes(childNodes, positions, pcx, pcy, focusBox, offsetX, depth, 'child', mobile);
+
+    for (const child of childNodes) {
+      const pos = positions.get(child.id);
+      if (pos) this.pinnedPositions.set(child.id, { ...pos });
+    }
+  }
+
+  ensureLayoutsForVisible(positions, visibleIds, mobile) {
+    const viewport = this.rootEl.querySelector('#kmTreeViewport');
+    const vw = viewport?.clientWidth || 900;
+    const vh = viewport?.clientHeight || 640;
+
+    if (!positions.has(this.tree.root.id)) {
+      this.layoutRootAtViewportCenter(positions);
+    }
+
+    const byDepth = [...visibleIds].sort((a, b) => this.depthFor(a) - this.depthFor(b));
+    for (const parentId of byDepth) {
+      if (!this.isBranchExpanded(parentId)) continue;
+      const parent = this.nodeById.get(parentId);
+      if (!parent) continue;
+      const children = sortNodesByLabel(parent.children || []);
+      const needsLayout = children.filter((c) => visibleIds.has(c.id) && !this.pinnedPositions.has(c.id));
+      if (needsLayout.length) {
+        this.layoutChildrenOf(parentId, needsLayout, positions, mobile);
+      }
+    }
   }
 
   placeSplitNodes(nodes, positions, centerX, centerY, focusBox, offsetX, depth, role, mobile) {
@@ -718,107 +807,75 @@ export class KnowledgeMindmap {
     const mobile = vw < MOBILE_BREAKPOINT;
     this.layoutMobile = mobile;
 
-    const focusId = this.getFocusId();
-    const focus = this.nodeById.get(focusId);
+    const visibleIds = this.getVisibleNodeIds();
     const positions = new Map();
+    this.copyPinnedInto(positions, visibleIds);
+    this.ensureLayoutsForVisible(positions, visibleIds, mobile);
+    this.prunePinnedPositions(visibleIds);
 
-    const cx = Math.max(LAYOUT_PAD, vw / 2);
-    const cy = Math.max(LAYOUT_PAD + 40, vh / 2);
-
-    if (!focus) {
-      return { positions, width: vw, height: vh, paddingTop: 0, focusId, mobile };
-    }
-
-    const focusBox = layoutBox(focus);
-    positions.set(focusId, {
-      x: cx - focusBox.width / 2,
-      y: cy - focusBox.height / 2,
-      width: focusBox.width,
-      height: focusBox.height,
-      depth: this.depthFor(focusId),
-      role: 'focus',
-    });
-
-    if (!this.rootRevealed && focusId === this.tree.root.id) {
-      return this.finalizeLayout(positions, vw, vh, focusId, mobile);
-    }
-
-    let lateralNodes = [];
-    let childNodes = [];
-
-    if (focusId === this.tree.root.id) {
-      childNodes = sortNodesByLabel(this.tree.root.children || []);
-    } else {
-      const parentId = this.parentById.get(focusId);
-      const parent = parentId ? this.nodeById.get(parentId) : null;
-      lateralNodes = sortNodesByLabel(parent?.children || []).filter((n) => n.id !== focusId);
-      if (hasChildren(focus)) {
-        childNodes = sortNodesByLabel(focus.children);
-      }
-    }
-
-    const childDepth = this.depthFor(focusId) + 1;
-    const lateralDepth = this.depthFor(focusId);
-
-    this.placeSplitNodes(lateralNodes, positions, cx, cy, focusBox, RADIAL_SIBLING_X, lateralDepth, 'sibling', mobile);
-    this.placeSplitNodes(childNodes, positions, cx, cy, focusBox, RADIAL_CHILD_X, childDepth, 'child', mobile);
-
-    return this.finalizeLayout(positions, vw, vh, focusId, mobile);
+    return this.finalizeLayout(positions, vw, vh, mobile);
   }
 
-  finalizeLayout(positions, vw, vh, focusId, mobile) {
+  finalizeLayout(positions, vw, vh, mobile) {
     const boxes = [...positions.values()];
-    const minY = Math.min(...boxes.map((p) => p.y), 0) - LAYOUT_PAD;
-    const maxY = Math.max(...boxes.map((p) => p.y + p.height), vh) + LAYOUT_PAD;
-    const minX = Math.min(...boxes.map((p) => p.x), 0) - LAYOUT_PAD;
-    const maxX = Math.max(...boxes.map((p) => p.x + p.width), vw) + LAYOUT_PAD;
-    const paddingTop = Math.max(0, -minY + 40);
-    const paddingLeft = Math.max(0, -minX + 40);
-
-    for (const pos of positions.values()) {
-      pos.y += paddingTop;
-      pos.x += paddingLeft;
+    if (!boxes.length) {
+      return { positions, width: vw, height: vh, mobile };
     }
+
+    const maxX = Math.max(...boxes.map((p) => p.x + p.width)) + LAYOUT_PAD;
+    const maxY = Math.max(...boxes.map((p) => p.y + p.height)) + LAYOUT_PAD;
 
     return {
       positions,
-      width: maxX - minX + paddingLeft + LAYOUT_PAD,
-      height: maxY - minY + paddingTop + LAYOUT_PAD,
-      paddingTop,
-      paddingLeft,
-      focusId,
+      width: Math.max(maxX, vw),
+      height: Math.max(maxY, vh),
       mobile,
     };
+  }
+
+  collapseBranch(nodeId) {
+    this.expandedBranches.delete(nodeId);
+    for (const id of this.collectDescendantIds(nodeId)) {
+      this.pinnedPositions.delete(id);
+      this.expandedBranches.delete(id);
+    }
   }
 
   toggleBranch(nodeId) {
     const node = this.nodeById.get(nodeId);
     if (!node || !hasChildren(node)) return;
-    const path = this.pathFor(nodeId);
-    const depth = path.length - 1;
+    const isRoot = nodeId === this.tree.root.id;
+    const recenter = isRoot;
 
-    if (depth === 0) {
+    if (isRoot) {
       if (!this.rootRevealed) {
         this.rootRevealed = true;
         this.expandedPath = [this.tree.root.id];
-      } else if (this.expandedPath.length === 1) {
-        this.rootRevealed = false;
       } else {
+        this.rootRevealed = false;
         this.expandedPath = [this.tree.root.id];
+        for (const id of this.collectDescendantIds(this.tree.root.id)) {
+          this.pinnedPositions.delete(id);
+        }
+        this.expandedBranches.clear();
+        this.pinnedPositions.delete(this.tree.root.id);
       }
-    } else if (this.expandedPath[depth] === nodeId) {
-      this.expandedPath = path.slice(0, depth);
+    } else if (this.expandedBranches.has(nodeId)) {
+      this.collapseBranch(nodeId);
+      this.expandedPath = this.pathFor(nodeId).slice(0, -1);
+      if (this.expandedPath.length === 0) this.expandedPath = [this.tree.root.id];
     } else {
-      this.expandedPath = path;
+      this.expandedBranches.add(nodeId);
+      this.expandedPath = this.pathFor(nodeId);
       this.rootRevealed = true;
     }
 
     this.dismissIntro();
-    this.beginDrillTransition();
+    if (recenter) this.beginDrillTransition();
     this.openLeafId = null;
     this.renderAll();
     this.syncHash(false);
-    this.focusCameraOn(this.getFocusId());
+    if (recenter) this.focusCameraOn(this.tree.root.id);
   }
 
   dismissIntro() {
@@ -838,24 +895,33 @@ export class KnowledgeMindmap {
   navigateToDepth(depth) {
     if (depth === 0 && this.expandedPath.length === 1 && this.rootRevealed) {
       this.rootRevealed = false;
+      this.expandedPath = [this.tree.root.id];
+      this.expandedBranches.clear();
+      for (const id of this.collectDescendantIds(this.tree.root.id)) {
+        this.pinnedPositions.delete(id);
+      }
+      this.pinnedPositions.delete(this.tree.root.id);
     } else {
       this.expandedPath = this.expandedPath.slice(0, depth + 1);
       this.rootRevealed = true;
+      this.rebuildExpandedBranchesFromPath();
+      const visible = this.getVisibleNodeIds();
+      this.prunePinnedPositions(visible);
     }
     this.dismissIntro();
     this.beginDrillTransition();
     this.openLeafId = null;
     this.renderAll();
     this.syncHash(false);
-    this.focusCameraOn(this.getFocusId());
+    if (depth === 0) this.focusCameraOn(this.tree.root.id);
   }
 
   openLeaf(nodeId) {
     const node = this.nodeById.get(nodeId);
     if (!node || hasChildren(node)) return;
     this.openLeafId = nodeId;
+    this.expandedPath = this.pathFor(nodeId);
     this.renderAll();
-    this.focusCameraOn(nodeId);
   }
 
   closeLeaf() {
@@ -1017,8 +1083,10 @@ export class KnowledgeMindmap {
         btn.style.setProperty('--pill-color-dim', `var(--km-domain-${domainId}-dim)`);
       }
 
-      if (id === this.getFocusId()) btn.classList.add('is-focus');
       if (this.isExpandedBranch(id)) btn.classList.add('is-expanded');
+      if (id === this.expandedPath[this.expandedPath.length - 1] && hasChildren(node)) {
+        btn.classList.add('is-focus');
+      }
       if (this.openLeafId === id) btn.classList.add('is-leaf-open');
       if (!hasChildren(node)) btn.classList.add('km-pill-leaf');
       if (entering.has(id)) btn.classList.add('is-entering');
@@ -1364,6 +1432,8 @@ export class KnowledgeMindmap {
   jumpToRoot() {
     this.expandedPath = [this.tree.root.id];
     this.rootRevealed = false;
+    this.expandedBranches.clear();
+    this.pinnedPositions.clear();
     this.openLeafId = null;
     this.dismissIntro();
     this.renderAll();
@@ -1382,6 +1452,8 @@ export class KnowledgeMindmap {
   reset() {
     this.expandedPath = [this.tree.root.id];
     this.rootRevealed = false;
+    this.expandedBranches.clear();
+    this.pinnedPositions.clear();
     this.introActive = false;
     this.rootEl.classList.remove('is-intro');
     this.openLeafId = null;
@@ -1405,15 +1477,22 @@ export class KnowledgeMindmap {
     this.rootRevealed = true;
     if (hasChildren(node)) {
       this.expandedPath = this.pathFor(nodeId);
+      this.expandedBranches.add(nodeId);
+      for (let i = 1; i < this.expandedPath.length - 1; i += 1) {
+        const id = this.expandedPath[i];
+        const anc = this.nodeById.get(id);
+        if (anc && hasChildren(anc)) this.expandedBranches.add(id);
+      }
       this.openLeafId = null;
     } else {
       const parentId = this.parentById.get(nodeId);
       this.expandedPath = parentId ? this.pathFor(parentId) : [this.tree.root.id];
+      this.rebuildExpandedBranchesFromPath();
       this.openLeafId = nodeId;
     }
     this.renderAll();
     this.syncHash(false);
-    this.focusCameraOn(hasChildren(node) ? nodeId : this.getFocusId());
+    this.focusCameraOn(this.tree.root.id, true);
   }
 
   runSearch() {
@@ -1530,10 +1609,8 @@ export class KnowledgeMindmap {
     this.rootEl.querySelector('#kmLeafBackdrop')?.addEventListener('click', () => this.closeLeaf());
 
     window.addEventListener('resize', () => {
-      const focusId = this.openLeafId
-        || this.expandedPath[this.expandedPath.length - 1]
-        || this.tree?.root?.id;
-      if (focusId) this.focusCameraOn(focusId, false);
+      this.renderTree();
+      this.updateJumpRootButton();
     });
 
     document.addEventListener('click', (e) => {
@@ -1547,14 +1624,24 @@ export class KnowledgeMindmap {
         if (this.openLeafId) {
           e.stopPropagation();
           this.closeLeaf();
-        } else if (this.expandedPath.length > 1) {
+        } else if (this.expandedBranches.size > 0 || this.expandedPath.length > 1) {
+          const lastId = this.expandedPath[this.expandedPath.length - 1];
+          if (this.expandedBranches.has(lastId)) {
+            this.collapseBranch(lastId);
+          }
           this.expandedPath = this.expandedPath.slice(0, -1);
-          this.rootRevealed = true;
+          if (this.expandedPath.length === 0) this.expandedPath = [this.tree.root.id];
+          this.rebuildExpandedBranchesFromPath();
+          this.prunePinnedPositions(this.getVisibleNodeIds());
           this.renderAll();
           this.syncHash(false);
-          this.focusCameraOn(this.getFocusId());
         } else if (this.rootRevealed) {
           this.rootRevealed = false;
+          for (const id of this.collectDescendantIds(this.tree.root.id)) {
+            this.pinnedPositions.delete(id);
+          }
+          this.expandedBranches.clear();
+          this.pinnedPositions.delete(this.tree.root.id);
           this.renderAll();
           this.syncHash(false);
           this.focusCameraOn(this.tree.root.id);
@@ -1566,6 +1653,12 @@ export class KnowledgeMindmap {
       if (p.length > 1) {
         this.expandedPath = p;
         this.rootRevealed = true;
+        this.expandedBranches.clear();
+        for (let i = 1; i < p.length; i += 1) {
+          const id = p[i];
+          const node = this.nodeById.get(id);
+          if (node && hasChildren(node)) this.expandedBranches.add(id);
+        }
         this.openLeafId = null;
         this.dismissIntro();
         this.renderAll();
