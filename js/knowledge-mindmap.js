@@ -465,6 +465,10 @@ export class KnowledgeMindmap {
     this.expandedBranches = new Set();
     /** Pinned layout coordinates — never recomputed once set, except root on full reset */
     this.pinnedPositions = new Map();
+    /** Node/edge IDs mid-exit-animation: still rendered (reverse animation playing)
+     *  even though expandedBranches/getVisibleNodeIds() no longer consider them visible.
+     *  Cleared once each id's own exit animation finishes (see renderTree()). */
+    this.pendingExitIds = new Set();
     this.rootRevealed = false;
     this.introActive = true;
     this.layoutMobile = false;
@@ -509,6 +513,7 @@ export class KnowledgeMindmap {
     const fromHash = this.pathFromHash();
     this.pinnedPositions.clear();
     this.expandedBranches.clear();
+    this.pendingExitIds.clear();
     if (fromHash.length > 1) {
       this.expandedPath = fromHash;
       this.rootRevealed = true;
@@ -847,10 +852,15 @@ export class KnowledgeMindmap {
     this.layoutMobile = mobile;
 
     const visibleIds = this.getVisibleNodeIds();
+    // Anything still mid-exit-animation needs its position preserved too, so it
+    // has somewhere to render/animate FROM this pass — see renderTree().
+    const renderIds = this.pendingExitIds.size
+      ? new Set([...visibleIds, ...this.pendingExitIds])
+      : visibleIds;
     const positions = new Map();
-    this.copyPinnedInto(positions, visibleIds);
+    this.copyPinnedInto(positions, renderIds);
     this.ensureLayoutsForVisible(positions, visibleIds, mobile);
-    this.prunePinnedPositions(visibleIds);
+    this.prunePinnedPositions(renderIds);
 
     return this.finalizeLayout(positions, vw, vh, mobile);
   }
@@ -873,9 +883,13 @@ export class KnowledgeMindmap {
   }
 
   collapseBranch(nodeId) {
+    // NOTE: position data (pinnedPositions) is deliberately NOT cleared here.
+    // Collapsing only updates the logical expanded state; the descendants stay
+    // pinned in place until their reverse-exit animation actually finishes
+    // (renderTree()'s exit-finalize step), so they have somewhere to animate
+    // FROM. Cleaning them up here would delete that data before it can be used.
     this.expandedBranches.delete(nodeId);
     for (const id of this.collectDescendantIds(nodeId)) {
-      this.pinnedPositions.delete(id);
       this.expandedBranches.delete(id);
     }
   }
@@ -892,9 +906,8 @@ export class KnowledgeMindmap {
       } else {
         this.rootRevealed = false;
         this.expandedPath = [this.tree.root.id];
-        for (const id of this.collectDescendantIds(this.tree.root.id)) {
-          this.pinnedPositions.delete(id);
-        }
+        // Descendant positions are left in place for the reverse-exit animation
+        // to play from — cleaned up once that animation finishes (renderTree()).
         this.expandedBranches.clear();
         this.pinnedPositions.delete(this.tree.root.id);
       }
@@ -936,16 +949,16 @@ export class KnowledgeMindmap {
       this.rootRevealed = false;
       this.expandedPath = [this.tree.root.id];
       this.expandedBranches.clear();
-      for (const id of this.collectDescendantIds(this.tree.root.id)) {
-        this.pinnedPositions.delete(id);
-      }
+      // Descendant positions stay pinned for the reverse-exit animation;
+      // renderTree()'s exit-finalize step cleans them up once it finishes.
       this.pinnedPositions.delete(this.tree.root.id);
     } else {
       this.expandedPath = this.expandedPath.slice(0, depth + 1);
       this.rootRevealed = true;
       this.rebuildExpandedBranchesFromPath();
-      const visible = this.getVisibleNodeIds();
-      this.prunePinnedPositions(visible);
+      // No pinnedPositions pruning here — computeLayout() now preserves
+      // positions for anything mid-exit-animation (pendingExitIds), and
+      // prunes for real only once that animation actually finishes.
     }
     this.dismissIntro();
     this.beginDrillTransition();
@@ -1059,12 +1072,30 @@ export class KnowledgeMindmap {
     const inner = this.rootEl.querySelector('#kmTreeInner');
     if (!inner) return;
 
-    const layout = this.computeLayout();
+    const reduceMotion = prefersReducedMotion();
+    const visibleIds = this.getVisibleNodeIds();
+
+    // If something mid-exit has become visible again (e.g. a rapid re-click),
+    // cancel its exit rather than let it fight the entrance below.
+    for (const id of [...this.pendingExitIds]) {
+      if (visibleIds.has(id)) this.pendingExitIds.delete(id);
+    }
+
+    // Newly-invisible-since-last-render ids join the exit batch (unless motion
+    // is reduced, in which case they're just dropped immediately, no animation).
+    const newlyLeaving = [...this.prevVisibleIds].filter((id) => !visibleIds.has(id));
+    if (reduceMotion) {
+      for (const id of newlyLeaving) this.pinnedPositions.delete(id);
+    } else {
+      for (const id of newlyLeaving) this.pendingExitIds.add(id);
+    }
+
+    const layout = this.computeLayout(); // now also carries positions for pendingExitIds
     this.lastLayout = layout;
     const { positions, width, height, mobile } = layout;
-    const visibleIds = this.getVisibleNodeIds();
     const entering = new Set([...visibleIds].filter((id) => !this.prevVisibleIds.has(id)));
-    const exiting = new Set([...this.prevVisibleIds].filter((id) => !visibleIds.has(id)));
+    const exiting = this.pendingExitIds; // everything currently mid-exit-animation
+    const renderIds = exiting.size ? new Set([...visibleIds, ...exiting]) : visibleIds;
 
     inner.style.width = `${width}px`;
     inner.style.height = `${height}px`;
@@ -1074,13 +1105,13 @@ export class KnowledgeMindmap {
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
 
-    const reduceMotion = prefersReducedMotion();
-    // childId -> edge path element, for the entering edges we need to draw in.
+    // childId -> edge path element, for edges entering (drawing in) or exiting (retracting).
     const enteringEdges = new Map();
+    const exitingEdges = new Map();
 
-    for (const childId of visibleIds) {
+    for (const childId of renderIds) {
       const parentId = this.parentById.get(childId);
-      if (!parentId || !visibleIds.has(parentId)) continue;
+      if (!parentId || !renderIds.has(parentId)) continue;
       const parentPos = positions.get(parentId);
       const pos = positions.get(childId);
       if (!parentPos || !pos) continue;
@@ -1088,25 +1119,28 @@ export class KnowledgeMindmap {
       const onPath = this.isEdgeActive(parentId, childId);
       const domainId = this.topDomainFor(childId);
       const isEntering = entering.has(childId) && !reduceMotion;
+      const isExiting = exiting.has(childId);
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', bezierEdge(x1, y1, x2, y2));
-      path.setAttribute('class', `km-tree-edge${onPath ? ' is-active' : ''}${isEntering ? ' is-entering' : ''}${exiting.has(childId) ? ' is-exiting' : ''}${onPath ? '' : ' is-muted'}`);
+      path.setAttribute('class', `km-tree-edge${onPath ? ' is-active' : ''}${isEntering ? ' is-entering' : ''}${isExiting ? ' is-exiting' : ''}${onPath ? '' : ' is-muted'}`);
       if (onPath && domainId) {
         path.style.stroke = this.domainColorVar(domainId);
       }
       path.dataset.from = parentId;
       path.dataset.to = childId;
       if (isEntering) enteringEdges.set(childId, path);
+      if (isExiting) exitingEdges.set(childId, path);
       svg.appendChild(path);
     }
 
     const nodesLayer = document.createElement('div');
     nodesLayer.className = 'km-tree-nodes';
 
-    // id -> pill element, for entering nodes we need to pop in (Step 2 delays).
+    // id -> pill element, for nodes entering (popping in) or exiting (popping out).
     const enteringNodes = new Map();
+    const exitingNodes = new Map();
 
-    for (const id of visibleIds) {
+    for (const id of renderIds) {
       const pos = positions.get(id);
       const node = this.nodeById.get(id);
       if (!node || !pos) continue;
@@ -1141,12 +1175,15 @@ export class KnowledgeMindmap {
       if (this.openLeafId === id) btn.classList.add('is-leaf-open');
       if (!hasChildren(node)) btn.classList.add('km-pill-leaf');
       const isEnteringNode = entering.has(id) && !reduceMotion;
+      const isExitingNode = exiting.has(id);
       if (isEnteringNode) btn.classList.add('is-entering');
-      if (exiting.has(id)) btn.classList.add('is-exiting');
+      if (isExitingNode) btn.classList.add('is-exiting');
 
       btn.innerHTML = `${pillIconHtml(node)}<span class="km-pill-label">${escapeHtml(nodeLabel(node))}</span>`;
-      btn.addEventListener('click', () => this.handleNodeClick(node));
+      // A pill mid-exit shouldn't be clickable — it's on its way out.
+      if (!isExitingNode) btn.addEventListener('click', () => this.handleNodeClick(node));
       if (isEnteringNode) enteringNodes.set(id, btn);
+      if (isExitingNode) exitingNodes.set(id, btn);
       nodesLayer.appendChild(btn);
     }
 
@@ -1154,19 +1191,18 @@ export class KnowledgeMindmap {
     inner.appendChild(svg);
     inner.appendChild(nodesLayer);
 
-    // Per-child cascade/stagger rank delay (Case A/B).
+    // Per-child cascade/stagger rank delay — forward order for entering,
+    // reversed order for exiting (see computeExitDelays()).
     const staggerDelays = this.computeEnterDelays([...enteringNodes.keys(), ...enteringEdges.keys()]);
+    const exitDelays = this.computeExitDelays([...exitingNodes.keys(), ...exitingEdges.keys()]);
 
-    // Step A: prime entering edges — hidden, no transition yet.
+    // ── Entrance priming (unchanged): hidden, no transition yet ──
     for (const [childId, path] of enteringEdges) {
       const len = path.getTotalLength() || 0;
       path.style.transition = 'none';
       path.style.strokeDasharray = `${len} ${len}`;
       path.style.strokeDashoffset = `${len}`;
     }
-
-    // Step B: prime entering nodes — pop-in starts after THIS node's edge finishes.
-    // nodeDelay = rankDelay + edgeDrawDuration (root itself has no incoming edge).
     for (const [id, btn] of enteringNodes) {
       const rankDelay = staggerDelays.get(id) || 0;
       const hasIncomingEdge = enteringEdges.has(id);
@@ -1174,11 +1210,29 @@ export class KnowledgeMindmap {
       btn.style.setProperty('--enter-delay', `${nodeDelay}ms`);
     }
 
+    // ── Exit priming (new): the reverse of entrance priming ──
+    // Edges start fully drawn (dashoffset 0) so they can visibly retract to
+    // fully hidden. Nodes start at their normal, already-visible state — the
+    // hidden end-state only gets applied once .is-exit-active is added below,
+    // after each node's own reversed-rank delay.
+    for (const [childId, path] of exitingEdges) {
+      const len = path.getTotalLength() || 0;
+      path.style.transition = 'none';
+      path.style.strokeDasharray = `${len} ${len}`;
+      path.style.strokeDashoffset = '0';
+    }
+    for (const [id, btn] of exitingNodes) {
+      const rankDelay = exitDelays.get(id) || 0;
+      btn.style.setProperty('--exit-delay', `${rankDelay}ms`);
+    }
+
+    let maxExitCompletionMs = 0;
+
     requestAnimationFrame(() => {
-      // rAF #1 — commit the initial dashoffset = len paint.
+      // rAF #1 — commit the initial dash/opacity paint for both directions.
       void inner.offsetWidth;
       requestAnimationFrame(() => {
-        // rAF #2 — attach transition + target, and flip nodes to entered (shared t0).
+        // rAF #2 — attach transitions + targets (shared t0) for entrance...
         for (const [childId, path] of enteringEdges) {
           const rankDelay = staggerDelays.get(childId) || 0;
           path.style.transition = `stroke-dashoffset ${EDGE_DRAW_MS}ms ${EDGE_DRAW_EASING} ${rankDelay}ms`;
@@ -1188,6 +1242,35 @@ export class KnowledgeMindmap {
           el.classList.add('is-entered');
         });
 
+        // ...and for exit — reversed sequencing: the node retracts FIRST
+        // (mirroring "edge draws, then node pops in" backward as "node pops
+        // out, then edge retracts"). Edge retract delay = this node's own
+        // reversed-rank delay + the node's exit duration.
+        for (const [id, btn] of exitingNodes) {
+          const rankDelay = exitDelays.get(id) || 0;
+          btn.classList.add('is-exit-active');
+          const edgeDelay = rankDelay + NODE_ENTER_MS;
+          const path = exitingEdges.get(id);
+          if (path) {
+            path.style.transition = `stroke-dashoffset ${EDGE_DRAW_MS}ms ${EDGE_DRAW_EASING} ${edgeDelay}ms`;
+            path.style.strokeDashoffset = `${path.getTotalLength() || 0}`;
+          }
+          const completion = edgeDelay + EDGE_DRAW_MS;
+          if (completion > maxExitCompletionMs) maxExitCompletionMs = completion;
+        }
+        // Defensive fallback: an exiting edge with no matching exiting node
+        // (shouldn't normally occur — see renderTree's shared renderIds/exiting
+        // set) still resolves on its own rank delay rather than hanging open.
+        for (const [id, path] of exitingEdges) {
+          if (exitingNodes.has(id)) continue;
+          const rankDelay = exitDelays.get(id) || 0;
+          path.style.transition = `stroke-dashoffset ${EDGE_DRAW_MS}ms ${EDGE_DRAW_EASING} ${rankDelay}ms`;
+          path.style.strokeDashoffset = `${path.getTotalLength() || 0}`;
+          const completion = rankDelay + EDGE_DRAW_MS;
+          if (completion > maxExitCompletionMs) maxExitCompletionMs = completion;
+        }
+
+        // Entrance cleanup (unchanged).
         for (const [childId, path] of enteringEdges) {
           const rankDelay = staggerDelays.get(childId) || 0;
           window.setTimeout(() => {
@@ -1197,7 +1280,6 @@ export class KnowledgeMindmap {
             path.classList.remove('is-entering');
           }, rankDelay + EDGE_DRAW_MS + 50);
         }
-
         for (const [id, btn] of enteringNodes) {
           const rankDelay = staggerDelays.get(id) || 0;
           const nodeDelay = enteringEdges.has(id) ? rankDelay + EDGE_DRAW_MS : rankDelay;
@@ -1205,6 +1287,27 @@ export class KnowledgeMindmap {
             btn.classList.remove('is-entering', 'is-entered');
             btn.style.removeProperty('--enter-delay');
           }, nodeDelay + NODE_ENTER_MS + 50);
+        }
+
+        // Exit finalize (new): once the whole batch's reverse animation has
+        // actually finished, drop these ids from pendingExitIds/pinnedPositions
+        // for real and re-render — that final pass excludes them from
+        // renderIds entirely, so they're gone (imperceptibly, since they've
+        // already animated to fully hidden by this point).
+        if (exitingNodes.size || exitingEdges.size) {
+          const batchIds = [...new Set([...exitingNodes.keys(), ...exitingEdges.keys()])];
+          window.setTimeout(() => {
+            let changed = false;
+            for (const id of batchIds) {
+              // Only clean up if still pending — guards against the rare case
+              // where the same id re-entered and got cancelled in the meantime.
+              if (!this.pendingExitIds.has(id)) continue;
+              this.pendingExitIds.delete(id);
+              this.pinnedPositions.delete(id);
+              changed = true;
+            }
+            if (changed) this.renderAll();
+          }, maxExitCompletionMs + 50);
         }
       });
 
@@ -1267,6 +1370,60 @@ export class KnowledgeMindmap {
           .forEach((id, index) => {
             delays.set(id, Math.min(index * CHILD_STAGGER_STEP_MS, STAGGER_CAP_MS));
           });
+      }
+    }
+
+    return delays;
+  }
+
+  /**
+   * Mirror of computeEnterDelays(), for the exit direction: identical grouping
+   * and rank logic, but rank order is reversed so the last child to enter is
+   * the first to leave (a symmetric "rewind" of the entrance sequencing) —
+   * same per-rank/per-index step constants, just walked backward.
+   * Positions are read from this.lastLayout, which computeLayout() now keeps
+   * populated for pendingExitIds too, so this resolves correctly mid-exit.
+   */
+  computeExitDelays(exitingIds) {
+    const delays = new Map();
+    if (!exitingIds.length) return delays;
+
+    const rootId = this.tree.root.id;
+    const byParent = new Map();
+    for (const id of exitingIds) {
+      const parentId = this.parentById.get(id);
+      if (!byParent.has(parentId)) byParent.set(parentId, []);
+      byParent.get(parentId).push(id);
+    }
+
+    const positions = this.lastLayout?.positions;
+
+    for (const [parentId, ids] of byParent) {
+      if (parentId === rootId) {
+        const left = [];
+        const right = [];
+        for (const id of ids) {
+          const pos = positions?.get(id) || this.pinnedPositions.get(id);
+          const side = pos?.side || (this.nodeSideForPos(pos) || 'right');
+          (side === 'left' ? left : right).push(id);
+        }
+        const rankSideReversed = (sideIds) => {
+          const sorted = sideIds
+            .slice()
+            .sort((a, b) => (positions?.get(a)?.y ?? 0) - (positions?.get(b)?.y ?? 0));
+          const maxRank = sorted.length - 1;
+          sorted.forEach((id, rank) => delays.set(id, (maxRank - rank) * ROOT_CASCADE_STEP_MS));
+        };
+        rankSideReversed(left);
+        rankSideReversed(right);
+      } else {
+        const sorted = ids
+          .slice()
+          .sort((a, b) => (positions?.get(a)?.y ?? 0) - (positions?.get(b)?.y ?? 0));
+        const maxIndex = sorted.length - 1;
+        sorted.forEach((id, index) => {
+          delays.set(id, Math.min((maxIndex - index) * CHILD_STAGGER_STEP_MS, STAGGER_CAP_MS));
+        });
       }
     }
 
@@ -1786,14 +1943,12 @@ export class KnowledgeMindmap {
           this.expandedPath = this.expandedPath.slice(0, -1);
           if (this.expandedPath.length === 0) this.expandedPath = [this.tree.root.id];
           this.rebuildExpandedBranchesFromPath();
-          this.prunePinnedPositions(this.getVisibleNodeIds());
+          // No pinnedPositions pruning here — see collapseBranch()'s note.
           this.renderAll();
           this.syncHash(false);
         } else if (this.rootRevealed) {
           this.rootRevealed = false;
-          for (const id of this.collectDescendantIds(this.tree.root.id)) {
-            this.pinnedPositions.delete(id);
-          }
+          // Descendant positions stay pinned for the reverse-exit animation.
           this.expandedBranches.clear();
           this.pinnedPositions.delete(this.tree.root.id);
           this.renderAll();
