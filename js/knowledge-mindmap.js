@@ -18,8 +18,9 @@ const PILL_PAD_X = 14;
 const ROOT_PILL_MAX_W = 420;
 
 /* ── Entrance animation timing (visual layer only) ────────────────────────── */
-const EDGE_DRAW_MS = 420;          // edge "draw-in" duration
+const EDGE_DRAW_MS = 280;          // edge "draw-in" duration
 const NODE_ENTER_MS = 320;         // node pop-in duration after edge draw
+const EDGE_DRAW_EASING = 'cubic-bezier(0.65, 0, 0.35, 1)';
 const ROOT_CASCADE_STEP_MS = 130;  // Case A: per-rank delay, paired left/right
 const CHILD_STAGGER_STEP_MS = 90;  // Case B: per-index delay in a single list
 const STAGGER_CAP_MS = 700;        // max stagger before edge-draw offset
@@ -1153,60 +1154,59 @@ export class KnowledgeMindmap {
     inner.appendChild(svg);
     inner.appendChild(nodesLayer);
 
-    // Per-child entrance stagger/cascade delay (Case A/B). Edge and node share it.
+    // Per-child cascade/stagger rank delay (Case A/B).
     const staggerDelays = this.computeEnterDelays([...enteringNodes.keys(), ...enteringEdges.keys()]);
 
-    // Prime entering edges: measure real path length, hide stroke, then reveal
-    // parent -> child by animating dashoffset length -> 0 on the inline style.
+    // Step A: prime entering edges — hidden, no transition yet.
     for (const [childId, path] of enteringEdges) {
       const len = path.getTotalLength() || 0;
+      path.style.transition = 'none';
       path.style.strokeDasharray = `${len} ${len}`;
       path.style.strokeDashoffset = `${len}`;
-      path.style.setProperty('--edge-draw-ms', `${EDGE_DRAW_MS}ms`);
-      path.style.setProperty('--enter-delay', `${staggerDelays.get(childId) || 0}ms`);
     }
 
-    // Prime entering nodes: pop-in starts AFTER its edge finishes drawing.
+    // Step B: prime entering nodes — pop-in starts after THIS node's edge finishes.
+    // nodeDelay = rankDelay + edgeDrawDuration (root itself has no incoming edge).
     for (const [id, btn] of enteringNodes) {
-      const base = staggerDelays.get(id) || 0;
-      // Root's own children have edges; root itself (no incoming edge) pops immediately.
+      const rankDelay = staggerDelays.get(id) || 0;
       const hasIncomingEdge = enteringEdges.has(id);
-      const nodeDelay = hasIncomingEdge ? base + EDGE_DRAW_MS : base;
+      const nodeDelay = hasIncomingEdge ? rankDelay + EDGE_DRAW_MS : rankDelay;
       btn.style.setProperty('--enter-delay', `${nodeDelay}ms`);
     }
 
     requestAnimationFrame(() => {
-      // Force layout so the initial dashoffset/opacity is committed before flip.
+      // rAF #1 — commit the initial dashoffset = len paint.
       void inner.offsetWidth;
-      inner.querySelectorAll('.km-pill.is-entering').forEach((el) => {
-        el.classList.add('is-entered');
-      });
-      // Second frame: dashoffset transition only runs once the initial inline value is painted.
       requestAnimationFrame(() => {
-        inner.querySelectorAll('.km-tree-edge.is-entering').forEach((el) => {
-          el.style.strokeDashoffset = '0';
+        // rAF #2 — attach transition + target, and flip nodes to entered (shared t0).
+        for (const [childId, path] of enteringEdges) {
+          const rankDelay = staggerDelays.get(childId) || 0;
+          path.style.transition = `stroke-dashoffset ${EDGE_DRAW_MS}ms ${EDGE_DRAW_EASING} ${rankDelay}ms`;
+          path.style.strokeDashoffset = '0';
+        }
+        inner.querySelectorAll('.km-pill.is-entering').forEach((el) => {
           el.classList.add('is-entered');
         });
+
+        for (const [childId, path] of enteringEdges) {
+          const rankDelay = staggerDelays.get(childId) || 0;
+          window.setTimeout(() => {
+            path.style.transition = 'none';
+            path.style.strokeDasharray = 'none';
+            path.style.strokeDashoffset = '0';
+            path.classList.remove('is-entering');
+          }, rankDelay + EDGE_DRAW_MS + 50);
+        }
+
+        for (const [id, btn] of enteringNodes) {
+          const rankDelay = staggerDelays.get(id) || 0;
+          const nodeDelay = enteringEdges.has(id) ? rankDelay + EDGE_DRAW_MS : rankDelay;
+          window.setTimeout(() => {
+            btn.classList.remove('is-entering', 'is-entered');
+            btn.style.removeProperty('--enter-delay');
+          }, nodeDelay + NODE_ENTER_MS + 50);
+        }
       });
-
-      for (const [childId, path] of enteringEdges) {
-        const delay = staggerDelays.get(childId) || 0;
-        window.setTimeout(() => {
-          // Keep the edge fully visible after draw-in; no dash pattern remains.
-          path.style.strokeDasharray = 'none';
-          path.style.strokeDashoffset = '0';
-          path.classList.remove('is-entering', 'is-entered');
-        }, delay + EDGE_DRAW_MS + 40);
-      }
-
-      for (const [id, btn] of enteringNodes) {
-        const base = staggerDelays.get(id) || 0;
-        const delay = enteringEdges.has(id) ? base + EDGE_DRAW_MS : base;
-        window.setTimeout(() => {
-          btn.classList.remove('is-entering', 'is-entered');
-          btn.style.removeProperty('--enter-delay');
-        }, delay + NODE_ENTER_MS + 40);
-      }
 
       if (this.pendingCameraFocus) {
         const id = this.pendingCameraFocus;
