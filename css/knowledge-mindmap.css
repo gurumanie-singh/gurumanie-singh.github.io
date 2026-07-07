@@ -733,10 +733,15 @@
   text-overflow: ellipsis;
 }
 
-/* Radial drill enter animation */
+/* ── Entrance: edge draw-in, then node pop-in (sequenced) ─────────────────── */
+/* Node pop-in: starts after its own --enter-delay (which already includes the
+   edge-draw offset computed in JS). Uses transition, flipped via .is-entered. */
 .km-pill.is-entering {
   opacity: 0;
   transform: scale(0.88) translateY(8px);
+  transition:
+    opacity 260ms cubic-bezier(0.16, 1, 0.3, 1) var(--enter-delay, 0ms),
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1) var(--enter-delay, 0ms);
 }
 
 .km-pill.is-entered {
@@ -744,23 +749,34 @@
   transform: scale(1) translateY(0);
 }
 
+/* Edge draw-in: JS sets stroke-dasharray/offset = path length, plus --enter-delay
+   (its own cascade/stagger rank) and --edge-draw-ms. Flip to .is-entered → 0. */
 .km-tree-edge.is-entering {
-  opacity: 0;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
+  opacity: 1;
+  transition:
+    stroke-dashoffset var(--edge-draw-ms, 280ms) cubic-bezier(0.65, 0, 0.35, 1) var(--enter-delay, 0ms),
+    stroke var(--km-transition-tree),
+    opacity var(--km-transition-tree);
 }
 
 .km-tree-edge.is-entered,
 .km-tree-edge:not(.is-entering) {
-  opacity: 1;
   stroke-dashoffset: 0;
 }
 
-/* Collapse / exit (stage 3 — symmetric fade) */
+/* Collapse / exit — uniform, quick, NOT staggered. */
 .km-pill.is-exiting {
   opacity: 0;
   transform: scale(0.92);
   pointer-events: none;
+  transition:
+    opacity 170ms cubic-bezier(0.4, 0, 1, 1),
+    transform 170ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.km-tree-edge.is-exiting {
+  opacity: 0;
+  transition: opacity 170ms cubic-bezier(0.4, 0, 1, 1);
 }
 
 @media (max-width: 720px) {
@@ -789,6 +805,7 @@
   .km-tree-camera,
   .km-pill-root {
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 
   .km-page.is-intro .km-pill-root {
@@ -798,6 +815,10 @@
   .km-pill.is-entering {
     opacity: 1;
     transform: none;
+  }
+
+  .km-tree-edge.is-entering {
+    stroke-dashoffset: 0 !important;
   }
 }
 
@@ -1019,12 +1040,17 @@ body.km-modal-open {
   .km-pill.is-entering,
   .km-pill.is-entered {
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
     animation: none !important;
   }
 
   .km-pill.is-entering {
     opacity: 1;
     transform: none;
+  }
+
+  .km-tree-edge.is-entering {
+    stroke-dashoffset: 0 !important;
   }
 
   .km-leaf-modal.is-open .km-leaf-card,

@@ -17,6 +17,18 @@ const PILL_H = 36;
 const PILL_PAD_X = 14;
 const ROOT_PILL_MAX_W = 420;
 
+/* ── Entrance animation timing (visual layer only) ────────────────────────── */
+const EDGE_DRAW_MS = 280;          // edge "draw-in" duration
+const ROOT_CASCADE_STEP_MS = 80;   // Case A: per-rank delay, paired left/right
+const CHILD_STAGGER_STEP_MS = 50;  // Case B: per-index delay in a single list
+const STAGGER_CAP_MS = 400;        // max stagger before edge-draw offset
+
+function prefersReducedMotion() {
+  return typeof window !== 'undefined'
+    && window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 /** Inline SVG icons per domainId — stroke via currentColor (--km-accent) */
 const DOMAIN_ICON_PATHS = {
   fundamentals: '<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/>',
@@ -1060,6 +1072,10 @@ export class KnowledgeMindmap {
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
 
+    const reduceMotion = prefersReducedMotion();
+    // childId -> edge path element, for the entering edges we need to draw in.
+    const enteringEdges = new Map();
+
     for (const childId of visibleIds) {
       const parentId = this.parentById.get(childId);
       if (!parentId || !visibleIds.has(parentId)) continue;
@@ -1069,19 +1085,24 @@ export class KnowledgeMindmap {
       const { x1, y1, x2, y2 } = edgeAnchors(parentPos, pos, mobile);
       const onPath = this.isEdgeActive(parentId, childId);
       const domainId = this.topDomainFor(childId);
+      const isEntering = entering.has(childId) && !reduceMotion;
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', bezierEdge(x1, y1, x2, y2));
-      path.setAttribute('class', `km-tree-edge${onPath ? ' is-active' : ''}${entering.has(childId) ? ' is-entering' : ''}${exiting.has(childId) ? ' is-exiting' : ''}${onPath ? '' : ' is-muted'}`);
+      path.setAttribute('class', `km-tree-edge${onPath ? ' is-active' : ''}${isEntering ? ' is-entering' : ''}${exiting.has(childId) ? ' is-exiting' : ''}${onPath ? '' : ' is-muted'}`);
       if (onPath && domainId) {
         path.style.stroke = this.domainColorVar(domainId);
       }
       path.dataset.from = parentId;
       path.dataset.to = childId;
+      if (isEntering) enteringEdges.set(childId, path);
       svg.appendChild(path);
     }
 
     const nodesLayer = document.createElement('div');
     nodesLayer.className = 'km-tree-nodes';
+
+    // id -> pill element, for entering nodes we need to pop in (Step 2 delays).
+    const enteringNodes = new Map();
 
     for (const id of visibleIds) {
       const pos = positions.get(id);
@@ -1117,11 +1138,13 @@ export class KnowledgeMindmap {
       }
       if (this.openLeafId === id) btn.classList.add('is-leaf-open');
       if (!hasChildren(node)) btn.classList.add('km-pill-leaf');
-      if (entering.has(id)) btn.classList.add('is-entering');
+      const isEnteringNode = entering.has(id) && !reduceMotion;
+      if (isEnteringNode) btn.classList.add('is-entering');
       if (exiting.has(id)) btn.classList.add('is-exiting');
 
       btn.innerHTML = `${pillIconHtml(node)}<span class="km-pill-label">${escapeHtml(nodeLabel(node))}</span>`;
       btn.addEventListener('click', () => this.handleNodeClick(node));
+      if (isEnteringNode) enteringNodes.set(id, btn);
       nodesLayer.appendChild(btn);
     }
 
@@ -1129,13 +1152,37 @@ export class KnowledgeMindmap {
     inner.appendChild(svg);
     inner.appendChild(nodesLayer);
 
+    // Per-child entrance stagger/cascade delay (Case A/B). Edge and node share it.
+    const staggerDelays = this.computeEnterDelays([...enteringNodes.keys(), ...enteringEdges.keys()]);
+
+    // Prime entering edges: measure real path length, freeze dash at full length.
+    for (const [childId, path] of enteringEdges) {
+      const len = path.getTotalLength() || 0;
+      path.style.strokeDasharray = `${len}`;
+      path.style.strokeDashoffset = `${len}`;
+      path.style.setProperty('--edge-draw-ms', `${EDGE_DRAW_MS}ms`);
+      path.style.setProperty('--enter-delay', `${staggerDelays.get(childId) || 0}ms`);
+    }
+
+    // Prime entering nodes: pop-in starts AFTER its edge finishes drawing.
+    for (const [id, btn] of enteringNodes) {
+      const base = staggerDelays.get(id) || 0;
+      // Root's own children have edges; root itself (no incoming edge) pops immediately.
+      const hasIncomingEdge = enteringEdges.has(id);
+      const nodeDelay = hasIncomingEdge ? base + EDGE_DRAW_MS : base;
+      btn.style.setProperty('--enter-delay', `${nodeDelay}ms`);
+    }
+
     requestAnimationFrame(() => {
-      inner.querySelectorAll('.is-entering').forEach((el) => {
+      // Force layout so the initial dashoffset/opacity is committed before flip.
+      void inner.offsetWidth;
+      inner.querySelectorAll('.km-pill.is-entering').forEach((el) => {
         el.classList.remove('is-entering');
         el.classList.add('is-entered');
       });
       inner.querySelectorAll('.km-tree-edge.is-entering').forEach((el) => {
         el.classList.remove('is-entering');
+        el.classList.add('is-entered');
       });
       if (this.pendingCameraFocus) {
         const id = this.pendingCameraFocus;
@@ -1145,6 +1192,61 @@ export class KnowledgeMindmap {
     });
 
     this.prevVisibleIds = visibleIds;
+  }
+
+  /**
+   * Compute per-node entrance delay (visual only).
+   * Case A: root's direct children (the 12 domains) cascade top→bottom per side,
+   *         paired left/right (same rank → same delay).
+   * Case B: any deeper expansion staggers by vertical index within its single list,
+   *         capped so long lists don't feel sluggish.
+   * Returns Map<id, delayMs>. Positioning is read from pinnedPositions/lastLayout
+   * side markers — no layout math is performed or mutated here.
+   */
+  computeEnterDelays(enteringIds) {
+    const delays = new Map();
+    if (!enteringIds.length) return delays;
+
+    const rootId = this.tree.root.id;
+    const byParent = new Map();
+    for (const id of enteringIds) {
+      const parentId = this.parentById.get(id);
+      if (!byParent.has(parentId)) byParent.set(parentId, []);
+      byParent.get(parentId).push(id);
+    }
+
+    const positions = this.lastLayout?.positions;
+
+    for (const [parentId, ids] of byParent) {
+      if (parentId === rootId) {
+        // Case A — split by side, rank by vertical order within side, pair L/R.
+        const left = [];
+        const right = [];
+        for (const id of ids) {
+          const pos = positions?.get(id) || this.pinnedPositions.get(id);
+          const side = pos?.side || (this.nodeSideForPos(pos) || 'right');
+          (side === 'left' ? left : right).push(id);
+        }
+        const rankSide = (sideIds) => {
+          sideIds
+            .slice()
+            .sort((a, b) => (positions?.get(a)?.y ?? 0) - (positions?.get(b)?.y ?? 0))
+            .forEach((id, rank) => delays.set(id, rank * ROOT_CASCADE_STEP_MS));
+        };
+        rankSide(left);
+        rankSide(right);
+      } else {
+        // Case B — single vertical list, stagger by index, capped.
+        ids
+          .slice()
+          .sort((a, b) => (positions?.get(a)?.y ?? 0) - (positions?.get(b)?.y ?? 0))
+          .forEach((id, index) => {
+            delays.set(id, Math.min(index * CHILD_STAGGER_STEP_MS, STAGGER_CAP_MS));
+          });
+      }
+    }
+
+    return delays;
   }
 
   getNodeCenter(nodeId) {
