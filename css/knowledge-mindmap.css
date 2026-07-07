@@ -25,6 +25,8 @@
   --km-transition-tree: 220ms cubic-bezier(0.16, 1, 0.3, 1);
   --km-edge-draw-duration: 280ms;
   --km-edge-draw-easing: cubic-bezier(0.65, 0, 0.35, 1);
+  --km-exit-duration: 180ms;
+  --km-exit-easing: cubic-bezier(0.4, 0, 1, 1);
 }
 
 @media (prefers-color-scheme: light) {
@@ -757,32 +759,26 @@
   opacity: 1;
 }
 
-/* Collapse / exit — the reverse mirror of entrance, staggered in reverse rank
-   order (see computeExitDelays()): node retracts first, then its edge un-draws.
-   .is-exiting alone changes nothing visually yet (the pill still looks fully
-   present) — only defines the transition, so it holds its normal appearance
-   until its own --exit-delay elapses. .is-exit-active (added by JS after the
-   double-rAF sync) is what actually drives it to the hidden end-state, using
-   the same duration/easing/transform values as entrance's start state, so the
-   two feel like true opposites of each other. */
+/* Collapse / exit — uniform, fast, nodes and edges fade together (no stagger). */
 .km-pill.is-exiting {
   pointer-events: none;
   transition:
-    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1) var(--exit-delay, 0ms),
-    transform 320ms cubic-bezier(0.16, 1, 0.3, 1) var(--exit-delay, 0ms);
+    opacity var(--km-exit-duration) var(--km-exit-easing),
+    transform var(--km-exit-duration) var(--km-exit-easing);
 }
 
 .km-pill.is-exiting.is-exit-active {
   opacity: 0;
-  transform: scale(0.88) translateY(8px);
+  transform: scale(0.92);
 }
 
-/* Edge retraction is driven by dashoffset inline styles from JS (same reason
-   entrance is: class-based dashoffset rules caused instant snaps). The edge
-   stays visually present (opacity: 1) for the whole retraction — the shrinking
-   dash IS the "opposite of draw-in" effect, not a fade. */
 .km-tree-edge.is-exiting {
   opacity: 1;
+  transition: opacity var(--km-exit-duration) var(--km-exit-easing);
+}
+
+.km-tree-edge.is-exiting.is-exit-active {
+  opacity: 0;
 }
 
 @media (max-width: 720px) {
@@ -829,12 +825,13 @@
 
   .km-pill.is-exiting,
   .km-pill.is-exiting.is-exit-active {
-    opacity: 1;
+    opacity: 0;
     transform: none;
   }
 
-  .km-tree-edge.is-exiting {
-    stroke-dashoffset: 0 !important;
+  .km-tree-edge.is-exiting,
+  .km-tree-edge.is-exiting.is-exit-active {
+    opacity: 0 !important;
   }
 }
 
@@ -1072,12 +1069,13 @@ body.km-modal-open {
 
   .km-pill.is-exiting,
   .km-pill.is-exiting.is-exit-active {
-    opacity: 1;
+    opacity: 0;
     transform: none;
   }
 
-  .km-tree-edge.is-exiting {
-    stroke-dashoffset: 0 !important;
+  .km-tree-edge.is-exiting,
+  .km-tree-edge.is-exiting.is-exit-active {
+    opacity: 0 !important;
   }
 
   .km-leaf-modal.is-open .km-leaf-card,
