@@ -536,7 +536,7 @@
   stroke: var(--km-edge);
   stroke-width: 1.5;
   opacity: 0.5;
-  transition: stroke var(--km-transition-tree), opacity var(--km-transition-tree), stroke-dashoffset var(--km-transition-tree);
+  transition: stroke var(--km-transition-tree), opacity var(--km-transition-tree);
 }
 
 .km-tree-edge.is-active {

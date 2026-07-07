@@ -1156,12 +1156,12 @@ export class KnowledgeMindmap {
     // Per-child entrance stagger/cascade delay (Case A/B). Edge and node share it.
     const staggerDelays = this.computeEnterDelays([...enteringNodes.keys(), ...enteringEdges.keys()]);
 
-    // Prime entering edges: measure real path length, freeze dash at full length.
-    // Negative dashoffset draws along the path direction (parent -> child).
+    // Prime entering edges: measure real path length, hide stroke, then reveal
+    // parent -> child by animating dashoffset length -> 0 on the inline style.
     for (const [childId, path] of enteringEdges) {
       const len = path.getTotalLength() || 0;
-      path.style.strokeDasharray = `${len}`;
-      path.style.strokeDashoffset = `${-len}`;
+      path.style.strokeDasharray = `${len} ${len}`;
+      path.style.strokeDashoffset = `${len}`;
       path.style.setProperty('--edge-draw-ms', `${EDGE_DRAW_MS}ms`);
       path.style.setProperty('--enter-delay', `${staggerDelays.get(childId) || 0}ms`);
     }
@@ -1181,8 +1181,12 @@ export class KnowledgeMindmap {
       inner.querySelectorAll('.km-pill.is-entering').forEach((el) => {
         el.classList.add('is-entered');
       });
-      inner.querySelectorAll('.km-tree-edge.is-entering').forEach((el) => {
-        el.classList.add('is-entered');
+      // Second frame: dashoffset transition only runs once the initial inline value is painted.
+      requestAnimationFrame(() => {
+        inner.querySelectorAll('.km-tree-edge.is-entering').forEach((el) => {
+          el.style.strokeDashoffset = '0';
+          el.classList.add('is-entered');
+        });
       });
 
       for (const [childId, path] of enteringEdges) {
