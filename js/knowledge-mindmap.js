@@ -693,6 +693,12 @@ export class KnowledgeMindmap {
     }
   }
 
+  nodeSideForPos(pos) {
+    // Stable side inference: compare node center to fixed root center.
+    const cx = (pos?.x ?? 0) + (pos?.width ?? 0) / 2;
+    return cx < WORLD_ORIGIN_X ? 'left' : 'right';
+  }
+
   layoutRootAtViewportCenter(positions) {
     const root = this.tree.root;
     const box = layoutBox(root);
@@ -721,7 +727,21 @@ export class KnowledgeMindmap {
     const offsetX = RADIAL_CHILD_X + Math.max(0, depth - 2) * 28;
     const focusBox = { width: parentPos.width, height: parentPos.height };
 
-    this.placeSplitNodes(childNodes, positions, pcx, pcy, focusBox, offsetX, depth, 'child', mobile);
+    const shouldSplitSides = parentId === this.tree.root.id;
+    const inheritedSide = this.nodeSideForPos(parentPos);
+    this.placeSplitNodes(
+      childNodes,
+      positions,
+      pcx,
+      pcy,
+      focusBox,
+      offsetX,
+      depth,
+      'child',
+      mobile,
+      inheritedSide,
+      shouldSplitSides
+    );
 
     for (const child of childNodes) {
       const pos = positions.get(child.id);
@@ -751,7 +771,7 @@ export class KnowledgeMindmap {
     }
   }
 
-  placeSplitNodes(nodes, positions, centerX, centerY, focusBox, offsetX, depth, role, mobile) {
+  placeSplitNodes(nodes, positions, centerX, centerY, focusBox, offsetX, depth, role, mobile, inheritedSide, shouldSplitSides) {
     if (!nodes.length) return;
 
     const gap = NODE_GAP_Y;
@@ -773,9 +793,6 @@ export class KnowledgeMindmap {
       return;
     }
 
-    const left = nodes.slice(0, Math.ceil(nodes.length / 2));
-    const right = nodes.slice(Math.ceil(nodes.length / 2));
-
     const stackSide = (sideNodes, side) => {
       const boxes = sideNodes.map((n) => ({ node: n, box: layoutBox(n) }));
       const totalH = boxes.reduce((s, b) => s + b.box.height, 0) + gap * Math.max(0, boxes.length - 1);
@@ -791,13 +808,21 @@ export class KnowledgeMindmap {
           height: box.height,
           depth,
           role,
+          side,
         });
         y += box.height + gap;
       });
     };
 
-    stackSide(left, 'left');
-    stackSide(right, 'right');
+    if (shouldSplitSides) {
+      const left = nodes.slice(0, Math.ceil(nodes.length / 2));
+      const right = nodes.slice(Math.ceil(nodes.length / 2));
+      stackSide(left, 'left');
+      stackSide(right, 'right');
+      return;
+    }
+
+    stackSide(nodes, inheritedSide);
   }
 
   computeLayout() {
