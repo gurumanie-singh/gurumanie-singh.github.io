@@ -24,7 +24,12 @@ const EDGE_DRAW_EASING = 'cubic-bezier(0.65, 0, 0.35, 1)';
 const ROOT_CASCADE_STEP_MS = 130;  // Case A: per-rank delay, paired left/right
 const CHILD_STAGGER_STEP_MS = 90;  // Case B: per-index delay in a single list
 const STAGGER_CAP_MS = 700;        // max stagger before edge-draw offset
-const EXIT_MS = 180;               // uniform collapse duration (nodes + edges together)
+// Exit (collapse): node and edge share this single duration and start at the
+// SAME delay, so they finish together — no node-then-edge sequencing, unlike
+// entrance. Keep this in sync with .km-pill.is-exiting's transition duration
+// in knowledge-mindmap.css (same reason EDGE_DRAW_MS/NODE_ENTER_MS above are
+// mirrored as literals in that file's entrance rules).
+const EXIT_DURATION_MS = 280;
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined'
@@ -485,6 +490,7 @@ export class KnowledgeMindmap {
     this.hasPanned = false;
     this._wheelSnapTimer = null;
     this._panHintTimer = null;
+    this._selfTriggeredHashchange = false;
   }
 
   async init() {
@@ -637,26 +643,19 @@ export class KnowledgeMindmap {
 
   syncHash(replace = false) {
     const next = `#${this.expandedPath.join('/')}`;
-    if (replace) history.replaceState(null, '', next);
-    else if (window.location.hash !== next) window.location.hash = next;
-  }
-
-  /** True when the URL hash already reflects current expandedPath + branches. */
-  hashMatchesAppState() {
-    const fromHash = this.pathFromHash();
-    if (!fromHash.length) return false;
-    if (fromHash.length !== this.expandedPath.length) return false;
-    for (let i = 0; i < fromHash.length; i += 1) {
-      if (fromHash[i] !== this.expandedPath[i]) return false;
+    if (replace) {
+      history.replaceState(null, '', next);
+    } else if (window.location.hash !== next) {
+      // Setting location.hash directly fires a native 'hashchange' event.
+      // That listener also calls renderAll() (for genuine external navigation,
+      // e.g. browser back/forward) — without this flag, every click's own
+      // hash update would trigger a redundant second render immediately after
+      // the real one, which re-diffs against an already-updated prevVisibleIds
+      // and finds nothing "entering" — silently erasing the first render's
+      // entrance-animation classes before they ever get to run.
+      this._selfTriggeredHashchange = true;
+      window.location.hash = next;
     }
-    if (!this.rootRevealed && fromHash.length === 1) return true;
-    if (!this.rootRevealed) return false;
-    for (let i = 1; i < fromHash.length; i += 1) {
-      const id = fromHash[i];
-      const node = this.nodeById.get(id);
-      if (node && hasChildren(node) && !this.expandedBranches.has(id)) return false;
-    }
-    return true;
   }
 
   depthFor(nodeId) {
@@ -944,7 +943,7 @@ export class KnowledgeMindmap {
     if (isRoot) this.beginDrillTransition();
     this.openLeafId = null;
     this.renderAll();
-    this.syncHash(true);
+    this.syncHash(false);
     // Any clicked branch node becomes the visual center.
     this.focusCameraOn(nodeId, true);
   }
@@ -983,7 +982,7 @@ export class KnowledgeMindmap {
     this.beginDrillTransition();
     this.openLeafId = null;
     this.renderAll();
-    this.syncHash(true);
+    this.syncHash(false);
     // Breadcrumb navigation uses the same smooth recenter behavior.
     const targetId = this.expandedPath[depth] || this.tree.root.id;
     this.focusCameraOn(targetId, true);
@@ -1210,10 +1209,12 @@ export class KnowledgeMindmap {
     inner.appendChild(svg);
     inner.appendChild(nodesLayer);
 
-    // Per-child cascade/stagger rank delay for entrance only.
+    // Per-child cascade/stagger rank delay — forward order for entering,
+    // reversed order for exiting (see computeExitDelays()).
     const staggerDelays = this.computeEnterDelays([...enteringNodes.keys(), ...enteringEdges.keys()]);
+    const exitDelays = this.computeExitDelays([...exitingNodes.keys(), ...exitingEdges.keys()]);
 
-    // ── Entrance priming: hidden, no transition yet ──
+    // ── Entrance priming (unchanged): hidden, no transition yet ──
     for (const [childId, path] of enteringEdges) {
       const len = path.getTotalLength() || 0;
       path.style.transition = 'none';
@@ -1227,11 +1228,23 @@ export class KnowledgeMindmap {
       btn.style.setProperty('--enter-delay', `${nodeDelay}ms`);
     }
 
-    // ── Exit priming: nodes/edges start fully visible; uniform fade begins in rAF #2.
-    for (const [, path] of exitingEdges) {
+    // ── Exit priming (new): the reverse of entrance priming ──
+    // Edges start fully drawn (dashoffset 0) so they can visibly retract to
+    // fully hidden. Nodes start at their normal, already-visible state — the
+    // hidden end-state only gets applied once .is-exit-active is added below,
+    // after each node's own reversed-rank delay.
+    for (const [childId, path] of exitingEdges) {
+      const len = path.getTotalLength() || 0;
       path.style.transition = 'none';
-      path.style.opacity = '1';
+      path.style.strokeDasharray = `${len} ${len}`;
+      path.style.strokeDashoffset = '0';
     }
+    for (const [id, btn] of exitingNodes) {
+      const rankDelay = exitDelays.get(id) || 0;
+      btn.style.setProperty('--exit-delay', `${rankDelay}ms`);
+    }
+
+    let maxExitCompletionMs = 0;
 
     requestAnimationFrame(() => {
       // rAF #1 — commit the initial dash/opacity paint for both directions.
@@ -1247,15 +1260,35 @@ export class KnowledgeMindmap {
           el.classList.add('is-entered');
         });
 
-        // Uniform exit: nodes and edges fade out together (no stagger, no sequencing).
-        for (const [, btn] of exitingNodes) {
+        // ...and for exit — node and edge now share the SAME delay and
+        // duration (EXIT_DURATION_MS), so they finish together. (Previously
+        // the edge didn't start retracting until after the node's own exit
+        // finished, so the node vanished first and the edge lingered alone —
+        // that's the bug this fixes.)
+        for (const [id, btn] of exitingNodes) {
+          const rankDelay = exitDelays.get(id) || 0;
           btn.classList.add('is-exit-active');
+          const path = exitingEdges.get(id);
+          if (path) {
+            path.style.transition = `stroke-dashoffset ${EXIT_DURATION_MS}ms ${EDGE_DRAW_EASING} ${rankDelay}ms`;
+            path.style.strokeDashoffset = `${path.getTotalLength() || 0}`;
+          }
+          const completion = rankDelay + EXIT_DURATION_MS;
+          if (completion > maxExitCompletionMs) maxExitCompletionMs = completion;
         }
-        for (const [, path] of exitingEdges) {
-          path.classList.add('is-exit-active');
+        // Defensive fallback: an exiting edge with no matching exiting node
+        // (shouldn't normally occur — see renderTree's shared renderIds/exiting
+        // set) still resolves on its own rank delay rather than hanging open.
+        for (const [id, path] of exitingEdges) {
+          if (exitingNodes.has(id)) continue;
+          const rankDelay = exitDelays.get(id) || 0;
+          path.style.transition = `stroke-dashoffset ${EXIT_DURATION_MS}ms ${EDGE_DRAW_EASING} ${rankDelay}ms`;
+          path.style.strokeDashoffset = `${path.getTotalLength() || 0}`;
+          const completion = rankDelay + EXIT_DURATION_MS;
+          if (completion > maxExitCompletionMs) maxExitCompletionMs = completion;
         }
 
-        // Entrance cleanup.
+        // Entrance cleanup (unchanged).
         for (const [childId, path] of enteringEdges) {
           const rankDelay = staggerDelays.get(childId) || 0;
           window.setTimeout(() => {
@@ -1274,19 +1307,25 @@ export class KnowledgeMindmap {
           }, nodeDelay + NODE_ENTER_MS + 50);
         }
 
-        // Exit finalize: drop pending ids once the uniform fade completes.
+        // Exit finalize (new): once the whole batch's reverse animation has
+        // actually finished, drop these ids from pendingExitIds/pinnedPositions
+        // for real and re-render — that final pass excludes them from
+        // renderIds entirely, so they're gone (imperceptibly, since they've
+        // already animated to fully hidden by this point).
         if (exitingNodes.size || exitingEdges.size) {
           const batchIds = [...new Set([...exitingNodes.keys(), ...exitingEdges.keys()])];
           window.setTimeout(() => {
             let changed = false;
             for (const id of batchIds) {
+              // Only clean up if still pending — guards against the rare case
+              // where the same id re-entered and got cancelled in the meantime.
               if (!this.pendingExitIds.has(id)) continue;
               this.pendingExitIds.delete(id);
               this.pinnedPositions.delete(id);
               changed = true;
             }
             if (changed) this.renderAll();
-          }, EXIT_MS + 50);
+          }, maxExitCompletionMs + 50);
         }
       });
 
@@ -1349,6 +1388,60 @@ export class KnowledgeMindmap {
           .forEach((id, index) => {
             delays.set(id, Math.min(index * CHILD_STAGGER_STEP_MS, STAGGER_CAP_MS));
           });
+      }
+    }
+
+    return delays;
+  }
+
+  /**
+   * Mirror of computeEnterDelays(), for the exit direction: identical grouping
+   * and rank logic, but rank order is reversed so the last child to enter is
+   * the first to leave (a symmetric "rewind" of the entrance sequencing) —
+   * same per-rank/per-index step constants, just walked backward.
+   * Positions are read from this.lastLayout, which computeLayout() now keeps
+   * populated for pendingExitIds too, so this resolves correctly mid-exit.
+   */
+  computeExitDelays(exitingIds) {
+    const delays = new Map();
+    if (!exitingIds.length) return delays;
+
+    const rootId = this.tree.root.id;
+    const byParent = new Map();
+    for (const id of exitingIds) {
+      const parentId = this.parentById.get(id);
+      if (!byParent.has(parentId)) byParent.set(parentId, []);
+      byParent.get(parentId).push(id);
+    }
+
+    const positions = this.lastLayout?.positions;
+
+    for (const [parentId, ids] of byParent) {
+      if (parentId === rootId) {
+        const left = [];
+        const right = [];
+        for (const id of ids) {
+          const pos = positions?.get(id) || this.pinnedPositions.get(id);
+          const side = pos?.side || (this.nodeSideForPos(pos) || 'right');
+          (side === 'left' ? left : right).push(id);
+        }
+        const rankSideReversed = (sideIds) => {
+          const sorted = sideIds
+            .slice()
+            .sort((a, b) => (positions?.get(a)?.y ?? 0) - (positions?.get(b)?.y ?? 0));
+          const maxRank = sorted.length - 1;
+          sorted.forEach((id, rank) => delays.set(id, (maxRank - rank) * ROOT_CASCADE_STEP_MS));
+        };
+        rankSideReversed(left);
+        rankSideReversed(right);
+      } else {
+        const sorted = ids
+          .slice()
+          .sort((a, b) => (positions?.get(a)?.y ?? 0) - (positions?.get(b)?.y ?? 0));
+        const maxIndex = sorted.length - 1;
+        sorted.forEach((id, index) => {
+          delays.set(id, Math.min((maxIndex - index) * CHILD_STAGGER_STEP_MS, STAGGER_CAP_MS));
+        });
       }
     }
 
@@ -1673,7 +1766,7 @@ export class KnowledgeMindmap {
     this.openLeafId = null;
     this.dismissIntro();
     this.renderAll();
-    this.syncHash(true);
+    this.syncHash(false);
     this.focusCameraOn(this.tree.root.id, true);
   }
 
@@ -1702,7 +1795,7 @@ export class KnowledgeMindmap {
       resultsEl.innerHTML = '';
     }
     this.renderAll();
-    this.syncHash(true);
+    this.syncHash(false);
     this.focusCameraOn(this.tree.root.id, true);
   }
 
@@ -1727,7 +1820,7 @@ export class KnowledgeMindmap {
       this.openLeafId = nodeId;
     }
     this.renderAll();
-    this.syncHash(true);
+    this.syncHash(false);
     this.focusCameraOn(this.tree.root.id, true);
   }
 
@@ -1870,20 +1963,28 @@ export class KnowledgeMindmap {
           this.rebuildExpandedBranchesFromPath();
           // No pinnedPositions pruning here — see collapseBranch()'s note.
           this.renderAll();
-          this.syncHash(true);
+          this.syncHash(false);
         } else if (this.rootRevealed) {
           this.rootRevealed = false;
           // Descendant positions stay pinned for the reverse-exit animation.
           this.expandedBranches.clear();
           this.pinnedPositions.delete(this.tree.root.id);
           this.renderAll();
-          this.syncHash(true);
+          this.syncHash(false);
           this.focusCameraOn(this.tree.root.id);
         }
       }
     });
     window.addEventListener('hashchange', () => {
-      if (this.hashMatchesAppState()) return;
+      if (this._selfTriggeredHashchange) {
+        // This hashchange was caused by our own syncHash() call — state and
+        // the DOM are already correct and already animated from that direct
+        // call path. Reacting again here would just redundantly re-render
+        // against a prevVisibleIds that's already caught up, silently
+        // stripping the entrance-animation classes the first render set.
+        this._selfTriggeredHashchange = false;
+        return;
+      }
       const p = this.pathFromHash();
       if (p.length > 1) {
         this.expandedPath = p;
