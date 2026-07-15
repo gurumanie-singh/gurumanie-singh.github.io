@@ -934,9 +934,15 @@ export class KnowledgeMindmap {
       this.expandedPath = this.pathFor(nodeId).slice(0, -1);
       if (this.expandedPath.length === 0) this.expandedPath = [this.tree.root.id];
     } else {
-      this.expandedBranches.add(nodeId);
       this.expandedPath = this.pathFor(nodeId);
       this.rootRevealed = true;
+      // Rebuild (clear + re-derive from the new path) rather than add — this
+      // node might be a completely different branch than whatever was
+      // previously expanded (e.g. Cryptography while Cloud Security was still
+      // open), and an additive add() would leave that old branch's children
+      // rendered too, overlapping with the new one. Only one path should ever
+      // be expanded at a time past the root.
+      this.rebuildExpandedBranchesFromPath();
     }
 
     this.dismissIntro();
@@ -1806,12 +1812,10 @@ export class KnowledgeMindmap {
     this.rootRevealed = true;
     if (hasChildren(node)) {
       this.expandedPath = this.pathFor(nodeId);
-      this.expandedBranches.add(nodeId);
-      for (let i = 1; i < this.expandedPath.length - 1; i += 1) {
-        const id = this.expandedPath[i];
-        const anc = this.nodeById.get(id);
-        if (anc && hasChildren(anc)) this.expandedBranches.add(id);
-      }
+      // Same reasoning as toggleBranch: rebuild from the new path rather than
+      // add, so jumping to a search result collapses whatever unrelated
+      // branch was previously expanded instead of layering on top of it.
+      this.rebuildExpandedBranchesFromPath();
       this.openLeafId = null;
     } else {
       const parentId = this.parentById.get(nodeId);

@@ -638,6 +638,12 @@
   overflow: visible;
   text-overflow: clip;
   white-space: nowrap;
+  /* Unlike every other pill type, root has no icon (see pillIconHtml()) to
+     anchor the left edge, and its width is a character-count estimate with a
+     180px floor — any gap between that estimate and the actual rendered text
+     width reads as visibly off-center with flex-start. Centering removes the
+     dependency on the estimate being exact. */
+  justify-content: center;
 }
 
 /* Initial title reveal — root only, before first drill */
