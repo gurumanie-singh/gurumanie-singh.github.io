@@ -66,17 +66,23 @@
 
   <main id="main">
 
-    <!-- HERO -->
+    <!-- HERO
+         Stagger slots: the <h1> holds d1 (0ms delay) because it is the LCP
+         element — an element at opacity:0 is not an LCP candidate, so any
+         animation-delay on it is added directly to Largest Contentful Paint.
+         It previously sat in d2 (100ms) while the availability strip held d1.
+         The strip now shares d1 (both are the top visual unit, so they arrive
+         together) and everything below cascades in --stagger-step increments. -->
     <section class="hero container" aria-label="Introduction">
       <p class="hero-avail rise d1">Based in Singapore · Available now · Security Engineer &amp; Cloud Security roles</p>
-      <h1 class="hero-name rise d2">Gurumanie<br />Singh Dhiman</h1>
-      <p class="hero-role rise d3">Security Engineering <span class="accent">&amp;</span> Cloud Security</p>
-      <p class="hero-desc rise d4">
+      <h1 class="hero-name rise d1">Gurumanie<br />Singh Dhiman</h1>
+      <p class="hero-role rise d2">Security Engineering <span class="accent">&amp;</span> Cloud Security</p>
+      <p class="hero-desc rise d3">
         Computer Engineering graduate from Iowa State University, May 2026. I work
         on network and cloud security, wireless systems, and secure system
         design, from packet-level tooling to securing wireless avionics updates.
       </p>
-      <div class="hero-actions rise d5">
+      <div class="hero-actions rise d4">
         <a class="btn btn-primary" href="#work">
           View work
           <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>

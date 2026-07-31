@@ -506,6 +506,17 @@
   top: 0;
   left: 0;
   transform-origin: 0 0;
+}
+
+/* will-change is scoped to the three states where the camera is actually
+   moving — a drill/focus animation, a bounds snap-back, or an active drag.
+   It was previously declared unconditionally on .km-tree-camera, which kept a
+   compositor layer for the whole tree alive for the life of the page even while
+   nothing moved. .is-grabbing is already applied to the viewport for the
+   duration of a pointer drag, so this needs no JS change. */
+.km-tree-camera.is-animating,
+.km-tree-camera.is-snap-back,
+.km-tree-viewport.is-grabbing .km-tree-camera {
   will-change: transform;
 }
 

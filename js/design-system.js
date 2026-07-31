@@ -80,11 +80,36 @@ function initScrollSpy() {
 /* ── SCROLL REVEAL (once, staggered) ─────────────────────────────────────── */
 /* [data-reveal] is the canonical hook (initial state set in CSS). Legacy
    .reveal / .ds-card selectors keep existing sub-pages working. */
+/* Motion values are owned by design-system.css. Read them from the cascade
+   rather than duplicating the numbers here — a stagger constant hardcoded in JS
+   that disagrees with the CSS token is exactly the drift this system exists to
+   remove. */
+function motionToken(name, fallback) {
+  const n = parseFloat(getComputedStyle(root).getPropertyValue(name));
+  return Number.isFinite(n) ? n : fallback;
+}
+
 function initReveal() {
   const els = document.querySelectorAll('[data-reveal], .reveal, .ds-card');
   if (!els.length) return;
 
-  const show = (el) => el.classList.add('is-visible', 'visible');
+  const STAGGER_STEP = motionToken('--stagger-step', 60);
+  const STAGGER_CAP = motionToken('--stagger-cap', 4);
+  const ENTER_MS = motionToken('--dur-enter', 240);
+
+  const show = (el) => {
+    // will-change is set immediately before the transition and cleared the
+    // moment it ends — never left on the element permanently, which would keep
+    // a compositor layer alive for every revealed block on the page.
+    el.style.willChange = 'opacity, translate';
+    el.classList.add('is-visible', 'visible');
+
+    const settle = () => { el.style.willChange = ''; };
+    el.addEventListener('transitionend', settle, { once: true });
+    // transitionend never fires if the transition doesn't actually run (already
+    // at its end state, reduced motion, background tab). Always clean up.
+    window.setTimeout(settle, ENTER_MS + 100);
+  };
 
   if (reduceMotion.matches) {
     els.forEach(show);
@@ -105,8 +130,10 @@ function initReveal() {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      // Stagger 80ms per sibling, capped at 6 (480ms) so long lists don't lag.
-      const delay = Math.min(orderIndex(el), 6) * 80;
+      // Stagger per sibling from --stagger-step, capped at --stagger-cap
+      // siblings (60ms x 4 = 240ms) so later items in long lists never arrive
+      // after the reader has already scrolled past them.
+      const delay = Math.min(orderIndex(el), STAGGER_CAP) * STAGGER_STEP;
       window.setTimeout(() => show(el), delay);
       obs.unobserve(el);
     });

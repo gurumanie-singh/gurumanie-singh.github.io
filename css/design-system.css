@@ -75,12 +75,47 @@
   --container: 1080px;
   --gutter: clamp(24px, 5vw, 48px);
 
-  /* motion — single source of truth for every duration and easing */
-  --ease-out:        cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-fast:   200ms;
-  --duration-base:   280ms;
-  --duration-reveal: 600ms;
-  --duration-enter:  700ms;
+  /* ── MOTION ──────────────────────────────────────────────────────────────
+     Single source of truth for every duration and easing on this site.
+     Four durations, four curves. The scale is deliberately this small: if
+     something seems to need a value that isn't here, the motion is doing too
+     much, not the scale being too coarse.
+
+     Ceiling is --dur-page (300ms), per the repo's binding motion standard
+     (.cursor/rules/review-animations/STANDARDS.md — "UI animations stay
+     under 300ms"). Nothing may exceed it.
+     -------------------------------------------------------------------- */
+
+  /* Durations. Ordered by how directly the user caused the motion: the more
+     direct the cause, the faster the response. */
+  --dur-press:    120ms; /* :active release — settles back with --ease-press */
+  --dur-press-in:  90ms; /* :active engage — deliberately faster than release, so
+                            the control meets the finger before it settles */
+  --dur-hover: 160ms;   /* hover colour/border; fires dozens of times a session */
+  --dur-enter: 240ms;   /* default — reveals, modals, popovers */
+  --dur-page:  300ms;   /* view transitions, hero entrance. Hard ceiling. */
+
+  /* Easings. Direction of travel picks the curve, not the component. */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);    /* entering / responding to input.
+                                                       ~80% of distance in the first third,
+                                                       so it reads as already-arrived. */
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);        /* exiting — accelerate away. Only ever
+                                                       for elements leaving; never entrances. */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);   /* on-screen movement with no
+                                                       user-perceived start point. */
+  --ease-press:  cubic-bezier(0.34, 1.26, 0.64, 1); /* direct manipulation. Slight overshoot
+                                                       (~0.8% on a 0.97 scale) — reads as
+                                                       physical release, not as bounce. */
+  --ease-hover:  ease;                              /* hover + colour crossfade only.
+                                                       Deliberately the CSS builtin: over 160ms
+                                                       a colour change can't express a curve, so
+                                                       a bespoke one is maintenance with no
+                                                       payoff. Named to record the choice. */
+
+  /* Entrance sequencing. */
+  --stagger-step: 60ms; /* per-sibling offset */
+  --stagger-cap:  4;    /* max siblings offset → 240ms total, never past --dur-page + step */
+
 
   /* resting card elevation (used to reset hover lift on touch devices) */
   --shadow-base:     none;
@@ -152,8 +187,10 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
-  transition: background var(--duration-fast) var(--ease-out),
-              color var(--duration-fast) var(--ease-out);
+  /* Theme flip: the one place a paint-bound property is worth transitioning.
+     Communicates that the toggle applied without a hard cut across the page. */
+  transition: background var(--dur-hover) var(--ease-hover),
+              color var(--dur-hover) var(--ease-hover);
 }
 
 a { color: inherit; text-decoration: none; }
@@ -176,7 +213,10 @@ img { max-width: 100%; display: block; }
 .skip-link {
   position: absolute;
   left: var(--sp-4);
-  top: -120px;
+  top: var(--sp-4);
+  /* Parked above the viewport via transform, not `top` — animating `top`
+     relayouts on every focus. */
+  transform: translateY(calc(-100% - var(--sp-8)));
   z-index: 200;
   padding: var(--sp-2) var(--sp-4);
   background: var(--surface);
@@ -184,9 +224,10 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: var(--fs-sm);
-  transition: top var(--duration-fast) var(--ease-out);
+  transition: transform var(--dur-enter) var(--ease-out);
 }
-.skip-link:focus { top: var(--sp-4); }
+/* Keyboard user has reached the top of the document and can jump the nav. */
+.skip-link:focus { transform: none; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px;
@@ -233,36 +274,53 @@ img { max-width: 100%; display: block; }
 /* ── REVEAL / ENTRANCE ───────────────────────────────────────────────────── */
 /* Reveal uses the `translate` longhand (not `transform`) so the entrance never
    collides with hover lifts that use `transform` on the same element. */
-.reveal {
-  opacity: 0;
-  translate: 0 20px;
-  transition: opacity var(--duration-reveal) var(--ease-out),
-              translate var(--duration-reveal) var(--ease-out);
-}
-.reveal.is-visible { opacity: 1; translate: none; }
+/* The hidden start state is gated on `scripting: enabled`.
 
-/* scroll-reveal: initial state lives in CSS so there is no flash before JS runs */
-[data-reveal] {
-  opacity: 0;
-  translate: 0 20px;
-  transition: opacity var(--duration-reveal) var(--ease-out),
-              translate var(--duration-reveal) var(--ease-out);
+   Reason: `opacity: 0` here is only ever undone by JS adding .is-visible. If
+   the IntersectionObserver never runs — JS error, module blocked, a headless
+   renderer or crawler that doesn't execute scripts, a prerender that snapshots
+   before DOMContentLoaded — the content stays permanently invisible. That
+   turns a decorative reveal into a content outage. Gating on `scripting`
+   means no-JS environments get the fully visible page and simply no
+   animation, which is the correct degradation. Browsers without support for
+   the query also fall through to visible.
+
+   The transition, the .is-visible end state, and the reveal contract are all
+   unchanged — this only decides whether the *hidden* start state applies. */
+@media (scripting: enabled) {
+  .reveal,
+  [data-reveal] {
+    opacity: 0;
+    translate: 0 14px;
+  }
 }
+
+.reveal,
+[data-reveal] {
+  transition: opacity var(--dur-enter) var(--ease-out),
+              translate var(--dur-enter) var(--ease-out);
+}
+
+/* Section has entered the viewport — establishes reading order and spatial
+   arrival rather than having blocks appear fully formed. */
+.reveal.is-visible,
 [data-reveal].is-visible {
   opacity: 1;
   translate: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .rise { opacity: 0; animation: rise var(--duration-enter) var(--ease-out) forwards; }
-  .rise.d1 { animation-delay: 0s; }
-  .rise.d2 { animation-delay: 0.1s; }
-  .rise.d3 { animation-delay: 0.2s; }
-  .rise.d4 { animation-delay: 0.3s; }
-  .rise.d5 { animation-delay: 0.4s; }
+  .rise { opacity: 0; animation: rise var(--dur-page) var(--ease-out) forwards; }
+  /* Above-the-fold cascade. d1 is 0ms and holds the LCP heading — see the
+     stagger note in index.html. Steps are --stagger-step (60ms) apart. */
+  .rise.d1 { animation-delay: 0ms; }
+  .rise.d2 { animation-delay: calc(var(--stagger-step) * 1); }
+  .rise.d3 { animation-delay: calc(var(--stagger-step) * 2); }
+  .rise.d4 { animation-delay: calc(var(--stagger-step) * 3); }
+  .rise.d5 { animation-delay: calc(var(--stagger-step) * 4); }
 }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: none; }
 }
 
@@ -273,9 +331,14 @@ img { max-width: 100%; display: block; }
   display: flex; align-items: center;
   background: transparent;
   border-bottom: 1px solid transparent;
-  transition: background var(--duration-fast) var(--ease-out),
-              border-color var(--duration-fast) var(--ease-out),
-              backdrop-filter var(--duration-fast) var(--ease-out);
+  /* Page is no longer at the top — the bar earns a surface so it separates
+     from content scrolling under it. backdrop-filter is deliberately NOT in
+     this list: it can't interpolate from `none`, so it popped in rather than
+     easing, while costing a full-viewport blur every frame of the transition.
+     It now applies as a static step on .is-scrolled; the background and border
+     carry the perceived transition. */
+  transition: background var(--dur-hover) var(--ease-hover),
+              border-color var(--dur-hover) var(--ease-hover);
 }
 .site-nav.is-scrolled {
   background: var(--nav-bg);
@@ -306,8 +369,10 @@ img { max-width: 100%; display: block; }
   font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--text-secondary);
-  transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-hover),
+              background var(--dur-hover) var(--ease-hover);
 }
+/* This link is the pointer's current target and is activatable. */
 .nav-link:hover { color: var(--text-primary); }
 .nav-link.is-active { color: var(--accent); }
 
@@ -319,9 +384,12 @@ img { max-width: 100%; display: block; }
   border: 1px solid transparent; border-radius: var(--radius-md);
   background: transparent; color: var(--text-secondary);
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-hover),
+              border-color var(--dur-hover) var(--ease-hover),
+              background var(--dur-hover) var(--ease-hover);
 }
+/* Icon-only control: the border materialising is what tells the user this
+   glyph is a button at all, since it has no label or resting chrome. */
 .icon-btn:hover { color: var(--text-primary); border-color: var(--border); }
 .icon-btn svg { width: 18px; height: 18px; }
 
@@ -340,8 +408,32 @@ img { max-width: 100%; display: block; }
   padding: var(--sp-2) var(--gutter) var(--sp-4);
   display: none;
   flex-direction: column; gap: var(--sp-1);
+  /* Closing: the panel is retracting into the bar it came from, so it
+     accelerates away on --ease-in. `allow-discrete` is what lets `display`
+     participate, so the panel stays rendered (and its links stay clickable)
+     for the whole exit instead of vanishing on frame one. */
+  opacity: 0;
+  translate: 0 -8px;
+  transition: opacity var(--dur-enter) var(--ease-in),
+              translate var(--dur-enter) var(--ease-in),
+              display var(--dur-enter) allow-discrete;
 }
-.nav-panel.is-open { display: flex; }
+/* Menu is open — the panel descends from under the nav bar, which is where the
+   toggle that opened it lives. Direction carries the spatial relationship. */
+.nav-panel.is-open {
+  display: flex;
+  opacity: 1;
+  translate: none;
+  transition: opacity var(--dur-enter) var(--ease-out),
+              translate var(--dur-enter) var(--ease-out),
+              display var(--dur-enter) allow-discrete;
+}
+/* Entry needs an explicit "from" because the element goes display:none →
+   flex in the same frame. Browsers without @starting-style simply get the
+   previous instant appearance. */
+@starting-style {
+  .nav-panel.is-open { opacity: 0; translate: 0 -8px; }
+}
 .nav-panel .nav-link {
   padding: var(--sp-3) var(--sp-3);
   font-size: var(--fs-base);
@@ -356,14 +448,23 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out),
-              background var(--duration-fast) var(--ease-out),
-              border-color var(--duration-fast) var(--ease-out),
-              color var(--duration-fast) var(--ease-out);
+  transition: transform var(--dur-press) var(--ease-press),
+              background var(--dur-hover) var(--ease-hover),
+              border-color var(--dur-hover) var(--ease-hover),
+              color var(--dur-hover) var(--ease-hover);
 }
-.btn:active { transform: scale(0.97); }
+/* Press is being received. Asymmetric on purpose: engaging is faster (90ms,
+   flat ease-out) than releasing (--dur-press on --ease-press), so the button
+   meets the finger immediately and settles back with a trace of physical
+   spring. will-change is scoped to the pressed state only. */
+.btn:active {
+  transform: scale(0.97);
+  transition: transform var(--dur-press-in) var(--ease-out);
+  will-change: transform;
+}
 
 .btn-primary { background: var(--accent); color: var(--on-accent); }
+/* Primary action is under the pointer. */
 .btn-primary:hover { background: var(--accent-hover); }
 
 .btn-secondary {
@@ -371,9 +472,9 @@ img { max-width: 100%; display: block; }
   color: var(--text-primary);
   border-color: var(--border);
 }
+/* Secondary action gains a surface, so it reads as raised relative to the page
+   without competing with the primary button's fill. */
 .btn-secondary:hover { border-color: var(--border-strong); background: var(--surface); }
-
-.btn .arrow { transition: transform var(--duration-fast) var(--ease-out); }
 
 /* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero {
@@ -426,14 +527,25 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--sp-8);
-  transition: opacity var(--duration-reveal) var(--ease-out),
-              translate var(--duration-reveal) var(--ease-out),
-              transform var(--duration-base) var(--ease-out),
-              border-color var(--duration-base) var(--ease-out),
-              box-shadow var(--duration-base) var(--ease-out);
+  /* Two lifecycles, deliberately separate: entrance drives `translate` and
+     `opacity` at --dur-enter, hover drives `transform` at --dur-hover. Using
+     the longhand for one and the shorthand for the other is what keeps a
+     mid-reveal hover from cancelling the entrance. */
+  transition: opacity var(--dur-enter) var(--ease-out),
+              translate var(--dur-enter) var(--ease-out),
+              transform var(--dur-hover) var(--ease-out),
+              border-color var(--dur-hover) var(--ease-hover),
+              box-shadow var(--dur-hover) var(--ease-hover);
 }
 @media (hover: hover) and (pointer: fine) {
-  .featured:hover { transform: translateY(-3px); border-color: var(--border-strong); box-shadow: var(--shadow-hover); }
+  /* Whole card is one link target — the lift plus a stronger border says
+     "this entire surface is clickable", which a text-only hover cannot. */
+  .featured:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-hover);
+    will-change: transform;
+  }
 }
 .featured-top {
   display: flex; align-items: center; justify-content: space-between;
@@ -471,14 +583,29 @@ img { max-width: 100%; display: block; }
   gap: var(--sp-6);
   padding: var(--sp-6) var(--sp-3);
   border-bottom: 1px solid var(--border);
-  transition: opacity var(--duration-reveal) var(--ease-out),
-              translate var(--duration-reveal) var(--ease-out),
-              background var(--duration-fast) var(--ease-out),
-              padding-left var(--duration-fast) var(--ease-out);
+  /* `padding-left` was previously animated here to nudge the row on hover. It
+     relayouted the three-column grid on every hover; the nudge is now a
+     transform on the row's contents, which composites. */
+  transition: opacity var(--dur-enter) var(--ease-out),
+              translate var(--dur-enter) var(--ease-out),
+              background var(--dur-hover) var(--ease-hover);
 }
 .work-row:hover { background: var(--surface); }
+
+/* Row contents shift together so the row reads as a single object being
+   pulled toward the pointer. */
+.work-index,
+.work-main,
+.work-row .arrow {
+  transition: transform var(--dur-hover) var(--ease-out);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .work-row:hover { padding-left: var(--sp-6); }
+  /* This row is the active navigation target: contents lean in, arrow breaks
+     away toward its destination. Previously the arrow had no transition at all
+     and teleported. */
+  .work-row:hover .work-index,
+  .work-row:hover .work-main { transform: translateX(var(--sp-2)); }
   .work-row:hover .arrow { transform: translate(3px, -3px); }
 }
 .work-index {
@@ -546,9 +673,11 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-md);
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--dur-hover) var(--ease-hover);
 }
 .course-row:last-child { border-bottom: 0; }
+/* Dense list — the surface tint is the only affordance distinguishing the
+   hovered row from its neighbours. */
 .course-row:hover { background: var(--surface-2); }
 @media (hover: hover) and (pointer: fine) {
   .course-row:hover .arrow { transform: translateX(3px); }
@@ -565,7 +694,7 @@ img { max-width: 100%; display: block; }
   color: var(--text-muted);
   margin-left: var(--sp-2);
 }
-.course-row .arrow { color: var(--text-muted); transition: transform var(--duration-fast) var(--ease-out); }
+.course-row .arrow { color: var(--text-muted); transition: transform var(--dur-hover) var(--ease-out); }
 
 /* ── ABOUT ───────────────────────────────────────────────────────────────── */
 .about-grid {
@@ -641,10 +770,12 @@ img { max-width: 100%; display: block; }
   letter-spacing: -0.02em;
   color: var(--text-primary);
   display: inline-flex; align-items: center; gap: var(--sp-3);
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-hover);
 }
+/* Primary conversion point on the page — accent colour marks it as the action,
+   not just large text. */
 .contact-email:hover { color: var(--accent); }
-.contact-email .arrow { transition: transform var(--duration-fast) var(--ease-out); }
+.contact-email .arrow { transition: transform var(--dur-hover) var(--ease-out); }
 @media (hover: hover) and (pointer: fine) {
   .contact-email:hover .arrow { transform: translate(3px, -3px); }
 }
@@ -656,8 +787,10 @@ img { max-width: 100%; display: block; }
   display: inline-flex; align-items: center; gap: var(--sp-2);
   font-size: var(--fs-sm); font-weight: 500;
   color: var(--text-secondary);
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-hover);
 }
+/* Secondary link lifts out of muted into full contrast: hoverable, but ranked
+   below the email above it. */
 .contact-link:hover { color: var(--text-primary); }
 .contact-link svg { width: 18px; height: 18px; }
 
@@ -674,12 +807,34 @@ img { max-width: 100%; display: block; }
 .footer-meta { font-size: var(--fs-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .footer-links { display: flex; gap: var(--sp-6); }
 
-/* ── VIEW TRANSITIONS ────────────────────────────────────────────────────── */
+/* ── VIEW TRANSITIONS ─────────────────────────────────────────────────────────
+   Cross-document, CSS-only — no router, no JS. Native to the platform, which is
+   why this site can have page transitions at all without a framework.
+   -------------------------------------------------------------------------- */
 @view-transition { navigation: auto; }
-::view-transition-old(root),
+
+/* Asymmetric crossfade: the outgoing page accelerates away (--ease-in), the
+   incoming one decelerates in (--ease-out). Both run --dur-page. The UA default
+   is a symmetric linear fade; this is the same effect with the easing pointed
+   in the direction each snapshot is actually travelling. */
+::view-transition-old(root) {
+  animation: vt-out var(--dur-page) var(--ease-in) both;
+}
 ::view-transition-new(root) {
-  animation-duration: var(--duration-fast);
-  animation-timing-function: var(--ease-out);
+  animation: vt-in var(--dur-page) var(--ease-out) both;
+}
+@keyframes vt-out { to   { opacity: 0; } }
+@keyframes vt-in  { from { opacity: 0; } }
+
+/* The nav bar is the same object on both sides of a navigation, so it gets its
+   own transition group and is carried across rather than being crossfaded with
+   the page under it. This is the spatial-consistency case for motion: the
+   chrome holds still, the content changes. Safe to share one name because no
+   page carries both variants — the homepage uses .site-nav, every sub-page uses
+   nav.ds-nav (verified across all 41 pages). */
+.site-nav,
+nav.ds-nav {
+  view-transition-name: site-nav;
 }
 
 /* ── RESPONSIVE: NAV ─────────────────────────────────────────────────────── */
@@ -691,19 +846,73 @@ img { max-width: 100%; display: block; }
   .work-row { grid-template-columns: auto 1fr auto; gap: var(--sp-4); padding-inline: var(--sp-1); }
 }
 
-/* ── REDUCED MOTION ──────────────────────────────────────────────────────── */
+/* ── REDUCED MOTION ──────────────────────────────────────────────────────────
+   Global guard. Policy: gentler, not absent.
+
+   Movement is removed outright — every transform, translate, scale, and
+   keyframe animation. What survives is crossfade: opacity and colour still
+   ease, because those communicate state (theme flip, hover target, focus)
+   without moving anything through space. Killing them too would turn every
+   state change into a hard cut, which is a comprehension regression, not an
+   accessibility win. This is what WCAG 2.3.3 actually asks for.
+
+   The mechanism is `transition-property`: overriding it site-wide to the
+   crossfade-safe set means any rule transitioning transform/translate/scale
+   (or a layout property, should one ever slip back in) simply stops
+   transitioning that property and snaps to its end state, while opacity and
+   colour keep their easing. One declaration, no per-component allowlist.
+   -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html { scroll-behavior: auto !important; }
+
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
+    /* Crossfade survives; everything positional snaps. */
+    transition-property: opacity, color, background-color, border-color,
+                         fill, stroke, box-shadow !important;
+    transition-duration: var(--dur-hover) !important;
+    transition-delay: 0ms !important;
+    /* Keyframe animations are movement by construction — end them immediately
+       (1ms, not 0, so `forwards` still commits the end state). */
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal, [data-reveal] { opacity: 1; transform: none; translate: none; transition: none; }
-  .rise { opacity: 1; animation: none; }
+
+  /* Entrances resolve to their visible end state with no travel. */
+  .reveal,
+  [data-reveal] {
+    opacity: 1 !important;
+    translate: none !important;
+    transform: none !important;
+  }
+  .rise,
+  .ds-fade-up {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .ds-card {
+    opacity: 1 !important;
+    translate: none !important;
+    transform: none !important;
+  }
+
+  /* Hover lifts and press feedback: state still reads via colour/border. */
+  .featured:hover,
+  .ds-card:hover,
+  .btn:active,
+  .ds-btn-primary:active,
+  .ds-btn-ghost:active {
+    transform: none !important;
+  }
+
+  /* Cross-document transitions: a crossfade is still legible and involves no
+     movement, so it stays — just at the crossfade duration. */
   ::view-transition-old(root),
-  ::view-transition-new(root) { animation: none; }
+  ::view-transition-new(root) {
+    animation-duration: var(--dur-hover) !important;
+  }
 }
 
 /* ── TOUCH DEVICES: no hover lift on cards ───────────────────────────────── */
@@ -742,17 +951,28 @@ nav.ds-nav {
   background: transparent;
   border: 1px solid var(--border);
   padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-md);
-  transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out),
-              transform var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-hover),
+              border-color var(--dur-hover) var(--ease-hover),
+              transform var(--dur-hover) var(--ease-out);
 }
-.ds-nav-back:hover { color: var(--text-primary); border-color: var(--border-strong); transform: translateX(-2px); }
+/* Backward nudge encodes direction: this control returns you up the hierarchy,
+   the opposite of every forward arrow on the page. */
+.ds-nav-back:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  transform: translateX(-2px);
+  will-change: transform;
+}
 .ds-nav-right { display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
 .ds-theme-toggle {
   width: 38px; height: 38px; border-radius: var(--radius-md); border: 1px solid transparent;
   background: transparent; cursor: pointer; color: var(--text-secondary);
   display: flex; align-items: center; justify-content: center;
-  transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-hover),
+              border-color var(--dur-hover) var(--ease-hover);
 }
+/* Same contract as .icon-btn: border appearing is what identifies the glyph
+   as an interactive control. */
 .ds-theme-toggle:hover { color: var(--text-primary); border-color: var(--border); }
 .ds-theme-toggle svg { width: 18px; height: 18px; }
 
@@ -808,15 +1028,27 @@ nav.ds-nav {
 .ds-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: var(--sp-6);
-  transition: opacity var(--duration-reveal) var(--ease-out),
-              translate var(--duration-reveal) var(--ease-out),
-              transform var(--duration-base) var(--ease-out),
-              border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
-  opacity: 0; translate: 0 20px;
+  transition: opacity var(--dur-enter) var(--ease-out),
+              translate var(--dur-enter) var(--ease-out),
+              transform var(--dur-hover) var(--ease-out),
+              border-color var(--dur-hover) var(--ease-hover),
+              box-shadow var(--dur-hover) var(--ease-hover);
+}
+/* Hidden start state gated on scripting for the same reason as [data-reveal]:
+   these cards are the entire content of most sub-pages, and without JS they
+   were shipping invisible. */
+@media (scripting: enabled) {
+  .ds-card { opacity: 0; translate: 0 14px; }
 }
 .ds-card.visible, .ds-card.is-visible { opacity: 1; translate: none; }
 @media (hover: hover) and (pointer: fine) {
-  .ds-card:hover { transform: translateY(-3px); border-color: var(--border-strong); box-shadow: var(--shadow-hover); }
+  /* Card is a single link target — lift declares the whole surface clickable. */
+  .ds-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-hover);
+    will-change: transform;
+  }
 }
 .ds-card.ds-card-featured { grid-column: 1 / -1; background: var(--surface); border-color: var(--border-strong); }
 .ds-card-icon {
@@ -848,9 +1080,19 @@ nav.ds-nav {
 .ds-link {
   display: inline-flex; align-items: center; gap: var(--sp-1);
   font-size: var(--fs-sm); font-weight: 500; color: var(--accent);
-  transition: gap var(--duration-fast) var(--ease-out);
+  /* Was `transition: gap` with a `gap` change on hover. That was inert: the
+     link's content is a single text node ("View Details →"), and gap only
+     applies between flex items, so there was nothing to space apart — the
+     hover state did nothing at all. Replaced with a real affordance. */
+  transition: transform var(--dur-hover) var(--ease-out),
+              color var(--dur-hover) var(--ease-hover);
 }
-.ds-link:hover { gap: var(--sp-2); }
+/* Forward-motion cue matching every other "go deeper" control on the site. */
+.ds-link:hover {
+  color: var(--accent-hover);
+  transform: translateX(2px);
+  will-change: transform;
+}
 
 .ds-btn-primary {
   display: inline-flex; align-items: center; gap: var(--sp-2);
@@ -858,20 +1100,35 @@ nav.ds-nav {
   font-size: var(--fs-sm); font-weight: 500;
   padding: var(--sp-3) var(--sp-6); border-radius: var(--radius-md);
   border: 1px solid transparent; cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+  transition: transform var(--dur-press) var(--ease-press),
+              background var(--dur-hover) var(--ease-hover);
 }
+/* Primary action under the pointer. */
 .ds-btn-primary:hover { background: var(--accent-hover); }
-.ds-btn-primary:active { transform: scale(0.97); }
+/* Press received — same asymmetric engage/release contract as .btn. */
+.ds-btn-primary:active {
+  transform: scale(0.97);
+  transition: transform var(--dur-press-in) var(--ease-out);
+  will-change: transform;
+}
 .ds-btn-ghost {
   display: inline-flex; align-items: center; gap: var(--sp-2);
   background: transparent; color: var(--text-primary);
   font-size: var(--fs-sm); font-weight: 500;
   padding: var(--sp-3) var(--sp-6); border-radius: var(--radius-md);
   border: 1px solid var(--border); cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+  transition: transform var(--dur-press) var(--ease-press),
+              border-color var(--dur-hover) var(--ease-hover),
+              background var(--dur-hover) var(--ease-hover);
 }
+/* Gains a surface so it reads as raised without competing with the primary. */
 .ds-btn-ghost:hover { border-color: var(--border-strong); background: var(--surface); }
-.ds-btn-ghost:active { transform: scale(0.97); }
+/* Press received. */
+.ds-btn-ghost:active {
+  transform: scale(0.97);
+  transition: transform var(--dur-press-in) var(--ease-out);
+  will-change: transform;
+}
 .ds-btn-row { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-6); }
 
 .ds-divider { height: 1px; background: var(--border); margin: 0; }
@@ -904,11 +1161,19 @@ code { font-family: var(--font-mono); }
 .ds-body ul, .ds-body ol { margin: var(--sp-2) 0 var(--sp-4) var(--sp-6); color: var(--text-secondary); line-height: 1.8; }
 .ds-body li { margin-bottom: var(--sp-1); }
 
-.ds-fade-up { opacity: 0; transform: translateY(24px); animation: rise var(--duration-enter) var(--ease-out) forwards; }
-.ds-fade-up-1 { animation-delay: 0.1s; }
-.ds-fade-up-2 { animation-delay: 0.2s; }
-.ds-fade-up-3 { animation-delay: 0.3s; }
-@media (prefers-reduced-motion: reduce) {
-  .ds-fade-up { opacity: 1; transform: none; animation: none; }
-  .ds-card { opacity: 1; transform: none; translate: none; }
+/* Sub-page hero entrance. Base class carries the animation and the 0ms slot,
+   which is reserved for the page's <h1> (the LCP element) — the -1/-2/-3
+   classes only add delay on top.
+
+   NOTE: ~400 elements across the sub-pages carry `ds-fade-up-1/2/3` WITHOUT
+   this base class. Those get an animation-delay with no animation attached, so
+   they are inert and always have been — the section content on sub-pages does
+   not actually animate. Left as-is rather than rewriting 400 class attributes
+   for zero visual change; see the audit notes. */
+.ds-fade-up {
+  opacity: 0;
+  animation: rise var(--dur-page) var(--ease-out) forwards;
 }
+.ds-fade-up-1 { animation-delay: calc(var(--stagger-step) * 1); }
+.ds-fade-up-2 { animation-delay: calc(var(--stagger-step) * 2); }
+.ds-fade-up-3 { animation-delay: calc(var(--stagger-step) * 3); }
