@@ -20,6 +20,9 @@ const COPY_SKIP_ROOT = new Set([
   'extraction-progress.log',
   'rebuild-progress.log',
   'rebuild-run.log',
+  // Private security research notes: gitignored, and excluded here too so a
+  // local build never copies them into the published site.
+  'AppleNotes',
 ]);
 
 // Path segments excluded anywhere under a copied tree (sim outputs, dev tooling).

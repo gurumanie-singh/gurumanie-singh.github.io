@@ -5,3 +5,7 @@ dist/
 # ModelSim / Quartus simulation outputs — not needed for GitHub Pages
 CPRE381/output/
 .aider*
+
+# Private security research notes — never publish (also excluded from the
+# Vite static copy via COPY_SKIP_ROOT in vite.config.js)
+AppleNotes/
