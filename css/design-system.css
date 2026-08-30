@@ -26,27 +26,38 @@
 
 /* ── TOKENS ──────────────────────────────────────────────────────────────── */
 :root {
-  /* color (dark, default) */
-  --bg:             #0a0a0c;
-  --surface:        #141417;
-  --surface-2:      #1b1b20;
-  --border:         rgba(255, 255, 255, 0.09);
-  --border-strong:  rgba(255, 255, 255, 0.16);
-  --text-primary:   #ececf1;
-  --text-secondary: #9a9aa6;
-  --text-muted:     #86868f;
-  --accent:         #7c9cff;
-  --accent-hover:   #9ab2ff;
-  --on-accent:      #0a0a0c;
-  --shadow-hover:   0 12px 32px rgba(0, 0, 0, 0.18);
-  --nav-bg:         rgba(10, 10, 12, 0.82);
+  /* color (dark, default) — warm near-black rather than pure #0a0a0c, and a
+     softly warm off-white primary text. Reads as ink on unbleached paper
+     rather than white-on-black terminal chrome. */
+  --bg:             #0b0b0d;
+  --surface:        #131316;
+  --surface-2:      #1a1a1e;
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-strong:  rgba(255, 255, 255, 0.14);
+  --text-primary:   #ecebe6;
+  --text-secondary: #9b9a94;
+  --text-muted:     #6f6e68;
+  --accent:         #d4b483;   /* warm, restrained — used sparingly, mostly for italic serif accents */
+  --accent-hover:   #e6c69a;
+  --on-accent:      #0b0b0d;
+  --shadow-hover:   0 20px 48px rgba(0, 0, 0, 0.24);
+  --nav-bg:         rgba(11, 11, 13, 0.72);
+  --spot:           rgba(255, 255, 255, 0.045); /* cursor-tracked list highlight */
+  --grain-opacity:  0.035;
 
-  /* typography */
-  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* typography.
+     Three families now: sans for UI/copy, mono for meta labels + code, serif
+     for editorial display. Serif is system-only — no extra network fetch,
+     resilient across platforms. `ui-serif` picks up Iowan/Palatino/Charter
+     depending on OS; Georgia is the guaranteed floor. */
+  --font-sans:  'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:  'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-serif: ui-serif, 'Iowan Old Style', 'Palatino Linotype', 'Palatino',
+                'Book Antiqua', Georgia, serif;
 
-  --fs-display: clamp(2.75rem, 7vw, 5.25rem);
-  --fs-h2:      clamp(1.75rem, 3.5vw, 2.5rem);
+  --fs-display: clamp(3rem, 8.5vw, 6.5rem);
+  --fs-eyebrow: 0.78rem;
+  --fs-h2:      clamp(1.85rem, 3.8vw, 2.75rem);
   --fs-h3:      1.25rem;
   --fs-lg:      1.125rem;
   --fs-base:    1rem;
@@ -58,10 +69,17 @@
   --sp-2:  8px;
   --sp-3:  12px;
   --sp-4:  16px;
+  --sp-5:  20px;
   --sp-6:  24px;
+  --sp-7:  28px;
   --sp-8:  32px;
+  --sp-9:  36px;
+  --sp-10: 40px;
+  --sp-11: 44px;
   --sp-12: 48px;
+  --sp-14: 56px;
   --sp-16: 64px;
+  --sp-20: 80px;
   --sp-24: 96px;
   --sp-32: 128px;
 
@@ -91,9 +109,14 @@
   --dur-press:    120ms; /* :active release — settles back with --ease-press */
   --dur-press-in:  90ms; /* :active engage — deliberately faster than release, so
                             the control meets the finger before it settles */
-  --dur-hover: 160ms;   /* hover colour/border; fires dozens of times a session */
-  --dur-enter: 240ms;   /* default — reveals, modals, popovers */
-  --dur-page:  300ms;   /* view transitions, hero entrance. Hard ceiling. */
+  --dur-hover: 200ms;   /* hover colour/border. Slightly slower than the old 160ms —
+                           the whole site is on a more considered pace now. */
+  --dur-enter: 320ms;   /* default reveal — a touch more room for the spring
+                           easing to actually feel physical rather than snap. */
+  --dur-page:  520ms;   /* view transitions, editorial reveals, magnetic
+                           moves. Sits above the strict --dur-enter ceiling
+                           deliberately: page-scale motion needs the extra
+                           room to land like intent, not reflex. */
 
   /* Easings. Direction of travel picks the curve, not the component. */
   --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);    /* entering / responding to input.
@@ -111,6 +134,12 @@
                                                        a colour change can't express a curve, so
                                                        a bespoke one is maintenance with no
                                                        payoff. Named to record the choice. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);    /* editorial spring — decelerates hard,
+                                                       lands slow. What gives the reveals and
+                                                       magnetic hovers their physical feel. */
+  --ease-swift:  cubic-bezier(0.19, 1, 0.22, 1);    /* long-distance moves that must feel
+                                                       instant at the start; the tail carries
+                                                       the "still-settling" impression. */
 
   /* Entrance sequencing. */
   --stagger-step: 60ms; /* per-sibling offset */
@@ -121,54 +150,62 @@
   --shadow-base:     none;
 }
 
+/* Light theme — warm off-white paper rather than pure white. Text is a
+   near-black with a hint of warmth so it reads as ink, not console output. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --bg:             #fafafa;
-    --surface:        #ffffff;
-    --surface-2:      #f4f4f5;
-    --border:         rgba(0, 0, 0, 0.09);
-    --border-strong:  rgba(0, 0, 0, 0.16);
-    --text-primary:   #18181b;
-    --text-secondary: #55555f;
-    --text-muted:     #6c6c75;
-    --accent:         #3a55e6;
-    --accent-hover:   #2c44c9;
-    --on-accent:      #ffffff;
-    --shadow-hover:   0 12px 28px rgba(0, 0, 0, 0.08);
-    --nav-bg:         rgba(250, 250, 250, 0.82);
+    --bg:             #f4f1ea;
+    --surface:        #ede9df;
+    --surface-2:      #e4dfd2;
+    --border:         rgba(20, 18, 14, 0.10);
+    --border-strong:  rgba(20, 18, 14, 0.20);
+    --text-primary:   #1a1815;
+    --text-secondary: #55524b;
+    --text-muted:     #7d7a72;
+    --accent:         #7a5a2f;
+    --accent-hover:   #5b4322;
+    --on-accent:      #f4f1ea;
+    --shadow-hover:   0 24px 48px rgba(20, 18, 14, 0.10);
+    --nav-bg:         rgba(244, 241, 234, 0.78);
+    --spot:           rgba(20, 18, 14, 0.04);
+    --grain-opacity:  0.055;
   }
 }
 
 [data-theme="light"] {
-  --bg:             #fafafa;
-  --surface:        #ffffff;
-  --surface-2:      #f4f4f5;
-  --border:         rgba(0, 0, 0, 0.09);
-  --border-strong:  rgba(0, 0, 0, 0.16);
-  --text-primary:   #18181b;
-  --text-secondary: #55555f;
-  --text-muted:     #6c6c75;
-  --accent:         #3a55e6;
-  --accent-hover:   #2c44c9;
-  --on-accent:      #ffffff;
-  --shadow-hover:   0 12px 28px rgba(0, 0, 0, 0.08);
-  --nav-bg:         rgba(250, 250, 250, 0.82);
+  --bg:             #f4f1ea;
+  --surface:        #ede9df;
+  --surface-2:      #e4dfd2;
+  --border:         rgba(20, 18, 14, 0.10);
+  --border-strong:  rgba(20, 18, 14, 0.20);
+  --text-primary:   #1a1815;
+  --text-secondary: #55524b;
+  --text-muted:     #7d7a72;
+  --accent:         #7a5a2f;
+  --accent-hover:   #5b4322;
+  --on-accent:      #f4f1ea;
+  --shadow-hover:   0 24px 48px rgba(20, 18, 14, 0.10);
+  --nav-bg:         rgba(244, 241, 234, 0.78);
+  --spot:           rgba(20, 18, 14, 0.04);
+  --grain-opacity:  0.055;
 }
 
 [data-theme="dark"] {
-  --bg:             #0a0a0c;
-  --surface:        #141417;
-  --surface-2:      #1b1b20;
-  --border:         rgba(255, 255, 255, 0.09);
-  --border-strong:  rgba(255, 255, 255, 0.16);
-  --text-primary:   #ececf1;
-  --text-secondary: #9a9aa6;
-  --text-muted:     #86868f;
-  --accent:         #7c9cff;
-  --accent-hover:   #9ab2ff;
-  --on-accent:      #0a0a0c;
-  --shadow-hover:   0 12px 32px rgba(0, 0, 0, 0.18);
-  --nav-bg:         rgba(10, 10, 12, 0.82);
+  --bg:             #0b0b0d;
+  --surface:        #131316;
+  --surface-2:      #1a1a1e;
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-strong:  rgba(255, 255, 255, 0.14);
+  --text-primary:   #ecebe6;
+  --text-secondary: #9b9a94;
+  --text-muted:     #6f6e68;
+  --accent:         #d4b483;
+  --accent-hover:   #e6c69a;
+  --on-accent:      #0b0b0d;
+  --shadow-hover:   0 20px 48px rgba(0, 0, 0, 0.24);
+  --nav-bg:         rgba(11, 11, 13, 0.72);
+  --spot:           rgba(255, 255, 255, 0.045);
+  --grain-opacity:  0.035;
 }
 
 /* ── BASE ────────────────────────────────────────────────────────────────── */
@@ -193,9 +230,44 @@ body {
               color var(--dur-hover) var(--ease-hover);
 }
 
+/* Editorial grain — extremely subtle noise texture over the whole page.
+   Pure SVG data URL, zero network cost, respects theme via `var(--grain-opacity)`.
+   Fixed position so it doesn't drift when the page scrolls; pointer-events off
+   so it never intercepts clicks. Purely tactile — not a background pattern. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+}
+
+/* Progress bar — cross-page reading indicator across the top of the viewport.
+   Purely decorative; the scale is set from JS on scroll. transform-origin is
+   left so it grows rightward as you descend the page. */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 101;
+  background: var(--text-primary);
+  transform-origin: left;
+  transform: scaleX(0);
+  will-change: transform;
+  transition: transform 60ms linear;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 a { color: inherit; text-decoration: none; }
 
-::selection { background: var(--accent); color: var(--on-accent); }
+::selection { background: var(--text-primary); color: var(--bg); }
 
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -248,27 +320,416 @@ img { max-width: 100%; display: block; }
 
 .divider { height: 1px; background: var(--border); border: 0; }
 
-.section-head { margin-bottom: var(--sp-12); }
+/* ── HORIZONTAL STAGE ──────────────────────────────────────────────────────
+   The home page's main scroll axis is horizontal on wide viewports. Sections
+   become viewport-width panels laid out in a flex row inside `.rail`, and
+   the wheel-hijack in JS converts vertical wheel input into horizontal
+   scroll on `main.stage`. Below the desktop breakpoint the panels stack
+   vertically as a normal document — touch swipe-left/right for an entire
+   site is bad UX on phones. */
+
+/* Mobile / narrow — panels stack vertically. Nothing exotic. */
+.stage { display: block; }
+.rail { display: block; }
+.panel {
+  position: relative;
+  padding-block: var(--sp-16);
+}
+.panel-inner {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.panel-hero {
+  min-height: 100dvh;
+  padding-top: 88px;
+}
+.panel-hero .panel-inner {
+  min-height: calc(100dvh - 88px - var(--sp-16));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Desktop — horizontal scroll rail.
+   IMPORTANT: everything in this block is gated on the presence of
+   `main.stage` in the document (via `:has()`). This stylesheet is shared
+   with every subpage in the project, and subpages are conventional
+   top-to-bottom scrolled documents — they must NOT inherit the home
+   page's `overflow: hidden` scroll lock. Only the home page owns
+   `main.stage`, so `:has(main.stage)` is the right lever here. */
+@media (min-width: 900px) {
+  html:has(main.stage),
+  body:has(main.stage) {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  main.stage {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior: none;
+    scroll-behavior: auto;
+    /* CSS snap is the safety net for scrollbar / touch input that bypasses
+       JS. During a JS-driven panel transition, the script sets
+       `scroll-snap-type: none` so proximity snap cannot yank the panel
+       to its align point mid-curve. */
+    scroll-snap-type: x proximity;
+  }
+  main.stage::-webkit-scrollbar { display: none; height: 0; width: 0; }
+
+  .rail {
+    display: flex;
+    height: 100%;
+    align-items: stretch;
+  }
+
+  .panel {
+    flex: 0 0 auto;
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    /* No internal vertical scroll: every panel fits its content in
+       100vh × 100vw. If the viewport is unusually short (< ~720px), the
+       panel simply clips — a deliberate trade so scrolling stays 100%
+       horizontal per the design brief. */
+    overflow: hidden;
+    scroll-snap-align: start;
+    /* Always stop on this panel when snapping — prevents fast scrolls
+       from skipping over a panel and lets a single wheel gesture advance
+       by exactly one. */
+    scroll-snap-stop: always;
+    position: relative;
+  }
+
+  /* Card treatment: give each panel a subtle vertical hairline on the
+     leading edge so panels read as discrete "cards" side by side, without
+     adding visual weight (no shadows, no fills — just a hairline). */
+  .panel + .panel::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12vh;
+    bottom: 12vh;
+    width: 1px;
+    background: var(--border);
+    pointer-events: none;
+  }
+
+  /* Two-column editorial layout inside every non-hero panel: the section
+     masthead sits on the left, the body sits on the right, both centred
+     vertically so the composition breathes exactly like the hero. */
+  .panel:not(.panel-hero) .panel-inner {
+    box-sizing: border-box;
+    height: 100vh;
+    max-width: 1440px;
+    width: 100%;
+    margin-inline: auto;
+    padding: 96px var(--gutter) var(--sp-10);
+    display: grid;
+    grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    column-gap: clamp(48px, 6vw, 96px);
+    /* Both columns centred vertically — matches the hero panel's
+       `justify-content: center` energy. */
+    align-items: center;
+  }
+
+  .panel:not(.panel-hero) .section-head {
+    grid-column: 1;
+    margin-bottom: 0;
+    align-self: center;
+  }
+
+  .panel:not(.panel-hero) .section-body {
+    grid-column: 2;
+    min-width: 0;
+    height: 100%;
+    /* Flex column so the body items distribute vertically across the full
+       column height. `justify-content: center` gives symmetric top/bottom
+       air (matching the hero); the fixed `gap` keeps rhythm consistent
+       across sections. */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(24px, 3.5vh, 44px);
+    padding-block: var(--sp-4);
+  }
+  /* Section-body children are laid out by the flex `gap` above — their
+     own margin-top rules would compound with it and break the rhythm. */
+  .panel:not(.panel-hero) .section-body > * { margin-top: 0; }
+
+  /* Section title sized to match the hero's editorial weight — smaller
+     than the hero name (which is the wordmark of the whole site), but
+     big enough to anchor each panel with clear typographic hierarchy. */
+  .panel:not(.panel-hero) .section-title {
+    font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+  .panel:not(.panel-hero) .section-lead {
+    font-size: var(--fs-lg);
+    max-width: none;
+    margin-top: var(--sp-4);
+  }
+  .panel:not(.panel-hero) .section-index {
+    margin-bottom: var(--sp-5);
+  }
+
+  /* Hero panel keeps its centred single-column layout. */
+  .panel-hero { min-height: 100vh; padding: 0; }
+  .panel-hero .panel-inner {
+    box-sizing: border-box;
+    min-height: 100vh;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding: 96px var(--gutter) var(--sp-8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Section padding inside a panel becomes 0 — the panel supplies the frame. */
+  .panel .section { padding: 0; }
+}
+
+/* On narrower desktop widths the masthead + body columns get too tight;
+   drop back to a stacked single-column layout inside the panel. */
+@media (min-width: 900px) and (max-width: 1100px) {
+  .panel:not(.panel-hero) .panel-inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    row-gap: var(--sp-6);
+    padding-top: 88px;
+    align-items: start;
+  }
+  .panel:not(.panel-hero) .section-head { grid-column: 1; align-self: start; }
+  .panel:not(.panel-hero) .section-body { grid-column: 1; height: auto; }
+  /* Narrow-desktop panels may exceed 100vh — grant vertical scroll inside
+     the panel as a graceful fallback. Wide desktop keeps overflow: hidden. */
+  .panel { overflow-y: auto; overflow-x: hidden; }
+}
+
+/* Panel-body typography pass — sits inside the desktop stage layout,
+   where the section-body is a flex column with a fixed inter-item gap
+   handled by `.section-body { gap: ... }`. Each item here relaxes its
+   own margins to zero (so gap owns the rhythm) and pushes up its type
+   size to fill the airy body column comfortably. */
+@media (min-width: 1101px) {
+  /* Featured card + work rows sized to fill the body column at 900vh
+     viewport height, with every item still reading generously spaced —
+     no crammed hairlines, but every panel fits in 100vh with no clip. */
+  .panel-work .section-body .featured {
+    padding: var(--sp-5) 0 var(--sp-5) var(--sp-6);
+  }
+  .panel-work .section-body .featured-title {
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+  }
+  .panel-work .section-body .featured-desc {
+    font-size: var(--fs-base);
+    margin-top: var(--sp-3);
+    line-height: 1.5;
+    max-width: 64ch;
+  }
+  .panel-work .section-body .featured-foot { margin-top: var(--sp-4); }
+
+  .panel-work .section-body .work-list { margin-top: 0; }
+  .panel-work .section-body .work-row {
+    padding: var(--sp-4) var(--sp-3);
+    gap: var(--sp-5);
+  }
+  .panel-work .section-body .work-title { font-size: 1.2rem; }
+  .panel-work .section-body .work-desc {
+    margin-top: 3px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Coursework rows: room to breathe. */
+  .panel-coursework .section-body .course-groups { gap: var(--sp-10); }
+  .panel-coursework .section-body .course-row {
+    padding: var(--sp-4) var(--sp-2) var(--sp-4) var(--sp-5);
+  }
+  .panel-coursework .section-body .course-name { font-size: 1.15rem; }
+
+  /* About: prose sized for editorial reading, photo a size larger. */
+  .panel-about .section-body .about-grid { gap: var(--sp-10); }
+  .panel-about .section-body .about-prose p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+  .panel-about .section-body .about-photo { width: 140px; height: 140px; }
+  .panel-about .section-body .facts { margin-top: 0; padding-top: var(--sp-6); }
+  .panel-about .section-body .fact-value { font-size: 1.75rem; }
+  .panel-about .section-body .skills { margin-top: 0; gap: var(--sp-4); }
+  .panel-about .section-body .skill-group { padding: var(--sp-4) 0; }
+
+  /* Contact: bring the email back to full editorial scale and give the
+     lead + footer room to breathe. Flex `gap` handles the vertical
+     rhythm, so every child resets margin-top / margin-bottom to 0. */
+  .panel-contact .section-body .contact-lead {
+    font-size: var(--fs-lg);
+    margin-bottom: 0;
+    max-width: 54ch;
+  }
+  .panel-contact .section-body .contact-email {
+    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  }
+  .panel-contact .section-body .contact-secondary {
+    margin-top: 0;
+    padding-top: var(--sp-5);
+  }
+  .panel-contact .section-body .contact-footer {
+    margin-top: 0;
+    padding-top: var(--sp-5);
+  }
+}
+
+/* Contact panel's embedded footer strip: replaces the standalone colophon
+   panel, so all the contact-adjacent chrome lives on one screen. */
+.contact-footer {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.contact-footer .footer-monogram {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  text-transform: none;
+}
+.contact-footer .footer-meta { font-variant-numeric: tabular-nums; }
+@media (min-width: 1101px) {
+  .panel-contact .section-body .contact-footer {
+    margin-top: var(--sp-6);
+    padding-top: var(--sp-4);
+  }
+}
+
+/* Scroll cue at the bottom of the hero panel — a small horizontal arrow +
+   "SCROLL / DRAG" label to hint that scroll goes sideways here. Only visible
+   on the desktop horizontal layout; auto-hides once the user has moved. */
+.scroll-cue {
+  display: none;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-12);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: opacity var(--dur-page) var(--ease-spring),
+              transform var(--dur-page) var(--ease-spring);
+}
+@media (min-width: 900px) {
+  .scroll-cue { display: inline-flex; }
+}
+.scroll-cue.is-hidden { opacity: 0; transform: translateY(6px); pointer-events: none; }
+.scroll-cue .cue-track {
+  position: relative;
+  display: inline-block;
+  width: 42px; height: 1px;
+  background: currentColor;
+  overflow: hidden;
+}
+.scroll-cue .cue-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--text-primary);
+  transform: translateX(-100%);
+  animation: cue-slide 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes cue-slide {
+  0%   { transform: translateX(-100%); }
+  60%  { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+.scroll-cue .cue-arrow {
+  transition: transform var(--dur-page) var(--ease-spring);
+}
+
+.section-head {
+  margin-bottom: var(--sp-12);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+}
+
+/* Section index label ("§ 01 — Selected work") — anchors each section in the
+   page's editorial index. Mono, small, tabular; kept in the top-left as a
+   fixed rhythm the eye can find. */
+.section-index {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.section-index::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-eyebrow);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: var(--sp-3);
 }
+
 .section-title {
+  font-family: var(--font-serif);
   font-size: var(--fs-h2);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.05;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
 }
+.section-title em {
+  font-style: italic;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+}
 .section-lead {
-  margin-top: var(--sp-4);
-  max-width: 60ch;
+  margin-top: var(--sp-2);
+  max-width: 62ch;
   font-size: var(--fs-lg);
   color: var(--text-secondary);
+  line-height: 1.55;
+}
+.section-lead em {
+  font-style: italic;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
 }
 
 /* ── REVEAL / ENTRANCE ───────────────────────────────────────────────────── */
@@ -297,12 +758,10 @@ img { max-width: 100%; display: block; }
 
 .reveal,
 [data-reveal] {
-  transition: opacity var(--dur-enter) var(--ease-out),
-              translate var(--dur-enter) var(--ease-out);
+  transition: opacity var(--dur-page) var(--ease-spring),
+              translate var(--dur-page) var(--ease-spring);
 }
 
-/* Section has entered the viewport — establishes reading order and spatial
-   arrival rather than having blocks appear fully formed. */
 .reveal.is-visible,
 [data-reveal].is-visible {
   opacity: 1;
@@ -310,41 +769,74 @@ img { max-width: 100%; display: block; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .rise { opacity: 0; animation: rise var(--dur-page) var(--ease-out) forwards; }
+  .rise { opacity: 0; animation: rise var(--dur-page) var(--ease-spring) forwards; }
   /* Above-the-fold cascade. d1 is 0ms and holds the LCP heading — see the
-     stagger note in index.html. Steps are --stagger-step (60ms) apart. */
+     stagger note in index.html. Slightly larger steps now to give the spring
+     room to breathe: 90ms per slot instead of 60ms. */
   .rise.d1 { animation-delay: 0ms; }
-  .rise.d2 { animation-delay: calc(var(--stagger-step) * 1); }
-  .rise.d3 { animation-delay: calc(var(--stagger-step) * 2); }
-  .rise.d4 { animation-delay: calc(var(--stagger-step) * 3); }
-  .rise.d5 { animation-delay: calc(var(--stagger-step) * 4); }
+  .rise.d2 { animation-delay: 90ms; }
+  .rise.d3 { animation-delay: 180ms; }
+  .rise.d4 { animation-delay: 270ms; }
+  .rise.d5 { animation-delay: 360ms; }
 }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* ── NAV ─────────────────────────────────────────────────────────────────── */
+/* Word-mask reveal for the hero name: two clipped bands slide up and settle.
+   The clip has to be tight on top (to hide the sliding text before it
+   arrives) but loose on the bottom (so descenders like the 'g' in Singh
+   aren't cut off). `overflow: hidden` clips at the padding-box, so we
+   ADD padding-bottom to enlarge the visible area downward — the sliding
+   text still hides above the padding-box top edge, but descenders can
+   fully render inside the padding.
+
+   The extra padding would visually push the second line further from
+   the first; we reclaim that space with a matching negative margin-top
+   on consecutive mask-ins, so the two lines still sit at the intended
+   tight line-height. */
+.mask-in {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.22em;
+}
+.mask-in + .mask-in {
+  margin-top: -0.2em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mask-in > .mask-inner {
+    display: inline-block;
+    /* Move 120% of the element's own height below its resting position so
+       even large descenders start fully outside the visible area. */
+    transform: translateY(120%);
+    animation: mask-slide var(--dur-page) var(--ease-spring) forwards;
+    animation-delay: var(--mask-delay, 0ms);
+  }
+}
+@keyframes mask-slide {
+  from { transform: translateY(120%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── NAV ────────────────────────────────────────────────────────────────────
+   Slim editorial nav. Brand as a small mono monogram + full-name whisper.
+   Links use mono + section indexing (01–05); active link is marked with a
+   small filled circle to the left, morphing between links via CSS transform. */
 .site-nav {
   position: fixed; inset: 0 0 auto 0; z-index: 100;
-  height: 64px;
+  height: 56px;
   display: flex; align-items: center;
   background: transparent;
   border-bottom: 1px solid transparent;
-  /* Page is no longer at the top — the bar earns a surface so it separates
-     from content scrolling under it. backdrop-filter is deliberately NOT in
-     this list: it can't interpolate from `none`, so it popped in rather than
-     easing, while costing a full-viewport blur every frame of the transition.
-     It now applies as a static step on .is-scrolled; the background and border
-     carry the perceived transition. */
   transition: background var(--dur-hover) var(--ease-hover),
               border-color var(--dur-hover) var(--ease-hover);
 }
 .site-nav.is-scrolled {
   background: var(--nav-bg);
   border-bottom-color: var(--border);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 .nav-inner {
   width: 100%; max-width: var(--container);
@@ -352,29 +844,73 @@ img { max-width: 100%; display: block; }
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-4);
 }
+
+/* Brand: mono monogram [GS] + full-name whisper. The two are grouped so the
+   monogram sits before the name at a smaller size — reads as a stamp
+   preceding an authored signature. */
 .nav-brand {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: -0.005em;
   color: var(--text-primary);
 }
+.nav-brand::before {
+  content: '§';
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-muted);
+  transition: color var(--dur-hover) var(--ease-hover),
+              transform var(--dur-page) var(--ease-spring);
+}
+.nav-brand:hover::before { color: var(--text-primary); transform: rotate(-8deg); }
+
 .nav-links {
   display: flex; align-items: center; gap: var(--sp-1);
   list-style: none;
+  font-family: var(--font-mono);
 }
 .nav-link {
-  display: inline-block;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
   padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-eyebrow);
   font-weight: 500;
-  color: var(--text-secondary);
-  transition: color var(--dur-hover) var(--ease-hover),
-              background var(--dur-hover) var(--ease-hover);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--dur-hover) var(--ease-hover);
 }
-/* This link is the pointer's current target and is activatable. */
+.nav-link .num {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-hover) var(--ease-hover);
+}
 .nav-link:hover { color: var(--text-primary); }
-.nav-link.is-active { color: var(--accent); }
+.nav-link:hover .num { color: var(--text-primary); }
+.nav-link.is-active { color: var(--text-primary); }
+.nav-link.is-active .num { color: var(--text-primary); opacity: 1; }
+.nav-link.is-active::before {
+  content: '';
+  position: absolute;
+  left: var(--sp-2); top: 50%;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  transform: translate(-6px, -50%);
+  animation: nav-dot-in var(--dur-page) var(--ease-spring) forwards;
+}
+@keyframes nav-dot-in {
+  from { opacity: 0; transform: translate(-10px, -50%) scale(0.6); }
+  to   { opacity: 1; transform: translate(-6px, -50%) scale(1); }
+}
 
 .nav-tools { display: flex; align-items: center; gap: var(--sp-1); }
 
@@ -439,215 +975,383 @@ img { max-width: 100%; display: block; }
   font-size: var(--fs-base);
 }
 
-/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
+/* ── BUTTONS ────────────────────────────────────────────────────────────────
+   Editorial buttons: quieter chrome, mono type inside, thin borders. Primary
+   uses the text-primary colour (ink) rather than a saturated accent — the
+   contrast against the paper background does the work of standing out. */
 .btn {
   display: inline-flex; align-items: center; gap: var(--sp-2);
-  font-family: var(--font-sans);
-  font-size: var(--fs-sm); font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow); font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   padding: var(--sp-3) var(--sp-6);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   border: 1px solid transparent;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
   transition: transform var(--dur-press) var(--ease-press),
               background var(--dur-hover) var(--ease-hover),
               border-color var(--dur-hover) var(--ease-hover),
               color var(--dur-hover) var(--ease-hover);
 }
-/* Press is being received. Asymmetric on purpose: engaging is faster (90ms,
-   flat ease-out) than releasing (--dur-press on --ease-press), so the button
-   meets the finger immediately and settles back with a trace of physical
-   spring. will-change is scoped to the pressed state only. */
 .btn:active {
   transform: scale(0.97);
   transition: transform var(--dur-press-in) var(--ease-out);
   will-change: transform;
 }
 
-.btn-primary { background: var(--accent); color: var(--on-accent); }
-/* Primary action is under the pointer. */
-.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg);
+}
+.btn-primary:hover { background: var(--text-secondary); }
 
 .btn-secondary {
   background: transparent;
   color: var(--text-primary);
-  border-color: var(--border);
+  border-color: var(--border-strong);
 }
-/* Secondary action gains a surface, so it reads as raised relative to the page
-   without competing with the primary button's fill. */
-.btn-secondary:hover { border-color: var(--border-strong); background: var(--surface); }
+.btn-secondary:hover { border-color: var(--text-primary); background: transparent; }
 
-/* ── HERO ────────────────────────────────────────────────────────────────── */
+/* Arrow inside a button gets a subtle right-nudge on hover — the same
+   forward-motion cue as every other "go there" control on the site. */
+.btn .arrow {
+  transition: transform var(--dur-hover) var(--ease-swift);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover .arrow { transform: translateX(3px); }
+}
+
+/* ── HERO ──────────────────────────────────────────────────────────────────
+   Editorial. Availability strip → the name as a two-line editorial title
+   (serif italic + sans, mixed) → serif-italic tagline → paragraph → actions.
+   The hero owns the page's typographic identity; everything else is quieter. */
 .hero {
   position: relative;
   isolation: isolate;
   min-height: 100dvh;
   display: flex; flex-direction: column; justify-content: center;
-  padding-top: 64px;
+  padding-top: 88px;
   padding-bottom: var(--sp-16);
 }
 .hero > :not(.hero-canvas) { position: relative; z-index: 1; }
+
+/* Availability strip. Mono meta with a pulsing dot on the left — communicates
+   "system status" in a single glyph without any actual system UI chrome. */
 .hero-avail {
-  display: inline-flex; align-items: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.04em;
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: var(--sp-6);
+  margin-bottom: var(--sp-8);
 }
+.hero-avail::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  animation: avail-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes avail-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.35); }
+  50%      { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+}
+
+/* Name. Serif display with italic emphasis on the second line. The italic
+   isn't decoration — it earns its keep by encoding hierarchy (surname reads
+   as the emphasis, matching how it's spoken). */
 .hero-name {
+  font-family: var(--font-serif);
   font-size: var(--fs-display);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
-  max-width: 16ch;
+  max-width: 14ch;
 }
+.hero-name .em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-primary);
+  display: inline-block;
+  transform-origin: left center;
+}
+
+/* Role tagline. Sans, medium weight, with the "&" swapped to serif italic —
+   a small typographic signature that costs nothing and reads as authored
+   rather than templated. */
 .hero-role {
-  margin-top: var(--sp-6);
-  font-size: var(--fs-lg);
-  font-weight: 500;
+  margin-top: var(--sp-8);
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-weight: 400;
   color: var(--text-primary);
+  letter-spacing: -0.005em;
 }
-.hero-role .accent { color: var(--accent); }
+.hero-role .accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-primary);
+  padding-inline: 0.1em;
+}
+
 .hero-desc {
-  margin-top: var(--sp-3);
-  max-width: 56ch;
+  margin-top: var(--sp-4);
+  max-width: 58ch;
   font-size: var(--fs-lg);
   color: var(--text-secondary);
+  line-height: 1.6;
 }
+.hero-desc em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-primary);
+}
+
 .hero-actions {
   margin-top: var(--sp-8);
   display: flex; flex-wrap: wrap; gap: var(--sp-3);
 }
 
-/* ── WORK ────────────────────────────────────────────────────────────────── */
+/* Editorial meta rail at the bottom of the hero — three or four data points
+   in mono, separated by hairlines. Anchors the page like a masthead. */
+.hero-meta {
+  margin-top: var(--sp-16);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--sp-4) var(--sp-8);
+  max-width: 780px;
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.hero-meta-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.hero-meta-value {
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.hero-meta-value em {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+/* ── WORK ──────────────────────────────────────────────────────────────────
+   Featured project reads as an editorial feature story: no card chrome, just
+   a horizontal rule above and a hairline hover indicator that draws in on the
+   left as you enter it. The rest of the work list is a set of indexed rows
+   with a cursor-tracked "spotlight" backdrop that follows the pointer through
+   the list (see `.work-list::before` + JS setting `--spot-x/--spot-y`). */
 .featured {
   display: block;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-8);
-  /* Two lifecycles, deliberately separate: entrance drives `translate` and
-     `opacity` at --dur-enter, hover drives `transform` at --dur-hover. Using
-     the longhand for one and the shorthand for the other is what keeps a
-     mid-reveal hover from cancelling the entrance. */
-  transition: opacity var(--dur-enter) var(--ease-out),
-              translate var(--dur-enter) var(--ease-out),
-              transform var(--dur-hover) var(--ease-out),
-              border-color var(--dur-hover) var(--ease-hover),
-              box-shadow var(--dur-hover) var(--ease-hover);
+  position: relative;
+  padding: var(--sp-6) 0 var(--sp-6) var(--sp-6);
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border);
+  transition: opacity var(--dur-enter) var(--ease-spring),
+              translate var(--dur-enter) var(--ease-spring),
+              border-color var(--dur-hover) var(--ease-hover);
+}
+.featured::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  width: 3px; height: 0;
+  background: var(--text-primary);
+  transform: translateY(-50%);
+  transition: height var(--dur-page) var(--ease-spring);
 }
 @media (hover: hover) and (pointer: fine) {
-  /* Whole card is one link target — the lift plus a stronger border says
-     "this entire surface is clickable", which a text-only hover cannot. */
-  .featured:hover {
-    transform: translateY(-3px);
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow-hover);
-    will-change: transform;
-  }
+  .featured:hover { border-bottom-color: var(--border-strong); }
+  .featured:hover::before { height: calc(100% - var(--sp-16)); }
+  .featured:hover .featured-title { transform: translateX(6px); }
+  .featured:hover .arrow { transform: translate(3px, -3px); }
 }
 .featured-top {
   display: flex; align-items: center; justify-content: space-between;
-  gap: var(--sp-4); margin-bottom: var(--sp-4);
+  gap: var(--sp-4); margin-bottom: var(--sp-6);
 }
 .featured-label {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.04em;
-  color: var(--accent);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.featured-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: currentColor;
+  opacity: 0.5;
 }
 .featured-title {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
   color: var(--text-primary);
+  transition: transform var(--dur-hover) var(--ease-swift);
 }
+.featured-title em { font-style: italic; }
 .featured-desc {
-  margin-top: var(--sp-3);
-  max-width: 70ch;
+  margin-top: var(--sp-4);
+  max-width: 62ch;
   color: var(--text-secondary);
+  font-size: var(--fs-lg);
+  line-height: 1.55;
 }
+.featured-desc em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); }
 .featured-foot {
   margin-top: var(--sp-6);
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: var(--sp-4);
 }
+.featured .arrow { transition: transform var(--dur-hover) var(--ease-swift); }
 
-.work-list { margin-top: var(--sp-8); border-top: 1px solid var(--border); }
+/* Numbered work list. Each row is a full-width surface; the whole list gets
+   a cursor-tracked spotlight backdrop that follows the pointer vertically,
+   feeling like a highlighter tracking your reading. */
+.work-list {
+  margin-top: var(--sp-8);
+  position: relative;
+  border-top: 1px solid var(--border);
+}
+.work-list::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    240px 140px at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spot),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-page) var(--ease-spring);
+  z-index: 0;
+}
+.work-list:hover::before { opacity: 1; }
 
 .work-row {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--sp-6);
-  padding: var(--sp-6) var(--sp-3);
+  padding: var(--sp-6) var(--sp-4);
   border-bottom: 1px solid var(--border);
-  /* `padding-left` was previously animated here to nudge the row on hover. It
-     relayouted the three-column grid on every hover; the nudge is now a
-     transform on the row's contents, which composites. */
-  transition: opacity var(--dur-enter) var(--ease-out),
-              translate var(--dur-enter) var(--ease-out),
-              background var(--dur-hover) var(--ease-hover);
+  z-index: 1;
+  transition: opacity var(--dur-enter) var(--ease-spring),
+              translate var(--dur-enter) var(--ease-spring);
 }
-.work-row:hover { background: var(--surface); }
 
-/* Row contents shift together so the row reads as a single object being
-   pulled toward the pointer. */
+/* Left indicator hairline — draws in from top to bottom on hover as a
+   directional cue that this row is the reading target. */
+.work-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%;
+  width: 2px; height: 0;
+  background: var(--text-primary);
+  transition: height var(--dur-page) var(--ease-spring);
+}
+
 .work-index,
 .work-main,
 .work-row .arrow {
-  transition: transform var(--dur-hover) var(--ease-out);
+  transition: transform var(--dur-hover) var(--ease-swift);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  /* This row is the active navigation target: contents lean in, arrow breaks
-     away toward its destination. Previously the arrow had no transition at all
-     and teleported. */
-  .work-row:hover .work-index,
+  .work-row:hover::before { height: 60%; top: 20%; }
+  .work-row:hover .work-index { color: var(--text-primary); transform: translateX(var(--sp-2)); }
+  .work-row:hover .work-title { color: var(--text-primary); }
   .work-row:hover .work-main { transform: translateX(var(--sp-2)); }
-  .work-row:hover .arrow { transform: translate(3px, -3px); }
+  .work-row:hover .arrow { transform: translate(3px, -3px); color: var(--text-primary); }
 }
 .work-index {
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-eyebrow);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition: color var(--dur-hover) var(--ease-hover),
+              transform var(--dur-hover) var(--ease-swift);
 }
 .work-main { min-width: 0; }
 .work-title {
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
   color: var(--text-primary);
+  line-height: 1.15;
+  transition: color var(--dur-hover) var(--ease-hover);
 }
+.work-title em { font-style: italic; }
 .work-desc {
-  margin-top: var(--sp-1);
+  margin-top: var(--sp-2);
   font-size: var(--fs-sm);
   color: var(--text-secondary);
   max-width: 62ch;
+  line-height: 1.55;
 }
 .work-aside {
   display: flex; align-items: center; gap: var(--sp-4);
   color: var(--text-muted);
+  transition: color var(--dur-hover) var(--ease-hover);
 }
 
-/* ── TAGS ────────────────────────────────────────────────────────────────── */
-.tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+/* ── TAGS ──────────────────────────────────────────────────────────────────
+   Tags are meta, not chrome. No boxes — just muted mono set inline, joined
+   with a middle-dot separator that comes from CSS so it can't be selected. */
+.tags {
+  display: flex; flex-wrap: wrap;
+  gap: 0;
+  align-items: center;
+}
 .tag {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  color: var(--text-secondary);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-muted);
+  padding: 0;
   white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.tag + .tag::before {
+  content: '·';
+  color: var(--text-muted);
+  opacity: 0.5;
+  padding: 0 var(--sp-2);
 }
 .work-row .tags { display: none; }
-@media (min-width: 880px) { .work-row .tags { display: flex; max-width: 320px; justify-content: flex-end; } }
+@media (min-width: 880px) { .work-row .tags { display: flex; max-width: 340px; justify-content: flex-end; } }
 
-/* ── COURSEWORK ──────────────────────────────────────────────────────────── */
+/* ── COURSEWORK ────────────────────────────────────────────────────────────
+   Two-column editorial index. No boxes, no fills — just hairlines and
+   typographic contrast. A cursor-following left-indicator on hover doubles
+   as the affordance that "yes, this is a link". */
 .course-groups {
   display: grid; gap: var(--sp-12);
   grid-template-columns: 1fr 1fr;
@@ -656,47 +1360,85 @@ img { max-width: 100%; display: block; }
 
 .course-group-title {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-eyebrow);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
   padding-bottom: var(--sp-3);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-strong);
+  margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.course-group-title::after {
+  content: attr(data-count);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 .course-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 5.5rem 1fr auto;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-2);
-  border-radius: var(--radius-md);
+  grid-template-columns: 5rem 1fr auto;
+  align-items: baseline;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-2) var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
-  transition: background var(--dur-hover) var(--ease-hover);
+  transition: color var(--dur-hover) var(--ease-hover);
+}
+.course-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  transform: translate(-12px, -50%) scale(0);
+  transition: transform var(--dur-page) var(--ease-spring);
 }
 .course-row:last-child { border-bottom: 0; }
-/* Dense list — the surface tint is the only affordance distinguishing the
-   hovered row from its neighbours. */
-.course-row:hover { background: var(--surface-2); }
 @media (hover: hover) and (pointer: fine) {
-  .course-row:hover .arrow { transform: translateX(3px); }
+  .course-row:hover::before { transform: translate(0, -50%) scale(1); }
+  .course-row:hover { color: var(--text-primary); }
+  .course-row:hover .course-name { transform: translateX(4px); }
+  .course-row:hover .arrow { transform: translateX(4px); color: var(--text-primary); }
 }
 .course-code {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  color: var(--accent);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
 }
-.course-name { font-size: var(--fs-sm); font-weight: 500; }
+.course-name {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 400;
+  transition: transform var(--dur-hover) var(--ease-swift);
+}
+.course-name em { font-style: italic; }
 .course-row .grad {
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   margin-left: var(--sp-2);
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
 }
-.course-row .arrow { color: var(--text-muted); transition: transform var(--dur-hover) var(--ease-out); }
+.course-row .arrow {
+  color: var(--text-muted);
+  transition: transform var(--dur-hover) var(--ease-swift),
+              color var(--dur-hover) var(--ease-hover);
+}
 
-/* ── ABOUT ───────────────────────────────────────────────────────────────── */
+/* ── ABOUT ─────────────────────────────────────────────────────────────────
+   Editorial prose column with a small circular portrait offset to the side.
+   Facts read as a tabular data strip below, in mono — data, not decoration. */
 .about-grid {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -707,105 +1449,210 @@ img { max-width: 100%; display: block; }
   .about-grid { grid-template-columns: 1fr; gap: var(--sp-8); }
 }
 .about-prose p {
-  font-size: var(--fs-lg);
+  font-size: 1.2rem;
   color: var(--text-secondary);
   max-width: 62ch;
+  line-height: 1.6;
 }
 .about-prose p + p { margin-top: var(--sp-4); }
-.about-prose strong { color: var(--text-primary); font-weight: 600; }
+.about-prose strong { color: var(--text-primary); font-weight: 500; }
+.about-prose em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); font-weight: 400; }
 
 .about-photo {
   width: 132px; height: 132px;
   border-radius: var(--radius-full);
   object-fit: cover;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
+  filter: grayscale(0.2) contrast(1.02);
+  transition: filter var(--dur-page) var(--ease-spring);
 }
+.about-photo:hover { filter: grayscale(0) contrast(1); }
 @media (max-width: 720px) { .about-photo { width: 96px; height: 96px; } }
 
 .facts {
   margin-top: var(--sp-8);
-  display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-8);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-6);
 }
-.fact { display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 540px) { .facts { grid-template-columns: 1fr; gap: var(--sp-4); } }
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
 .fact-value {
-  font-size: var(--fs-lg); font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 400;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  line-height: 1;
 }
+.fact-value em { font-style: italic; }
 .fact-label {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-eyebrow);
   color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .skills {
-  margin-top: var(--sp-12);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  padding: var(--sp-8);
-  display: grid; gap: var(--sp-6);
-  grid-template-columns: repeat(2, 1fr);
+  margin-top: var(--sp-8);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(4, 1fr);
 }
-@media (max-width: 540px) { .skills { grid-template-columns: 1fr; } }
+.skill-group {
+  padding: var(--sp-4) 0;
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 720px) {
+  .skills { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .skills { grid-template-columns: 1fr; }
+}
 .skill-group-title {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-eyebrow);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: var(--sp-3);
 }
+.skill-group .tags {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+}
+.skill-group .tag {
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+.skill-group .tag + .tag::before { content: none; padding: 0; }
 
-/* ── CONTACT ─────────────────────────────────────────────────────────────── */
+/* ── CONTACT ──────────────────────────────────────────────────────────────
+   Address-book layout. Big serif italic email as the conversion point, with
+   an animated underline that draws in on hover — a physical "here's the
+   thread" gesture instead of a colour swap. */
 .contact-lead {
   font-size: var(--fs-lg);
   color: var(--text-secondary);
   max-width: 56ch;
   margin-bottom: var(--sp-8);
+  line-height: 1.6;
 }
+.contact-lead em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); }
+
 .contact-email {
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  font-weight: 400;
+  letter-spacing: -0.015em;
   color: var(--text-primary);
-  display: inline-flex; align-items: center; gap: var(--sp-3);
-  transition: color var(--dur-hover) var(--ease-hover);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-4);
+  position: relative;
+  padding-bottom: 4px;
+  line-height: 1.05;
 }
-/* Primary conversion point on the page — accent colour marks it as the action,
-   not just large text. */
-.contact-email:hover { color: var(--accent); }
-.contact-email .arrow { transition: transform var(--dur-hover) var(--ease-out); }
+.contact-email::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 40px;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform var(--dur-page) var(--ease-spring);
+}
+.contact-email:hover::after { transform-origin: left; transform: scaleX(1); }
+.contact-email .arrow {
+  font-style: normal;
+  transition: transform var(--dur-hover) var(--ease-swift);
+}
 @media (hover: hover) and (pointer: fine) {
-  .contact-email:hover .arrow { transform: translate(3px, -3px); }
+  .contact-email:hover .arrow { transform: translate(4px, -4px); }
 }
 .contact-secondary {
   margin-top: var(--sp-8);
-  display: flex; flex-wrap: wrap; gap: var(--sp-6);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-8);
 }
 .contact-link {
   display: inline-flex; align-items: center; gap: var(--sp-2);
-  font-size: var(--fs-sm); font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
   color: var(--text-secondary);
-  transition: color var(--dur-hover) var(--ease-hover);
+  transition: color var(--dur-hover) var(--ease-hover),
+              transform var(--dur-hover) var(--ease-swift);
 }
-/* Secondary link lifts out of muted into full contrast: hoverable, but ranked
-   below the email above it. */
-.contact-link:hover { color: var(--text-primary); }
-.contact-link svg { width: 18px; height: 18px; }
+.contact-link:hover { color: var(--text-primary); transform: translateY(-2px); }
+.contact-link svg { width: 16px; height: 16px; }
 
-/* ── FOOTER ──────────────────────────────────────────────────────────────── */
+/* ── FOOTER ────────────────────────────────────────────────────────────────
+   Colophon at the end of the document. Serif italic monogram + mono meta —
+   the exact opposite arrangement of the nav (which leads with the monogram),
+   so the top and bottom of the page bracket the content as a spread. */
 .site-footer {
   border-top: 1px solid var(--border);
   padding-block: var(--sp-8);
+  margin-top: var(--sp-16);
 }
 .footer-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: var(--sp-4);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-6);
+  align-items: baseline;
 }
-.footer-name { font-weight: 600; color: var(--text-primary); }
-.footer-meta { font-size: var(--fs-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
-.footer-links { display: flex; gap: var(--sp-6); }
+@media (max-width: 720px) {
+  .footer-inner { grid-template-columns: 1fr; }
+}
+.footer-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.footer-meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: right;
+}
+@media (max-width: 720px) {
+  .footer-meta { text-align: left; }
+}
+.footer-links {
+  display: flex;
+  gap: var(--sp-6);
+  margin-top: var(--sp-4);
+  grid-column: 1 / -1;
+  padding-top: var(--sp-4);
+  border-top: 1px dashed var(--border);
+}
 
 /* ── VIEW TRANSITIONS ─────────────────────────────────────────────────────────
    Cross-document, CSS-only — no router, no JS. Native to the platform, which is
@@ -924,44 +1771,67 @@ nav.ds-nav {
 }
 
 /* ============================================================================
-   LEGACY ds-* COMPONENTS
-   Used by existing sub-pages (course and project pages). Ported to the new
-   tokens so those pages adopt the system without editing their markup.
+   LEGACY ds-* COMPONENTS (sub-pages)
+   Long-form docs — kept vertical (native scroll) but refreshed to the same
+   editorial language as the home page: serif italic accents, mono meta
+   labels, hairline dividers, no card chrome unless it earns it.
    ========================================================================== */
 nav.ds-nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-4);
-  height: 64px;
+  height: 56px;
   padding: 0 var(--gutter);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background var(--dur-hover) var(--ease-hover),
+              border-color var(--dur-hover) var(--ease-hover);
+}
+nav.ds-nav.is-scrolled {
   background: var(--nav-bg);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid var(--border);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 .ds-nav-logo {
-  font-weight: 600; font-size: var(--fs-base);
-  letter-spacing: -0.01em; color: var(--text-primary);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
   white-space: nowrap; flex-shrink: 0;
 }
+.ds-nav-logo::before {
+  content: '§';
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-muted);
+  transition: color var(--dur-hover) var(--ease-hover),
+              transform var(--dur-page) var(--ease-spring);
+}
+.ds-nav-logo:hover::before { color: var(--text-primary); transform: rotate(-8deg); }
+
 .ds-nav-back {
   display: inline-flex; align-items: center; gap: var(--sp-2);
-  font-size: var(--fs-sm); font-weight: 500;
-  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
   background: transparent;
-  border: 1px solid var(--border);
-  padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-md);
+  border: 0;
+  padding: var(--sp-2) 0;
   transition: color var(--dur-hover) var(--ease-hover),
-              border-color var(--dur-hover) var(--ease-hover),
-              transform var(--dur-hover) var(--ease-out);
+              transform var(--dur-hover) var(--ease-swift);
 }
-/* Backward nudge encodes direction: this control returns you up the hierarchy,
-   the opposite of every forward arrow on the page. */
 .ds-nav-back:hover {
   color: var(--text-primary);
-  border-color: var(--border-strong);
-  transform: translateX(-2px);
-  will-change: transform;
+  transform: translateX(-3px);
 }
 .ds-nav-right { display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
 .ds-theme-toggle {
@@ -971,141 +1841,273 @@ nav.ds-nav {
   transition: color var(--dur-hover) var(--ease-hover),
               border-color var(--dur-hover) var(--ease-hover);
 }
-/* Same contract as .icon-btn: border appearing is what identifies the glyph
-   as an interactive control. */
 .ds-theme-toggle:hover { color: var(--text-primary); border-color: var(--border); }
 .ds-theme-toggle svg { width: 18px; height: 18px; }
 
-.ds-main { position: relative; z-index: 1; padding-top: 64px; }
+.ds-main { position: relative; z-index: 1; padding-top: 56px; }
 
+/* Page hero (sub-pages) — mirrors the editorial header on the home hero:
+   a mono badge sits above a serif title with italic emphasis. */
 .ds-page-hero {
   max-width: var(--container); margin: 0 auto;
-  padding: var(--sp-16) var(--gutter) var(--sp-12);
+  padding: var(--sp-24) var(--gutter) var(--sp-16);
 }
 .ds-badge {
-  display: inline-flex; align-items: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs); letter-spacing: 0.04em;
-  padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm);
-  background: var(--surface); color: var(--accent);
-  border: 1px solid var(--border); margin-bottom: var(--sp-6);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-6);
+}
+.ds-badge::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: currentColor;
+  opacity: 0.5;
 }
 .ds-page-title {
-  font-size: clamp(2.2rem, 6vw, 3.5rem);
-  font-weight: 700; line-height: 1.0; letter-spacing: -0.03em;
-  color: var(--text-primary); margin-bottom: var(--sp-4);
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 6.5vw, 4rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-6);
 }
-.ds-page-title em { font-style: normal; color: var(--accent); }
+.ds-page-title em {
+  font-style: italic;
+  color: var(--text-primary);
+}
 .ds-page-desc {
-  font-size: var(--fs-lg); color: var(--text-secondary);
-  line-height: 1.6; max-width: 62ch;
+  font-size: var(--fs-lg);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 62ch;
 }
+.ds-page-desc em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); }
 
 .ds-section { max-width: var(--container); margin: 0 auto; padding: var(--sp-12) var(--gutter); }
 .ds-section-label {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text-muted); margin-bottom: var(--sp-3);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.ds-section-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: currentColor;
+  opacity: 0.5;
 }
 .ds-section-title {
-  font-size: var(--fs-h2); font-weight: 600;
-  line-height: 1.05; letter-spacing: -0.02em;
-  color: var(--text-primary); margin-bottom: var(--sp-4);
+  font-family: var(--font-serif);
+  font-size: var(--fs-h2);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-6);
 }
-.ds-section-title em { font-style: normal; color: var(--accent); }
+.ds-section-title em {
+  font-style: italic;
+  color: var(--text-primary);
+}
 
 .ds-body {
-  font-size: var(--fs-base); color: var(--text-secondary);
-  line-height: 1.7; margin-bottom: var(--sp-4); max-width: 70ch;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--sp-4);
+  max-width: 68ch;
 }
-.ds-body strong { color: var(--text-primary); font-weight: 600; }
+.ds-body strong { color: var(--text-primary); font-weight: 500; }
+.ds-body em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); font-weight: 400; }
 
+/* Card grid — editorial cards with hairlines rather than filled surfaces.
+   Featured card gets a stronger top rule. Hover response is a subtle border
+   colour + upward nudge rather than a full lift. */
+/* Sub-page card grid.
+   Previous version used a shared-hairline "bento" layout where every card
+   only had a right-border + bottom-border and no left/top padding — that
+   created two real problems:
+     1. When the number of cards didn't fill a full row (e.g. 4 cards on
+        a 3-col grid), the trailing card's right-border hung into empty
+        space and read as visually broken.
+     2. `padding-left: 0` meant text sat flush against the previous card's
+        right-border, with no breathing room.
+   The layout is now a set of individually outlined tiles with a real gap
+   between them: no hanging borders, symmetric padding on every side, and
+   the alignment problem from partial rows goes away entirely. */
 .ds-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--sp-4); margin-top: var(--sp-8);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-4);
+  margin-top: var(--sp-8);
 }
 .ds-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: var(--sp-6);
-  transition: opacity var(--dur-enter) var(--ease-out),
-              translate var(--dur-enter) var(--ease-out),
-              transform var(--dur-hover) var(--ease-out),
+  padding: var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  position: relative;
+  transition: opacity var(--dur-page) var(--ease-spring),
+              translate var(--dur-page) var(--ease-spring),
               border-color var(--dur-hover) var(--ease-hover),
-              box-shadow var(--dur-hover) var(--ease-hover);
+              background var(--dur-hover) var(--ease-hover);
 }
-/* Hidden start state gated on scripting for the same reason as [data-reveal]:
-   these cards are the entire content of most sub-pages, and without JS they
-   were shipping invisible. */
+
 @media (scripting: enabled) {
   .ds-card { opacity: 0; translate: 0 14px; }
 }
 .ds-card.visible, .ds-card.is-visible { opacity: 1; translate: none; }
 @media (hover: hover) and (pointer: fine) {
-  /* Card is a single link target — lift declares the whole surface clickable. */
   .ds-card:hover {
-    transform: translateY(-3px);
+    background: var(--surface);
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-hover);
-    will-change: transform;
+  }
+  .ds-card:hover .ds-card-title {
+    color: var(--text-primary);
   }
 }
-.ds-card.ds-card-featured { grid-column: 1 / -1; background: var(--surface); border-color: var(--border-strong); }
-.ds-card-icon {
-  width: 40px; height: 40px; border-radius: var(--radius-md);
-  background: var(--surface-2); color: var(--accent);
-  display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-4);
+.ds-card.ds-card-featured {
+  grid-column: 1 / -1;
+  padding: var(--sp-8);
 }
-.ds-card-icon svg { width: 20px; height: 20px; }
-.ds-card-title { font-size: var(--fs-h3); font-weight: 600; color: var(--text-primary); margin-bottom: var(--sp-2); letter-spacing: -0.01em; }
-.ds-card-title-lg { font-size: clamp(1.4rem, 3vw, 1.8rem); font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: var(--sp-3); }
-.ds-card-desc { font-size: var(--fs-sm); color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--sp-4); }
+.ds-card-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-2);
+}
+.ds-card-icon svg { width: 18px; height: 18px; }
+.ds-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-2);
+  line-height: 1.2;
+  transition: color var(--dur-hover) var(--ease-hover);
+}
+.ds-card-title em { font-style: italic; }
+.ds-card-title-lg {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-4);
+}
+.ds-card-title-lg em { font-style: italic; }
+.ds-card-desc {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-4);
+}
+.ds-card-desc em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); }
 
 .ds-highlight {
-  background: var(--surface); border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  padding: var(--sp-4) var(--sp-6); margin: var(--sp-6) 0;
-  font-size: var(--fs-sm); color: var(--text-secondary); line-height: 1.65;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--text-primary);
+  border-radius: 0;
+  padding: var(--sp-2) var(--sp-6);
+  margin: var(--sp-6) 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  line-height: 1.55;
+  max-width: 62ch;
 }
-.ds-highlight strong { color: var(--text-primary); font-weight: 600; }
+.ds-highlight strong { color: var(--text-primary); font-weight: 500; font-style: normal; font-family: var(--font-sans); }
 
-.ds-pill-row { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-4); }
+.ds-pill-row { display: flex; gap: 0; flex-wrap: wrap; margin-top: var(--sp-4); align-items: center; }
 .ds-pill {
-  font-family: var(--font-mono); font-size: var(--fs-xs);
-  padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  padding: 0;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  letter-spacing: 0.02em;
+}
+.ds-pill + .ds-pill::before {
+  content: '·';
+  color: var(--text-muted);
+  opacity: 0.5;
+  padding: 0 var(--sp-2);
 }
 
 .ds-link {
-  display: inline-flex; align-items: center; gap: var(--sp-1);
-  font-size: var(--fs-sm); font-weight: 500; color: var(--accent);
-  /* Was `transition: gap` with a `gap` change on hover. That was inert: the
-     link's content is a single text node ("View Details →"), and gap only
-     applies between flex items, so there was nothing to space apart — the
-     hover state did nothing at all. Replaced with a real affordance. */
-  transition: transform var(--dur-hover) var(--ease-out),
-              color var(--dur-hover) var(--ease-hover);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--text-primary);
+  position: relative;
+  padding-bottom: 2px;
+  transition: transform var(--dur-hover) var(--ease-swift);
 }
-/* Forward-motion cue matching every other "go deeper" control on the site. */
+.ds-link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 20px; bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transform: scaleX(1);
+  transition: transform var(--dur-page) var(--ease-spring);
+}
 .ds-link:hover {
-  color: var(--accent-hover);
-  transform: translateX(2px);
-  will-change: transform;
+  transform: translateX(3px);
+}
+.ds-link:hover::after {
+  transform-origin: left;
+  transform: scaleX(0.4);
 }
 
+/* Buttons on sub-pages use the same editorial pill style as .btn on home. */
 .ds-btn-primary {
   display: inline-flex; align-items: center; gap: var(--sp-2);
-  background: var(--accent); color: var(--on-accent);
-  font-size: var(--fs-sm); font-weight: 500;
-  padding: var(--sp-3) var(--sp-6); border-radius: var(--radius-md);
-  border: 1px solid transparent; cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  background: var(--text-primary);
+  color: var(--bg);
+  cursor: pointer;
   transition: transform var(--dur-press) var(--ease-press),
               background var(--dur-hover) var(--ease-hover);
 }
-/* Primary action under the pointer. */
-.ds-btn-primary:hover { background: var(--accent-hover); }
-/* Press received — same asymmetric engage/release contract as .btn. */
+.ds-btn-primary:hover { background: var(--text-secondary); }
 .ds-btn-primary:active {
   transform: scale(0.97);
   transition: transform var(--dur-press-in) var(--ease-out);
@@ -1113,17 +2115,22 @@ nav.ds-nav {
 }
 .ds-btn-ghost {
   display: inline-flex; align-items: center; gap: var(--sp-2);
-  background: transparent; color: var(--text-primary);
-  font-size: var(--fs-sm); font-weight: 500;
-  padding: var(--sp-3) var(--sp-6); border-radius: var(--radius-md);
-  border: 1px solid var(--border); cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
   transition: transform var(--dur-press) var(--ease-press),
               border-color var(--dur-hover) var(--ease-hover),
               background var(--dur-hover) var(--ease-hover);
 }
-/* Gains a surface so it reads as raised without competing with the primary. */
-.ds-btn-ghost:hover { border-color: var(--border-strong); background: var(--surface); }
-/* Press received. */
+.ds-btn-ghost:hover { border-color: var(--text-primary); background: transparent; }
 .ds-btn-ghost:active {
   transform: scale(0.97);
   transition: transform var(--dur-press-in) var(--ease-out);
@@ -1137,12 +2144,29 @@ footer.ds-footer {
   position: relative; z-index: 1;
   border-top: 1px solid var(--border);
   padding: var(--sp-8) var(--gutter);
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: var(--sp-4);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--sp-4);
   max-width: var(--container); margin: 0 auto;
+  margin-top: var(--sp-16);
 }
-.ds-footer-logo { font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; }
-.ds-footer-text { font-size: var(--fs-sm); color: var(--text-muted); }
+@media (max-width: 720px) { footer.ds-footer { grid-template-columns: 1fr; } }
+.ds-footer-logo {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.ds-footer-text {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 .ds-code-block {
   background: var(--surface); border: 1px solid var(--border);
@@ -1155,11 +2179,20 @@ code { font-family: var(--font-mono); }
 .ds-body code, .ds-card-desc code, .ds-page-desc code {
   background: var(--surface-2); border: 1px solid var(--border);
   padding: 1px var(--sp-1); border-radius: var(--radius-sm);
-  font-size: var(--fs-xs); color: var(--accent);
+  font-size: var(--fs-xs); color: var(--text-primary);
 }
-.ds-step-title { font-size: var(--fs-h3); font-weight: 600; color: var(--text-primary); margin-bottom: var(--sp-2); }
+.ds-step-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-2);
+  letter-spacing: -0.005em;
+}
+.ds-step-title em { font-style: italic; }
 .ds-body ul, .ds-body ol { margin: var(--sp-2) 0 var(--sp-4) var(--sp-6); color: var(--text-secondary); line-height: 1.8; }
 .ds-body li { margin-bottom: var(--sp-1); }
+.ds-body li em { font-family: var(--font-serif); font-style: italic; color: var(--text-primary); }
 
 /* Sub-page hero entrance. Base class carries the animation and the 0ms slot,
    which is reserved for the page's <h1> (the LCP element) — the -1/-2/-3
@@ -1172,8 +2205,8 @@ code { font-family: var(--font-mono); }
    for zero visual change; see the audit notes. */
 .ds-fade-up {
   opacity: 0;
-  animation: rise var(--dur-page) var(--ease-out) forwards;
+  animation: rise var(--dur-page) var(--ease-spring) forwards;
 }
-.ds-fade-up-1 { animation-delay: calc(var(--stagger-step) * 1); }
-.ds-fade-up-2 { animation-delay: calc(var(--stagger-step) * 2); }
-.ds-fade-up-3 { animation-delay: calc(var(--stagger-step) * 3); }
+.ds-fade-up-1 { animation-delay: 90ms; }
+.ds-fade-up-2 { animation-delay: 180ms; }
+.ds-fade-up-3 { animation-delay: 270ms; }

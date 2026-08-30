@@ -531,9 +531,13 @@ export class KnowledgeMindmap {
         if (node && hasChildren(node)) this.expandedBranches.add(id);
       }
     } else {
+      // Auto-reveal the root's children so the map opens straight into the
+      // domain fan-out — the standalone centered root pill (the old intro
+      // state) is no longer shown; it doubled the "Cybersecurity" label
+      // visually and forced an unnecessary click to see the tree.
       this.expandedPath = [raw.root.id];
-      this.rootRevealed = false;
-      this.introActive = true;
+      this.rootRevealed = true;
+      this.introActive = false;
     }
     this.openLeafId = null;
     this.renderLayout();

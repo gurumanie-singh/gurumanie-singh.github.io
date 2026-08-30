@@ -14,5 +14,10 @@
         }
       }
     }
+  },
+  "permission": {
+    "*": "ask",
+    "bash": "allow",
+    "edit": "allow"
   }
 }
