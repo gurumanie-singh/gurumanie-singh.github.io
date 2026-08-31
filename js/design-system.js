@@ -38,48 +38,23 @@ function initTheme() {
 }
 
 /* ── STAGE DETECTION ───────────────────────────────────────────────────────
-   The home page uses a horizontal-scroll stage on wide viewports; sub-pages
-   don't. Every scroll-driven behaviour below (nav state, spy, progress bar)
-   needs to know which axis is the "primary" scroll for the current page. */
+   The home page runs a "panel stage" on wide viewports: sections are
+   absolutely stacked inside a fixed rail and JS translates each one
+   horizontally from `window.scrollY`, producing a Simon Holm-style
+   glide-over effect. Sub-pages are conventional vertical documents.
+   `isPanelStage()` is true only when both conditions are met. */
 const stageEl = document.getElementById('main');
 const stageMedia = window.matchMedia('(min-width: 900px)');
-const isHorizontalStage = () =>
+const isPanelStage = () =>
   !!stageEl && stageEl.classList.contains('stage') && stageMedia.matches;
 
-/** Return the scroll source (element or window) whose scroll axis matters. */
-function scrollSource() {
-  return isHorizontalStage() ? stageEl : window;
-}
-
-/** Return the primary scroll position for the current page (px). */
-function scrollPos() {
-  return isHorizontalStage() ? stageEl.scrollLeft : window.scrollY;
-}
-
 /* ── NAV SCROLL STATE ──────────────────────────────────────────────────────
-   The nav gains a `.is-scrolled` class once the user has moved a few pixels
-   away from the start of the primary axis. On sub-pages / mobile that's the
-   window's Y axis (via a sentinel IntersectionObserver so we don't add a
-   scroll listener). On the desktop home page the primary axis is the
-   stage's X, so we use a rAF-throttled listener there. */
+   The nav gains a `.is-scrolled` class once the user has moved a few
+   pixels off the top of the window. Uses an IntersectionObserver against
+   a tiny sentinel at the document top so no scroll listener is required. */
 function initNavState() {
   const nav = document.querySelector('.site-nav');
   if (!nav) return;
-
-  if (isHorizontalStage()) {
-    let ticking = false;
-    const check = () => {
-      ticking = false;
-      nav.classList.toggle('is-scrolled', stageEl.scrollLeft > 8);
-    };
-    stageEl.addEventListener('scroll', () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(check);
-    }, { passive: true });
-    check();
-    return;
-  }
 
   const sentinel = document.createElement('div');
   sentinel.setAttribute('aria-hidden', 'true');
@@ -92,11 +67,12 @@ function initNavState() {
 }
 
 /* ── SCROLL SPY (active nav link) ──────────────────────────────────────────
-   IntersectionObserver against the viewport works for both scroll axes,
-   because horizontal scroll of `.stage` still moves the panels within the
-   viewport. rootMargin is set as a narrow horizontal strip in the middle
-   of the viewport on horizontal stages, and a narrow vertical strip
-   otherwise — either way a section is "active" once its centre crosses it. */
+   On the home page panel-stage, all panels are absolutely stacked at the
+   same viewport position — IntersectionObserver can't distinguish them.
+   So on that page we compute the active panel index directly from
+   `scrollY / viewportHeight`. Elsewhere (subpages, mobile) sections lay
+   out normally and an IntersectionObserver with a narrow vertical strip
+   in the viewport centre handles it. */
 function initScrollSpy() {
   const links = Array.from(document.querySelectorAll('.nav-link[data-spy]'));
   if (!links.length) return;
@@ -108,9 +84,33 @@ function initScrollSpy() {
     if (section) map.set(section, link);
   });
 
-  const rootMargin = isHorizontalStage()
-    ? '0px -45% 0px -45%'   // strip down the horizontal centre
-    : '-45% 0px -50% 0px';  // strip across the vertical centre
+  if (isPanelStage()) {
+    const panels = Array.from(stageEl.querySelectorAll('.panel'));
+    if (!panels.length) return;
+
+    let vh = window.innerHeight;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const idx = Math.min(
+        panels.length - 1,
+        Math.max(0, Math.round(window.scrollY / Math.max(1, vh))),
+      );
+      const active = panels[idx];
+      links.forEach((l) => l.classList.remove('is-active'));
+      const link = map.get(active);
+      if (link) link.classList.add('is-active');
+    };
+
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', () => { vh = window.innerHeight; update(); });
+    update();
+    return;
+  }
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
@@ -120,7 +120,7 @@ function initScrollSpy() {
         if (link) link.classList.add('is-active');
       }
     });
-  }, { rootMargin, threshold: 0 });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
 
   map.forEach((_, section) => observer.observe(section));
 }
@@ -404,33 +404,24 @@ export function initParticleField(host, options = {}) {
    the knowledge mindmap can keep using it as its own atmospheric backdrop. */
 
 /* ── SCROLL PROGRESS BAR ────────────────────────────────────────────────────
-   Single scaleX-transform driven by scroll position — no layout work, no
-   width writes. rAF-throttled so multiple scroll events per frame coalesce
-   into one paint. On the horizontal home stage it tracks scrollLeft; on
-   sub-pages / mobile it tracks window scrollY. */
+   Single scaleX-transform driven by window scroll position. rAF-throttled
+   so multiple scroll events per frame coalesce into one paint. On the
+   home page the document height = N * viewport heights (see main.stage
+   in CSS), so this naturally spans the full glide-over run. */
 function initProgressBar() {
   const bar = document.getElementById('progressBar');
   if (!bar) return;
 
-  const horizontal = isHorizontalStage();
-  const source = horizontal ? stageEl : window;
-
   let ticking = false;
   const update = () => {
     ticking = false;
-    let p = 0;
-    if (horizontal) {
-      const max = stageEl.scrollWidth - stageEl.clientWidth;
-      p = max > 0 ? Math.min(1, Math.max(0, stageEl.scrollLeft / max)) : 0;
-    } else {
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - doc.clientHeight;
-      p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-    }
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     bar.style.transform = `scaleX(${p})`;
   };
 
-  source.addEventListener('scroll', () => {
+  window.addEventListener('scroll', () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(update);
@@ -439,245 +430,121 @@ function initProgressBar() {
   update();
 }
 
-/* ── HORIZONTAL STAGE (snap-per-gesture + smooth lerp + hash nav + keyboard) ─
-   On the home page (≥900px viewport, motion enabled), the page's primary
-   scroll axis is horizontal. Vertical mouse-wheel input is captured and
-   converted into horizontal scroll on `main.stage`, but instead of the
-   free-scrolling continuous lerp that earlier versions used, each wheel
-   gesture snaps to the next / previous panel — one scroll = one panel
-   advance. That's what stops the user from stopping halfway between
-   two sections.
+/* ── PANEL STAGE (scroll-driven horizontal glide-over) ─────────────────────
+   Home page desktop only. `main.stage` provides one viewport of vertical
+   scroll per transition (see CSS: `height: (N-1) * 100vh`), the `.rail`
+   is `position: fixed` and always visible, and each panel is absolutely
+   stacked inside it. This function reads `window.scrollY` on every scroll
+   tick and writes `transform: translate3d(...)` on each panel so that
+   the newer panel glides in from the right, over the previous one, which
+   drifts slightly left as it's covered.
 
-   The mechanism:
-   - Wheel deltaY accumulates until it crosses `WHEEL_THRESHOLD` (small
-     enough that even a light trackpad flick triggers a snap).
-   - When it crosses, we snap toward the next / previous panel, smoothly
-     lerped over ~500ms, and lock out further wheel input until the
-     animation settles (`LOCKOUT_MS`). This is what prevents a single
-     hard scroll from skipping past multiple panels.
-   - The CSS side (see design-system.css `scroll-snap-type: x mandatory`
-     with `scroll-snap-stop: always` on every panel) is the safety net:
-     if any input path bypasses this JS (drag on scrollbar, touch), the
-     browser still snaps to the nearest panel edge.
+   Every panel k gets two per-frame progress values, each clamped [0, 1]:
+     enter[k] = (scrollY - (k-1) * vh) / vh   — 0 = off right, 1 = at rest
+     cover[k] = (scrollY - k * vh) / vh       — 0 = at rest, 1 = fully covered
+   Panel k's translateX (in % of its own width) is:
+     (1 - enter[k]) * 100 - cover[k] * PARALLAX
+   The `-cover * PARALLAX` term is the slight leftward drift that gives
+   the outgoing panel a sense of depth — pure sticky (cover term = 0)
+   makes the transition feel like a slide-in over a still image, which
+   reads flat.
 
-   The wheel is only intercepted when the current panel isn't scrolling
-   internally — a panel with content taller than the viewport (narrow-
-   desktop fallback) scrolls vertically first and only cedes the wheel to
-   the horizontal stage once it hits the top/bottom edge.
+   Snap-per-gesture: every wheel/keyboard input advances by exactly one
+   panel, no matter how large the flick — the browser's native
+   `scrollTo({ behavior: 'smooth' })` handles the actual animation. This
+   is what stops the user from ever ending up half-way between two
+   sections. Reduced-motion drops out via CSS (the `.rail` stops being
+   fixed and panels stack naturally) so this function still runs but
+   its transforms and hijacks are visually inert.
 
-   Skipped entirely on narrow viewports (mobile) and under prefers-reduced-
-   motion — both cases fall back to native scroll behaviour. */
-function initHorizontalStage() {
+   Skipped on narrow viewports (mobile) — CSS falls back to natural
+   vertical stacking. */
+function initPanelStage() {
   if (!stageEl || !stageEl.classList.contains('stage')) return;
-  if (!stageMedia.matches) return;
-
-  // Under reduced motion we still let hash links jump instantly and hide the
-  // scroll cue, but skip the animation and wheel-hijack entirely so
-  // scrolling stays 1:1 with input.
-  const smooth = !reduceMotion.matches;
 
   const panels = Array.from(stageEl.querySelectorAll('.panel'));
   if (!panels.length) return;
 
-  // Flattened S-curve: mostly linear, with a light sine ease-in-out
-  // mixed in. Pure easeInOutSine peaks at π/2 ≈ 1.57× average speed
-  // at the midpoint — that burst eats most of the remaining distance
-  // before the "slow end" can be seen, so the settle reads as a snap.
-  // Blending 60% linear + 40% sine caps the peak at ~1.23×, which
-  // keeps the slow → slightly-faster → slow shape without a spike:
-  //
-  //   t=0.1 → 7%    t=0.5 → 50%    t=0.8 → 84%    t=0.9 → 93%
-  //
-  // (Pure sine is already at 90% by t=0.8, which is the snap.)
-  // CSS scroll-snap is also disabled for the duration of the tick —
-  // `proximity` snap will otherwise yank the panel to its align point
-  // the moment the next section crosses ~50% of the viewport, which
-  // is the other half of the "snaps from the middle" feel.
-  const DURATION_MS = 800;
-  const SINE_MIX = 0.4;
-  const ease = (t) => {
-    const sine = (1 - Math.cos(Math.PI * t)) / 2;
-    return t * (1 - SINE_MIX) + sine * SINE_MIX;
-  };
+  // Tell CSS how many panels there are so `main.stage` can size itself
+  // to (N-1) * 100vh — one viewport of scroll per transition.
+  root.style.setProperty('--stage-panel-count', String(panels.length));
 
-  const state = {
-    target: stageEl.scrollLeft,
-    current: stageEl.scrollLeft,
-    startX: stageEl.scrollLeft,
-    startTime: 0,
-    animating: false,
-  };
+  // Below the desktop breakpoint, panels stack naturally via CSS — no JS
+  // transforms needed. Under reduced motion, the CSS media query drops
+  // out of the fixed rail entirely, so any transforms we'd apply would
+  // be inert (position: relative, transform: none override); no harm
+  // running the tick, but pointless — bail.
+  if (!stageMedia.matches) return;
+  if (reduceMotion.matches) return;
 
-  const clampTarget = () => {
-    const max = stageEl.scrollWidth - stageEl.clientWidth;
-    state.target = Math.max(0, Math.min(max, state.target));
-  };
+  const PARALLAX = 15; // % of viewport width the outgoing panel drifts left
+  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
-  const tick = (now) => {
-    const elapsed = now - state.startTime;
-    const t = Math.min(1, elapsed / DURATION_MS);
-    const eased = ease(t);
-    state.current = state.startX + (state.target - state.startX) * eased;
-    stageEl.scrollLeft = state.current;
-    if (t >= 1) {
-      state.current = state.target;
-      stageEl.scrollLeft = state.target;
-      state.animating = false;
-      stageEl.style.scrollSnapType = '';
-      return;
-    }
-    requestAnimationFrame(tick);
-  };
+  let vh = window.innerHeight;
+  let ticking = false;
 
-  const ensureTick = () => {
-    // Re-anchor from the current position so an in-flight retarget
-    // doesn't jump. Kill CSS snap for the duration of this tick so
-    // the browser can't yank us to a panel edge mid-curve.
-    state.startX = state.current;
-    state.startTime = performance.now();
-    stageEl.style.scrollSnapType = 'none';
-    if (state.animating) return;
-    state.animating = true;
-    requestAnimationFrame(tick);
-  };
-
-  // Which panel is currently in the viewport? Determined by whichever
-  // panel's centre is closest to the current viewport centre.
-  const findCurrentPanelIndex = () => {
-    const viewportCentre = stageEl.scrollLeft + stageEl.clientWidth * 0.5;
-    let closest = 0;
-    let minDist = Infinity;
+  const update = () => {
+    ticking = false;
+    const scrollY = window.scrollY;
     for (let i = 0; i < panels.length; i++) {
-      const centre = panels[i].offsetLeft + panels[i].offsetWidth * 0.5;
-      const dist = Math.abs(centre - viewportCentre);
-      if (dist < minDist) { minDist = dist; closest = i; }
+      const enter = clamp01((scrollY - (i - 1) * vh) / vh);
+      const cover = i < panels.length - 1
+        ? clamp01((scrollY - i * vh) / vh)
+        : 0;
+      const tx = (1 - enter) * 100 - cover * PARALLAX;
+      panels[i].style.transform = `translate3d(${tx}%, 0, 0)`;
     }
-    return closest;
   };
 
-  const snapToPanel = (index) => {
-    const clamped = Math.max(0, Math.min(panels.length - 1, index));
-    state.target = panels[clamped].offsetLeft;
-    clampTarget();
-    if (!smooth) {
-      state.current = state.target;
-      stageEl.scrollLeft = state.current;
-      return;
-    }
-    ensureTick();
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
   };
 
-  /* Determine whether a wheel event should pan the stage horizontally, or
-     let the currently-focused panel scroll internally. Panels are
-     overflow: hidden on wide desktop, so this only matters in the
-     narrow-desktop fallback where they scroll vertically. */
-  const shouldHijack = (e) => {
-    if (!smooth) return false;
-    const panel = e.target.closest('.panel');
-    if (!panel) return true;
-    const hasInternalScroll = panel.scrollHeight > panel.clientHeight + 1;
-    if (!hasInternalScroll) return true;
-    const scrollingDown = e.deltaY > 0;
-    const scrollingUp   = e.deltaY < 0;
-    const atTop    = panel.scrollTop <= 0;
-    const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1;
-    if (scrollingDown && !atBottom) return false;
-    if (scrollingUp   && !atTop)    return false;
-    return true;
-  };
+  window.addEventListener('scroll', requestUpdate, { passive: true });
 
-  // Wheel handler.
-  //
-  // The subtle bug this has to defeat is inertial-scroll bleed from
-  // macOS / trackpad flicks. A single hard flick doesn't produce one
-  // wheel event — it produces a *burst* of 30–50 events over 1–2s: a
-  // large initial delta, then a long decaying tail as the OS simulates
-  // physical momentum. A naive lockout ends before the tail does, so
-  // the trailing events cross the threshold on their own and trigger a
-  // *second* snap — the user sees one gesture skip two panels.
-  //
-  // Fix: while wheel events keep arriving, push the lockout forward.
-  // Only after INERTIA_QUIET_MS of true silence do we accept a new
-  // gesture. Combined with LOCKOUT_MS covering the animation itself,
-  // one flick = one snap regardless of how long the OS tail lasts.
-  const WHEEL_THRESHOLD = 40;
-  const LOCKOUT_MS = DURATION_MS + 80;
-  const INERTIA_QUIET_MS = 160;
-  let wheelAccumulator = 0;
-  let wheelResetTimer = null;
-  let lockoutUntil = 0;
-
-  if (smooth) {
-    stageEl.addEventListener('wheel', (e) => {
-      if (!shouldHijack(e)) return;
-      e.preventDefault();
-
-      const now = performance.now();
-
-      // Locked out — either the animation window or still absorbing the
-      // previous gesture's inertial tail. Swallow the event and push
-      // the lockout forward so the tail can't sneak past.
-      if (now < lockoutUntil) {
-        wheelAccumulator = 0;
-        lockoutUntil = Math.max(lockoutUntil, now + INERTIA_QUIET_MS);
-        return;
-      }
-
-      // Trackpads sometimes emit horizontal deltaX for a vertical scroll;
-      // treat both as scroll-progress input.
-      const dy = (e.deltaY || 0) + (e.deltaX || 0);
-      wheelAccumulator += dy;
-
-      // Reset the accumulator between gestures — a pause of ~180ms
-      // between wheel events means the previous gesture is over.
-      window.clearTimeout(wheelResetTimer);
-      wheelResetTimer = window.setTimeout(() => { wheelAccumulator = 0; }, 180);
-
-      if (Math.abs(wheelAccumulator) < WHEEL_THRESHOLD) return;
-
-      const direction = wheelAccumulator > 0 ? 1 : -1;
-      wheelAccumulator = 0;
-      lockoutUntil = now + LOCKOUT_MS;
-      snapToPanel(findCurrentPanelIndex() + direction);
-    }, { passive: false });
-  }
-
-  // Keyboard: snap-per-key. Home / End jump to the first / last panel.
-  window.addEventListener('keydown', (e) => {
-    const tag = e.target && e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-    if (e.target && e.target.isContentEditable) return;
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-    switch (e.key) {
-      case 'ArrowRight':
-      case 'PageDown':
-        e.preventDefault();
-        snapToPanel(findCurrentPanelIndex() + 1);
-        break;
-      case 'ArrowLeft':
-      case 'PageUp':
-        e.preventDefault();
-        snapToPanel(findCurrentPanelIndex() - 1);
-        break;
-      case ' ':
-        e.preventDefault();
-        snapToPanel(findCurrentPanelIndex() + (e.shiftKey ? -1 : 1));
-        break;
-      case 'Home':
-        e.preventDefault();
-        snapToPanel(0);
-        break;
-      case 'End':
-        e.preventDefault();
-        snapToPanel(panels.length - 1);
-        break;
-      default:
-        break;
-    }
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      vh = window.innerHeight;
+      update();
+    }, 120);
   });
 
-  // Hash-link clicks snap to the target panel.
+  /* ── Custom smooth-scroll ────────────────────────────────────────────────
+     Browser-native `scrollTo({ behavior: 'smooth' })` runs different
+     durations and curves per engine — Safari lands in ~300ms with a
+     near-linear ramp, which reads as flicky. This rAF loop drives a
+     consistent 800ms `easeInOutCubic` on every browser, matching the
+     premium-scroll feel of Lenis-style implementations without a
+     dependency. */
+  const ANIMATION_MS = 800;
+  const easeInOutCubic = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  let currentScrollAnim = null;
+  const smoothScrollTo = (targetY) => {
+    if (currentScrollAnim) cancelAnimationFrame(currentScrollAnim);
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    if (Math.abs(distance) < 1) { currentScrollAnim = null; return; }
+    const startTime = performance.now();
+    const step = (now) => {
+      const t = Math.min(1, (now - startTime) / ANIMATION_MS);
+      const eased = easeInOutCubic(t);
+      window.scrollTo(0, Math.round(startY + distance * eased));
+      if (t < 1) {
+        currentScrollAnim = requestAnimationFrame(step);
+      } else {
+        currentScrollAnim = null;
+      }
+    };
+    currentScrollAnim = requestAnimationFrame(step);
+  };
+
+  // Hash-link clicks smooth-scroll to the target panel's vertical offset.
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener('click', (e) => {
       const hash = link.getAttribute('href');
@@ -689,51 +556,184 @@ function initHorizontalStage() {
       const index = panels.indexOf(panel);
       if (index < 0) return;
       e.preventDefault();
-      snapToPanel(index);
-      // Update history so back/forward and refresh land on the right panel.
+      lockoutUntil = performance.now() + LOCKOUT_MS;
+      smoothScrollTo(index * vh);
       history.pushState(null, '', hash);
     });
   });
 
-  // Hide the scroll cue after any horizontal movement.
+  // Landing with a hash: jump to that panel on load, no animation on cold load.
+  if (window.location.hash) {
+    const target = document.querySelector(window.location.hash);
+    if (target) {
+      const panel = target.classList.contains('panel') ? target : target.closest('.panel');
+      if (panel) {
+        const index = panels.indexOf(panel);
+        if (index >= 0) window.scrollTo(0, index * vh);
+      }
+    }
+  }
+
+  /* ── Snap-per-gesture (wheel + keyboard) ─────────────────────────────────
+     Every deliberate wheel or keyboard input advances by exactly one
+     panel — short flicks and long flicks alike.
+
+     The design is set up to defeat macOS / trackpad inertial-scroll
+     bleed. A single hard flick emits a large first event, then a burst
+     of 30–50 decaying tail events over 500–1500 ms. Our earlier version
+     dealt with the tail by extending the lockout by 160 ms on every
+     wheel event during lockout — but that meant if the *user's finger
+     stayed on the trackpad* between two flicks, the tail never dies,
+     the lockout never expires, and the second flick is silently
+     absorbed. That's why moving the cursor "fixed" it: releasing the
+     trackpad long enough was the only way to break the extension.
+
+     New approach: **fixed** lockout equal to the animation duration
+     (no extension), and a new gesture is detected by *either*:
+       (a) SILENCE_MS of no wheel events (the tail has died), OR
+       (b) a delta that spikes above the decaying peak of the current
+           stream by FRESH_RATIO — a deliberate flick that lands amid
+           an inertial tail is still visibly larger than the tail's
+           current magnitude.
+     Either signal is enough on its own, so a rapid re-flick that keeps
+     the finger on the trackpad now advances correctly.
+
+     A `MIN_ABS_DELTA` guard drops mouse-jitter and precise-trackpad
+     micro-scrolls that shouldn't count as gestures. */
+  const LOCKOUT_MS = ANIMATION_MS + 50;
+  const SILENCE_MS = 120;
+  const MIN_ABS_DELTA = 5;
+  const FRESH_MIN_DELTA = 20;
+  const FRESH_RATIO = 1.4;
+  const PEAK_HALF_LIFE_MS = 250;
+
+  let lockoutUntil = 0;
+  let lastWheelTime = 0;
+  let recentPeak = 0;
+  let recentPeakTime = 0;
+
+  const gesture = (direction) => {
+    const now = performance.now();
+    const currentIdx = Math.max(
+      0,
+      Math.min(panels.length - 1, Math.round(window.scrollY / Math.max(1, vh))),
+    );
+    const targetIdx = Math.max(0, Math.min(panels.length - 1, currentIdx + direction));
+    // At a boundary in the direction of the gesture — nothing to advance
+    // to. Don't start a lockout so the user can immediately reverse.
+    if (targetIdx === currentIdx) return;
+    lockoutUntil = now + LOCKOUT_MS;
+    smoothScrollTo(targetIdx * vh);
+  };
+
+  /* Let internally-scrollable panels absorb the wheel first. Panels are
+     `overflow: hidden` at wide desktop, so this only matters in the
+     narrow-desktop (900–1100px) fallback where they scroll vertically. */
+  const shouldHijack = (e) => {
+    const panel = e.target?.closest?.('.panel');
+    if (!panel) return true;
+    const hasInternalScroll = panel.scrollHeight > panel.clientHeight + 1;
+    if (!hasInternalScroll) return true;
+    const scrollingDown = (e.deltaY || 0) > 0;
+    const atTop = panel.scrollTop <= 0;
+    const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1;
+    if (scrollingDown && !atBottom) return false;
+    if (!scrollingDown && !atTop) return false;
+    return true;
+  };
+
+  window.addEventListener('wheel', (e) => {
+    if (!shouldHijack(e)) return;
+    e.preventDefault();
+
+    const now = performance.now();
+
+    // Normalise line-mode wheels (mouse scroll wheels on some OSes report
+    // `deltaMode: 1` in "lines") to pixels so the same thresholds apply.
+    const rawDelta = (e.deltaY || 0) + (e.deltaX || 0);
+    const delta = e.deltaMode === 1 ? rawDelta * 30 : rawDelta;
+    const absDelta = Math.abs(delta);
+
+    // The gap since the last wheel event of *any* magnitude — always
+    // updated, even for events we ignore, so silence tracking stays
+    // accurate.
+    const gap = now - lastWheelTime;
+    lastWheelTime = now;
+
+    // Ignore pointer jitter / precise-scroll micro-events.
+    if (absDelta < MIN_ABS_DELTA) return;
+
+    // During animation: absorb WITHOUT extending the lockout. The
+    // inertial tail can't keep pushing the guard forward, so a second
+    // deliberate flick moments after the animation ends will fire.
+    if (now < lockoutUntil) return;
+
+    // Time-decayed peak of recent wheel deltas. A deliberate new flick
+    // spikes above this; inertial tail sits below.
+    const decayedPeak = recentPeak *
+      Math.exp(-(now - recentPeakTime) / PEAK_HALF_LIFE_MS);
+    if (absDelta > decayedPeak) {
+      recentPeak = absDelta;
+      recentPeakTime = now;
+    }
+
+    const isSilenceGap = gap >= SILENCE_MS;
+    const isFreshSpike = absDelta >= FRESH_MIN_DELTA
+      && absDelta > decayedPeak * FRESH_RATIO;
+    if (!isSilenceGap && !isFreshSpike) return;
+
+    gesture(delta > 0 ? 1 : -1);
+  }, { passive: false });
+
+  window.addEventListener('keydown', (e) => {
+    const tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.target && e.target.isContentEditable) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    const now = performance.now();
+    if (now < lockoutUntil) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+      case 'PageDown':
+        e.preventDefault(); gesture(1); break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault(); gesture(-1); break;
+      case ' ':
+        e.preventDefault(); gesture(e.shiftKey ? -1 : 1); break;
+      case 'Home':
+        e.preventDefault();
+        lockoutUntil = now + LOCKOUT_MS;
+        smoothScrollTo(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        lockoutUntil = now + LOCKOUT_MS;
+        smoothScrollTo((panels.length - 1) * vh);
+        break;
+      default:
+        break;
+    }
+  });
+
+  // Hide the scroll cue after any downward movement.
   const cue = document.getElementById('scrollCue');
   if (cue) {
     let hidden = false;
-    stageEl.addEventListener('scroll', () => {
+    window.addEventListener('scroll', () => {
       if (hidden) return;
-      if (stageEl.scrollLeft > 40) {
+      if (window.scrollY > 40) {
         hidden = true;
         cue.classList.add('is-hidden');
       }
     }, { passive: true });
   }
 
-  // On resize, re-snap to the currently active panel so it stays flush
-  // to the viewport edge (offsets change with viewport width).
-  let resizeTimer = null;
-  window.addEventListener('resize', () => {
-    window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(() => {
-      const idx = findCurrentPanelIndex();
-      state.target = panels[idx].offsetLeft;
-      state.current = state.target;
-      stageEl.scrollLeft = state.current;
-    }, 120);
-  });
-
-  // Landing with a hash: jump to that panel on load (native browsers only
-  // vertically snap to hashes; we need horizontal here).
-  if (window.location.hash) {
-    const target = document.querySelector(window.location.hash);
-    if (target) {
-      const panel = target.classList.contains('panel') ? target : target.closest('.panel');
-      if (panel) {
-        state.current = panel.offsetLeft;
-        state.target = state.current;
-        stageEl.scrollLeft = state.current;
-      }
-    }
-  }
+  update();
 }
 
 /* ── CURSOR-TRACKED SPOTLIGHT (work list) ──────────────────────────────────
@@ -813,14 +813,13 @@ function initMagneticButtons() {
 }
 
 /* ── INIT ──────────────────────────────────────────────────────────────────
-   Order matters slightly: `initHorizontalStage` must run before
-   `initNavState` / `initProgressBar` / `initScrollSpy` don't strictly
-   depend on it, but running it early primes the stage's scrollLeft (e.g.
-   from a page-load hash target) so those readers see the correct value
-   on their first tick. */
+   Order matters slightly: `initPanelStage` must run before
+   `initNavState` / `initProgressBar` / `initScrollSpy` because it sets
+   the `--stage-panel-count` CSS variable and (for hash landings) primes
+   `window.scrollY` — the other three read that value on their first tick. */
 function init() {
   initTheme();
-  initHorizontalStage();
+  initPanelStage();
   initNavState();
   initScrollSpy();
   initReveal();

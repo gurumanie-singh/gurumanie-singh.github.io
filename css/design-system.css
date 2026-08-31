@@ -320,13 +320,21 @@ img { max-width: 100%; display: block; }
 
 .divider { height: 1px; background: var(--border); border: 0; }
 
-/* ── HORIZONTAL STAGE ──────────────────────────────────────────────────────
-   The home page's main scroll axis is horizontal on wide viewports. Sections
-   become viewport-width panels laid out in a flex row inside `.rail`, and
-   the wheel-hijack in JS converts vertical wheel input into horizontal
-   scroll on `main.stage`. Below the desktop breakpoint the panels stack
-   vertically as a normal document — touch swipe-left/right for an entire
-   site is bad UX on phones. */
+/* ── PANEL STAGE (scroll-driven glide-over) ────────────────────────────────
+   The home page's user-facing scroll axis is *vertical* (native window
+   scroll), but the *visual* transition between sections is *horizontal*:
+   each subsequent panel glides in from the right and overlays the
+   previous one, which drifts slightly left as it's covered. This is the
+   Simon Holm-style "glide over" pattern.
+
+   Architecturally: on desktop the `.rail` is `position: fixed` — a
+   permanent viewport-shaped stage — and each `.panel` is absolutely
+   stacked inside it. `main.stage` itself is only a *spacer*: its height
+   provides one viewport of vertical scroll per transition, and the
+   `initPanelStage` handler in design-system.js reads `window.scrollY`
+   to compute each panel's `translateX`. Below the desktop breakpoint
+   this all collapses to a normal vertical stack (see the base rules
+   just below) — touch users get a conventional document. */
 
 /* Mobile / narrow — panels stack vertically. Nothing exotic. */
 .stage { display: block; }
@@ -352,75 +360,96 @@ img { max-width: 100%; display: block; }
   justify-content: center;
 }
 
-/* Desktop — horizontal scroll rail.
-   IMPORTANT: everything in this block is gated on the presence of
-   `main.stage` in the document (via `:has()`). This stylesheet is shared
-   with every subpage in the project, and subpages are conventional
-   top-to-bottom scrolled documents — they must NOT inherit the home
-   page's `overflow: hidden` scroll lock. Only the home page owns
-   `main.stage`, so `:has(main.stage)` is the right lever here. */
+/* Desktop — fixed-rail + absolute-stacked panels.
+   IMPORTANT: everything in this block is gated on `main.stage` being
+   present (via `:has()`). This stylesheet is shared with every subpage
+   in the project, and subpages are conventional top-to-bottom scrolled
+   documents — they must NOT inherit any of this. Only the home page
+   owns `main.stage`. */
 @media (min-width: 900px) {
-  html:has(main.stage),
-  body:has(main.stage) {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-
+  /* Stage is a pure spacer: its height provides one viewport of vertical
+     scroll per transition, PLUS one viewport at the end so the last
+     panel's rest position sits at the maximum scrollY (= scrollHeight
+     - viewport). Total = N * 100vh. JS sets --stage-panel-count on
+     load; the fallback covers hero + 4 sections. */
   main.stage {
     position: relative;
-    height: 100vh;
-    width: 100vw;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    overscroll-behavior: none;
+    height: calc(var(--stage-panel-count, 5) * 100vh);
+    width: 100%;
+  }
+
+  /* Hide the native vertical scrollbar on the home page only. Vertical
+     scroll is still active — this only removes the visible track. The
+     progress bar at the top of the page communicates position; a
+     scrollbar next to a snap-per-gesture experience just shows a
+     misleading "you're 40% through" indicator that never sits at a
+     natural resting point. Also override the base `scroll-behavior:
+     smooth` — the JS drives its own rAF easing curve, and letting the
+     browser layer its own native smooth-scroll on top of every
+     per-frame `scrollTo(0, y)` fights that loop and produces a
+     laggy-then-snappy result. Gated on `:has(main.stage)` so every
+     subpage keeps its native scrollbar and native smooth-scroll. */
+  html:has(main.stage) {
     scroll-behavior: auto;
-    /* CSS snap is the safety net for scrollbar / touch input that bypasses
-       JS. During a JS-driven panel transition, the script sets
-       `scroll-snap-type: none` so proximity snap cannot yank the panel
-       to its align point mid-curve. */
-    scroll-snap-type: x proximity;
+    scrollbar-width: none;              /* Firefox */
+    -ms-overflow-style: none;           /* legacy Edge / IE */
   }
-  main.stage::-webkit-scrollbar { display: none; height: 0; width: 0; }
+  html:has(main.stage)::-webkit-scrollbar {
+    display: none;                      /* Safari, Chrome */
+    width: 0;
+    height: 0;
+  }
 
+  /* The rail is a viewport-fixed container. It's always visible; scrolling
+     the window never moves it. All motion happens inside via the transforms
+     JS applies to each panel. */
   .rail {
-    display: flex;
-    height: 100%;
-    align-items: stretch;
-  }
-
-  .panel {
-    flex: 0 0 auto;
-    height: 100vh;
-    width: 100vw;
-    padding: 0;
-    /* No internal vertical scroll: every panel fits its content in
-       100vh × 100vw. If the viewport is unusually short (< ~720px), the
-       panel simply clips — a deliberate trade so scrolling stays 100%
-       horizontal per the design brief. */
-    overflow: hidden;
-    scroll-snap-align: start;
-    /* Always stop on this panel when snapping — prevents fast scrolls
-       from skipping over a panel and lets a single wheel gesture advance
-       by exactly one. */
-    scroll-snap-stop: always;
-    position: relative;
-  }
-
-  /* Card treatment: give each panel a subtle vertical hairline on the
-     leading edge so panels read as discrete "cards" side by side, without
-     adding visual weight (no shadows, no fills — just a hairline). */
-  .panel + .panel::before {
-    content: '';
-    position: absolute;
+    position: fixed;
+    top: 0;
     left: 0;
-    top: 12vh;
-    bottom: 12vh;
-    width: 1px;
-    background: var(--border);
-    pointer-events: none;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    /* Below the site nav and progress bar (which sit at higher z-index
+       in the base stylesheet), but establishes its own stacking context
+       so absolute-positioned children stack against each other cleanly. */
+    z-index: 0;
+  }
+
+  /* Panels are absolutely stacked in the fixed rail. Because they share
+     the same z-index, later panels in DOM order paint on top of earlier
+     ones — that's what makes the newer panel visually glide *over* the
+     previous one during a transition. Every panel except the first
+     starts translated fully off to the right as a pre-JS fallback, so
+     a JS failure shows the hero rather than a stack.
+
+     `background: var(--bg)` is required: panels overlap during a
+     transition and would otherwise let the panel underneath bleed
+     through. Solid background is what makes "gliding over" read as one
+     card covering another. */
+  .panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    will-change: transform;
+    transform: translate3d(100%, 0, 0);
+    background: var(--bg);
+  }
+  .panel:first-of-type { transform: translate3d(0, 0, 0); }
+
+  /* Card-edge treatment on every non-hero panel: a hairline on the
+     leading (left) edge plus a subtle drop shadow. Both sit *off* the
+     viewport when the panel is at rest at translateX(0) — visible only
+     while the panel is mid-transition sliding over the panel below.
+     Reads as a card gliding over another card. */
+  .panel:not(:first-of-type) {
+    box-shadow:
+      -1px 0 0 var(--border),
+      -18px 0 40px -20px rgb(0 0 0 / 0.28);
   }
 
   /* Two-column editorial layout inside every non-hero panel: the section
@@ -498,6 +527,30 @@ img { max-width: 100%; display: block; }
 
   /* Section padding inside a panel becomes 0 — the panel supplies the frame. */
   .panel .section { padding: 0; }
+}
+
+/* Reduced-motion desktop fallback: drop out of the fixed-rail stack
+   entirely and let panels flow as a normal vertical document. Users who
+   opt out of motion still get every section, they just don't get the
+   horizontal glide-over transitions. */
+@media (min-width: 900px) and (prefers-reduced-motion: reduce) {
+  main.stage { height: auto; }
+  .rail {
+    position: static;
+    height: auto;
+    width: 100%;
+    overflow: visible;
+  }
+  .panel {
+    position: relative;
+    transform: none;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    box-shadow: none;
+    padding-block: var(--sp-16);
+  }
+  .panel-hero { padding-top: 88px; padding-bottom: var(--sp-16); }
 }
 
 /* On narrower desktop widths the masthead + body columns get too tight;
